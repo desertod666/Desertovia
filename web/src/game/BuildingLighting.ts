@@ -1,7 +1,6 @@
 import { Container, Graphics, Mesh, MeshGeometry, Shader, type Texture } from 'pixi.js'
 import registrations from '../assets/night/registration.json'
-import dayAtlas from '../assets/sprites.json'
-import { TILE, art, type ArtName, type TileSet } from './sheets'
+import { TILE, type TileSet } from './sheets'
 
 type Bounds = readonly number[]
 export const hasPreparedBuilding = (kind: string) => Object.hasOwn(registrations, kind)
@@ -79,11 +78,10 @@ export class BuildingLighting extends Container {
     super()
     this.emitsLight = emitsLight
     const pair = registrations[kind as keyof typeof registrations]
-    const [left, top, right, bottom] = pair.dayBounds
-    const scale = Math.min(0.5, plotWidth*TILE/(right-left),plotHeight*TILE/(bottom-top))
-    const width = (right-left)*scale, height = (bottom-top)*scale
-    const dayTexture = tiles.get(art(pair.day as ArtName)), nightTexture = tiles.nightBuilding(pair.night)
-    const day = sampling(dayTexture,registeredPlacement(pair.dayBounds.map(value=>value/dayAtlas.meta.scale),width,height))
+    const scale = Math.min(1, plotWidth*TILE/pair.worldSize[0],plotHeight*TILE/pair.worldSize[1])
+    const width = pair.worldSize[0]*scale, height = pair.worldSize[1]*scale
+    const dayTexture = tiles.nightBuilding(pair.day), nightTexture = tiles.nightBuilding(pair.night)
+    const day = sampling(dayTexture,registeredPlacement(pair.dayBounds,width,height))
     const night = sampling(nightTexture,registeredPlacement(pair.nightBounds,width,height))
     const x0=Math.min(day.bounds[0],night.bounds[0]),y0=Math.min(day.bounds[1],night.bounds[1])
     const x1=Math.max(day.bounds[2],night.bounds[2]),y1=Math.max(day.bounds[3],night.bounds[3])

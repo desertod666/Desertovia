@@ -1,183 +1,471 @@
 {
   "frames": {
-    "building-stage-night": {
+    "building-monastery-church": {
       "frame": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 204,
+        "h": 189
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 204,
+        "h": 189
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 204,
+        "h": 189
+      }
+    },
+    "building-monastery-church-night": {
+      "frame": {
+        "x": 206,
+        "y": 0,
+        "w": 204,
+        "h": 189
+      },
+      "sourceSize": {
+        "w": 204,
+        "h": 189
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 204,
+        "h": 189
+      }
+    },
+    "building-monk-cell": {
+      "frame": {
+        "x": 412,
+        "y": 0,
+        "w": 196,
+        "h": 186
+      },
+      "sourceSize": {
+        "w": 196,
+        "h": 186
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 196,
+        "h": 186
+      }
+    },
+    "building-monk-cell-night": {
+      "frame": {
+        "x": 610,
+        "y": 0,
+        "w": 196,
+        "h": 186
+      },
+      "sourceSize": {
+        "w": 196,
+        "h": 186
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 196,
+        "h": 186
+      }
+    },
+    "building-smithy": {
+      "frame": {
+        "x": 808,
+        "y": 0,
+        "w": 158,
+        "h": 142
+      },
+      "sourceSize": {
+        "w": 158,
+        "h": 142
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 158,
+        "h": 142
+      }
+    },
+    "building-smithy-night": {
+      "frame": {
+        "x": 968,
+        "y": 0,
+        "w": 158,
+        "h": 142
+      },
+      "sourceSize": {
+        "w": 158,
+        "h": 142
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 158,
+        "h": 142
+      }
+    },
+    "building-stage": {
+      "frame": {
+        "x": 1128,
+        "y": 0,
+        "w": 170,
+        "h": 158
+      },
+      "sourceSize": {
+        "w": 170,
+        "h": 158
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 170,
+        "h": 158
+      }
+    },
+    "building-stage-night": {
+      "frame": {
+        "x": 1300,
+        "y": 0,
+        "w": 170,
+        "h": 158
+      },
+      "sourceSize": {
+        "w": 170,
+        "h": 158
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 170,
+        "h": 158
+      }
+    },
+    "building-stone-pile": {
+      "frame": {
+        "x": 0,
+        "y": 191,
+        "w": 138,
+        "h": 159
+      },
+      "sourceSize": {
+        "w": 138,
+        "h": 159
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 138,
+        "h": 159
       }
     },
     "building-stone-pile-night": {
       "frame": {
-        "x": 384,
-        "y": 0,
-        "w": 384,
-        "h": 384
+        "x": 140,
+        "y": 191,
+        "w": 138,
+        "h": 159
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 138,
+        "h": 159
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 138,
+        "h": 159
+      }
+    },
+    "building-stone-yard": {
+      "frame": {
+        "x": 280,
+        "y": 191,
+        "w": 149,
+        "h": 153
+      },
+      "sourceSize": {
+        "w": 149,
+        "h": 153
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 149,
+        "h": 153
       }
     },
     "building-stone-yard-night": {
       "frame": {
-        "x": 768,
-        "y": 0,
-        "w": 384,
-        "h": 384
+        "x": 431,
+        "y": 191,
+        "w": 149,
+        "h": 153
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 149,
+        "h": 153
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 149,
+        "h": 153
+      }
+    },
+    "building-storehouse": {
+      "frame": {
+        "x": 582,
+        "y": 191,
+        "w": 153,
+        "h": 132
+      },
+      "sourceSize": {
+        "w": 153,
+        "h": 132
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 153,
+        "h": 132
       }
     },
     "building-storehouse-night": {
       "frame": {
-        "x": 1152,
-        "y": 0,
-        "w": 384,
-        "h": 384
+        "x": 737,
+        "y": 191,
+        "w": 153,
+        "h": 132
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 153,
+        "h": 132
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 153,
+        "h": 132
+      }
+    },
+    "building-tavern": {
+      "frame": {
+        "x": 892,
+        "y": 191,
+        "w": 141,
+        "h": 151
+      },
+      "sourceSize": {
+        "w": 141,
+        "h": 151
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 141,
+        "h": 151
       }
     },
     "building-tavern-night": {
       "frame": {
-        "x": 0,
-        "y": 384,
-        "w": 384,
-        "h": 384
+        "x": 1035,
+        "y": 191,
+        "w": 141,
+        "h": 151
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 141,
+        "h": 151
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 141,
+        "h": 151
+      }
+    },
+    "building-town-hall": {
+      "frame": {
+        "x": 1178,
+        "y": 191,
+        "w": 117,
+        "h": 132
+      },
+      "sourceSize": {
+        "w": 117,
+        "h": 132
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 117,
+        "h": 132
       }
     },
     "building-town-hall-night": {
       "frame": {
-        "x": 384,
-        "y": 384,
-        "w": 384,
-        "h": 384
+        "x": 1297,
+        "y": 191,
+        "w": 117,
+        "h": 132
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 117,
+        "h": 132
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 117,
+        "h": 132
+      }
+    },
+    "building-treasury": {
+      "frame": {
+        "x": 0,
+        "y": 352,
+        "w": 193,
+        "h": 188
+      },
+      "sourceSize": {
+        "w": 193,
+        "h": 188
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 193,
+        "h": 188
       }
     },
     "building-treasury-night": {
       "frame": {
-        "x": 768,
-        "y": 384,
-        "w": 384,
-        "h": 384
+        "x": 195,
+        "y": 352,
+        "w": 193,
+        "h": 188
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 193,
+        "h": 188
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 193,
+        "h": 188
+      }
+    },
+    "building-wood-pile": {
+      "frame": {
+        "x": 390,
+        "y": 352,
+        "w": 191,
+        "h": 206
+      },
+      "sourceSize": {
+        "w": 191,
+        "h": 206
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 191,
+        "h": 206
       }
     },
     "building-wood-pile-night": {
       "frame": {
-        "x": 1152,
-        "y": 384,
-        "w": 384,
-        "h": 384
+        "x": 583,
+        "y": 352,
+        "w": 191,
+        "h": 206
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 191,
+        "h": 206
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 191,
+        "h": 206
+      }
+    },
+    "building-woodyard": {
+      "frame": {
+        "x": 776,
+        "y": 352,
+        "w": 136,
+        "h": 140
+      },
+      "sourceSize": {
+        "w": 136,
+        "h": 140
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 136,
+        "h": 140
       }
     },
     "building-woodyard-night": {
       "frame": {
-        "x": 0,
-        "y": 768,
-        "w": 384,
-        "h": 384
+        "x": 914,
+        "y": 352,
+        "w": 136,
+        "h": 140
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 136,
+        "h": 140
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 136,
+        "h": 140
+      }
+    },
+    "building-workshop": {
+      "frame": {
+        "x": 1052,
+        "y": 352,
+        "w": 141,
+        "h": 104
+      },
+      "sourceSize": {
+        "w": 141,
+        "h": 104
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 141,
+        "h": 104
       }
     },
     "building-workshop-night": {
       "frame": {
-        "x": 384,
-        "y": 768,
-        "w": 384,
-        "h": 384
+        "x": 1195,
+        "y": 352,
+        "w": 141,
+        "h": 104
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 141,
+        "h": 104
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 141,
+        "h": 104
       }
     }
   },
@@ -185,7 +473,7 @@
     "image": "buildings-b.png",
     "size": {
       "w": 1536,
-      "h": 1152
+      "h": 558
     },
     "scale": "1"
   }

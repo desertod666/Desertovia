@@ -398,5 +398,30 @@
     "public_release_header_verified": true,
     "public_bundle_version_verified": true,
     "public_providers_verified": true
+  },
+  "building_outline": {
+    "decision": "D-023",
+    "branch": "tools/sprite-outline",
+    "state": "baked_locally_verified_not_deployed",
+    "live_changed": false,
+    "deployment_authorized": false,
+    "profile": "art/style/building-outline.json",
+    "color": "#2b1d2b",
+    "world_width": 1,
+    "building_pairs": 26,
+    "checks": [
+      "52 frame masks: exact opaque ink, uniform2px square outer morphology, unchanged aligned pixels outside contour, no border clipping",
+      "byte-identical repeated bake:52 PNGs, two atlases, registration",
+      "4 browser checks passed on phone/desktop:26 crossfades and emission",
+      "2 browser checks passed on phone/desktop: all52 baked textures load uniform ink",
+      "production frontend build and lint completed"
+    ],
+    "runtime_outline_shader": false,
+    "baked_frames": 52,
+    "source_pixels_per_world": 2,
+    "native_contour_pixels": 2,
+    "contour_shape": "square-outer",
+    "ready_assets": "art/outlined-buildings",
+    "idempotent_bake_verified": true
   }
 }

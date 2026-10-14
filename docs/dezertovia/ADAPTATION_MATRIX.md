@@ -144,3 +144,12 @@ interrupted для всех окон + modal-backdrop stacking. Регресси
 D-022 RELEASED/VERIFIED14.10.2026:0.5.1, SHA ad88be344908a7fb42bc434ce89aad94c92d1665,
 CI38571676265 (474 backend/55 browser passed/1 skipped), deploy38573019933,
 check38573303603; публичные release header и bundle проверены.
+
+D-023 BRANCH: BuildingLighting + art/style/building-outline.json + scripts/outline_sprites.py;
+единый world-space контур26 зданий, PNG-экспорт без генерации. Проверка GPU цвета,
+непрозрачности перехода и emission; deployment запрещён владельцем.
+
+D-023 updated BRANCH:52 baked PNGs + two ready atlases, day/night registration,
+no runtime contour shader. scripts/bake_building_outlines.py, repeat builds byte-identical.
+Native stroke2 source px/1 world px, one ink and square external morphology.
+No deployment. See art/outlined-buildings/README.md.

@@ -1,0 +1,845 @@
+{
+  "style": {
+    "color": "#2b1d2b",
+    "worldWidth": 1,
+    "alphaThreshold": 192,
+    "defaultPixelsPerWorldPixel": 2
+  },
+  "frames": [
+    {
+      "name": "building-bakery",
+      "state": "day",
+      "size": [
+        131,
+        160
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 787,
+      "outlineMaskSha256": "b252a2716da13c81f46239d18538c31eefa56af7648392c9657d57d128ee59da",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "a84091e7abc246f3f58ada113ae191e830d89c1675d96aa8418c0495d122d9ea"
+    },
+    {
+      "name": "building-bakery-night",
+      "state": "night",
+      "size": [
+        131,
+        160
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 794,
+      "outlineMaskSha256": "8cf84010bc4daa13c01662271a2577ddb1a98a9daa14049857a0d0d9d3e9f26e",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "36c4bed83f7ef01b58c4365df2ab38aee88ea7f6e8e2f80bf27b34459ade2a03"
+    },
+    {
+      "name": "building-barracks",
+      "state": "day",
+      "size": [
+        113,
+        103
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 1007,
+      "outlineMaskSha256": "b4a3ee5d9f953381a37bffb30678e293a3838f1b6c81a02c8758f0f99a480c07",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "774c4ed63c22f2bac314b91f8a8e6a755eb186042f8f0d1330023c7bf4902da0"
+    },
+    {
+      "name": "building-barracks-night",
+      "state": "night",
+      "size": [
+        113,
+        103
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 975,
+      "outlineMaskSha256": "45a0984a335c8f1a213f5d62f75ca013d6b470cc22c14d8ba522452c9e1d8570",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "8ecb600ca1760a76b5072e6ad9c779bb77e1cf927f57d6fa2b38978ff10542df"
+    },
+    {
+      "name": "building-bell-tower",
+      "state": "day",
+      "size": [
+        186,
+        192
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 783,
+      "outlineMaskSha256": "dbc4dbdb08344f2b44b4d578383e5f480f611d5714fc79a58ed75d0ffc2a7c84",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "c6bb24dc56224f111ef646a6545752dc40b327f89d531e0767fe1d0a7f80fb6d"
+    },
+    {
+      "name": "building-bell-tower-night",
+      "state": "night",
+      "size": [
+        186,
+        192
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 757,
+      "outlineMaskSha256": "6d7a96f268a941e35dc75ffd284852f889a0db52893c18b61c7b65e06e04c889",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "493a1ec01baa3c93685f1dba3d5e9f53f438dd2e9b20f4c7f6a3f8538c3ca2d6"
+    },
+    {
+      "name": "building-drying-rack",
+      "state": "day",
+      "size": [
+        160,
+        169
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 696,
+      "outlineMaskSha256": "75ef1d9d125254c3d9b641b682acfe0cb91464f0f370d8e0b9c7e2d325526865",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "f004d123936c35b159404587e32e0fa1e03b3dda44f89d8e413059229a2d5cbb"
+    },
+    {
+      "name": "building-drying-rack-night",
+      "state": "night",
+      "size": [
+        160,
+        169
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 653,
+      "outlineMaskSha256": "e53d94e2cb7b6bbe01fe09e76e6fbbe837430dc275070fccb574eee44baf7c6b",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "796eeb52e7ea3b7a6b9fe93e6c473be73edb1b2b3945b06010d253974d704210"
+    },
+    {
+      "name": "building-farm",
+      "state": "day",
+      "size": [
+        157,
+        154
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 851,
+      "outlineMaskSha256": "d1ec174e31c6eace3a1647b724ab9954cd16e9a11e72e9b59bd93823b53d0662",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "08e67c11c4132706309600397c7a990992ab493ad98ec85eb59fa2d4e1d427c8"
+    },
+    {
+      "name": "building-farm-night",
+      "state": "night",
+      "size": [
+        157,
+        154
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 820,
+      "outlineMaskSha256": "2bb0f341d46c5f7c09da790bd266b25e6f79098552542222e198e466a54b8981",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "c0cf081dfa28c09268f8146abf5baf5b6c625ba92277681361c8805598ec463d"
+    },
+    {
+      "name": "building-granary",
+      "state": "day",
+      "size": [
+        116,
+        120
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 792,
+      "outlineMaskSha256": "bc67f174f9973d625c01940aab206b693725b80e6c3c59a95e6100b0f54291b4",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "c802e2fec226f85816bc3222d5e4f93ebd7f2a18f8cb68c65bbfca8accdd517f"
+    },
+    {
+      "name": "building-granary-night",
+      "state": "night",
+      "size": [
+        116,
+        120
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 733,
+      "outlineMaskSha256": "eabfb757c4ee11e1410e647b6c01f3b8804c0ded4e725ae755c3f5fcc943f922",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "901a490439b2e6cfb361cf6a2afab1864b755847d1a0e7892afea79a112b6cc6"
+    },
+    {
+      "name": "building-great-granary",
+      "state": "day",
+      "size": [
+        184,
+        188
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 1283,
+      "outlineMaskSha256": "b60324e04bbb1f254f7d09d7c1f7c15ca6101c85faf7c2da7677ff3da93360ad",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "f9a6423793b84fbaa6877a724042e7317f0d7d1d7f4e690c753aa06addd64f5c"
+    },
+    {
+      "name": "building-great-granary-night",
+      "state": "night",
+      "size": [
+        184,
+        188
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 988,
+      "outlineMaskSha256": "7738806c776bf5f6339360b2962b3597e0ebbda446f744cbc260b389273871ff",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "394a692fb234ec0b85fbaa846eead0492d42e3620a486e50bb278ddb00c531b9"
+    },
+    {
+      "name": "building-heap",
+      "state": "day",
+      "size": [
+        155,
+        153
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 509,
+      "outlineMaskSha256": "d73b4d476db3c27ed71ee22c6e145206b653450e1beb0e4dc004ce09dccda93e",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "43986318c748ae9c107b0e2376596f9eda9fb335abb3a794f5ac0532cdf21442"
+    },
+    {
+      "name": "building-heap-night",
+      "state": "night",
+      "size": [
+        155,
+        153
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 484,
+      "outlineMaskSha256": "a2ef341998e38407c6cd46ad9ee24d7b0b0f997a35f113ab735e1ec322e8612a",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "225331fd7e79aac663af30340ee89e125feb178ae355bdbcae507553a135c4b4"
+    },
+    {
+      "name": "building-hut",
+      "state": "day",
+      "size": [
+        179,
+        186
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 760,
+      "outlineMaskSha256": "8103df95294546b97ef91f561927fb4c401a8555dc59c6b60e56e93d7997b35f",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "c275dc7f4d428f31ff60e3d9a743bfc9a74224fbbe40747054ab04a8a8ec93c8"
+    },
+    {
+      "name": "building-hut-night",
+      "state": "night",
+      "size": [
+        179,
+        186
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 764,
+      "outlineMaskSha256": "1b4924d0b061b1635b01ef667eec0a4a1e0fadda4118384ca26f606b4fadfc5f",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "4d3459ae75f0291ac4a41f848c6c43c2aa37b8272c91c6ee2a10f744cee51acc"
+    },
+    {
+      "name": "building-lean-to",
+      "state": "day",
+      "size": [
+        179,
+        173
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 524,
+      "outlineMaskSha256": "7d478b5a15cdc1569c666c397f325a2f80436516ad0bc56b03db0612999ae6d1",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "66558cd3ec82e27a1e1676c1c7f6d06247a2be2e1c71a665478b4abc73c5692c"
+    },
+    {
+      "name": "building-lean-to-night",
+      "state": "night",
+      "size": [
+        179,
+        173
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 512,
+      "outlineMaskSha256": "74d72e1d40f6e1b9ce17f314f7c814820503373c86e70224843a7fe5c92846a8",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "483ec6d46e60a8826acd43a7a6b8f9ca90001aa517a7f78b9f6488a81c7c5bba"
+    },
+    {
+      "name": "building-library",
+      "state": "day",
+      "size": [
+        140,
+        134
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 720,
+      "outlineMaskSha256": "8201f5e9f3747b136979a02ee0febc81f93627e4c046f9eed2ce4cf814cbf289",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "988a56f3c95600f0b4a2b7f7e9f0446ec55b0d53ea8a78437d507f960d38d2fe"
+    },
+    {
+      "name": "building-library-night",
+      "state": "night",
+      "size": [
+        140,
+        134
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 695,
+      "outlineMaskSha256": "a4f6bdb4cb229043d64c3732e1e2c29e622c47e59c35af4ffad6c70adbc24b27",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "5ca76e72f935eb7b4c88e7d3e87da075a700c4c24379ab9bea86723950ff45e5"
+    },
+    {
+      "name": "building-market",
+      "state": "day",
+      "size": [
+        143,
+        152
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 789,
+      "outlineMaskSha256": "eb6f190a2d65e43767473534d5da26605ab6d860f31b9bdf07c279b96c012cc4",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "aff48a931a86fe37e6292fdb14847cc33ea76df5fc0177ad9f226b980d77f6c6"
+    },
+    {
+      "name": "building-market-night",
+      "state": "night",
+      "size": [
+        143,
+        152
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 758,
+      "outlineMaskSha256": "47ba3e8196a0bb3fc1e56dd844a880249aac386f5a9536a6438277efdcb28ee7",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "35185c2b149ad9ad5c0c39e77c033677e54bb88768edf2663500bfdb02bf18a2"
+    },
+    {
+      "name": "building-mine",
+      "state": "day",
+      "size": [
+        184,
+        195
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 863,
+      "outlineMaskSha256": "717d7ad871b334904d23da6bf7e4a46961df891cc73436f59b89377f12537e39",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "22736bbf512bc6d59732d80385481c7c6b8bcbcc3b3d0bef72b95fb16b8e2f90"
+    },
+    {
+      "name": "building-mine-night",
+      "state": "night",
+      "size": [
+        184,
+        195
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 755,
+      "outlineMaskSha256": "0c3b9754a17d402d326ac006ed4ceb3c18349a3bfac68e344ea4e47006bc82ff",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "fcd6e49432a8c0aa696aa112e7c534eb96f3c13084e9e0db9a1321898d8cebf7"
+    },
+    {
+      "name": "building-monastery-church",
+      "state": "day",
+      "size": [
+        204,
+        189
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 917,
+      "outlineMaskSha256": "836ae5d7cd7cf570600e3c126f3dc79f203cb376aeecba55127bd83e95e69c3b",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "4de3847953a3119c3dd66001d4205b03cf4a5634d525db0475df72a801536b5a"
+    },
+    {
+      "name": "building-monastery-church-night",
+      "state": "night",
+      "size": [
+        204,
+        189
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 919,
+      "outlineMaskSha256": "fc33e7da6bb36046c700231fcbe1df0aff735d4508eae3c8163a6337a5f09d46",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "6e35d25e9c12c6db5f29ace28f6bbd151122aaf7c341c0e5f17be2c59d51a9b2"
+    },
+    {
+      "name": "building-monk-cell",
+      "state": "day",
+      "size": [
+        196,
+        186
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 784,
+      "outlineMaskSha256": "f3a7928666f6bd34ed7fb13aa42634f5371d5bf1134ceb9630e5133f1f4d9c92",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "a0f560db4b23eedbbf3cbac5cb3dff0475608beecb24992a62c74e7b2d5a9bb5"
+    },
+    {
+      "name": "building-monk-cell-night",
+      "state": "night",
+      "size": [
+        196,
+        186
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 800,
+      "outlineMaskSha256": "8f21777ea944aba111567bb026bd86d0f6bdf7feddf000e85b2f0c5cf3b581b7",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "c8d9703715e0b051327a87659c32179fcf666c00acec764d83f8d18a91c8dad7"
+    },
+    {
+      "name": "building-smithy",
+      "state": "day",
+      "size": [
+        158,
+        142
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 771,
+      "outlineMaskSha256": "d326e3f58507984b54dd39c8318e3851557267ee044b7528ba5f9490e89112c3",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "78723131465dc39205003ef5dd59216df8d7e381af399a1947bbce144fa17e57"
+    },
+    {
+      "name": "building-smithy-night",
+      "state": "night",
+      "size": [
+        158,
+        142
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 756,
+      "outlineMaskSha256": "660c4c9de8810b34595e03c29aff74572d9319a612f800c33c3115937b1fae10",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "958c019a7f628ff1e7cb982d615ec52a31bcbd58136b52779683ba990a04a952"
+    },
+    {
+      "name": "building-stage",
+      "state": "day",
+      "size": [
+        170,
+        158
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 1046,
+      "outlineMaskSha256": "cc1b2a74e6830faf2c25020a982d928610716375f44676be02bae94973adbd1f",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "dffa0aae2eac2c34e40f651d3e61aa7900612114fd5bd5b19fc28ac7008fbe69"
+    },
+    {
+      "name": "building-stage-night",
+      "state": "night",
+      "size": [
+        170,
+        158
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 978,
+      "outlineMaskSha256": "90171eabf2d8311f1729cafc286b5edcb755e866419fcd62c68ee88bf5658a3b",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "28c27b4e909a326c58907751ef47dfa4895be7bad9cab2a868a3f6073e6f8189"
+    },
+    {
+      "name": "building-stone-pile",
+      "state": "day",
+      "size": [
+        138,
+        159
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 487,
+      "outlineMaskSha256": "b367753ce7d9521a94388afa27838407b7076c8092c7eb8cf1e974d4466522dc",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "52329668b2fed389334ee64b76aba129a06f0cf55b3cb5a2303f549309f3a5ef"
+    },
+    {
+      "name": "building-stone-pile-night",
+      "state": "night",
+      "size": [
+        138,
+        159
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 567,
+      "outlineMaskSha256": "ae67f635b9c12aa9a979577f0905a8a2914d68eb76fbff448bdff1b4f452d70e",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "bff3039b330fcf046af6dfd87e7345c41a56f99e47e10b1d68d8649b17ca462e"
+    },
+    {
+      "name": "building-stone-yard",
+      "state": "day",
+      "size": [
+        149,
+        153
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 854,
+      "outlineMaskSha256": "820e55c297258faec26c7a9bfcad86bbc21075d3ddddbc96d6bee93f5f01969c",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "2e44393e4da4bdc62c4daa3e86f0bbc2b511e139b5e8e69a824a65ffbacfb630"
+    },
+    {
+      "name": "building-stone-yard-night",
+      "state": "night",
+      "size": [
+        149,
+        153
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 829,
+      "outlineMaskSha256": "f60662b648bee576b066877c65bd1b4806983176401c04ee139669d1f4920dc8",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "ee4fb4f45721cd69e5394f09c4cb09dc27f64a3ca9f277df53d870d5c4e1a10a"
+    },
+    {
+      "name": "building-storehouse",
+      "state": "day",
+      "size": [
+        153,
+        132
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 649,
+      "outlineMaskSha256": "47fdd9964a9117ff2611de849c0005a81b02d869c717a05932216c7f96a1d669",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "a73dece230dcf1c171f13ceb817265b835f2690fcb52c22eba5bcee32d167d0e"
+    },
+    {
+      "name": "building-storehouse-night",
+      "state": "night",
+      "size": [
+        153,
+        132
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 630,
+      "outlineMaskSha256": "936e4f54f3039102a6a2bbaa7fcba0f5d4453b61e44187446f61869af9bd8f63",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "cf4f7bacfe6c1e63dcd9d53fd8c661c00f3b076d8ffa05fca5d643ad9a6e619a"
+    },
+    {
+      "name": "building-tavern",
+      "state": "day",
+      "size": [
+        141,
+        151
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 812,
+      "outlineMaskSha256": "2ea03b2097f72c03079403f55f8dbc3183003689eaa5018e9c57b39bf3c55cdf",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "1a916983de45daf04de7d76044e72f2ebf74f9806ea89d42748568478a2252d1"
+    },
+    {
+      "name": "building-tavern-night",
+      "state": "night",
+      "size": [
+        141,
+        151
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 725,
+      "outlineMaskSha256": "0e10da5c00a886de39812eadac36532b395b96c4fa80d8a9fbeff8284c268a62",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "3eaafde8c31982a371e57787293d84228ef350ca718d921abe8eee9cc4099350"
+    },
+    {
+      "name": "building-town-hall",
+      "state": "day",
+      "size": [
+        117,
+        132
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 896,
+      "outlineMaskSha256": "fe98d0da99b153d969c0b1f5bc3202bdbdf28f6a8c4d4666a3ec361d5ab4182a",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "38cda40c6bc2b42a8639fe4230e0886f53b89b8fc336fdc8252d01f46fc2f490"
+    },
+    {
+      "name": "building-town-hall-night",
+      "state": "night",
+      "size": [
+        117,
+        132
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 867,
+      "outlineMaskSha256": "449baa65b63443c0641ef6ff91cdd2a5a1ab20298d49da6406a4204995a73cb2",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "881541fede612ba0d93e28bfc71a3e0eb52c1cf02b6fbf61c760a25d31fd1b2d"
+    },
+    {
+      "name": "building-treasury",
+      "state": "day",
+      "size": [
+        193,
+        188
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 790,
+      "outlineMaskSha256": "36a577a6619eb0ea84d4be81e7baab24d997e0cc30a4702496faefa3a573ead5",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "6c8b3e6a40924c6dd0e87940977b756364dc214263a383c29f9c63ef6bb3a1a0"
+    },
+    {
+      "name": "building-treasury-night",
+      "state": "night",
+      "size": [
+        193,
+        188
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 771,
+      "outlineMaskSha256": "01967a63a38966e8d0039ad6fca2b553918a2fa676c1acc0495bc53b5bb12d83",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "32dfee753c4b79a4b4cdc5e484d0236b54ad07ff22ac01217a0a9688e13e1adb"
+    },
+    {
+      "name": "building-wood-pile",
+      "state": "day",
+      "size": [
+        191,
+        206
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 591,
+      "outlineMaskSha256": "44d8df4799722308535f2965a828809e8bc37465531d062099f129a448b7e17c",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "2c7d4b07574a9e44d171fd1869aaaaf3b6214e0cc198f097776c1292efdd8324"
+    },
+    {
+      "name": "building-wood-pile-night",
+      "state": "night",
+      "size": [
+        191,
+        206
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 605,
+      "outlineMaskSha256": "2e2898850549b07fccb9e5f0e80ea849df85a04cdc69b36ba1f68f20105763da",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "ab167899484a7c6601227efdc2d73f7a6abf3b579fea1aa6f19ce13181dcba62"
+    },
+    {
+      "name": "building-woodyard",
+      "state": "day",
+      "size": [
+        136,
+        140
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 618,
+      "outlineMaskSha256": "15cd0ee640eb7c6f8258a24574da3a78774ebcfcdfb508cabcb65e69ee6143e1",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "5e6c536a3b54c607b8d0fc4adbe2aefdade3e7020e606df49296d23592e254dd"
+    },
+    {
+      "name": "building-woodyard-night",
+      "state": "night",
+      "size": [
+        136,
+        140
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 596,
+      "outlineMaskSha256": "8ae96c18e19a1b4c904ca066a193ba54f2e87eb090e3e42df146c5a3b74976a9",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "59713c4471d9f32c14b971d27488e777e06611a8a762ccd602fbd5e5b6bf2454"
+    },
+    {
+      "name": "building-workshop",
+      "state": "day",
+      "size": [
+        141,
+        104
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 745,
+      "outlineMaskSha256": "03a72bb9c9548927bcafc9214ad81603a25d2e6d549dfdbf6c789f50140d3233",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "b1252e9e2e50ca370c52d07d24da749761d6ec5af1d8913179a0e2e8e9f8bbca"
+    },
+    {
+      "name": "building-workshop-night",
+      "state": "night",
+      "size": [
+        141,
+        104
+      ],
+      "ink": "#2b1d2b",
+      "strokePixels": 2,
+      "pixelsPerWorld": 2,
+      "shape": "square-outer",
+      "contourPixels": 678,
+      "outlineMaskSha256": "6636b35b04172a8e85310f7da1a10546004e867d3572fbfcdad0847961f580eb",
+      "sourceAlignedPixelsPreservedOutsideContour": true,
+      "sha256": "44cea2e697e483326c82ddfd3a9a27d86574e3719599d7183d96cc77edc7a97f"
+    }
+  ],
+  "count": 52,
+  "runtimeOutlineShader": false,
+  "sourceArtChanged": false
+}

@@ -1,291 +1,471 @@
 {
   "frames": {
-    "building-bakery-night": {
+    "building-bakery": {
       "frame": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 131,
+        "h": 160
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 131,
+        "h": 160
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 131,
+        "h": 160
+      }
+    },
+    "building-bakery-night": {
+      "frame": {
+        "x": 133,
+        "y": 0,
+        "w": 131,
+        "h": 160
+      },
+      "sourceSize": {
+        "w": 131,
+        "h": 160
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 131,
+        "h": 160
+      }
+    },
+    "building-barracks": {
+      "frame": {
+        "x": 266,
+        "y": 0,
+        "w": 113,
+        "h": 103
+      },
+      "sourceSize": {
+        "w": 113,
+        "h": 103
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 113,
+        "h": 103
       }
     },
     "building-barracks-night": {
       "frame": {
-        "x": 384,
+        "x": 381,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 113,
+        "h": 103
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 113,
+        "h": 103
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 113,
+        "h": 103
+      }
+    },
+    "building-bell-tower": {
+      "frame": {
+        "x": 496,
+        "y": 0,
+        "w": 186,
+        "h": 192
+      },
+      "sourceSize": {
+        "w": 186,
+        "h": 192
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 186,
+        "h": 192
       }
     },
     "building-bell-tower-night": {
       "frame": {
-        "x": 768,
+        "x": 684,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 186,
+        "h": 192
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 186,
+        "h": 192
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 186,
+        "h": 192
+      }
+    },
+    "building-drying-rack": {
+      "frame": {
+        "x": 872,
+        "y": 0,
+        "w": 160,
+        "h": 169
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 169
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 169
       }
     },
     "building-drying-rack-night": {
       "frame": {
-        "x": 1152,
+        "x": 1034,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 160,
+        "h": 169
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 160,
+        "h": 169
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 160,
+        "h": 169
+      }
+    },
+    "building-farm": {
+      "frame": {
+        "x": 1196,
+        "y": 0,
+        "w": 157,
+        "h": 154
+      },
+      "sourceSize": {
+        "w": 157,
+        "h": 154
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 157,
+        "h": 154
       }
     },
     "building-farm-night": {
       "frame": {
-        "x": 0,
-        "y": 384,
-        "w": 384,
-        "h": 384
+        "x": 1355,
+        "y": 0,
+        "w": 157,
+        "h": 154
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 157,
+        "h": 154
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 157,
+        "h": 154
+      }
+    },
+    "building-granary": {
+      "frame": {
+        "x": 0,
+        "y": 194,
+        "w": 116,
+        "h": 120
+      },
+      "sourceSize": {
+        "w": 116,
+        "h": 120
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 116,
+        "h": 120
       }
     },
     "building-granary-night": {
       "frame": {
-        "x": 384,
-        "y": 384,
-        "w": 384,
-        "h": 384
+        "x": 118,
+        "y": 194,
+        "w": 116,
+        "h": 120
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 116,
+        "h": 120
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 116,
+        "h": 120
+      }
+    },
+    "building-great-granary": {
+      "frame": {
+        "x": 236,
+        "y": 194,
+        "w": 184,
+        "h": 188
+      },
+      "sourceSize": {
+        "w": 184,
+        "h": 188
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 184,
+        "h": 188
       }
     },
     "building-great-granary-night": {
       "frame": {
-        "x": 768,
-        "y": 384,
-        "w": 384,
-        "h": 384
+        "x": 422,
+        "y": 194,
+        "w": 184,
+        "h": 188
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 184,
+        "h": 188
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 184,
+        "h": 188
+      }
+    },
+    "building-heap": {
+      "frame": {
+        "x": 608,
+        "y": 194,
+        "w": 155,
+        "h": 153
+      },
+      "sourceSize": {
+        "w": 155,
+        "h": 153
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 155,
+        "h": 153
       }
     },
     "building-heap-night": {
       "frame": {
-        "x": 1152,
-        "y": 384,
-        "w": 384,
-        "h": 384
+        "x": 765,
+        "y": 194,
+        "w": 155,
+        "h": 153
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 155,
+        "h": 153
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 155,
+        "h": 153
+      }
+    },
+    "building-hut": {
+      "frame": {
+        "x": 922,
+        "y": 194,
+        "w": 179,
+        "h": 186
+      },
+      "sourceSize": {
+        "w": 179,
+        "h": 186
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 179,
+        "h": 186
       }
     },
     "building-hut-night": {
       "frame": {
-        "x": 0,
-        "y": 768,
-        "w": 384,
-        "h": 384
+        "x": 1103,
+        "y": 194,
+        "w": 179,
+        "h": 186
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 179,
+        "h": 186
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 179,
+        "h": 186
+      }
+    },
+    "building-lean-to": {
+      "frame": {
+        "x": 1284,
+        "y": 194,
+        "w": 179,
+        "h": 173
+      },
+      "sourceSize": {
+        "w": 179,
+        "h": 173
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 179,
+        "h": 173
       }
     },
     "building-lean-to-night": {
       "frame": {
-        "x": 384,
-        "y": 768,
-        "w": 384,
-        "h": 384
+        "x": 0,
+        "y": 384,
+        "w": 179,
+        "h": 173
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 179,
+        "h": 173
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 179,
+        "h": 173
+      }
+    },
+    "building-library": {
+      "frame": {
+        "x": 181,
+        "y": 384,
+        "w": 140,
+        "h": 134
+      },
+      "sourceSize": {
+        "w": 140,
+        "h": 134
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 140,
+        "h": 134
       }
     },
     "building-library-night": {
       "frame": {
-        "x": 768,
-        "y": 768,
-        "w": 384,
-        "h": 384
+        "x": 323,
+        "y": 384,
+        "w": 140,
+        "h": 134
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 140,
+        "h": 134
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 140,
+        "h": 134
+      }
+    },
+    "building-market": {
+      "frame": {
+        "x": 465,
+        "y": 384,
+        "w": 143,
+        "h": 152
+      },
+      "sourceSize": {
+        "w": 143,
+        "h": 152
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 143,
+        "h": 152
       }
     },
     "building-market-night": {
       "frame": {
-        "x": 1152,
-        "y": 768,
-        "w": 384,
-        "h": 384
+        "x": 610,
+        "y": 384,
+        "w": 143,
+        "h": 152
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 143,
+        "h": 152
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 143,
+        "h": 152
+      }
+    },
+    "building-mine": {
+      "frame": {
+        "x": 755,
+        "y": 384,
+        "w": 184,
+        "h": 195
+      },
+      "sourceSize": {
+        "w": 184,
+        "h": 195
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 184,
+        "h": 195
       }
     },
     "building-mine-night": {
       "frame": {
-        "x": 0,
-        "y": 1152,
-        "w": 384,
-        "h": 384
+        "x": 941,
+        "y": 384,
+        "w": 184,
+        "h": 195
       },
       "sourceSize": {
-        "w": 384,
-        "h": 384
+        "w": 184,
+        "h": 195
       },
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 384,
-        "h": 384
-      }
-    },
-    "building-monastery-church-night": {
-      "frame": {
-        "x": 384,
-        "y": 1152,
-        "w": 384,
-        "h": 384
-      },
-      "sourceSize": {
-        "w": 384,
-        "h": 384
-      },
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 384,
-        "h": 384
-      }
-    },
-    "building-monk-cell-night": {
-      "frame": {
-        "x": 768,
-        "y": 1152,
-        "w": 384,
-        "h": 384
-      },
-      "sourceSize": {
-        "w": 384,
-        "h": 384
-      },
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 384,
-        "h": 384
-      }
-    },
-    "building-smithy-night": {
-      "frame": {
-        "x": 1152,
-        "y": 1152,
-        "w": 384,
-        "h": 384
-      },
-      "sourceSize": {
-        "w": 384,
-        "h": 384
-      },
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 384,
-        "h": 384
+        "w": 184,
+        "h": 195
       }
     }
   },
@@ -293,7 +473,7 @@
     "image": "buildings-a.png",
     "size": {
       "w": 1536,
-      "h": 1536
+      "h": 579
     },
     "scale": "1"
   }

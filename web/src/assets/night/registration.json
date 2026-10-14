@@ -3,416 +3,520 @@
     "day": "building-bakery",
     "night": "building-bakery-night",
     "dayBounds": [
-      4,
-      2,
-      90,
-      94
+      38,
+      41,
+      124,
+      133
     ],
     "nightBounds": [
-      121,
-      119,
-      260,
-      270
+      38,
+      41,
+      124,
+      133
+    ],
+    "worldSize": [
+      43.0,
+      46.0
     ]
   },
   "Barracks": {
     "day": "building-barracks",
     "night": "building-barracks-night",
     "dayBounds": [
-      2,
-      12,
-      158,
-      148
+      7,
+      5,
+      103,
+      89
     ],
     "nightBounds": [
-      65,
-      83,
-      320,
-      304
+      7,
+      5,
+      103,
+      89
+    ],
+    "worldSize": [
+      48.0,
+      42.0
     ]
   },
   "bell-tower": {
     "day": "building-bell-tower",
     "night": "building-bell-tower-night",
     "dayBounds": [
-      26,
-      2,
-      68,
-      126
+      71,
+      32,
+      113,
+      156
     ],
     "nightBounds": [
-      154,
-      91,
-      227,
-      296
+      71,
+      32,
+      113,
+      156
+    ],
+    "worldSize": [
+      21.0,
+      62.0
     ]
   },
   "DryingRack": {
     "day": "building-drying-rack",
     "night": "building-drying-rack-night",
     "dayBounds": [
-      2,
-      14,
-      62,
-      80
+      63,
+      55,
+      123,
+      121
     ],
     "nightBounds": [
-      141,
-      138,
-      247,
-      249
+      63,
+      55,
+      123,
+      121
+    ],
+    "worldSize": [
+      30.0,
+      33.0
     ]
   },
   "Farm": {
     "day": "building-farm",
     "night": "building-farm-night",
     "dayBounds": [
-      4,
-      2,
-      92,
-      94
+      27,
+      18,
+      115,
+      110
     ],
     "nightBounds": [
-      116,
-      108,
-      267,
-      268
+      27,
+      18,
+      115,
+      110
+    ],
+    "worldSize": [
+      44.0,
+      46.0
     ]
   },
   "Granary": {
     "day": "building-granary",
     "night": "building-granary-night",
     "dayBounds": [
-      4,
-      2,
-      92,
-      126
+      16,
+      8,
+      84,
+      104
     ],
     "nightBounds": [
-      118,
-      91,
-      265,
-      294
+      16,
+      8,
+      84,
+      104
+    ],
+    "worldSize": [
+      34.0,
+      48.0
     ]
   },
   "great-granary": {
     "day": "building-great-granary",
     "night": "building-great-granary-night",
     "dayBounds": [
-      2,
-      10,
-      126,
-      86
+      34,
+      59,
+      158,
+      135
     ],
     "nightBounds": [
-      89,
-      128,
-      297,
-      256
+      34,
+      59,
+      158,
+      135
+    ],
+    "worldSize": [
+      62.0,
+      38.0
     ]
   },
   "Heap": {
     "day": "building-heap",
     "night": "building-heap-night",
     "dayBounds": [
-      2,
-      6,
-      62,
-      56
+      40,
+      50,
+      100,
+      100
     ],
     "nightBounds": [
-      141,
-      139,
-      245,
-      233
+      40,
+      50,
+      100,
+      100
+    ],
+    "worldSize": [
+      30.0,
+      25.0
     ]
   },
   "Hut": {
     "day": "building-hut",
     "night": "building-hut-night",
     "dayBounds": [
-      2,
-      6,
-      94,
-      88
+      38,
+      50,
+      130,
+      132
     ],
     "nightBounds": [
-      112,
-      121,
-      270,
-      261
+      38,
+      50,
+      130,
+      132
+    ],
+    "worldSize": [
+      46.0,
+      41.0
     ]
   },
   "LeanTo": {
     "day": "building-lean-to",
     "night": "building-lean-to-night",
     "dayBounds": [
-      2,
-      8,
-      62,
-      56
+      60,
+      59,
+      120,
+      107
     ],
     "nightBounds": [
-      138,
-      153,
-      247,
-      235
+      60,
+      59,
+      120,
+      107
+    ],
+    "worldSize": [
+      30.0,
+      24.0
     ]
   },
   "Library": {
     "day": "building-library",
     "night": "building-library-night",
     "dayBounds": [
-      8,
-      2,
-      88,
-      126
+      40,
+      14,
+      102,
+      110
     ],
     "nightBounds": [
-      120,
-      86,
-      264,
-      301
+      40,
+      14,
+      102,
+      110
+    ],
+    "worldSize": [
+      31.0,
+      48.0
     ]
   },
   "Market": {
     "day": "building-market",
     "night": "building-market-night",
     "dayBounds": [
-      2,
-      8,
-      126,
-      88
+      29,
+      45,
+      125,
+      107
     ],
     "nightBounds": [
-      91,
-      128,
-      297,
-      260
+      29,
+      45,
+      125,
+      107
+    ],
+    "worldSize": [
+      48.0,
+      31.0
     ]
   },
   "Mine": {
     "day": "building-mine",
     "night": "building-mine-night",
     "dayBounds": [
-      2,
-      6,
-      94,
-      88
+      46,
+      55,
+      138,
+      137
     ],
     "nightBounds": [
-      111,
-      121,
-      274,
-      258
+      46,
+      55,
+      138,
+      137
+    ],
+    "worldSize": [
+      46.0,
+      41.0
     ]
   },
   "monastery-church": {
     "day": "building-monastery-church",
     "night": "building-monastery-church-night",
     "dayBounds": [
-      10,
-      2,
-      84,
-      126
+      64,
+      37,
+      138,
+      161
     ],
     "nightBounds": [
-      131,
-      90,
-      249,
-      294
+      64,
+      37,
+      138,
+      161
+    ],
+    "worldSize": [
+      37.0,
+      62.0
     ]
   },
   "monk-cell": {
     "day": "building-monk-cell",
     "night": "building-monk-cell-night",
     "dayBounds": [
-      2,
-      2,
-      94,
-      92
+      55,
+      43,
+      147,
+      133
     ],
     "nightBounds": [
-      118,
-      118,
-      266,
-      267
+      55,
+      43,
+      147,
+      133
+    ],
+    "worldSize": [
+      46.0,
+      45.0
     ]
   },
   "Smithy": {
     "day": "building-smithy",
     "night": "building-smithy-night",
     "dayBounds": [
-      2,
-      4,
-      94,
-      122
+      40,
+      21,
+      115,
+      117
     ],
     "nightBounds": [
-      117,
-      94,
-      268,
-      291
+      40,
+      21,
+      115,
+      117
+    ],
+    "worldSize": [
+      37.5,
+      48.0
     ]
   },
   "Stage": {
     "day": "building-stage",
     "night": "building-stage-night",
     "dayBounds": [
-      2,
-      4,
-      94,
-      90
+      55,
+      13,
+      147,
+      99
     ],
     "nightBounds": [
-      122,
-      121,
-      265,
-      260
+      55,
+      13,
+      147,
+      99
+    ],
+    "worldSize": [
+      46.0,
+      43.0
     ]
   },
   "StonePile": {
     "day": "building-stone-pile",
     "night": "building-stone-pile-night",
     "dayBounds": [
-      2,
-      6,
-      62,
-      56
+      20,
+      43,
+      80,
+      93
     ],
     "nightBounds": [
-      141,
-      148,
-      237,
-      230
+      20,
+      43,
+      80,
+      93
+    ],
+    "worldSize": [
+      30.0,
+      25.0
     ]
   },
   "StoneYard": {
     "day": "building-stone-yard",
     "night": "building-stone-yard-night",
     "dayBounds": [
-      2,
-      4,
-      126,
-      124
+      26,
+      30,
+      122,
+      123
     ],
     "nightBounds": [
-      89,
-      91,
-      295,
-      291
+      26,
+      30,
+      122,
+      123
+    ],
+    "worldSize": [
+      48.0,
+      46.5
     ]
   },
   "Storehouse": {
     "day": "building-storehouse",
     "night": "building-storehouse-night",
     "dayBounds": [
-      2,
-      14,
-      126,
-      80
+      29,
+      47,
+      125,
+      98
     ],
     "nightBounds": [
-      90,
-      136,
-      295,
-      248
+      29,
+      47,
+      125,
+      98
+    ],
+    "worldSize": [
+      48.0,
+      25.5
     ]
   },
   "Tavern": {
     "day": "building-tavern",
     "night": "building-tavern-night",
     "dayBounds": [
-      2,
-      18,
-      126,
-      108
+      29,
+      40,
+      125,
+      110
     ],
     "nightBounds": [
-      91,
-      114,
-      298,
-      266
+      29,
+      40,
+      125,
+      110
+    ],
+    "worldSize": [
+      48.0,
+      35.0
     ]
   },
   "TownHall": {
     "day": "building-town-hall",
     "night": "building-town-hall-night",
     "dayBounds": [
-      2,
-      2,
-      158,
-      156
+      8,
+      5,
+      104,
+      100
     ],
     "nightBounds": [
-      62,
-      37,
-      323,
-      297
+      8,
+      5,
+      104,
+      100
+    ],
+    "worldSize": [
+      48.0,
+      47.5
     ]
   },
   "Treasury": {
     "day": "building-treasury",
     "night": "building-treasury-night",
     "dayBounds": [
-      4,
-      2,
-      90,
-      94
+      53,
+      50,
+      139,
+      142
     ],
     "nightBounds": [
-      118,
-      116,
-      263,
-      275
+      53,
+      50,
+      139,
+      142
+    ],
+    "worldSize": [
+      43.0,
+      46.0
     ]
   },
   "WoodPile": {
     "day": "building-wood-pile",
     "night": "building-wood-pile-night",
     "dayBounds": [
-      2,
-      6,
-      62,
-      58
+      64,
+      77,
+      124,
+      129
     ],
     "nightBounds": [
-      138,
-      153,
-      240,
-      234
+      64,
+      77,
+      124,
+      129
+    ],
+    "worldSize": [
+      30.0,
+      26.0
     ]
   },
   "Woodyard": {
     "day": "building-woodyard",
     "night": "building-woodyard-night",
     "dayBounds": [
-      2,
-      20,
-      126,
-      76
+      28,
+      48,
+      124,
+      91
     ],
     "nightBounds": [
-      89,
-      144,
-      298,
-      243
+      28,
+      48,
+      124,
+      91
+    ],
+    "worldSize": [
+      48.0,
+      21.5
     ]
   },
   "Workshop": {
     "day": "building-workshop",
     "night": "building-workshop-night",
     "dayBounds": [
-      2,
-      14,
-      126,
-      82
+      25,
+      24,
+      121,
+      77
     ],
     "nightBounds": [
-      83,
-      107,
-      301,
-      227
+      25,
+      24,
+      121,
+      77
+    ],
+    "worldSize": [
+      48.0,
+      26.5
     ]
   }
 }
