@@ -477,5 +477,26 @@
     "data_reset": false,
     "game_code_changed": false,
     "new_game_release": false
+  },
+  "battle_commander_plan": {
+    "decision": "D-032",
+    "state": "planned_not_implemented",
+    "document": "BATTLE_PLAN.md",
+    "code_reviewed": [
+      "RaidRules.cs",
+      "Raid.cs",
+      "GameService.cs Due/Resolve",
+      "web/src/game/enemies.ts"
+    ],
+    "stages": [
+      "bridge_and_baseline",
+      "analysis_only",
+      "single_squad_local_defense",
+      "persistent_orders_and_rendering",
+      "multiple_squads",
+      "event_director"
+    ],
+    "requires_llm": false,
+    "deployed": false
   }
 }
