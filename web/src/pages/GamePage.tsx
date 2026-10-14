@@ -523,21 +523,6 @@ function VillageView({ me, onAccountChanged }: { me: Me; onAccountChanged: () =>
     }
   }
 
-  /** Leaving as a citizen or deleting as the Tsar both end on the home page. */
-  const goAway = async (question: string, action: () => Promise<void>) => {
-    if (!window.confirm(question)) return
-    setPending(true)
-    setError(null)
-    try {
-      await action()
-      navigate('/')
-    } catch (exception) {
-      setError(i18n.error(exception))
-    } finally {
-      setPending(false)
-    }
-  }
-
   const cancelTask = async () => {
     setPending(true)
     setError(null)
@@ -972,12 +957,6 @@ function VillageView({ me, onAccountChanged }: { me: Me; onAccountChanged: () =>
               onOpenDungeon={() => dungeonAction(() => api.openDungeon(slug))}
               onCancelDungeon={() => dungeonAction(() => api.cancelDungeon(slug))}
               dungeonError={dungeonError}
-              onLeaveVillage={() =>
-                goAway(i18n.t('menu.leaveConfirm', { village: village.name }), () => api.leaveVillage(slug))
-              }
-              onDeleteVillage={() =>
-                goAway(i18n.t('menu.deleteConfirm', { village: village.name }), () => api.deleteVillage(slug))
-              }
             />
           )}
         </ServerClock>

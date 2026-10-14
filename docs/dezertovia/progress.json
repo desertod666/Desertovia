@@ -477,5 +477,47 @@
     "data_reset": false,
     "game_code_changed": false,
     "new_game_release": false
+  },
+  "hide_destructive_city_actions": {
+    "decision": "D-030",
+    "state": "verified_in_repository_not_deployed",
+    "ui": [
+      "Remove Leave village for citizens",
+      "Remove Delete village for Tsar",
+      "Remove GamePage destructive-action callbacks"
+    ],
+    "preserved": [
+      "Main menu navigation",
+      "Existing backend lifecycle and API"
+    ],
+    "checks": [
+      "npm run lint: passed with 12 existing warnings",
+      "npm run build: passed (TypeScript and production build)"
+    ],
+    "deployed": false,
+    "version_changed": false
+  },
+  "viewer_feedback_48_52": {
+    "decision": "D-031",
+    "state": "recorded_not_implemented",
+    "source": "owner_forwarded_summary",
+    "feedback_ids": [
+      48,
+      49,
+      50,
+      51,
+      52
+    ],
+    "priority": [
+      "bridge_access_exploit",
+      "construction_renown_investigation",
+      "storage_design_and_migration"
+    ],
+    "day_cycle_source": "DayCycle.cs + appsettings.json + deploy/oracle.compose.yml",
+    "configured_day_hours": 4,
+    "configured_daylight_hours": 2,
+    "configured_night_hours": 2,
+    "live_override_checked": false,
+    "deployed": false
   }
 }

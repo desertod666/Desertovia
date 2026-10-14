@@ -85,10 +85,6 @@ export interface MenuProps {
   onOpenDungeon: () => void
   onCancelDungeon: () => void
   dungeonError: string | null
-  /** The citizen leaves the village for good; asks first. */
-  onLeaveVillage: () => void
-  /** The Tsar deletes the village; asks first. */
-  onDeleteVillage: () => void
 }
 
 function JoinPrompt(props: MenuProps) {
@@ -355,17 +351,6 @@ export function GameMenu(props: MenuProps) {
             ))}
         </div>
         <div className="menu-actions">
-          {tsar ? (
-            <button className="danger" disabled={pending} onClick={props.onDeleteVillage}>
-              {t('menu.deleteVillage')}
-            </button>
-          ) : (
-            citizen && (
-              <button className="danger" disabled={pending} onClick={props.onLeaveVillage}>
-                {t('menu.leaveVillage')}
-              </button>
-            )
-          )}
           <Link to="/" className="button">
             {t('menu.toMainMenu')}
           </Link>
