@@ -477,5 +477,18 @@
     "data_reset": false,
     "game_code_changed": false,
     "new_game_release": false
+  },
+  "hospital_mishaps": {
+    "decision": "D-033",
+    "state": "idea_recorded_not_implemented",
+    "document": "HOSPITAL_MISHAPS.md",
+    "outcomes": [
+      "normal_discharge",
+      "single_temporary_debuff",
+      "single_treatment_extension"
+    ],
+    "candidate_events": 11,
+    "balance_approved": false,
+    "deployed": false
   }
 }
