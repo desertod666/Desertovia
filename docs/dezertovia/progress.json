@@ -477,5 +477,23 @@
     "data_reset": false,
     "game_code_changed": false,
     "new_game_release": false
+  },
+  "bridge_complexity_plan": {
+    "decision": "D-035",
+    "state": "planned_not_implemented",
+    "document": "BRIDGE_COMPLEXITY_TODO.md",
+    "goal": "increase_cooperative_and_production_complexity_without_speeding_work",
+    "stages": [
+      "survey_and_design",
+      "processed_materials",
+      "foundations",
+      "supports",
+      "span",
+      "deck",
+      "inspection"
+    ],
+    "balance_approved": false,
+    "preserve_existing_bridge_and_contributions": true,
+    "deployed": false
   }
 }
