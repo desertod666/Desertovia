@@ -477,5 +477,32 @@
     "data_reset": false,
     "game_code_changed": false,
     "new_game_release": false
+  },
+  "chaplain_chat_quiet_and_context": {
+    "decision": "D-034",
+    "state": "bot_side_deployed_game_worker_pending",
+    "document": "CHAPLAIN_CHAT_TODO.md",
+    "priority": "P1",
+    "source_reviewed": [
+      "ChaplainChatWorker.cs",
+      "SramoslavService.cs"
+    ],
+    "time_zone": "Europe/Kyiv",
+    "requires_new_human_chat_for_ambient": true,
+    "deployed": false,
+    "night_tone": [
+      "praise_actual_contribution",
+      "gentle_teasing",
+      "ask_how_the_player_is"
+    ],
+    "player_time_zone_not_assumed": true,
+    "time_zone_internal_only": true,
+    "no_geographic_references_in_speech": true,
+    "bot_pr": "https://github.com/desertod666/TG-bots/pull/33",
+    "bot_focused_tests_passed": 13,
+    "bot_deployed": true,
+    "bot_source": "8239cf9f11660bd058b18e8975422aa56a4547ed",
+    "bot_full_tests_passed": 778,
+    "game_deployed_for_this_change": false
   }
 }
