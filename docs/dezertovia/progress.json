@@ -477,5 +477,25 @@
     "data_reset": false,
     "game_code_changed": false,
     "new_game_release": false
+  },
+  "housing_demolition_marriages": {
+    "decision": "D-036",
+    "state": "planned_not_implemented",
+    "document": "HOUSING_DEMOLITION_MARRIAGES.md",
+    "existing_shared_beds": {
+      "LeanTo": 2,
+      "Hut": 4
+    },
+    "marriage_source": "TG-bots/sramoslav/marry.py",
+    "identity": "telegram_numeric_id",
+    "proposals": [
+      "safe_demolition_in_building_card",
+      "communal_housing_and_upgrades",
+      "persistent_residency",
+      "shared_bot_marriage_status",
+      "voluntary_family_residency"
+    ],
+    "balance_approved": false,
+    "deployed": false
   }
 }
