@@ -1,14 +1,21 @@
-# In-game reports — IN PROGRESS, NOT INSTALLED18Oct2026
+# In-game reports — IMPLEMENTED AND VERIFIED, NOT INSTALLED18Oct2026
 
-Owner: small non-text «!» above map/menus, bug/complaint/suggestion with current
-screen and account/version context. Explicit clarification: Cancel/close discards
-all draft data; no server/bot/file/browser storage before Send. Capture before
-opening the form, preview/remove image, fallback without image; game and Dungeon.
-Authenticated server identity, bounded allowlisted context/JPEG, durable PG outbox,
-idempotent receipt and owner-only bot ZIP including JSON/text/optional image.
-No model calls, gameplay mutations or synthetic live messages. Source/tests only;
-no new deployment authorization. Preserve current0.7.14 and parallel bot news work.
-See docs/dezertovia/IN_GAME_REPORTS.md. Historical records below.
+Owner: small «!» over all game menus, bug/complaint/suggestion, optional current
+screen and automatic identity/version/context. Cancel/X/Escape discard unsent
+memory-only drafts: no server, bot, browser storage or file writes before Send.
+Exact runtime source f0027ff215ccabc0490daa479e82843a7848fbd3, CI39166485172
+attempt1 SUCCESS:533Domain/287API/226browser+2normal skips/4Nodeunit/lint/build/
+Docker. Paired bot6f9e71eba49e5e397366779c91e6c31bddc882d5, CI39166484124
+attempt1 SUCCESS1096tests, serverSKIPPED. Extra real-menu WebKit/iPhone13
+emulation1PASS after settling the fixture's initial account fetch; screenshots
+inspected. No physical iPhone claim. This follow-up changes docs and test setup
+only; runtime files match f0027ff. See IN_GAME_REPORTS_RESULT.json/IN_GAME_REPORTS.md.
+Source PR69 and TG-botsPR93. No deployment authorization/request/install in this
+task; live remains0.7.14/a616b64. Future patch stays in0.7 series (next0.7.15).
+New schema adds only PlayerReports (38th migration); backup and reviewed game+bot
+rollout required before a later install. Only4bot modules may be payload after
+fresh actual hashes review; protect concurrent news/vision/config/budgets/Propose.
+Historical records below.
 
 #0.7.14 УСТАНОВЛЕНА И НЕЗАВИСИМО ПРОВЕРЕНА — 18 октября 2026
 

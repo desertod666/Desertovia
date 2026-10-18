@@ -6,6 +6,8 @@ test.use({serviceWorkers:'block'})
 
 async function village(page: import('@playwright/test').Page) {
   await page.goto('/')
+  // Settle initial account loading before API login/navigation, including WebKit.
+  await expect(page.locator('section.login')).toBeVisible()
   await page.request.post('/auth/dev-login', {data:{name:uniqueName('report')}})
   await page.request.post('/api/me/character', {data:{name:'Report tester',appearance:{body:'Female',style:0,skinTone:0,hairColor:0,outfitColor:0}}})
   const created = await (await page.request.post('/api/villages', {data:{name:uniqueName('Report village'),isPrivate:false}})).json()
