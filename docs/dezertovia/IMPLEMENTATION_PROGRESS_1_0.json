@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T18:50:03.094885+00:00",
-  "status": "main_plan_active_reconnect_authority_rest_economy_farm",
+  "recorded_at_utc": "2026-10-20T21:05:38.334034+00:00",
+  "status": "main_plan_active_farm_implementation",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-economy",
+  "branch": "feat/desertovia-1-0-farm",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "PKG-T020 cost core verified; PKG-T021/T022 funded production-order slice implemented, full CI pending",
+  "implemented_task": "F005 read-only farm inspection during rest/for Tsar, bounded maturity forecast, precise minimap selection and compact phone rest HUD; F003 seed/compost proposal awaiting owner; F004 backed rewards pending.",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -40,13 +40,17 @@
     "hospital_bridge_enabled": false,
     "original_game_container_replaced": false,
     "bot_modified": false,
-    "current_source_restarted": false,
+    "current_source_restarted": true,
     "tool_recipes_verified_http": 8,
-    "local_world_migrations": 42,
+    "local_world_migrations": 45,
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "migration42 initial funded-work source; later DTO/UI followups not restarted yet"
+    "loaded_scope": "Migration45; current Debug API includes maturity estimate; Vite includes readonly farm/minimap/status HUD. No public release.",
+    "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
+    "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
+    "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
+    "pre_farm_history_backup": "/tmp/foundation-before-restart-20261020T202837Z.dump"
   },
   "checks": {
     "baseline_ci": {
@@ -373,8 +377,20 @@
       "scope": "final form CSS, RU/EN desktop/phone at320px, publication request/deadline retry, public and personal work; screenshot inspected"
     },
     "work_order_full_ci": {
-      "status": "pending_new_source_push",
-      "scope": "current work-order source including latest receipt compatibility and departure cleanup"
+      "status": "success_with_one_browser_case_retried",
+      "run_id": 39481592557,
+      "sha": "ddf0c22581b6aef569d75ff8f7b8c8b956b08d33",
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39481592557",
+      "all_five_jobs": "success",
+      "domain": 564,
+      "api": 308,
+      "browser_desktop": 144,
+      "browser_phone_first_attempt_passed": 141,
+      "browser_phone_passed_on_retry": 1,
+      "browser_skipped": 2,
+      "retry_case": "phone chat-modes viewport resize: immediate bound read412 versus320, retry passed",
+      "previous_failed_run": 39478205987,
+      "scope": "parent economy source only; not current farm source"
     },
     "m1_late_combat_full_ci": {
       "status": "success",
@@ -382,6 +398,280 @@
       "sha": "ace2cff2eb874e8a82169664b18d282704ce28b2",
       "url": "https://github.com/desertod666/Desertovia/actions/runs/39473906108",
       "scope": "all five jobs success; details of M1 parent, later economy receipt separately recorded"
+    },
+    "work_order_api_expanded": {
+      "passed": 7,
+      "failed": 0,
+      "scope": "all308 API CI at ddf0c22 includes7 WorkOrder cases; distinct farm source checks recorded separately"
+    },
+    "farm_target_domain": {
+      "passed": 571,
+      "failed": 0,
+      "scope": "whole Domain after preserving CurrentTargetPlotId for accepted bed; completed before D106"
+    },
+    "farm_target_api": {
+      "unique_cases": 4,
+      "first_combined_run": "10 passed/1 failed: legacy JSON test read wrapper instead of state. Corrected focused legacy case passed. Fresh combined11-case run started before D106; final result recorded separately.",
+      "work_order_cases_passed": 7,
+      "scope": "real PostgreSQL, migration43 in throwaway fixture; not full current API PASS",
+      "corrected_legacy_case": {
+        "passed": 1,
+        "failed": 0,
+        "log": "outside-repo qa/farm-legacy-api-corrected.log"
+      },
+      "fresh_combined_run": {
+        "passed": 11,
+        "failed": 0,
+        "farm_cases": 4,
+        "work_order_cases": 7,
+        "result_file": "TestResults/farm-targets/Admin_DESKTOP-FQ85FTD_2026-10-20_21_25_13_net10.0.trx",
+        "scope": "run started before D106, completion observed during docs work. API compiled before the later CurrentTargetPlotId followup;571 Domain covers that followup. Not full farm-source CI."
+      }
+    },
+    "farm_target_browser": {
+      "passed": 16,
+      "failed": 0,
+      "scope": "spatial tool→bed, specific seeds, inspect/inapplicable no command, tap hints,44px and no horizontal overflow; RU/EN actual960px desktop and320/390px phone emulation; before D106",
+      "visual_review": "desktop and390px phone seed-selection screenshots inspected; headings/tool labels fully visible after flex sizing fix; not final menu art"
+    },
+    "farm_concept_documentation": {
+      "decision": "D-106",
+      "checked_at_utc": "2026-10-20T19:33:01.817654+00:00",
+      "result": "passed_documentation_consistency_checks",
+      "scope": "local_docs_only_not_game_runtime_validation",
+      "tasks": 53,
+      "acceptance_cases": 46,
+      "layers": 23,
+      "all_tasks_reach_final_readiness": true,
+      "farm_to_economy_dependencies_acyclic": true,
+      "local_markdown_links_checked": 66,
+      "concept_sections": 12,
+      "manifest_hashes_verified": 22,
+      "source_package_unchanged": true,
+      "instruction_headers_synchronized": true,
+      "game_code_and_existing_uncommitted_work": "not changed by the concept integration scripts",
+      "new_github_publication": false,
+      "new_server_action_by_this_request": false
+    },
+    "farm_admission_domain": {
+      "passed": 577,
+      "failed": 0,
+      "scope": "whole Domain includes legacy private farm admission compatibility and5 exact-allocation cases; allocator is not yet wired to crop/financial settlement"
+    },
+    "farm_admission_api_initial": {
+      "passed": 10,
+      "failed": 0,
+      "scope": "4 FarmAccess+4 FarmTarget+2 AuthorityMatrix in real PostgreSQL with migration44; before final post-commit notification refactor"
+    },
+    "farm_admission_api_final": {
+      "passed": 4,
+      "failed": 0,
+      "scope": "final FarmAccess API source including post-commit notification. Real PostgreSQL; separate initial10-case authority/bed regression also passed.",
+      "result_file": "TestResults/farm-access-final/Admin_DESKTOP-FQ85FTD_2026-10-20_22_00_08_net10.0.trx"
+    },
+    "farm_admission_ui_initial": {
+      "passed": 20,
+      "failed": 4,
+      "cause": "Controlled async checkbox reverted until server reply; Playwright check() demanded immediate state. Snapshot already showed checked. Test changed to click then awaited checked; no forced click or assertion removal."
+    },
+    "farm_admission_ui_final": {
+      "passed": 28,
+      "failed": 0,
+      "scope": "final RU/EN desktop960/phone320px; owner delegation/enrollment, limited manager, inspect-only resident,16 spatial bed scenarios. TS/build/lint pass.",
+      "visual_review": "phone delegated-manager screenshot inspected; no clipping,44px label target."
+    },
+    "addressed_farm_full_ci": {
+      "schema_version": 1,
+      "recorded_at_utc": "2026-10-20T20:04:54.078357+00:00",
+      "sha": "42e63c5f3d5670b06c963d58858c0a4d39b68dec",
+      "run_id": 39486283151,
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39486283151",
+      "result": "success",
+      "jobs": {
+        "backend": 118847411941,
+        "frontend": 118847411605,
+        "docker": 118847411529,
+        "desktop": 118847411752,
+        "phone": 118847411239
+      },
+      "passed": {
+        "domain": 571,
+        "api": 312,
+        "browser_desktop": 152,
+        "browser_phone": 150
+      },
+      "browser_skipped": 2,
+      "scope": "addressed farm work and spatial tool prototype, before narrow farmer admission and allocator",
+      "public_release": false,
+      "receipt": "FARM_ADDRESSED_VERIFICATION_1_0.json"
+    },
+    "development_world_restart_initial": {
+      "status": "failed_identity_check_expected_original_demo_reset_identified",
+      "scope": "43→44 local restart preserved counts but regenerated13 synthetic demo citizens and3 field identities. Existing DemoVillage/BuiltVillage unconditionally rebuild on Development startup; no public/user world affected.",
+      "fix": "local Hosting:PreserveDevelopmentWorlds opt-in and integration coverage; defaults for disposable CI demos unchanged"
+    },
+    "development_world_persistence_api": {
+      "passed": 1,
+      "failed": 0,
+      "scope": "actual PostgreSQL fixture preserves world/citizen/admission/crop identity, rollback-isolated from other cases",
+      "result_file": "TestResults/dev-world-persistence/Admin_DESKTOP-FQ85FTD_2026-10-20_22_04_45_net10.0.trx"
+    },
+    "development_world_persistent_restart": {
+      "result": "pass",
+      "migrations": 44,
+      "worlds": 2,
+      "citizens": 13,
+      "fields": 3,
+      "identity_and_crop_generation_hashes_match": true,
+      "snapshots": "outside-repo qa/farm-admission-world-keep-before.json and keep-after.json",
+      "scope": "real local Debug API restart with Hosting:PreserveDevelopmentWorlds=true, following correction of inherited Development demo reset behavior"
+    },
+    "farm_admission_full_ci": {
+      "schema_version": 1,
+      "recorded_at_utc": "2026-10-20T20:44:45.797446+00:00",
+      "sha": "7ff51bbd190ad2fb790d5046221088fd266c1de9",
+      "run_id": 39489047549,
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39489047549",
+      "result": "success",
+      "jobs": {
+        "backend": 118856963871,
+        "frontend": 118856963730,
+        "docker": 118856963813,
+        "desktop": 118856963872,
+        "phone": 118856963225
+      },
+      "passed": {
+        "domain": 577,
+        "api": 317,
+        "desktop_browser": 158,
+        "phone_browser": 156
+      },
+      "browser_skipped": 2,
+      "scope": "narrow admission, allocator component and persistent dev-world setup; before per-crop history",
+      "public_release": false,
+      "receipt": "FARM_ADMISSION_VERIFICATION_1_0.json"
+    },
+    "farm_history_domain": {
+      "passed": 585,
+      "failed": 0,
+      "scope": "whole Domain;8 new cases for cooperative history, snapshot isolation, rest/revocation, rain, late growth/water, legacy/private compatibility and null JSON"
+    },
+    "farm_history_api_initial": {
+      "passed": 11,
+      "failed": 1,
+      "unique_cases": 12,
+      "scope": "4 new history+4 addressed-bed+4 admission cases. Legacy missing JSON collection gave500; fixed defensive collection access, no old crop reset."
+    },
+    "farm_history_api_corrected": {
+      "passed": 4,
+      "failed": 0,
+      "scope": "all FarmHistoryApiTests after missing-field fix, before expanding old-cycle-null fixture",
+      "result_file": "TestResults/farm-history-final/Admin_DESKTOP-FQ85FTD_2026-10-20_22_25_35_net10.0.trx"
+    },
+    "farm_history_legacy_cycle_final": {
+      "passed": 1,
+      "failed": 0,
+      "scope": "expanded old field JSON plus NULL CycleFarmTargets and version0 accepted harvest, after defensive Citizen getter; no invented contributors",
+      "result_file": "TestResults/farm-history-legacy/Admin_DESKTOP-FQ85FTD_2026-10-20_22_29_52_net10.0.trx"
+    },
+    "farm_history_browser": {
+      "passed": 32,
+      "failed": 0,
+      "scope": "final component source, RU/EN desktop960/phone320, lazy20+1 history pages, named helpers, accepted worker, rain, busy no-request and existing access/target scenarios",
+      "visual_review": "phone social care screenshot inspected; duplicate worker notice removed and32 cases rerun successfully"
+    },
+    "farm_real_menu_browser": {
+      "passed": 2,
+      "failed": 0,
+      "scope": "actual Pixi GamePage on desktop/phone with real demo world/login/join/read state; task-menu Harvest opens farm with zero mutations, selected bed then emits generation-bound POST; final mutation mocked, not a natural full harvest run"
+    },
+    "farm_history_full_ci": {
+      "schema_version": 1,
+      "recorded_at_utc": "2026-10-20T21:05:38.332091+00:00",
+      "sha": "0e6443ee2886068e34855a282bdc6786922065d9",
+      "run_id": 39494670239,
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39494670239",
+      "result": "success",
+      "jobs": {
+        "Backend tests": 118876484710,
+        "Browser tests (2/2)": 118876484797,
+        "Frontend lint and build": 118876484953,
+        "Docker image": 118876485031,
+        "Browser tests (1/2)": 118876485215
+      },
+      "passed": {
+        "domain": 585,
+        "api": 321,
+        "desktop_browser": 161,
+        "phone_browser": 159
+      },
+      "browser_skipped": 2,
+      "scope": "Durable crop care/harvest history, late settlement and manual task routing; before maturity forecast, spectator inspection and rest HUD changes",
+      "public_release": false,
+      "receipt": "FARM_HISTORY_VERIFICATION_1_0.json"
+    },
+    "farm_history_local_migration": {
+      "from": 44,
+      "to": 45,
+      "result": "pass",
+      "citizen_and_crop_identity_hashes_unchanged": true,
+      "profiles_before": 13,
+      "fields_before": 3,
+      "worlds": 2,
+      "scope": "real Debug API restart before the2 real-menu test accounts joined; snapshots outside repo qa/farm-admission-world-history-before.json and history-after.json"
+    },
+    "farm_maturity_domain": {
+      "passed": 592,
+      "failed": 0,
+      "scope": "Whole Domain including7 maturity-bound cases across5 crops, wet/dry/elapsed growth and no state mutation"
+    },
+    "farm_inspection_api": {
+      "passed": 4,
+      "failed": 0,
+      "scope": "All FarmHistoryApiTests with current forecast DTO fields and legacy NULL accepted cycle",
+      "result_file": "TestResults/farm-inspection-api/Admin_DESKTOP-FQ85FTD_2026-10-20_22_51_42_net10.0.trx"
+    },
+    "farm_inspection_browser": {
+      "passed": 38,
+      "failed": 0,
+      "scope": "RU/EN farm access/targets/history plus6 read-only owner/rest/spectator cases; then final layout/copy source rechecked with10 relevant social/history/readonly cases, not a second full38 run"
+    },
+    "farm_real_inspection_initial": {
+      "passed": 3,
+      "failed": 1,
+      "scope": "Menu and desktop inspection passed; phone minimap click hit adjacent building. Corrected map-canvas bounds and test pointer coordinates."
+    },
+    "farm_real_inspection_corrected": {
+      "passed": 2,
+      "failed": 0,
+      "scope": "Actual map/minimap/WatchPopup on desktop and320px phone with real dev login/join/rest/API state; no mocked work mutation. Resting and accepted-cycle timestamp unchanged, no game writes during inspection."
+    },
+    "farm_rest_hud_browser": {
+      "passed": 4,
+      "failed": 0,
+      "scope": "RU/EN desktop/phone projects, each at320/390/720px with large balances, <=96px status row, in-viewport controls,44px rest button, rest toggle/help/weather card; additionally1 actual320px phone map/rest inspection after final CSS"
+    },
+    "farm_inspection_visual_review": {
+      "result": "pass",
+      "scope": "Real desktop/phone screenshot review; enlarged contained farm popup keeps selected-bed state visible. Phone HUD no longer stretches status chips into tall columns."
+    },
+    "farm_inspection_build": {
+      "result": "pass",
+      "scope": "TypeScript/Vite/oxlint final gameplay source; no database schema changes"
+    },
+    "farm_inspection_restart": {
+      "result": "pass",
+      "migrations": 45,
+      "citizens_at_restart": 19,
+      "fields": 3,
+      "worlds": 2,
+      "identity_and_crop_generation_hashes_match": true,
+      "scope": "Synthetic local API restart before additional test accounts joined",
+      "backup": "/tmp/foundation-before-restart-20261020T205549Z.dump"
+    },
+    "farm_inspection_full_ci": {
+      "status": "pending_new_checkpoint",
+      "scope": "Maturity/readonly/minimap/phone rest HUD source is newer than0e6443e"
     }
   },
   "open_questions": [],
@@ -400,9 +690,11 @@
     "bot_deployed": false
   },
   "next_tasks": [
-    "PKG-T021/T022 verify current source including explicit ownership and bounded funded production orders",
-    "F001/F002 farm rules contract and addressed bed generations; owner confirmed proportional losses",
-    "Continue T023/T024/T025/F003–006 and the rest of the integrated DAG"
+    "F004 protected physical Food reserve and one funded harvest settlement",
+    "F003 seeds/compost only after pending owner reply",
+    "F005 authoritative action quotes and final art/claim interface",
+    "F006/T026 food/labor/market/recovery simulation",
+    "remaining complete1.0 DAG"
   ],
   "screenshots": [
     "screenshots/foundation/economic-gold-ru-phone.png",
@@ -439,11 +731,48 @@
     "PKG-D101": "Owner confirmed: finish already accepted work, settle its result once, then Resting without new work/XP; retreat from combat before rest. Disconnect is not rest.",
     "PKG-D108": "Owner confirmed: transfer actual consumed personal input costs; allocate multi-output cost by recipe base prices with deterministic remainder. Legacy unknown basis stays explicitly unknown; no profit tax on its sale until a separate decision.",
     "F001": "Protect 10% of actual harvest immediately for contributors; community receives90%. Owner answer supersedes reserve-first deferral.",
-    "F001-reserve-loss": "Owner confirmed proportional actual warehouse Food loss across communal stock and unclaimed farmer reserve, with corresponding claim reduction; claimed personal food follows normal rules. No money debt replaces destroyed harvest."
+    "F001-reserve-loss": "Owner confirmed proportional actual warehouse Food loss across communal stock and unclaimed farmer reserve, with corresponding claim reduction; claimed personal food follows normal rules. No money debt replaces destroyed harvest.",
+    "D106": "Farm gameplay concept integrated locally. Soil preparation may be part of sowing, no mandatory extra waiting/action. Selected-bed costs/forecast/history, close does not cancel, pixel palette and short sessions. No new code/server/GitHub/archive changes by this request.",
+    "FARM-WEIGHTS": "Owner accepted40 sow/30 all necessary waters together/10 fertilizer/20 harvest. Normalize stages that did not happen; repeated requests add no weight.",
+    "FARM-DESTROYED-PAY": "Owner chose no money before actual harvest. Destroyed crop creates neither Food nor cash wage. Reserved funds for an unharvested crop must be returned; completed work remains historical, not a money debt."
   },
   "active_tasks": [
-    "PKG-T021/T022 verify current source including explicit ownership and bounded funded production orders",
-    "F001/F002 farm rules contract and addressed bed generations; owner confirmed proportional losses",
-    "Continue T023/T024/T025/F003–006 and the rest of the integrated DAG"
-  ]
+    "F004 protected physical Food reserve and one funded harvest settlement",
+    "F003 seeds/compost only after pending owner reply",
+    "F005 authoritative action quotes and final art/claim interface",
+    "F006/T026 food/labor/market/recovery simulation",
+    "remaining complete1.0 DAG"
+  ],
+  "owner_menu_visual_requirement": {
+    "status": "style1_selected_spatial_farm_revision_delivered_implementation_active",
+    "evidence": "MENU_VISUAL_DESIGN_1_0.md",
+    "first_examples": [
+      "shared farm",
+      "character menu"
+    ],
+    "scope": "richer graphics across menus and dedicated mobile layout, beyond tooltip/text compaction",
+    "concepts": "menu-concepts/manifest.json",
+    "selected_style": "Живое царство",
+    "interaction_correction": "Farm is a spatial plot with tools applied directly to beds, not a set of plant cards. FARM_INTERACTION_REFERENCE_1_0.md."
+  },
+  "current_assignment": {
+    "decision": "D-107",
+    "scope": "implementation_testing_local_runtime_github",
+    "goal": "GOAL_1_0.md",
+    "status": "active_not_complete"
+  },
+  "farm_pull_request": {
+    "url": "https://github.com/desertod666/Desertovia/pull/78",
+    "draft": true,
+    "base": "feat/desertovia-1-0-economy",
+    "first_source": "42e63c5f3d5670b06c963d58858c0a4d39b68dec"
+  },
+  "farm_input_proposal": {
+    "status": "awaiting_owner_reply",
+    "terms": "Shared seed stock,1 seed per bed, recovery gathering without coin purchase; compost3 Reeds+1 Wood, once per unripe crop,+20%; no implementation until response",
+    "dependent_tasks": [
+      "F003 seed inputs and compost"
+    ],
+    "independent_work_continues": true
+  }
 }

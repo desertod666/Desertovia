@@ -109,10 +109,11 @@ export function WeatherChip({
         className={`resource-chip weather-chip weather-${weather.kind.toLowerCase()}${weather.raining ? ' raining' : ''}${weather.night ? ' night' : ''}`}
         onClick={() => setOpen(!open)}
         title={t('weather.title')}
+        aria-label={sky}
         aria-expanded={open}
       >
         <span className="weather-icon" aria-hidden />
-        {sky}
+        <span className="weather-name">{sky}</span>
       </button>
       {open && (
         <div className="weather-panel" style={place}>

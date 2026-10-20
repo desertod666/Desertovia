@@ -22,6 +22,7 @@ try {
         'Backend' {
             $env:ASPNETCORE_ENVIRONMENT = 'Development'
             $env:ASPNETCORE_URLS = 'http://127.0.0.1:5180'
+            $env:Hosting__PreserveDevelopmentWorlds = 'true'
             $env:ConnectionStrings__Desertod = 'Host=127.0.0.1;Port=55432;Database=desertovia_foundation;Username=desertovia_dev;Password=desertovia_dev_only'
             $env:Game__AlmightyEnabled = 'false'
             $env:Game__HospitalEnabled = 'false'

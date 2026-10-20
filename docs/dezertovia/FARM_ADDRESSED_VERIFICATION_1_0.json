@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-20T20:04:54.078357+00:00",
+  "sha": "42e63c5f3d5670b06c963d58858c0a4d39b68dec",
+  "run_id": 39486283151,
+  "url": "https://github.com/desertod666/Desertovia/actions/runs/39486283151",
+  "result": "success",
+  "jobs": {
+    "backend": 118847411941,
+    "frontend": 118847411605,
+    "docker": 118847411529,
+    "desktop": 118847411752,
+    "phone": 118847411239
+  },
+  "passed": {
+    "domain": 571,
+    "api": 312,
+    "browser_desktop": 152,
+    "browser_phone": 150
+  },
+  "browser_skipped": 2,
+  "scope": "addressed farm work and spatial tool prototype, before narrow farmer admission and allocator",
+  "public_release": false
+}

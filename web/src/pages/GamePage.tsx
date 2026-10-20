@@ -2,7 +2,7 @@ import { MonasteryPanel } from '../ui/MonasteryPanel'
 import { WalletDialog, WalletHud } from '../ui/WalletHud'
 import { PersonalBattlePanel } from '../ui/PersonalBattlePanel'
 import { SafeRestControl } from '../ui/SafeRestControl'
-import { createOperationId } from '../api'
+import { createOperationId,type FarmWorkTarget } from '../api'
 import { HospitalPanel } from '../ui/HospitalPanel'
 import { RescuePatientPanel } from '../ui/RescuePatientPanel'
 import { SramoslavPanel } from '../ui/SramoslavPanel'
@@ -115,7 +115,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   /** Citizen the Tsar clicked: appoints them Governor or writes their subtitle. */
   const [subtitleFor, setSubtitleFor] = useState<string | null>(null)
   /** Place on the map the player clicked to send their citizen there. */
-  const [picked, setPicked] = useState<{ target: WorldTarget; screen: { x: number; y: number } } | null>(null)
+  const [picked, setPicked] = useState<{ target: WorldTarget; screen: { x: number; y: number };farmTaskId?:string } | null>(null)
   const [enemyPick,setEnemyPick]=useState<{battleId:string;unitId:string;selectionToken:number}|null>(null)
   const enemySelection=useRef(0)
   const [notice, setNotice] = useState<string | null>(null)
@@ -159,6 +159,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   const canvas = useRef<GameCanvasHandle>(null)
   const citizenId = useRef<string | null>(null)
   const lastCitizenSnapshot = useRef(-Infinity)
+  const taskStartRequests=useRef(new Map<string,string>())
   const applyCitizen = useCallback((next: Citizen | null) => {
     if(next && Date.parse(next.serverNow)<lastCitizenSnapshot.current)return
     lastCitizenSnapshot.current=next?Date.parse(next.serverNow):-Infinity
@@ -459,7 +460,18 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
     }
   }
 
-  const start = (task: Task, spot: TilePoint | null = null, workplacePlotId?: string) => run(() => api.startTask(slug, task.id, spot, workplacePlotId))
+  const start = (task: Task, spot: TilePoint | null = null, workplacePlotId?: string, farmTarget?:FarmWorkTarget) => {
+    if(!farmTarget&&(['Sow','Water','Harvest'].includes(task.effect)||task.id==='tend-fields')) {
+      const farms=live.state?.structures.filter(s=>s.kind==='Farm')??[]
+      const farm=workplacePlotId?farms.find(s=>s.plotId===workplacePlotId):farms.find(s=>!s.ownerAccountId)??farms.find(s=>s.ownerAccountId===me.id)
+      const beds=farm?live.state?.fields.filter(b=>b.plotId===farm.plotId)??[]:[]
+      if(farm&&beds.length>0&&beds.every(b=>!!b.generationId)){setPanel('none');setPicked({target:{kind:'building',building:'Farm',plotId:farm.plotId,area:null,storage:false},screen:{x:innerWidth/2,y:innerHeight/3},farmTaskId:task.id});return}
+    }
+    const key=JSON.stringify([slug,task.id,spot,workplacePlotId,farmTarget])
+    let requestId=taskStartRequests.current.get(key)
+    if(!requestId){requestId=createOperationId();taskStartRequests.current.set(key,requestId)}
+    return run(async()=>{const next=await api.startTask(slug,task.id,spot,workplacePlotId,{requestId,farmTarget});taskStartRequests.current.delete(key);return next})
+  }
   const startJob = (choice: JobChoice) => run(() => api.startJob(slug, choice.plotId, choice.stage, choice.jobId))
   const carry = () => run(() => api.startTask(slug, CARRY_TO_STORAGE))
   const research = () => run(() => api.research(slug))
@@ -479,6 +491,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
     }
     const task = catalog?.tasks.find((t) => t.id === finished.taskId)
     if (task) {
+      if(['Sow','Water','Harvest'].includes(task.effect)){void start(task,null,finished.targetPlotId??undefined);return}
       const ownership=citizen?.cycleOwnership
       if(ownership==='PrivateExtraction'||ownership==='PrivateCraft')void run(()=>api.startTask(slug,task.id,againAt(task),finished.targetPlotId??undefined,{ownership}))
       else void start(task, againAt(task), finished.targetPlotId ?? undefined)
@@ -681,7 +694,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
     villageRef.current = live.state
   })
   const citizens = useMemo(() => [...live.citizens.values()], [live.citizens])
-  const pickCitizen = useMemo(() => (id: string) => { setEnemyPick(null); if (id === PRIEST_ID) setChaplainOpen(true); else if(id===TSAR_ID&&live.state?.tsar.injuredUntil||live.citizens.get(id)?.injuredUntil||live.citizens.get(id)?.recovery?.until)setPatientFor(id); else if (tsar) setSubtitleFor(id) }, [tsar,live.citizens,live.state?.tsar.injuredUntil])
+  const pickCitizen = useMemo(() => (id: string) => { setEnemyPick(null); if (id === PRIEST_ID) setChaplainOpen(true); else if(id===TSAR_ID&&live.state?.tsar.injuredUntil||live.citizens.get(id)?.injuredUntil||live.citizens.get(id)?.recovery?.until)setPatientFor(id); else if (tsar||citizen?.isGovernor&&citizen.canManageFarm) setSubtitleFor(id) }, [tsar,citizen?.isGovernor,citizen?.canManageFarm,live.citizens,live.state?.tsar.injuredUntil])
   // Only a citizen can be sent to work; the Tsar watches and walks around, players without a character just look.
   const canWork = !tsar && !!citizen && (!citizen.restState || citizen.restState === 'Active')
   const working = citizen?.state === 'Paused' || citizen?.state === 'Working' && !!citizen.cycleEndsAt && Date.parse(citizen.cycleEndsAt)>raidClock
@@ -717,7 +730,11 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
         })
       }
     }
-    if (!canWork || !ownId) return null
+    if (!canWork || !ownId) return (target: WorldTarget | null,screen:{x:number;y:number})=>{
+      setEnemyPick(null)
+      const watched=target!==null&&villageRef.current!==null&&watchable(target,villageRef.current)
+      setPicked(watched?{target,screen}:null)
+    }
     return (target: WorldTarget | null, screen: { x: number; y: number }, point: TilePoint) => {
       setEnemyPick(null)
       if(point.x>=34&&point.x<=44&&point.y>=7&&point.y<=14){setMonasteryOpen(true);setPicked(null);return}
@@ -756,11 +773,11 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   }, [pickWorld,pickEnemy])
 
   const worldPickable = useMemo(
-    () => (tsar ? (target: WorldTarget) => target.kind === 'building' && target.building === 'Hospital' || villageRef.current !== null && watchable(target, villageRef.current) : null),
-    [tsar],
+    () => (!canWork ? (target: WorldTarget) => target.kind === 'building' && target.building === 'Hospital' || villageRef.current !== null && watchable(target, villageRef.current) : null),
+    [canWork],
   )
   const showPicked = picked !== null && canWork && panel === 'none'
-  const showWatched = picked !== null && tsar && panel === 'none' && live.state !== null && watchable(picked.target, live.state)
+  const showWatched = picked !== null && !canWork && panel === 'none' && live.state !== null && watchable(picked.target, live.state)
   const subtitleCitizen = subtitleFor ? live.citizens.get(subtitleFor) : undefined
 
   /** On phones the minimap sits right under the top bar, whose height changes with the banner and the wrapped chips. */
@@ -860,9 +877,12 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
       )}
 
       {showPicked && citizen && (
-        <ServerClock key={`${picked.screen.x},${picked.screen.y}`} offsetMs={serverOffset}>
+        <ServerClock key={`${picked.screen.x},${picked.screen.y},${picked.farmTaskId??''},${'plotId' in picked.target?picked.target.plotId:''}`} offsetMs={serverOffset}>
           {(now) => (
             <TargetPopup
+              slug={slug}
+              workers={citizens}
+              initialFarmTaskId={picked.farmTaskId}
               target={picked.target}
               screen={picked.screen}
               phone={phone}
@@ -1172,11 +1192,14 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
         </ServerClock>
       )}
 
-      {tsar && subtitleCitizen && (
+      {(tsar||citizen?.isGovernor&&citizen.canManageFarm) && subtitleCitizen && (
         <CitizenDialog
           key={subtitleCitizen.id}
           slug={slug}
           citizen={subtitleCitizen}
+          canRule={tsar}
+          admissionEnabled={!!village.farmerAdmissionEnabled}
+          onEnableAdmission={async()=>setVillageState(await api.enableFarmerAdmission(slug,createOperationId()))}
           onSaved={live.updateCitizen}
           onClose={() => setSubtitleFor(null)}
         />

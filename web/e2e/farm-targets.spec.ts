@@ -1,0 +1,55 @@
+import {test,expect,uniqueName} from './fixtures.ts'
+declare global {interface Window {farmCalls:unknown[]}}
+
+for(const language of ['en','ru'])for(const [index,taskId] of [[0,'harvest'],[1,'water-fields'],[2,'sow-turnips']] as const) {
+ test(`selected bed ${index+1} offers its own action and sends its generation (${language})`,async({page},testInfo)=>{
+  await page.addInitScript(value=>localStorage.setItem('desertod.language',value),language)
+  await page.setViewportSize({width:testInfo.project.name==='phone'?320:960,height:760})
+  expect((await page.request.post('/auth/dev-login',{data:{name:uniqueName('farm-menu')}})).status()).toBe(204)
+  await page.goto('/e2e/farm-harness.html')
+  const belt=page.getByRole('toolbar',{name:language==='ru'?'Инструменты фермы':'Farm tools'})
+  const tool=belt.getByRole('button',{name:language==='ru'?['Сбор','Лейка','Семена'][index]:['Harvest','Water','Seeds'][index],exact:true})
+  await tool.click();await expect(tool).toHaveAttribute('aria-pressed','true')
+  for(const control of await belt.getByRole('button').all()) {
+   const box=await control.boundingBox();expect(box!.width).toBeGreaterThanOrEqual(44);expect(box!.height).toBeGreaterThanOrEqual(44)
+   expect(await control.evaluate(el=>el.scrollHeight<=el.clientHeight)).toBe(true)
+  }
+  expect(await page.evaluate(()=>window.farmCalls)).toHaveLength(0)
+  const bed=page.getByRole('button',{name:language==='ru'?`Грядка ${index+1}`:`Bed ${index+1}`,exact:true})
+  await bed.click();await expect(bed).toHaveAttribute('aria-pressed','true')
+  const touch=await bed.boundingBox();expect(touch!.width).toBeGreaterThanOrEqual(44);expect(touch!.height).toBeGreaterThanOrEqual(44)
+  await expect(page.locator('.task-card:enabled')).toHaveCount(0)
+  await page.screenshot({path:test.info().outputPath(`farm-${language}-${index}.png`)})
+  const calls=await page.evaluate(()=>window.farmCalls)
+  expect(calls).toHaveLength(1);expect(calls[0]).toMatchObject({taskId,workplacePlotId:'21,12',farmTarget:{plotId:'21,12',index,generationId:['11111111-1111-4111-8111-111111111111','22222222-2222-4222-8222-222222222222','33333333-3333-4333-8333-333333333333'][index]}})
+  const overflow=await page.locator('.target-popup').evaluate(el=>el.scrollWidth>el.clientWidth)
+  expect(overflow).toBe(false)
+ })
+}
+
+for(const language of ['en','ru'])test(`inspect and inapplicable tools do not submit work; chosen seed targets one bed (${language})`,async({page},testInfo)=>{
+ await page.addInitScript(value=>localStorage.setItem('desertod.language',value),language)
+ await page.setViewportSize({width:testInfo.project.name==='phone'?390:960,height:760})
+ expect((await page.request.post('/auth/dev-login',{data:{name:uniqueName('farm-inspect')}})).status()).toBe(204)
+ await page.goto('/e2e/farm-harness.html')
+ const bed=(index:number)=>page.getByRole('button',{name:language==='ru'?`Грядка ${index}`:`Bed ${index}`,exact:true})
+ const belt=page.getByRole('toolbar'),tool=(en:string,ru:string)=>belt.getByRole('button',{name:language==='ru'?ru:en,exact:true})
+ await bed(2).click()
+ await expect(page.getByRole('status')).toContainText('30%')
+ await tool('Harvest','Сбор').click();await bed(2).click()
+ await expect(page.getByRole('status')).toContainText(language==='ru'?'не нужно':'does not need')
+ await tool('Water','Лейка').click();await bed(3).click()
+ expect(await page.evaluate(()=>window.farmCalls)).toHaveLength(0)
+ await page.getByRole('button',{name:language==='ru'?'Как работать с грядками':'How to work on beds'}).click()
+ await expect(page.getByRole('tooltip')).toContainText(language==='ru'?'затем нажмите':'then tap')
+ await tool('Seeds','Семена').click()
+ const seeds=page.getByRole('group',{name:language==='ru'?'Выбор семян':'Choose seeds'})
+ const seed=seeds.getByRole('button',{name:language==='ru'?'Морковь':'Carrots',exact:true})
+ await seed.click();await expect(seed).toHaveAttribute('aria-pressed','true')
+ await page.screenshot({path:test.info().outputPath(`farm-seeds-${language}.png`)})
+ await bed(3).click()
+ const calls=await page.evaluate(()=>window.farmCalls)
+ expect(calls).toHaveLength(1)
+ expect(calls[0]).toMatchObject({taskId:'sow-carrots',workplacePlotId:'21,12',farmTarget:{index:2}})
+ await expect(page.getByText(language==='ru'?'Здесь пока нечего делать.':'Nothing to do here yet.',{exact:true})).toHaveCount(0)
+})

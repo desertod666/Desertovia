@@ -172,7 +172,7 @@ public class FarmingTests
     }
 
     [Fact]
-    public void BedHarvestedByAnother_LeavesAnEmptyHarvest_WithHalfExperience()
+    public void BedHarvestedByAnother_DoesNotRetargetOrEarnExperience()
     {
         var village = FarmVillage();
         Sown(village, 0, CropKind.Turnip).Growth = 1;
@@ -184,7 +184,7 @@ public class FarmingTests
 
         Assert.Empty(report.Produced);
         Assert.True(report.Overflowed);
-        Assert.Equal(GameRules.BaseExperiencePerCycle * GameRules.OverflowExperienceMultiplier, report.PrimaryExperience, 6);
+        Assert.Equal(0,report.PrimaryExperience);
     }
 
     [Fact]

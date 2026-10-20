@@ -10,6 +10,14 @@ public sealed class FieldBed
     public required string PlotId { get; set; }
 
     public int Index { get; set; }
+    /// <summary>Legacy beds start at Empty; every sow/harvest creates another generation, including empty beds.</summary>
+    public Guid GenerationId { get; set; }
+    /// <summary>Zero for old/private crops. This versions useful-work history, not a financial entitlement.</summary>
+    public int ContributionVersion { get; set; }
+    public DateTimeOffset? SownAt { get; set; }
+    private List<FarmContribution>? contributions;
+    // Older JSON has no owned collection: EF may materialize it as null, unlike the normal constructor.
+    public List<FarmContribution> Contributions { get=>contributions??=[];set=>contributions=value; }
 
     /// <summary>Null while the bed is empty.</summary>
     public CropKind? Crop { get; set; }

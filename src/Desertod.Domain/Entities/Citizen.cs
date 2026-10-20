@@ -52,6 +52,9 @@ public sealed class Citizen
 
     /// <summary>Appointed by the Tsar: still a citizen who works and votes, who may also plan buildings and call votes.</summary>
     public bool IsGovernor { get; set; }
+    public bool IsFarmer { get; set; }
+    /// <summary>An additional narrow delegation, effective only while this citizen is a Governor.</summary>
+    public bool CanManageFarm { get; set; }
 
     /// <summary>Null for citizens created before character creation; they get a sprite picked from their id.</summary>
     public Appearance? Appearance { get; set; }
@@ -179,6 +182,9 @@ public sealed class Citizen
     public Desertod.Domain.Economy.WorkOwnership CycleOwnership { get; set; }
     public Desertod.Domain.Economy.WorkPaymentMode CyclePaymentMode { get; set; }
     public Guid? CycleWorkOrderClaimId { get; set; }
+    private List<Desertod.Domain.Farming.FarmWorkTarget>? cycleFarmTargets;
+    public List<Desertod.Domain.Farming.FarmWorkTarget> CycleFarmTargets { get=>cycleFarmTargets??=[];set=>cycleFarmTargets=value; }
+    public int CycleFarmContributionVersion { get; set; }
 
     /// <summary>Mirrors <c>Load.Count &gt; 0</c> so the server can find waiting carriers with a simple query.</summary>
     public bool IsCarrying { get; set; }

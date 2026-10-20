@@ -1,0 +1,38 @@
+{
+  "generated_at_utc": "2026-10-20T19:06:53.245112+00:00",
+  "mode": "built-in image_gen",
+  "skill": "C:/Users/Admin/.codex/skills/.system/imagegen/SKILL.md",
+  "status": "Owner selected style1; farming interaction corrected after researching historical VK spatial farm and tool belt",
+  "prompts": "prompts.json",
+  "not_runtime_screenshots": true,
+  "balances_and_costs_are_illustrative": true,
+  "images": [
+    {
+      "title": "Живое царство",
+      "file": "01-living-kingdom.png",
+      "bytes": 2757491,
+      "sha256": "d366e6ae9f0b04391940cfa9f30062d61e899d62deb1bdeae345b95a09a7251a"
+    },
+    {
+      "title": "Королевская книга",
+      "file": "02-royal-book.png",
+      "bytes": 3300811,
+      "sha256": "b3f08237ad042ef7b54feb0c7201482825f867269a53172cb09200a17b8b347f"
+    },
+    {
+      "title": "Тёмная RPG",
+      "file": "03-dark-rpg.png",
+      "bytes": 2253619,
+      "sha256": "f37fd3dccb1c6853e10d8c782ab83a3f1bd88e93c302ab612601986935acb25b"
+    }
+  ],
+  "selected_style": "01-living-kingdom",
+  "spatial_revision": {
+    "file": "04-living-kingdom-spatial-farm.png",
+    "bytes": 3001167,
+    "sha256": "c20361b131139747cbdcb4d6d6a40761c1ee51c4847c52feb1c52ec69c1e0c4e",
+    "prompt": "04-farm-spatial-prompt.txt",
+    "reference_role": "Historical game screenshot was an interaction/layout reference only, not a reusable game asset",
+    "source": "https://www.gamer.ru/api/field/image/KoSNZwWSfoAm7"
+  }
+}

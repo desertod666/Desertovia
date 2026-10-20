@@ -1,16 +1,22 @@
 import { useState } from 'react'
-import { api, CITIZEN_SUBTITLE_MAXIMUM, type CitizenSummary } from '../api'
+import { api, createOperationId, CITIZEN_SUBTITLE_MAXIMUM, type CitizenSummary } from '../api'
 import { useI18n } from '../i18n'
 
 /** The Tsar clicked a citizen on the map: appoints them Governor or dismisses them, and writes the line under their name. */
 export function CitizenDialog({
   slug,
   citizen,
+  canRule,
+  admissionEnabled,
+  onEnableAdmission,
   onSaved,
   onClose,
 }: {
   slug: string
   citizen: CitizenSummary
+  canRule: boolean
+  admissionEnabled: boolean
+  onEnableAdmission: ()=>Promise<void>
   onSaved: (citizen: CitizenSummary) => void
   onClose: () => void
 }) {
@@ -47,10 +53,10 @@ export function CitizenDialog({
           className="modal-body"
           onSubmit={(event) => {
             event.preventDefault()
-            void save(subtitle.trim() || null)
+            if(canRule)void save(subtitle.trim() || null)
           }}
         >
-          <label className="check-field">
+          {canRule&&<label className="check-field">
             <input
               type="checkbox"
               checked={citizen.isGovernor}
@@ -64,8 +70,11 @@ export function CitizenDialog({
               <strong>{t('governor.appoint')}</strong>
               <span className="small muted"> — {t('governor.appointHint')}</span>
             </span>
-          </label>
-          <p className="small">{t('subtitle.hint')}</p>
+          </label>}
+          {canRule&&!admissionEnabled&&<button type="button" disabled={pending} onClick={()=>void act(async()=>{await onEnableAdmission();return citizen},false)}>{i18n.language==='ru'?'Общие грядки — только назначенным фермерам':'Limit shared beds to appointed farmers'}</button>}
+          <label className="check-field farm-access-field"><input type="checkbox" checked={!!citizen.isFarmer} disabled={pending} onChange={event=>void act(()=>api.setFarmAccess(slug,citizen.id,{requestId:createOperationId(),isFarmer:event.target.checked}),false)}/><span>{i18n.language==='ru'?'Назначен фермером':'Appointed farmer'}</span></label>
+          {canRule&&citizen.isGovernor&&<label className="check-field farm-access-field"><input type="checkbox" checked={!!citizen.canManageFarm} disabled={pending} onChange={event=>void act(()=>api.setFarmAccess(slug,citizen.id,{requestId:createOperationId(),canManageFarm:event.target.checked}),false)}/><span>{i18n.language==='ru'?'Разрешить назначать фермеров':'May appoint farmers'}</span></label>}
+          {canRule&&<><p className="small">{t('subtitle.hint')}</p>
           <label className="field">
             {t('subtitle.label')}
             <input
@@ -85,7 +94,7 @@ export function CitizenDialog({
                 {t('subtitle.remove')}
               </button>
             )}
-          </div>
+          </div></>}
           {error && <p className="error">{error}</p>}
         </form>
       </div>

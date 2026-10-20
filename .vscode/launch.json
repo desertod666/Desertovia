@@ -20,6 +20,7 @@
         "DOTNET_ROOT": "${workspaceFolder}/../tools/dotnet",
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_URLS": "http://127.0.0.1:5180",
+        "Hosting__PreserveDevelopmentWorlds": "true",
         "ConnectionStrings__Desertod": "Host=127.0.0.1;Port=55432;Database=desertovia_foundation;Username=desertovia_dev;Password=desertovia_dev_only",
         "Game__AlmightyEnabled": "false",
         "Game__HospitalEnabled": "false",

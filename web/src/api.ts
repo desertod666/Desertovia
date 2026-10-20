@@ -534,6 +534,12 @@ export interface CropDefinition {
 
 /** One bed of a farm. */
 export interface FieldBed {
+  earliestRipeAt?:string|null
+  latestRipeAt?:string|null
+  contributionVersion?:number
+  sownAt?:string|null
+  contributions?:FarmCare[]
+  generationId?:string
   /** Plot of the farm. */
   plotId: string
   number?: number
@@ -548,6 +554,10 @@ export interface FieldBed {
   /** Growing and drying out soon: watering reaches it. */
   thirsty: boolean
 }
+
+export interface FarmCare {accountId:string;name:string;step:'Sow'|'Water'|'Fertilize'|'Harvest';startedAt:string;completedAt:string}
+export interface FarmCropHistory {id:string;plotId:string;bedIndex:number;crop:CropKind;sownAt:string;harvestedAt:string|null;status:'Growing'|'Harvested'|'Lost';contributions:FarmCare[];received:ResourceAmount[];lost:ResourceAmount[]}
+export interface FarmWorkTarget {plotId:string;index:number;generationId:string}
 
 /** Mirrors the server's tolerance for a ripe bed. */
 const RIPE = 1 - 1e-6
@@ -1008,6 +1018,7 @@ export interface CivicOrder { buildingKind?:BuildingKind|null; id:string; plotId
 export interface Housing { plotId:string; beds:number; occupied:number; level:number; number?:number; ownerAccountId?:string|null; ownerName?:string|null; builtAt?:string|null }
 export interface MonasteryView {open:boolean;inRange:boolean;knowsRemedy:boolean;readyAt:string|null;wood:number;food:number;remedyRoom:number;yard:TilePoint}
 export interface VillageState {
+  farmerAdmissionEnabled?:boolean
   workContractsEnabled?:boolean
   snapshotAt?: string
   bridgeDamage?:number
@@ -1143,6 +1154,9 @@ export interface RescueJourney {
 }
 
 export interface CitizenSummary {
+  farmTargets?:FarmWorkTarget[]
+  isFarmer?:boolean
+  canManageFarm?:boolean
   restState?: RestState
   rescueJourney?:RescueJourney|null
   rescueRequestedAt?:string|null
@@ -1241,6 +1255,8 @@ export interface SkillValue {
 }
 
 export interface Citizen {
+  isFarmer?:boolean
+  canManageFarm?:boolean
   restState?: RestState
   restRequestedAt?: string | null
   mealKind?: string | null
@@ -1596,7 +1612,7 @@ export const api = {
   /** The Tsar deletes the village with everything in it. */
   deleteVillage: (slug: string) => request<void>('DELETE', `/api/villages/${encodeURIComponent(slug)}`),
   startTask: (slug: string, taskId: string, spot: TilePoint | null = null, workplacePlotId?: string,
-    terms?:{ownership?:'PublicService'|'PrivateExtraction'|'PrivateCraft';workOrderId?:string;requestId?:string}) =>
+    terms?:{ownership?:'PublicService'|'PrivateExtraction'|'PrivateCraft';workOrderId?:string;requestId?:string;farmTarget?:FarmWorkTarget}) =>
     request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/me/task`, { taskId, spot, workplacePlotId, ...terms }),
   cancelTask: (slug: string) => request<Citizen>('DELETE', `/api/villages/${encodeURIComponent(slug)}/me/task`),
   startJob: (slug: string, plotId: string, stage: number, jobId: string) =>
@@ -1647,6 +1663,12 @@ export const api = {
       `/api/villages/${encodeURIComponent(slug)}/citizens/${encodeURIComponent(citizenId)}/governor`,
       { isGovernor },
     ),
+  setFarmAccess: (slug:string,citizenId:string,conditions:{requestId:string;isFarmer?:boolean;canManageFarm?:boolean}) =>
+    request<CitizenSummary>('PUT',`/api/villages/${encodeURIComponent(slug)}/citizens/${encodeURIComponent(citizenId)}/farm-access`,conditions),
+  enableFarmerAdmission: (slug:string,requestId:string) =>
+    request<VillageState>('PUT',`/api/villages/${encodeURIComponent(slug)}/farm/admission`,{requestId}),
+  farmHistory: (slug:string,plotId:string,before?:string) =>
+    request<FarmCropHistory[]>('GET',`/api/villages/${encodeURIComponent(slug)}/farm/history?plotId=${encodeURIComponent(plotId)}${before?`&before=${encodeURIComponent(before)}`:''}`),
   openDungeon: (slug: string, dungeonId: string = DEAD_LANDS) =>
     request<VillageState>('POST', `/api/villages/${encodeURIComponent(slug)}/dungeon`, { dungeonId }),
   cancelDungeon: (slug: string) => request<VillageState>('DELETE', `/api/villages/${encodeURIComponent(slug)}/dungeon`),

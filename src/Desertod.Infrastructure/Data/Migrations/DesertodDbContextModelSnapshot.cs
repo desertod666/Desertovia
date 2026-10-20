@@ -735,6 +735,9 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<int>("Arrows")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("CanManageFarm")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -759,6 +762,9 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                     b.Property<DateTimeOffset?>("CycleEndsAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CycleFarmContributionVersion")
+                        .HasColumnType("integer");
 
                     b.Property<bool?>("CycleHungry")
                         .HasColumnType("boolean");
@@ -827,6 +833,9 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsCarrying")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsFarmer")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsGovernor")
@@ -1120,6 +1129,9 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("bytea");
 
+                    b.Property<bool>("FarmerAdmissionEnabled")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("GoldVeinMined")
                         .HasColumnType("integer");
 
@@ -1220,6 +1232,46 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Villages");
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Farming.FarmCropRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("BedIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ContributionVersion")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Crop")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("HarvestedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PlotId")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<DateTimeOffset>("SownAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("VillageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("YieldFactor")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VillageId", "PlotId", "Id");
+
+                    b.ToTable("FarmCrops");
                 });
 
             modelBuilder.Entity("Desertod.Domain.Projects.ProjectContribution", b =>
@@ -2267,6 +2319,33 @@ namespace Desertod.Infrastructure.Data.Migrations
                                 .HasForeignKey("CitizenId");
                         });
 
+                    b.OwnsMany("Desertod.Domain.Farming.FarmWorkTarget", "CycleFarmTargets", b1 =>
+                        {
+                            b1.Property<Guid>("CitizenId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd();
+
+                            b1.Property<Guid>("GenerationId");
+
+                            b1.Property<int>("Index");
+
+                            b1.Property<string>("PlotId")
+                                .IsRequired()
+                                .HasMaxLength(40);
+
+                            b1.HasKey("CitizenId", "__synthesizedOrdinal");
+
+                            b1.ToTable("Citizens");
+
+                            b1
+                                .ToJson("CycleFarmTargets")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CitizenId");
+                        });
+
                     b.OwnsOne("Desertod.Domain.Rules.RescueJourney", "RescueJourney", b1 =>
                         {
                             b1.Property<Guid>("CitizenId");
@@ -2393,6 +2472,8 @@ namespace Desertod.Infrastructure.Data.Migrations
                         });
 
                     b.Navigation("Appearance");
+
+                    b.Navigation("CycleFarmTargets");
 
                     b.Navigation("Load");
 
@@ -3212,7 +3293,11 @@ namespace Desertod.Infrastructure.Data.Migrations
                             b1.Property<int>("__synthesizedOrdinal")
                                 .ValueGeneratedOnAdd();
 
+                            b1.Property<int>("ContributionVersion");
+
                             b1.Property<string>("Crop");
+
+                            b1.Property<Guid>("GenerationId");
 
                             b1.Property<double>("Growth");
 
@@ -3220,6 +3305,8 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                             b1.Property<string>("PlotId")
                                 .IsRequired();
+
+                            b1.Property<DateTimeOffset?>("SownAt");
 
                             b1.Property<DateTimeOffset>("UpdatedAt");
 
@@ -3235,6 +3322,38 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("VillageId");
+
+                            b1.OwnsMany("Desertod.Domain.Farming.FarmContribution", "Contributions", b2 =>
+                                {
+                                    b2.Property<Guid>("FieldBedVillageId");
+
+                                    b2.Property<int>("FieldBed__synthesizedOrdinal");
+
+                                    b2.Property<int>("__synthesizedOrdinal")
+                                        .ValueGeneratedOnAdd();
+
+                                    b2.Property<Guid>("AccountId");
+
+                                    b2.Property<DateTimeOffset>("CompletedAt");
+
+                                    b2.Property<string>("Name")
+                                        .IsRequired()
+                                        .HasMaxLength(80);
+
+                                    b2.Property<DateTimeOffset>("StartedAt");
+
+                                    b2.Property<string>("Step")
+                                        .IsRequired();
+
+                                    b2.HasKey("FieldBedVillageId", "FieldBed__synthesizedOrdinal", "__synthesizedOrdinal");
+
+                                    b2.ToTable("Villages");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("FieldBedVillageId", "FieldBed__synthesizedOrdinal");
+                                });
+
+                            b1.Navigation("Contributions");
                         });
 
                     b.OwnsMany("Desertod.Domain.Storage.StorageBuilding", "Storages", b1 =>
@@ -3674,6 +3793,113 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Navigation("Wildlife");
 
                     b.Navigation("Wilds");
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Farming.FarmCropRecord", b =>
+                {
+                    b.HasOne("Desertod.Domain.Entities.Village", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsMany("Desertod.Domain.Farming.FarmContribution", "Contributions", b1 =>
+                        {
+                            b1.Property<Guid>("FarmCropRecordId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd();
+
+                            b1.Property<Guid>("AccountId");
+
+                            b1.Property<DateTimeOffset>("CompletedAt");
+
+                            b1.Property<string>("Name")
+                                .IsRequired()
+                                .HasMaxLength(80);
+
+                            b1.Property<DateTimeOffset>("StartedAt");
+
+                            b1.Property<string>("Step")
+                                .IsRequired();
+
+                            b1.HasKey("FarmCropRecordId", "__synthesizedOrdinal");
+
+                            b1.ToTable("FarmCrops");
+
+                            b1
+                                .ToJson("Contributions")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("FarmCropRecordId");
+                        });
+
+                    b.OwnsMany("Desertod.Domain.Catalog.ResourceAmount", "Lost", b1 =>
+                        {
+                            b1.Property<Guid>("FarmCropRecordId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd();
+
+                            b1.Property<int>("Amount");
+
+                            b1.Property<int>("Durability");
+
+                            b1.Property<int>("MaxDurability");
+
+                            b1.Property<string>("Resource")
+                                .IsRequired();
+
+                            b1.Property<int>("Sharpen");
+
+                            b1.HasKey("FarmCropRecordId", "__synthesizedOrdinal");
+
+                            b1.ToTable("FarmCrops");
+
+                            b1
+                                .ToJson("Lost")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("FarmCropRecordId");
+                        });
+
+                    b.OwnsMany("Desertod.Domain.Catalog.ResourceAmount", "Produced", b1 =>
+                        {
+                            b1.Property<Guid>("FarmCropRecordId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd();
+
+                            b1.Property<int>("Amount");
+
+                            b1.Property<int>("Durability");
+
+                            b1.Property<int>("MaxDurability");
+
+                            b1.Property<string>("Resource")
+                                .IsRequired();
+
+                            b1.Property<int>("Sharpen");
+
+                            b1.HasKey("FarmCropRecordId", "__synthesizedOrdinal");
+
+                            b1.ToTable("FarmCrops");
+
+                            b1
+                                .ToJson("Produced")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("FarmCropRecordId");
+                        });
+
+                    b.Navigation("Contributions");
+
+                    b.Navigation("Lost");
+
+                    b.Navigation("Produced");
                 });
 
             modelBuilder.Entity("Desertod.Domain.Projects.ProjectContribution", b =>

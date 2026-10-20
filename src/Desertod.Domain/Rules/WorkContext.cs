@@ -30,6 +30,7 @@ public sealed class WorkContext
 
     /// <summary>Persisted unfinished construction cycles, including overdue/offline/hospitalized citizens.</summary>
     public IReadOnlyList<SiteWorkClaim> SiteWork { get; init; } = [];
+    public IReadOnlyList<Desertod.Domain.Farming.FarmWorkClaim> FarmWork { get; init; } = [];
 
     public int ReservedWork(string plotId, int stage, string jobId, int remaining, Guid? except = null)
     {

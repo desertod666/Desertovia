@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Desertod.Domain.Economy;
+using Desertod.Domain.Farming;
 using Desertod.Domain.Director;
 using Desertod.Domain.Chat;
 using Desertod.Domain.Dungeons;
@@ -56,6 +57,7 @@ public sealed class DesertodDbContext(DbContextOptions<DesertodDbContext> option
     public DbSet<MarketLot> MarketLots => Set<MarketLot>();
     public DbSet<WorkOrder> WorkOrders => Set<WorkOrder>();
     public DbSet<WorkOrderClaim> WorkOrderClaims => Set<WorkOrderClaim>();
+    public DbSet<FarmCropRecord> FarmCrops => Set<FarmCropRecord>();
 
     public DbSet<RaidLaunchReceipt> RaidLaunchReceipts => Set<RaidLaunchReceipt>();
     public DbSet<Desertod.Domain.Combat.RaidBattle> RaidBattles => Set<Desertod.Domain.Combat.RaidBattle>();
@@ -109,6 +111,15 @@ public sealed class DesertodDbContext(DbContextOptions<DesertodDbContext> option
             b.HasOne<WorkOrder>().WithMany().HasForeignKey(x=>new{x.VillageId,x.WorkOrderId}).HasPrincipalKey(x=>new{x.VillageId,x.Id}).OnDelete(DeleteBehavior.Cascade);
         });
         modelBuilder.Entity<GameWallet>(b => { b.HasKey(x=>new{x.VillageId,x.AccountId}); b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade); b.HasOne<Account>().WithMany().HasForeignKey(x=>x.AccountId); });
+        modelBuilder.Entity<FarmCropRecord>(b=>
+        {
+            b.HasKey(c=>c.Id);b.HasIndex(c=>new{c.VillageId,c.PlotId,c.Id});
+            b.Property(c=>c.PlotId).HasMaxLength(40);b.Property(c=>c.Crop).HasConversion<string>();
+            b.OwnsMany(c=>c.Contributions,a=>{a.ToJson();a.Property(x=>x.Step).HasConversion<string>();a.Property(x=>x.Name).HasMaxLength(80);});
+            b.OwnsMany(c=>c.Produced,g=>{g.ToJson();g.Property(x=>x.Resource).HasConversion<string>();});
+            b.OwnsMany(c=>c.Lost,g=>{g.ToJson();g.Property(x=>x.Resource).HasConversion<string>();});
+            b.HasOne<Village>().WithMany().HasForeignKey(c=>c.VillageId).OnDelete(DeleteBehavior.Cascade);
+        });
         modelBuilder.Entity<EconomyReceipt>(b => { b.HasKey(x=>new{x.VillageId,x.RequestId}); b.Property(x=>x.Fingerprint).HasMaxLength(128); b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade); });
         modelBuilder.Entity<LedgerEntry>(b => { b.HasKey(x=>x.Id); b.HasIndex(x=>new{x.VillageId,x.At,x.Id}); b.HasIndex(x=>new{x.VillageId,x.OperationId}); b.Property(x=>x.Operation).HasMaxLength(80); b.Property(x=>x.Asset).HasMaxLength(40); b.Property(x=>x.Location).HasMaxLength(100); b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade); });
         modelBuilder.Entity<MarketLot>(b => { b.HasKey(x=>x.Id); b.HasIndex(x=>new{x.VillageId,x.Status,x.CreatedAt}); b.Property(x=>x.Resource).HasConversion<string>(); b.Property(x=>x.Status).HasMaxLength(16); b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade); });
@@ -221,6 +232,7 @@ public sealed class DesertodDbContext(DbContextOptions<DesertodDbContext> option
             {
                 bed.ToJson();
                 bed.Property(b => b.Crop).HasConversion<string>();
+                bed.OwnsMany(b=>b.Contributions,a=>{a.Property(x=>x.Step).HasConversion<string>();a.Property(x=>x.Name).HasMaxLength(80);});
             });
             village.OwnsMany(v => v.Research, research =>
             {
@@ -306,6 +318,7 @@ public sealed class DesertodDbContext(DbContextOptions<DesertodDbContext> option
             citizen.Property(c => c.Subtitle).HasMaxLength(Citizen.SubtitleMaximumLength);
             citizen.Property(c => c.Status).HasConversion<string>().HasMaxLength(16);
             citizen.Property(c => c.RestState).HasConversion<string>().HasMaxLength(16).HasDefaultValue(Desertod.Domain.Rules.RestState.Active);
+            citizen.OwnsMany(c=>c.CycleFarmTargets,target=>{target.ToJson();target.Property(t=>t.PlotId).HasMaxLength(40);});
             citizen.Property(c => c.CurrentTaskId).HasMaxLength(32);
             citizen.Property(c => c.CurrentSiteId).HasMaxLength(16);
             citizen.Property(c => c.CurrentTechnologyId).HasMaxLength(32);

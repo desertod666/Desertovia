@@ -1337,6 +1337,43 @@ button.tech-node {
 .field-bed.thirsty .muted {
   color: var(--red);
 }
+.farm-board { flex: 0 0 auto; margin-block: .3rem; border: 3px solid #78502d; border-radius: 12px; overflow: hidden; background: #f1dfb6; color: #352411; box-shadow: 0 3px 0 #4c321c, inset 0 0 0 2px #d6b16e; }
+.farm-board-heading { display: flex; align-items: center; gap: .3rem; padding: .2rem .5rem; background: linear-gradient(#d4af6f, #e7cfa0); border-bottom: 2px solid #8f6339; font-weight: bold; }
+.farm-board-heading > span { flex: 1; }
+.farm-ground { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); align-items: start; gap: 0; padding: 1rem .2rem 2.4rem; min-height: 215px; background: radial-gradient(ellipse at 15% 80%,#c4bc73 0 5%,transparent 6%), radial-gradient(ellipse at 80% 14%,#b1b369 0 4%,transparent 5%), repeating-linear-gradient(25deg,transparent 0 14px,#77924c33 15px 17px), linear-gradient(#94a758,#647e40); box-shadow: inset 0 5px 14px #334d3155; }
+button.farm-plot { position: relative; min-width: 0; width: 100%; height: 140px; padding: 0; border: 0; background: transparent; box-shadow: none; color: #fff8de; isolation: isolate; }
+button.farm-plot:nth-child(3n+2) { margin-top: 30px; }
+button.farm-plot:hover { background: transparent; }
+.farm-soil { position: absolute; inset: 28% 1% 6%; clip-path: polygon(50% 0,100% 32%,100% 63%,50% 100%,0 64%,0 32%); background: repeating-linear-gradient(155deg,#8e5f37 0 7px,#64401f 8px 12px,#ad8252 13px 15px); filter: drop-shadow(0 4px 2px #27361b88); z-index: -1; }
+.farm-plot.selected .farm-soil { background: repeating-linear-gradient(155deg,#b0813e 0 7px,#764c23 8px 12px,#e0b85c 13px 15px); }
+.farm-plot.selected::after { content: ''; position: absolute; inset: 28% 0 6%; background: #ffdb6e; clip-path: polygon(50% 0,100% 32%,100% 64%,50% 100%,0 64%,0 32%,50% 3%,2% 33%,2% 62%,50% 97%,98% 62%,98% 33%,50% 3%); z-index: -1; filter: drop-shadow(0 0 4px #ffd85a); }
+.farm-crop { position: absolute; display: grid; place-items: center; inset: 6% 0 23%; pointer-events: none; }
+.farm-bed-mark { position: absolute; right: 5%; top: 4%; min-width: 24px; line-height: 24px; font-size: 18px; border-radius: 50%; background: #f4e5bacc; color: #365426; box-shadow: 0 1px 2px #30200b66; }
+.farm-bed-number { position: absolute; left: 44%; bottom: 23%; font-weight: bold; font-size: .8rem; text-shadow: 1px 1px #261709; }
+.farm-growth { display: block; position: absolute; bottom: 5%; left: 15%; right: 15%; height: 7px; border: 1px solid #3c3622; background: #392915; border-radius: 6px; overflow: hidden; }
+.farm-growth > span { display: block; height: 100%; background: linear-gradient(#b9d865,#578a35); }
+.farm-plot.not-needed .farm-soil { opacity: .6; }
+.farm-plot:focus-visible { outline: 3px solid #f3ce68; outline-offset: -3px; border-radius: 12px; }
+.farm-selection { min-height: 2.3rem; padding: .35rem .6rem; font-size: .85rem; background: #efe0b9; border-block: 1px solid #b1894e; overflow-wrap: anywhere; }
+.farm-toolbelt { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: .25rem; padding: .4rem; background: repeating-linear-gradient(4deg,#725033 0 5px,#7e5937 6px 13px,#855f3c 14px 15px); }
+.farm-toolbelt > button { display: grid; justify-items: center; align-content: center; gap: .1rem; min-width: 44px; min-height: 64px; padding: .2rem; color: #edd6a1; background: linear-gradient(#9b7248,#6e4627); border: 2px solid #bb9156; border-radius: 9px; box-shadow: 0 2px 0 #3b2618; font-size: .72rem; }
+.farm-toolbelt > button[aria-pressed="true"] { background: linear-gradient(#447c80,#225362); border-color: #a2dce0; box-shadow: inset 0 0 7px #64c6ce88,0 2px 0 #1e3e43; color: #fff6d6; }
+.farm-toolbelt > button:disabled { opacity: .55; }
+.farm-seeds { display: flex; flex-wrap: wrap; gap: .3rem; padding: .4rem; }
+.farm-seeds > button { min-height: 44px; display: inline-flex; align-items: center; gap: .25rem; font-size: .85rem; }
+.farm-seeds > button[aria-pressed="true"] { outline: 2px solid #5f7336; outline-offset: -2px; }
+.farm-tool-note { display: flex; flex-wrap: wrap; gap: .25rem; align-items: center; padding: .3rem .5rem; font-size: .8rem; }
+.farm-tool-note .task-meta { margin: 0; }
+.farm-access-field { min-height:44px; }
+.farm-worker,.farm-rain { margin:0; padding:.3rem .6rem; font-size:.85rem; }
+.farm-care,.farm-history,.farm-forecast { padding:.35rem .5rem; }
+.farm-care>summary,.farm-history>summary,.farm-history-crop>summary,.farm-forecast>summary { min-height:44px; align-content:center; cursor:pointer; }
+.farm-care-list { margin:.3rem 0; padding-left:1.2rem; font-size:.85rem; }
+.farm-care-list li { margin:.25rem 0; }
+.farm-history { flex:0 0 auto; }
+.farm-history-crop { border-top:1px solid #a78954; }
+.farm-history button { min-height:44px; }
+.farm-plot.wet:not(.selected) .farm-soil { background:repeating-linear-gradient(155deg,#67422d 0 7px,#3e281c 8px 12px,#83603f 13px 15px); }
 
 .watch-stages {
   list-style: none;
@@ -1656,6 +1693,11 @@ input[aria-invalid='true'] {
   width: auto;
   max-height: 55vh;
 }
+
+.target-popup.farm-popup { width: min(520px, calc(100% - 16px)); }
+.target-popup.farm-popup.sheet { width: auto; max-height: min(85dvh, 680px); }
+:root[data-ui-theme="dark"] button.farm-plot { background: transparent; color: #fff8de; }
+:root[data-ui-theme="dark"] .farm-toolbelt > button[aria-pressed="true"] { background: #225362; color: #fff6d6; }
 
 .target-popup-header {
   display: flex;
@@ -2819,5 +2861,17 @@ button, input, select, textarea, .modal-header, .target-popup-header { font-fami
 .safe-rest-control { display:flex; align-items:center; gap:4px; flex-wrap:wrap; max-width:100%; }
 .safe-rest-control > button { min-height:44px; min-width:44px; }
 .safe-rest-control > .error { flex-basis:100%; max-width:280px; font-size:12px; }
+@media(max-width:720px){
+ /* Rest must not squeeze a whole status row into tall text columns on a320px phone. */
+ .hud-state-row:has(>.safe-rest-control){display:grid;grid-template-columns:44px minmax(36px,1fr) 44px max-content;gap:2px;align-items:center}
+ .hud-state-row:has(>.safe-rest-control)>.resource-chip:not(.personal-vitals){grid-column:1;grid-row:1;min-height:44px;display:flex;align-items:center;justify-content:center;padding:1px}
+ .hud-state-row:has(>.safe-rest-control)>.personal-vitals{grid-column:2;grid-row:1;width:100%;min-height:44px;align-content:center}
+ .hud-state-row:has(>.safe-rest-control)>.weather{grid-column:3;grid-row:1;width:44px;height:44px}
+ .hud-state-row:has(>.safe-rest-control) .weather-chip{width:44px;height:44px;justify-content:center;padding:2px}
+ .hud-state-row:has(>.safe-rest-control) .weather-name{display:none}
+ .hud-state-row:has(>.safe-rest-control)>.wallet-hud{grid-column:4;grid-row:1;margin:0;min-height:44px;align-self:stretch;max-width:128px}
+ .hud-state-row>.safe-rest-control{grid-column:1/-1;grid-row:2;justify-self:end;flex-wrap:nowrap;align-items:center}
+ .hud-state-row>.safe-rest-control>.error{position:absolute;right:0;top:100%;padding:6px;background:var(--parchment)}
+}
 .economy-panel .inventory-grid .slot { position:relative; }
 .economy-panel .inventory-cost { position:absolute; top:0; right:0; }
