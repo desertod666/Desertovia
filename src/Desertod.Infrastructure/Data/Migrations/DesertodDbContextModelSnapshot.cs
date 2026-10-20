@@ -563,6 +563,9 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<long>("CostBasis")
                         .HasColumnType("bigint");
 
+                    b.Property<bool>("CostBasisKnown")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -655,6 +658,12 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool?>("CycleHungry")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("CycleInputCostBasis")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("CycleInputCostBasisKnown")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("CyclePrivateOutput")
@@ -2045,6 +2054,8 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                             b1.Property<long>("CostBasis");
 
+                            b1.Property<bool>("CostBasisKnown");
+
                             b1.Property<string>("Kind")
                                 .IsRequired();
 
@@ -3195,6 +3206,8 @@ namespace Desertod.Infrastructure.Data.Migrations
                                     b2.Property<int>("Amount");
 
                                     b2.Property<long>("CostBasis");
+
+                                    b2.Property<bool>("CostBasisKnown");
 
                                     b2.Property<string>("Kind")
                                         .IsRequired();

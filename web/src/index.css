@@ -2813,5 +2813,7 @@ button, input, select, textarea, .modal-header, .target-popup-header { font-fami
   .energy-shop .row button { min-height: 44px; }
 }
 .safe-rest-control { display:flex; align-items:center; gap:4px; flex-wrap:wrap; max-width:100%; }
-.safe-rest-control > button { min-height:44px; }
+.safe-rest-control > button { min-height:44px; min-width:44px; }
 .safe-rest-control > .error { flex-basis:100%; max-width:280px; font-size:12px; }
+.economy-panel .inventory-grid .slot { position:relative; }
+.economy-panel .inventory-cost { position:absolute; top:0; right:0; }

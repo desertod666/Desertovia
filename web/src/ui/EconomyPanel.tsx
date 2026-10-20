@@ -76,7 +76,9 @@ export function EconomyPanel({ village, catalog, citizen, accountId, onPrivatePl
         <details><summary>{text('Моё имущество и передача','My possessions and transfers')}</summary>
           <p className="small">{text('Личное имущество хранится отдельно от общей ноши и склада. До 100 каждого материала.','Personal goods are separate from communal loads and storage. Up to 100 of each material.')}</p>
           {citizen && <p>{text('Общая экипировка на время работы','Communal gear borrowed for work')}: {citizen.weapon ? <><ResourceIcon kind={citizen.weapon} scale={1} sharpen={citizen.weaponSharpen ?? 0} /> {i18n.resource(citizen.weapon)}</> : '—'} · {citizen.armor ? i18n.resource(citizen.armor) : '—'}. {text('Вернётся на склад после работы.','Returned after work.')}</p>}
-          <div className="inventory-grid">{view.inventory.map(g => <div className="slot" key={g.kind}><ResourceIcon kind={g.kind} scale={2}/><span>{i18n.resource(g.kind)}</span><strong>{g.amount}/100</strong></div>)}</div>
+          <div className="inventory-grid">{view.inventory.map(g => <div className="slot" key={g.kind}><ResourceIcon kind={g.kind} scale={2}/><span>{i18n.resource(g.kind)}</span><strong>{g.amount}/100</strong><Hint className="help-button inventory-cost" label={text('Себестоимость','Acquisition cost')} text={g.costBasisKnown
+            ? `${text('Себестоимость всей партии','Whole stack acquisition cost')}: ${g.costBasis} ${i18n.t('currency.goldUnit')}`
+            : text('История стоимости этой партии не подтверждена. Продажа не включается в налогооблагаемую прибыль до уточнения учёта. Это не означает нулевую стоимость.','This stack’s cost history is unverified. Its sale is excluded from taxable profit until reconciliation. This does not mean its cost was zero.')}>ⓘ</Hint></div>)}</div>
           {view.inventory.length === 0 && <p className="muted small">{text('Личных вещей пока нет. Их можно купить у царства или добыть за его границей.','No personal goods yet. Buy from the kingdom or gather outside its boundary.')}</p>}
         </details>
         {citizen && <section className="economy-controls">

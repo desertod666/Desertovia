@@ -183,9 +183,13 @@ public static class CycleEngine
             }
         }
 
+        var inputBasis = 0L;
+        var inputBasisKnown = true;
         foreach (var input in task.Inputs)
         {
-            TakeFromHandsThenStorage(citizen, village, input.Resource, input.Amount);
+            var cost = TakeFromHandsThenStorage(citizen, village, input.Resource, input.Amount);
+            inputBasis = checked(inputBasis + cost.Basis);
+            inputBasisKnown &= cost.Known;
         }
 
         if (task.Effect == TaskEffect.Sharpen)
@@ -206,6 +210,8 @@ public static class CycleEngine
             work *= worn.Damage > 75 ? 1.25 : worn.Damage > 50 ? 1.1 : 1;
         var walk = (repairYard ?? unloadYard) is { } yard ? WorldMap.Walk(WorldMap.Places[WorldMap.Camp], yard) : Walk(citizen, village, task, spot, now);
         Begin(citizen, task.Id, work + walk, WorkEnergy.TaskCost(village, task, now), village, now, walk);
+        citizen.CycleInputCostBasis = inputBasis;
+        citizen.CycleInputCostBasisKnown = inputBasisKnown;
         if (projectKey is not null && context.Project is { } acceptedProject)
         {
             var factor = TaskYieldFactor(citizen, village, task, now);
@@ -343,7 +349,7 @@ public static class CycleEngine
     public static CycleReport? Settle(Citizen citizen, WorkContext context, DateTimeOffset now)
     {
         var report = SettleCore(citizen, context, now);
-        SafeRest.AfterSettlement(citizen, now);
+        SafeRest.AfterSettlement(citizen, now, context.RestBlockedByCombat);
         return report;
     }
 
@@ -447,6 +453,8 @@ public static class CycleEngine
         var repaired = 0;
         double experienceShare = 1;
         var toolsBroken = new List<ResourceKind>();
+        var production = new List<(ResourceKind Kind, int Amount, int Kept)>();
+        var recipeOutput = false;
 
         void Produce(ResourceKind kind, int amount)
         {
@@ -458,7 +466,8 @@ public static class CycleEngine
             produced.Add(ToolCatalog.Get(kind) is { } tool
                 ? new ResourceAmount(kind, amount, 0, tool.MaxDurability, tool.MaxDurability)
                 : new ResourceAmount(kind, amount));
-            Keep(citizen, village, kind, amount, carried, lost);
+            var kept = Keep(citizen, village, kind, amount, carried, lost, recipeOutput ? citizen.CycleInputCostBasisKnown : true);
+            if (recipeOutput && citizen.CyclePrivateOutput) production.Add((kind, amount, kept));
         }
 
         var fight = task.Danger is { } danger
@@ -472,6 +481,7 @@ public static class CycleEngine
         // Beaten by a beast: the citizen runs back with nothing.
         var beaten = fight is { Won: false };
         overflowed = beaten;
+        recipeOutput = true;
         switch (beaten ? (TaskEffect?)null : task.Effect)
         {
             case TaskEffect.Guard:
@@ -728,6 +738,17 @@ public static class CycleEngine
             experienceShare *= task.WorkSeconds / GameRules.CycleLength.TotalSeconds;
         }
 
+        // Discarded output carries its own discarded cost; it must not inflate the remaining items' basis.
+        var allocations = ProductionCost.Allocate(citizen.CycleInputCostBasis, production.Select(p => new ResourceAmount(p.Kind, p.Amount)).ToArray());
+        foreach (var group in production.GroupBy(p => p.Kind))
+        {
+            var kept = group.Sum(p => p.Kept);
+            if (kept == 0) continue;
+            var basis = (long)((Int128)allocations[group.Key] * kept / group.Sum(p => (long)p.Amount));
+            var good = citizen.PersonalGoods.Single(g => g.Kind == group.Key);
+            good.CostBasis = checked(good.CostBasis + basis);
+            good.CostBasisKnown &= citizen.CycleInputCostBasisKnown;
+        }
         var (experienceHungry, hungry) = FinishMeal(citizen, village, now, task.Effect != TaskEffect.Unload);
         if(task.Effect is TaskEffect.Survey or TaskEffect.Build && contributed>0)
             experienceShare*=Math.Min(1,(double)contributed/Math.Max(1,YieldMath.Whole(task.BaseYield*factor)));
@@ -747,15 +768,15 @@ public static class CycleEngine
     /// Stores what fits; the rest goes to the citizen's hands up to <see cref="StorageRules.TakeLimit"/> of the good,
     /// and anything beyond that is lost.
     /// </summary>
-    private static void Keep(Citizen citizen, Village village, ResourceKind kind, int amount,
-        List<ResourceAmount> carried, List<ResourceAmount> lost)
+    private static int Keep(Citizen citizen, Village village, ResourceKind kind, int amount,
+        List<ResourceAmount> carried, List<ResourceAmount> lost, bool basisKnown = false)
     {
         if (citizen.CyclePrivateOutput)
         {
             var kept = Math.Min(amount, PersonalInventory.Room(citizen, kind));
-            if (kept > 0) PersonalInventory.Add(citizen, kind, kept, 0);
+            if (kept > 0) PersonalInventory.Add(citizen, kind, kept, 0, basisKnown);
             if (amount > kept) lost.Add(new ResourceAmount(kind, amount - kept));
-            return;
+            return kept;
         }
         var left = amount - village.Store(kind, amount);
         var held = Math.Min(left, Math.Max(0, StorageRules.CarryLimit(citizen, citizen.CycleEndsAt ?? DateTimeOffset.UtcNow) - citizen.Carried(kind)));
@@ -769,6 +790,7 @@ public static class CycleEngine
         {
             lost.Add(new ResourceAmount(kind, left - held));
         }
+        return amount - left + held;
     }
 
     private static CycleReport? SettleJob(Citizen citizen, WorkContext context, DateTimeOffset now)
@@ -1022,6 +1044,8 @@ public static class CycleEngine
         var walking = walkDuration ?? (task is null ? TimeSpan.Zero : Walk(citizen, village, task));
         citizen.CycleEndsAt = now + (citizen.CycleTired ? duration + (duration > walking ? duration - walking : TimeSpan.Zero) * 2 : duration) + walking * (1/citizen.MedicalWalk(now)-1);
         citizen.CycleSettled = false;
+        citizen.CycleInputCostBasis = 0;
+        citizen.CycleInputCostBasisKnown = true;
     }
 
     /// <summary>The place on the map a task is done at, unless it is done at the camp, in a building or all over the land.</summary>
@@ -1238,12 +1262,13 @@ public static class CycleEngine
     private static int Available(Citizen citizen, Village village, ResourceKind kind) =>
         citizen.CyclePrivateOutput ? PersonalInventory.Amount(citizen, kind) : citizen.Carried(kind) + village.Stock(kind);
 
-    private static void TakeFromHandsThenStorage(Citizen citizen, Village village, ResourceKind kind, int amount)
+    private static InventoryCost TakeFromHandsThenStorage(Citizen citizen, Village village, ResourceKind kind, int amount)
     {
-        if (amount <= 0) return;
-        if (citizen.CyclePrivateOutput) { PersonalInventory.Remove(citizen, kind, amount); return; }
+        if (amount <= 0) return new(0, true);
+        if (citizen.CyclePrivateOutput) return PersonalInventory.RemoveWithCost(citizen, kind, amount);
         var fromHands = citizen.TakeFromLoad(kind, amount);
         village.Take(kind, amount - fromHands);
+        return new(0, true);
     }
 
     private static int Min(params int[] values) => values.Min();

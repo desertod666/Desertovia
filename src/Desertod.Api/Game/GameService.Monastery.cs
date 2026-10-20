@@ -64,7 +64,12 @@ public sealed partial class GameService
             if(view.Wood<10||view.Food<6)throw new GameRuleException("monastery.supplies","Bring ten wood and six food.");
             if(view.RemedyRoom<1)throw new GameRuleException("inventory.full","Make room for a remedy.");
             if(citizen is null){village.Take(ResourceKind.Wood,10);village.Take(ResourceKind.Food,6);village.Store(ResourceKind.Remedy,1);}
-            else{var basis=checked(PersonalInventory.Remove(citizen,ResourceKind.Wood,10)+PersonalInventory.Remove(citizen,ResourceKind.Food,6));PersonalInventory.Add(citizen,ResourceKind.Remedy,1,basis);}
+            else
+            {
+                var wood = PersonalInventory.RemoveWithCost(citizen, ResourceKind.Wood, 10);
+                var food = PersonalInventory.RemoveWithCost(citizen, ResourceKind.Food, 6);
+                PersonalInventory.Add(citizen, ResourceKind.Remedy, 1, checked(wood.Basis + food.Basis), wood.Known && food.Known);
+            }
             MoneyEntry(db,village.Id,request.RequestId,actor,"monastery-aid","Wood","monastery",-10,now);
             MoneyEntry(db,village.Id,request.RequestId,actor,"monastery-aid","Food","monastery",-6,now);
             MoneyEntry(db,village.Id,request.RequestId,actor,"monastery-aid","Remedy","monastery",1,now);

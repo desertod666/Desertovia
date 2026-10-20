@@ -186,7 +186,7 @@ public static class BuildingOperations
                         throw new GameRuleException("inventory.full", "Make room for the salvaged material first.");
                 if (structure is not null) village.Structures.Remove(structure);
                 if (storage is not null) village.Storages.Remove(storage);
-                foreach (var good in returns) Desertod.Domain.Economy.PersonalInventory.Add(worker,good.Kind,good.Amount,0);
+                foreach (var good in returns) Desertod.Domain.Economy.PersonalInventory.Add(worker,good.Kind,good.Amount,0,basisKnown:false);
                 var ownOrder=village.CivicOrders.SingleOrDefault(o=>o.Id==site.OrderId);
                 if(ownOrder is not null)ownOrder.Status="completed";
                 village.Sites.Remove(site); return true;

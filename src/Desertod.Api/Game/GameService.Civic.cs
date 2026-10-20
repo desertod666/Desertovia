@@ -37,7 +37,7 @@ public sealed partial class GameService
                         &&c.RecoveryPausedAt is null&&c.CycleEndsAt<=now).ToArray())
                     {
                         var context=(await LoadContextAsync(db,village,worker.Id,now,ct)).Work;
-                        var report=CycleEngine.Settle(worker,context,now);
+                        var report=await SettleWorkAsync(db,worker,context,now,ct);
                         await AfterSettleAsync(db,village,report,now,ct);
                     }
                     if(!village.Sites.Contains(site))throw new GameRuleException("site.stageDone","This building is finished. Refresh its card.");

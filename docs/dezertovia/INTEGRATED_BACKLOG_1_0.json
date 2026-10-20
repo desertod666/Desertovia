@@ -1255,7 +1255,7 @@
       "id": "PKG-T020",
       "milestone": "M2",
       "title": "Себестоимость материалов и производства",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "core_verified_full_ci_pending_farm_capital_extensions_follow",
       "dependencies": [
         "PKG-T011"
       ],
@@ -1292,7 +1292,8 @@
         "status": "defect_confirmed_source",
         "evidence": "CycleEngine.Keep: PersonalInventory.Add(citizen, kind, kept, 0), потеря себестоимости private production.",
         "runtime_verification": "not_run_this_assignment"
-      }
+      },
+      "implementation_evidence": "PRODUCTION_COST_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json"
     },
     {
       "id": "PKG-T021",

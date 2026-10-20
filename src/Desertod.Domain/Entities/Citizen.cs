@@ -106,6 +106,9 @@ public sealed class Citizen
     public DateTimeOffset? CycleEndsAt { get; set; }
     public bool CycleSettled { get; set; } = true;
     public bool CycleTired { get; set; }
+    public long CycleInputCostBasis { get; set; }
+    /// <summary>Legacy unfinished cycles have unknown input cost until explicitly reconciled.</summary>
+    public bool CycleInputCostBasisKnown { get; set; }
     /// <summary>Голод при старте оплаченного цикла; null для работ, начатых до обновления.</summary>
     public bool? CycleHungry { get; set; }
     public int Streak { get; set; }

@@ -17,7 +17,10 @@ namespace Desertod.Api.Game;
 public sealed record EconomyRequest(Guid RequestId, string Action, ResourceKind Resource = ResourceKind.Wood,
     int Amount = 1, long Price = 0, Guid? Target = null, int X = 0, int Y = 0, BuildingKind Building = BuildingKind.Hut);
 public sealed record MarketLotDto(Guid Id, Guid SellerAccountId, ResourceKind Resource, int Amount, long Price, string Status, string Seller);
-public sealed record PersonalGoodDto(ResourceKind Kind, int Amount, long CostBasis);
+public sealed record PersonalGoodDto(ResourceKind Kind, int Amount, long CostBasis)
+{
+    public bool CostBasisKnown { get; init; }
+}
 public sealed record LedgerDto(Guid Id, DateTimeOffset At, string Operation, string Asset, string Location, long Delta, string? Actor);
 /// <summary>Stable display identities mapped to existing ledger assets; this does not convert balances.</summary>
 public sealed record EconomyCurrencyDto(string Id, string LedgerAsset);
@@ -160,7 +163,7 @@ public sealed partial class GameService
                         var recipient=Own();
                         foreach(var good in recovery.Goods)
                             if(PersonalInventory.Room(recipient,good.Kind)<good.Amount)throw new GameRuleException("inventory.full","Make room for the recovered materials.");
-                        foreach(var good in recovery.Goods)PersonalInventory.Add(recipient,good.Kind,good.Amount,0);
+                        foreach(var good in recovery.Goods)PersonalInventory.Add(recipient,good.Kind,good.Amount,0,basisKnown:false);
                     }
                     else
                     {
@@ -228,8 +231,8 @@ public sealed partial class GameService
                         ?? throw new GameRuleException("inventory.recipient", "Choose a resident in this kingdom.");
                     if (recipient.AccountId == account) throw new GameRuleException("inventory.recipient", "Choose another resident.");
                     if (PersonalInventory.Room(recipient, request.Resource) < request.Amount) throw new GameRuleException("inventory.full", "The recipient's inventory is full.");
-                    var basis = PersonalInventory.Remove(sender, request.Resource, request.Amount);
-                    PersonalInventory.Add(recipient, request.Resource, request.Amount, basis);
+                    var cost = PersonalInventory.RemoveWithCost(sender, request.Resource, request.Amount);
+                    PersonalInventory.Add(recipient, request.Resource, request.Amount, cost.Basis, cost.Known);
                     affected.Add(recipient.Id);
                     break;
                 }
@@ -238,9 +241,9 @@ public sealed partial class GameService
                     if (request.Price < 1) throw new GameRuleException("economy.amount", "Choose a positive whole price for the lot.");
                     if (await db.MarketLots.CountAsync(x => x.VillageId == village.Id && x.SellerAccountId == account && x.Status == "open", ct) >= 10)
                         throw new GameRuleException("market.limit", "You already have ten open lots.");
-                    var basis = PersonalInventory.Remove(Own(), request.Resource, request.Amount);
+                    var cost = PersonalInventory.RemoveWithCost(Own(), request.Resource, request.Amount);
                     db.MarketLots.Add(new MarketLot { Id = request.RequestId, VillageId = village.Id, SellerAccountId = account,
-                        Resource = request.Resource, Amount = request.Amount, Price = request.Price, CostBasis = basis, Status = "open", CreatedAt = now });
+                        Resource = request.Resource, Amount = request.Amount, Price = request.Price, CostBasis = cost.Basis, CostBasisKnown = cost.Known, Status = "open", CreatedAt = now });
                     break;
                 }
                 case "buy-lot":
@@ -255,7 +258,7 @@ public sealed partial class GameService
                     if (request.Action == "cancel-lot")
                     {
                         if (lot.SellerAccountId != account) throw new UnauthorizedAccessException();
-                        PersonalInventory.Add(seller, lot.Resource, lot.Amount, lot.CostBasis); lot.Status = "cancelled";
+                        PersonalInventory.Add(seller, lot.Resource, lot.Amount, lot.CostBasis, lot.CostBasisKnown); lot.Status = "cancelled";
                     }
                     else
                     {
@@ -263,7 +266,7 @@ public sealed partial class GameService
                         if (PersonalInventory.Room(Own(), lot.Resource) < lot.Amount) throw new GameRuleException("inventory.full", "Your personal inventory is full.");
                         var sellerWallet = await WalletAsync(db, village.Id, lot.SellerAccountId, now, ct);
                         EconomyRules.Spend(wallet, lot.Price); EconomyRules.Credit(sellerWallet, lot.Price);
-                        sellerWallet.ProfitToday = checked(sellerWallet.ProfitToday + lot.Price - lot.CostBasis);
+                        if (lot.CostBasisKnown) sellerWallet.ProfitToday = checked(sellerWallet.ProfitToday + lot.Price - lot.CostBasis);
                         PersonalInventory.Add(Own(), lot.Resource, lot.Amount, lot.Price);
                         lot.Status = "sold"; lot.BuyerAccountId = account;
                         WalletChange(account, -lot.Price, "trade"); WalletChange(lot.SellerAccountId, lot.Price, "trade");
@@ -361,7 +364,7 @@ public sealed partial class GameService
             EconomyNumber("ExchangeRate", 100, 1, 100_000), EconomyNumber("DailyExchangeLimit", 5, 1, 20), wallet.ExchangedToday,
             Math.Max(0, EconomyNumber("KingdomDailyCandles", 50, 1, 1000) - (state.FundDay == EconomyDay(now) ? state.CandlesIssuedToday : 0)),
             new DateTimeOffset(now.UtcDateTime.Date.AddDays(1), TimeSpan.Zero), state.TreasuryCoins,
-            citizen?.PersonalGoods.Select(x => new PersonalGoodDto(x.Kind, x.Amount, x.CostBasis)).ToArray() ?? [],
+            citizen?.PersonalGoods.Select(x => new PersonalGoodDto(x.Kind, x.Amount, x.CostBasis) { CostBasisKnown = x.CostBasisKnown }).ToArray() ?? [],
             lots.Select(x=>new MarketLotDto(x.Id,x.SellerAccountId,x.Resource,x.Amount,x.Price,x.Status,sellerNames.GetValueOrDefault(x.SellerAccountId,"Resident"))).ToArray(), journal, rows.Count > 50 ? rows[49].Id : null, state.StartedAt,
             EconomyNumber("WorkPay", 10, 1, 1000), EconomyNumber("ConstructionPay", 20, 1, 1000),
             await db.Citizens.AsNoTracking().Where(c => c.VillageId == village.Id && c.Status == CitizenStatus.Active)

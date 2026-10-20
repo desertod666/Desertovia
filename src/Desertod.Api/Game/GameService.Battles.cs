@@ -64,7 +64,9 @@ public sealed partial class GameService
             var citizen=await db.Citizens.SingleOrDefaultAsync(c=>c.VillageId==villageId&&c.AccountId==actor,ct);
             var tsar=village.OwnerAccountId==actor;
             if(!tsar&&citizen is null)throw new UnauthorizedAccessException();
-            SafeRest.RequireActive(tsar ? village.TsarRestState : citizen!.RestState);
+            var restState = tsar ? village.TsarRestState : citizen!.RestState;
+            if (restState == RestState.Resting || restState == RestState.RestRequested && order.Mode is not ("retreat" or "heal"))
+                SafeRest.RequireActive(restState);
             var now=time.GetUtcNow();
             await SyncHospitalAsync(db,villageId,ct,true,actor,actorOnly:true);
             if(HasHospitalRestriction(actor))throw new GameRuleException("hospital.unavailable","Wait until recovery.");

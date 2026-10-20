@@ -1249,7 +1249,7 @@ export interface Citizen {
   vigorCooldownMinutes?: number
   accountId?: string
   cyclePrivateOutput?: boolean
-  personalGoods?: {kind:string;amount:number;costBasis:number}[]
+  personalGoods?: {kind:string;amount:number;costBasis:number;costBasisKnown?:boolean}[]
   actionEnergyCosts?: Record<string, number>
   homePlotId?:string|null
   spouseAccountId?:string|null
@@ -1529,7 +1529,7 @@ export interface EconomyView {
   privateProperty: {plotId:string;kind:string;level:number;site:boolean;hasWork:boolean}[]
   coins: number; testCandles: number; earnedToday: number; profitToday: number; taxPreview: number; taxEnabled: boolean
   exchangeRate: number; dailyExchangeLimit: number; exchangedToday: number; kingdomCandleRoom: number; dayResetsAt: string; treasury: number
-  inventory: {kind: string; amount: number; costBasis: number}[]
+  inventory: {kind: string; amount: number; costBasis: number; costBasisKnown?: boolean}[]
   lots: {id: string; sellerAccountId: string; seller: string; resource: string; amount: number; price: number; status: string}[]
   journal: {id: string; at: string; operation: string; asset: string; location: string; delta: number; actor: string|null}[]
   nextJournalBefore: string|null; startedAt: string; workPay: number; constructionPay: number

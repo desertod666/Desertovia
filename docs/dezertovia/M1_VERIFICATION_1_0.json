@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-20T18:17:15.449296+00:00",
+  "source_sha": "bc9bd8180566aed7276c20f92ad639bdc8044e1b",
+  "run_id": 39470513420,
+  "url": "https://github.com/desertod666/Desertovia/actions/runs/39470513420",
+  "jobs": [
+    {
+      "name": "Docker image",
+      "result": "success",
+      "id": 118793040356
+    },
+    {
+      "name": "Frontend lint and build",
+      "result": "success",
+      "id": 118793040410
+    },
+    {
+      "name": "Browser tests (2/2)",
+      "result": "success",
+      "id": 118793040518
+    },
+    {
+      "name": "Browser tests (1/2)",
+      "result": "success",
+      "id": 118793040549
+    },
+    {
+      "name": "Backend tests",
+      "result": "success",
+      "id": 118793040820
+    }
+  ],
+  "counts": {
+    "domain": 550,
+    "api": 296,
+    "browser_desktop": 136,
+    "browser_phone": 134,
+    "browser_normal_skips": 2,
+    "client_unit": 7
+  },
+  "trees": {
+    "src": "57c1312680445f9806c58792106ae15eda414b89",
+    "web": "3444c6d0807c0c76896a0fbc12c2689a0d835247",
+    "tests": "cb83bb5650733b2fdf37159e9d6816ea7dfb72bf",
+    "tools": "260b321a252eddaec065e58f99c879317b6a7053",
+    ".vscode": "a6c4dd06f40a7cb0becb846f2126f589a13afde5"
+  },
+  "scope": "M1 base including rest/reconnect/authority and previously integrated PR76. Not whole1.0; later cost accounting and the late-combat/rest race followup need their own source checks.",
+  "released": false
+}

@@ -8,6 +8,20 @@ namespace Desertod.Domain.Tests;
 public sealed class SafeRestTests
 {
     [Fact]
+    public void A_new_encounter_during_accepted_work_delays_protection_until_retreat()
+    {
+        var v = NewVillage(); var c = NewCitizen(v); var context = WorkContext.For(v);
+        CycleEngine.Start(c, Task("chop-wood"), context, Now);
+        SafeRest.Request(c, Now);
+        Assert.True(RaidSimulation.CanFight(c, Now));
+        context.RestBlockedByCombat = true;
+        Assert.NotNull(CycleEngine.Settle(c, context, c.CycleEndsAt!.Value));
+        Assert.Equal(RestState.RestRequested, c.RestState);
+        context.RestBlockedByCombat = false;
+        Assert.Null(CycleEngine.Settle(c, context, c.CycleEndsAt!.Value.AddSeconds(1)));
+        Assert.Equal(RestState.Resting, c.RestState);
+    }
+    [Fact]
     public void Accepted_work_finishes_once_before_rest_and_rest_produces_no_more_work_or_experience()
     {
         var village = NewVillage();

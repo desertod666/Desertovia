@@ -22,9 +22,9 @@ public static class SafeRest
         if (citizen.RestState == RestState.Resting) StopWalking(citizen, now);
     }
 
-    public static void AfterSettlement(Citizen citizen, DateTimeOffset now)
+    public static void AfterSettlement(Citizen citizen, DateTimeOffset now, bool blockedByCombat = false)
     {
-        if (citizen.RestState != RestState.RestRequested || !citizen.CycleSettled) return;
+        if (citizen.RestState != RestState.RestRequested || !citizen.CycleSettled || blockedByCombat) return;
         citizen.RestState = RestState.Resting;
         StopWalking(citizen, now);
     }

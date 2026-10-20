@@ -1,0 +1,21 @@
+import {test, expect} from './fixtures.ts'
+
+for (const language of ['en', 'ru']) for (const known of [true, false]) test(`acquisition cost stays in a tap hint and distinguishes unverified history (${language},known=${known})`, async ({page}) => {
+  await page.addInitScript(value => localStorage.setItem('desertod.language', value), language)
+  await page.setViewportSize({width:320,height:760})
+  await page.goto(`/e2e/economy-harness.html?cost=${known?'known':'legacy'}`)
+  await page.locator('.economy-panel > summary').click()
+  await page.locator('.economy-panel details > summary').filter({hasText:language==='ru'?'Моё имущество':'My possessions'}).click()
+  const slot=page.locator('.inventory-grid .slot')
+  await expect(slot).toContainText('4/100')
+  const hint=slot.getByRole('button', {name:language==='ru'?'Себестоимость':'Acquisition cost',exact:true})
+  const touch = await hint.boundingBox()
+  expect(touch!.width).toBeGreaterThanOrEqual(44);expect(touch!.height).toBeGreaterThanOrEqual(44)
+  await hint.click()
+  const tooltip=page.getByRole('tooltip')
+  await expect(tooltip).toBeVisible()
+  await expect(tooltip).toContainText(known?'9':language==='ru'?'не означает нулевую':'does not mean its cost was zero')
+  const box=await tooltip.boundingBox()
+  expect(box!.x).toBeGreaterThanOrEqual(0);expect(box!.x+box!.width).toBeLessThanOrEqual(320)
+  await page.keyboard.press('Escape');await expect(tooltip).toHaveCount(0)
+})

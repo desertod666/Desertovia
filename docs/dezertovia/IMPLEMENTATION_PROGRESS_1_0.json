@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T17:55:51.771590+00:00",
+  "recorded_at_utc": "2026-10-20T18:21:45.117853+00:00",
   "status": "main_plan_active_reconnect_authority_rest_economy_farm",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
@@ -9,7 +9,7 @@
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-foundation",
+  "branch": "feat/desertovia-1-0-economy",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -278,9 +278,69 @@
         20
       ],
       "capacity_acceptance": false
+    },
+    "safe_rest_browser": {
+      "unique_cases_passed": 4,
+      "full_local_run": {
+        "passed": 3,
+        "failed": 1,
+        "reason": "phone RU second-tab reload exceeded15s splash wait during concurrent browser work"
+      },
+      "isolated_repeat": {
+        "passed": 1,
+        "failed": 0,
+        "scope": "same RU phone case unchanged; full-map reload, two tabs, persisted server state"
+      },
+      "physical_phone": false
+    },
+    "m1_broader_browser": {
+      "passed": 38,
+      "failed": 0,
+      "scope": "reconnect/live-combat/app-resume desktop+phone; compiled M1 source"
+    },
+    "m1_candidate_ci": {
+      "run_id": 39470513420,
+      "sha": "bc9bd8180566aed7276c20f92ad639bdc8044e1b",
+      "status": "success",
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39470513420",
+      "receipt": "M1_VERIFICATION_1_0.json"
+    },
+    "production_cost_domain": {
+      "passed": 558,
+      "failed": 0,
+      "scope": "whole domain after cost accounting and late-combat/rest followup"
+    },
+    "production_cost_api": {
+      "passed": 4,
+      "failed": 0,
+      "scope": "corrected new API cases;15 existing economy API cases also passed in the earlier run",
+      "first_run_harness_error": "Four new cases lacked enum JSON converter. Corrected and fresh4/4 passed."
+    },
+    "production_cost_browser": {
+      "passed": 22,
+      "failed": 0,
+      "scope": "RU/EN known/unknown cost tap hints and existing kingdom economy desktop/phone"
+    },
+    "safe_rest_late_combat": {
+      "domain": "passed; whole suite558",
+      "api_unique_cases_passed": 3,
+      "fresh_late_encounter_passed": 1,
+      "scope": "after-request encounter delays protection until actual retreat; successful retreat endpoint returns an empty200, test corrected accordingly"
+    },
+    "cost_touch_browser": {
+      "passed": 8,
+      "failed": 0,
+      "scope": "final44x44 cost hints, RU/EN known/legacy values, desktop/phone"
     }
   },
-  "open_questions": [],
+  "open_questions": [
+    {
+      "id": "F001-reserve-loss",
+      "question": "Proportional actual food loss in communal and protected farm reserve, or immunity for protected reserve?",
+      "status": "asked_owner_waiting",
+      "blocks": "farm reserve damage behavior only"
+    }
+  ],
   "known_followups": [
     {
       "id": "SEC-001",
@@ -296,9 +356,10 @@
     "bot_deployed": false
   },
   "next_tasks": [
-    "PKG-T012 after owner answers D101; only dependent rest work waits",
-    "Continue T014 full flow after T012/T013 and T035",
-    "PKG-T020 after ownership/legacy/multi-output policy review; private worn-tool trading needs an item-aware contract"
+    "PKG-T020 core implemented and focused domain/API/browser verified; full candidate CI next",
+    "PKG-T021/T022 explicit ownership and treasury-funded work contracts next",
+    "F001 protected farm reserve; damage policy owner reply pending",
+    "M1 rest race followup ace2cff in PR75; fresh full CI pending"
   ],
   "screenshots": [
     "screenshots/foundation/economic-gold-ru-phone.png",
@@ -337,10 +398,9 @@
     "F001": "Protect 10% of actual harvest immediately for contributors; community receives90%. Owner answer supersedes reserve-first deferral."
   },
   "active_tasks": [
-    "PKG-T012 server implemented and domain/API verified, browser running",
-    "PKG-T013 transport fixes and focused browser verified, broader regression pending",
-    "PKG-T015 current authority/serialization verified; future economic actions keep their own gates",
-    "PKG-T004 synthetic simulation/wire baseline measured; D114 capacity target pending",
-    "PKG-T020 owner-confirmed cost accounting implementation next"
+    "PKG-T020 core implemented and focused domain/API/browser verified; full candidate CI next",
+    "PKG-T021/T022 explicit ownership and treasury-funded work contracts next",
+    "F001 protected farm reserve; damage policy owner reply pending",
+    "M1 rest race followup ace2cff in PR75; fresh full CI pending"
   ]
 }

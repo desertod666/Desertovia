@@ -12,6 +12,8 @@ import '../src/index.css'
 declare global { interface Window { economyCalls: EconomyRequest[]; failEconomyOnce: boolean; kingdomCanBuild: (personal:boolean,x:number,y:number)=>boolean } }
 window.economyCalls=[];window.failEconomyOnce=false
 const view: EconomyView={energyDrinkReadyAt:null,coins:1000,testCandles:0,earnedToday:100,profitToday:0,taxPreview:0,taxEnabled:false,exchangeRate:100,dailyExchangeLimit:5,exchangedToday:0,kingdomCandleRoom:50,dayResetsAt:new Date(Date.now()+3600000).toISOString(),treasury:0,inventory:[],lots:[],journal:[],nextJournalBefore:null,startedAt:new Date().toISOString(),workPay:10,constructionPay:20,residents:[{accountId:'me',name:'Игрок'},{accountId:'other',name:'Очень длинное имя другого игрока'}],privateStorages:[],stockPrices:{Wood:2,Stone:3,Planks:8},privateProperty:[]}
+const costFixture = new URLSearchParams(location.search).get('cost')
+if (costFixture) view.inventory = [{kind:'Wood', amount:4, costBasis:9, costBasisKnown:costFixture==='known'}]
 api.economy=async()=>structuredClone(view)
 api.economyAction=async(_slug,request)=>{
   window.economyCalls.push(structuredClone(request))
