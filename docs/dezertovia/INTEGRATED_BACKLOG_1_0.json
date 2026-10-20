@@ -1197,7 +1197,7 @@
       "source": "source-package/05_TASKS.json",
       "current_support": {
         "status": "independent_compact_slice_implemented",
-        "evidence": "INTERFACE_COMPACTNESS_1_0.md; tests in progress. T012/T013 and complete T035 path still required.",
+        "evidence": "INTERFACE_COMPACTNESS_1_0.md; 30 browser and 6 WebKit cases passed before final storage compactness iteration; final candidate checks pending. PR76 merged with wear preservation guards.",
         "runtime_verification": "pending_final_ui_and_partner_candidate"
       }
     },

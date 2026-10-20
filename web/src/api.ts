@@ -1526,7 +1526,7 @@ export interface EconomyView {
   journal: {id: string; at: string; operation: string; asset: string; location: string; delta: number; actor: string|null}[]
   nextJournalBefore: string|null; startedAt: string; workPay: number; constructionPay: number
   residents: {accountId: string; name: string}[]
-  privateStorages: {plotId: string; kind: string; goods: {resource:string; amount:number; sharpen?:number}[]}[]
+  privateStorages: {plotId: string; kind: string; goods: ResourceAmount[]}[]
 }
 export const api = {
   submitReport: (body: {id:string;kind:string;text:string;slug:string|null;capturedAt:string;screen:unknown;screenshot:string|null}) =>

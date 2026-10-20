@@ -4,6 +4,9 @@ import { api, type Catalog, type Citizen, type EconomyRequest, type EconomyView,
 import { I18nProvider } from '../src/i18n'
 import { EconomyPanel } from '../src/ui/EconomyPanel'
 import { ActionEnergy } from '../src/ui/ActionEnergy'
+import { StorageCard } from '../src/ui/StorageCard'
+import { HandsCard } from '../src/ui/HandsCard'
+import { useState } from 'react'
 import '../src/index.css'
 
 declare global { interface Window { economyCalls: EconomyRequest[]; failEconomyOnce: boolean; kingdomCanBuild: (personal:boolean,x:number,y:number)=>boolean } }
@@ -20,4 +23,12 @@ const village={id:'00000000-0000-0000-0000-000000000001',slug:'test',structures:
 const catalog={buildings:[],buildArea:{x:0,y:0,width:28,height:26},reservedAreas:[]} as unknown as Catalog
 window.kingdomCanBuild=(personal,x,y)=>canBuildAt(catalog,village,x,y,personal)
 const citizen={energy:0,exhaustedCycles:2,actionEnergyCosts:{'test-work':2},accountId:'me',name:'Игрок',weapon:null,armor:null} as unknown as Citizen
-createRoot(document.getElementById('app')!).render(<I18nProvider><div className="modal-backdrop"><section className="modal menu"><div className="modal-body"><div id="faint-warning"><ActionEnergy citizen={citizen} action="test-work"/></div><EconomyPanel village={village} catalog={catalog} citizen={citizen} accountId="me"/></div></section></div></I18nProvider>)
+function ToolStand() {
+  const [taken,setTaken]=useState('')
+  const held={...citizen,load:[{resource:'StoneAxe',amount:1,durability:3,maxDurability:8}]}
+  const empty={...citizen,load:[]}
+  const toolCatalog={...catalog,storages:[{kind:'TownHall',slots:8,slotSize:15,accepts:['StoneAxe','Sword']}],rules:{takeLimit:10}} as unknown as Catalog
+  const storage={kind:'TownHall',plotId:'3,3',damage:0,slots:[],goods:[{resource:'StoneAxe',amount:1,durability:3,maxDurability:8},{resource:'StoneAxe',amount:1,durability:8,maxDurability:8},{resource:'Sword',amount:1,sharpen:2}]}
+  return <><HandsCard citizen={held} catalog={toolCatalog} village={village} pending={false} onCarry={()=>{}} onDrop={()=>{}}/><StorageCard storage={storage} catalog={toolCatalog} take={{citizen:empty,disabled:false,onTake:(...values)=>setTaken(JSON.stringify(values))}}/><output id="tool-take">{taken}</output></>
+}
+createRoot(document.getElementById('app')!).render(<I18nProvider><div className="modal-backdrop"><section className="modal menu"><div className="modal-body">{new URLSearchParams(location.search).has('tools')?<ToolStand/>:<><div id="faint-warning"><ActionEnergy citizen={citizen} action="test-work"/></div><EconomyPanel village={village} catalog={catalog} citizen={citizen} accountId="me"/></>}</div></section></div></I18nProvider>)

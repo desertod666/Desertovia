@@ -1,6 +1,8 @@
 /** English is the primary language; every other dictionary must provide the same keys. */
 export const en = {
   ui: {
+    'hands.help': 'About carried goods',
+    'storage.acceptsHelp': 'What this storage accepts',
     'needs.foodHelp': 'Food details',
     'needs.restHelp': 'Energy recovery details',
     'needs.restShort': 'Rest',

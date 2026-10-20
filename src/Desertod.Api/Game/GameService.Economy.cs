@@ -194,9 +194,12 @@ public sealed partial class GameService
                 case "buy-stock":
                 {
                     var buyer = Own();
-                    // Личный торговый инвентарь пока не хранит заточку. Не превращать улучшенное оружие в обычное.
+                    // Count-only personal inventory cannot preserve an edge or tool wear.
+                    // Trade fresh tools only; a worn tool remains in communal storage with its uses intact.
+                    var toolDurability = ToolCatalog.Get(request.Resource)?.MaxDurability;
                     var plainStock = village.Storages.Where(s => s.OwnerAccountId is null && s.RuinedAt is null && s.Damage < 100)
-                        .SelectMany(s => s.Goods).Where(g => g.Kind == request.Resource && g.Sharpen == 0).Sum(g => g.Amount);
+                        .SelectMany(s => s.Goods).Where(g => g.Kind == request.Resource && g.Sharpen == 0 &&
+                            (toolDurability is null || g.Durability == toolDurability)).Sum(g => g.Amount);
                     if (!StorageCatalog.IsGood(request.Resource) || plainStock < request.Amount)
                         throw new GameRuleException("inventory.stockMissing", "The common storage does not have this material.");
                     if (request.Price != 0 && request.Price != EconomyRules.StorePrice(request.Resource))
@@ -204,7 +207,7 @@ public sealed partial class GameService
                     var cost = checked((long)EconomyRules.StorePrice(request.Resource) * request.Amount);
                     if (PersonalInventory.Room(buyer, request.Resource) < request.Amount)
                         throw new GameRuleException("inventory.full", "Your personal inventory is full.");
-                    EconomyRules.Spend(wallet, cost); village.Take(request.Resource, request.Amount, 0);
+                    EconomyRules.Spend(wallet, cost); village.Take(request.Resource, request.Amount, 0, toolDurability);
                     PersonalInventory.Add(buyer, request.Resource, request.Amount, cost);
                     state.TreasuryCoins = checked(state.TreasuryCoins + cost);
                     WalletChange(account, -cost, "buy-stock");
@@ -363,7 +366,7 @@ public sealed partial class GameService
             EconomyNumber("WorkPay", 10, 1, 1000), EconomyNumber("ConstructionPay", 20, 1, 1000),
             await db.Citizens.AsNoTracking().Where(c => c.VillageId == village.Id && c.Status == CitizenStatus.Active)
                 .OrderBy(c => c.Name).Select(c => new EconomyResident(c.AccountId, c.Name)).ToListAsync(ct),
-            village.Storages.Where(s => s.OwnerAccountId == account).Select(s => new PrivateStorageDto(s.PlotId, s.Kind, s.Goods.Select(g => new ResourceAmount(g.Kind, g.Amount, g.Sharpen)).ToArray())).ToArray(),
+            village.Storages.Where(s => s.OwnerAccountId == account).Select(s => new PrivateStorageDto(s.PlotId, s.Kind, s.Goods.Select(g => ToolCatalog.Amount(g.Kind, g.Amount, g.Sharpen, g.Durability)).ToArray())).ToArray(),
             Enum.GetValues<ResourceKind>().Where(StorageCatalog.IsGood).ToDictionary(k=>k,EconomyRules.StorePrice),
             village.Structures.Where(s=>s.OwnerAccountId==account).Select(s=>new PrivatePropertyDto(s.PlotId,s.Kind,s.Level,false,false))
                 .Concat(village.Storages.Where(s=>s.OwnerAccountId==account).Select(s=>new PrivatePropertyDto(s.PlotId,BuildingCatalog.ForStorage(s.Kind)??BuildingKind.Heap,1,false,false)))

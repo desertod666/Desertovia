@@ -1,4 +1,4 @@
-import { test, expect, uniqueName } from './fixtures'
+import { test, expect, uniqueName } from './fixtures.ts'
 
 for (const language of ['ru', 'en']) {
   const ru = language === 'ru'
@@ -82,7 +82,7 @@ for (const language of ['ru', 'en']) {
     await page.locator('.energy-shop-disclosure > summary').click()
     await page.locator('.modal-body').evaluate(el => {el.scrollTop = 0})
     await page.locator('.modal.menu').screenshot({path: test.info().outputPath(`compact-wallet-${language}.png`)})
-    expect(await page.evaluate(() => window.economyCalls)).toEqual([])
+    expect(await page.evaluate(() => (window as unknown as {economyCalls: unknown[]}).economyCalls)).toEqual([])
   })
 }
 
@@ -97,4 +97,29 @@ test('hunger and tired warnings stay visible while formulas remain in tap hints'
   await expect(page.locator('.hud-needs')).toContainText('Устал')
   await page.getByRole('button', {name: 'Подробности питания', exact: true}).click()
   await expect(page.getByRole('tooltip')).toContainText('опыт')
+})
+
+test('partner tools show mixed wear and choose the exact stack without changing sharpened weapons', async ({page}) => {
+  await page.addInitScript(() => localStorage.setItem('desertod.language', 'ru'))
+  await page.setViewportSize({width:320,height:760})
+  await page.goto('/e2e/economy-harness.html?tools=1')
+  await expect(page.locator('.hands')).toContainText('3/8')
+  const rows=page.locator('.storage-take > li')
+  await expect(rows).toHaveCount(3)
+  await expect(rows.nth(0)).toContainText('3/8')
+  await expect(rows.nth(1)).toContainText('8/8')
+  await expect(rows.nth(2).locator('.sharpen-badge')).toHaveText('+2')
+  for (const [index, expected] of [[0,['StoneAxe',1,0,3]],[1,['StoneAxe',1,0,8]],[2,['Sword',1,2,null]]] as const) {
+    await rows.nth(index).getByRole('button').click()
+    await expect(page.locator('#tool-take')).toHaveText(JSON.stringify(expected))
+  }
+  await page.getByRole('button',{name:'Что принимает этот склад'}).click()
+  await expect(page.getByRole('tooltip')).toContainText('Каменный топор')
+  await page.keyboard.press('Escape')
+  for (const row of await rows.all()) expect(await row.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true)
+  for (const button of await rows.getByRole('button').all()) {
+    expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44)
+    expect((await button.boundingBox())!.width).toBeGreaterThanOrEqual(44)
+  }
+  await page.locator('.modal.menu').screenshot({path:test.info().outputPath('partner-tools-phone.png')})
 })

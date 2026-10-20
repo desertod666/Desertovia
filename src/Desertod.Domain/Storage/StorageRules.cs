@@ -72,7 +72,11 @@ public static class StorageRules
         if (building.OwnerAccountId is {} owner && owner != citizen.AccountId)
             throw new GameRuleException("building.private", "This storage belongs to another player.");
         if (building.OwnerAccountId is not null)
+        {
+            if (ToolCatalog.Get(kind) is { } tool && durability is int wear && wear != tool.MaxDurability)
+                throw new GameRuleException("take.nothing", $"There is no transferable {ResourceNames.Of(kind)} here.", Resource(kind));
             return Desertod.Domain.Economy.PrivateWarehouse.Withdraw(citizen, building, kind, amount);
+        }
         var room = CarryLimit(citizen,now) - citizen.Carried(kind);
         if (room <= 0)
         {

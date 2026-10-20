@@ -5,6 +5,7 @@ using Desertod.Domain;
 using Desertod.Domain.Buildings;
 using Desertod.Domain.Catalog;
 using Desertod.Domain.Entities;
+using Desertod.Domain.Economy;
 using Desertod.Domain.Rules;
 using Desertod.Domain.Skills;
 using Desertod.Domain.Stats;
@@ -16,6 +17,28 @@ namespace Desertod.Domain.Tests;
 
 public class ToolDurabilityTests
 {
+    [Fact]
+    public void Private_count_only_inventory_selects_fresh_tools_and_does_not_repair_worn_ones()
+    {
+        var (citizen, village) = Gatherer();
+        var storage = StorageBuilding.Create(StorageKind.TownHall, "3,3", Now);
+        storage.OwnerAccountId = citizen.AccountId;
+        village.Storages.Add(storage);
+        PersonalInventory.Add(citizen, ResourceKind.StoneAxe, 1, 80);
+        PrivateWarehouse.Deposit(citizen, storage, ResourceKind.StoneAxe, 1);
+        storage.Put(ResourceKind.StoneAxe, 1, durability: 3);
+
+        var error = Assert.Throws<GameRuleException>(() =>
+            StorageRules.Take(citizen, village, storage.PlotId, ResourceKind.StoneAxe, 1, Now, durability: 3));
+        Assert.Equal("take.nothing", error.Code);
+        Assert.Equal(2, storage.Goods.Count(g => g.Kind == ResourceKind.StoneAxe));
+        Assert.Equal(1, PrivateWarehouse.Withdraw(citizen, storage, ResourceKind.StoneAxe, 1));
+        var remaining = Assert.Single(storage.Goods, g => g.Kind == ResourceKind.StoneAxe);
+        Assert.Equal((1,3), (remaining.Amount, remaining.Durability));
+        var personal = Assert.Single(citizen.PersonalGoods, g => g.Kind == ResourceKind.StoneAxe);
+        Assert.Equal((1,80L), (personal.Amount, personal.CostBasis));
+    }
+
     private static (Citizen Citizen, Village Village) Gatherer()
     {
         var village = NewVillage();

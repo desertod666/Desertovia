@@ -335,7 +335,7 @@ public sealed class Village
 
     /// <summary>Takes up to <paramref name="amount"/>, general storage first to keep its slots free.</summary>
     /// <param name="sharpen">One weapon edge. Null takes the dullest stacks first.</param>
-    public int Take(ResourceKind kind, int amount, int? sharpen = null)
+    public int Take(ResourceKind kind, int amount, int? sharpen = null, int? durability = null)
     {
         if (!StorageCatalog.IsGood(kind))
         {
@@ -352,9 +352,7 @@ public sealed class Village
                 break;
             }
 
-            taken += sharpen is int level
-                ? building.Take(kind, amount - taken, level)
-                : building.Take(kind, amount - taken);
+            taken += building.Take(kind, amount - taken, sharpen, durability);
         }
 
         return taken;

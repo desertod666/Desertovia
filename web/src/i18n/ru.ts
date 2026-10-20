@@ -2,6 +2,8 @@ import type { Dictionary } from './en'
 
 export const ru: Dictionary = {
   ui: {
+    'hands.help': 'О ноше и переноске',
+    'storage.acceptsHelp': 'Что принимает этот склад',
     'needs.foodHelp': 'Подробности питания',
     'needs.restHelp': 'Подробности восстановления сил',
     'needs.restShort': 'Отдых',

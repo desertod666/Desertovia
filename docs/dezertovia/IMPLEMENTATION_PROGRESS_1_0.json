@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T16:18:39.256582+00:00",
-  "status": "foundation_ci_pass_compact_ui_and_partner_integration_in_progress",
+  "recorded_at_utc": "2026-10-20T16:32:30.072352+00:00",
+  "status": "foundation_tools_and_compact_ui_candidate_verification_in_progress",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
@@ -49,17 +49,21 @@
       "result": "all five jobs success; historical baseline, not new candidate CI"
     },
     "domain": {
-      "passed": 537,
+      "passed": 547,
       "failed": 0,
-      "command": "dotnet test tests/Desertod.Domain.Tests -c Release",
-      "fresh": true
+      "fresh": true,
+      "scope": "merged partner source and count-only private warehouse protection"
     },
     "api_focused": {
-      "passed": 14,
+      "passed": 17,
       "failed": 0,
-      "command": "dotnet test tests/Desertod.Api.Tests -c Release --filter FullyQualifiedName~KingdomEconomyApiTests",
-      "external_fixture_override": true,
-      "fresh": true
+      "fresh": true,
+      "scope": "KingdomEconomyApiTests and ToolIntegrationApiTests; isolated PostgreSQL",
+      "cases": [
+        "legacy JSON without durability preserves progress and weapon sharpen",
+        "mixed wear round-trip and exact storage take",
+        "no worn tool repair through market purchase/donation"
+      ]
     },
     "client_unit": {
       "passed": 4,
@@ -121,9 +125,8 @@
       "telegramBrowserLogin": false
     },
     "full_candidate_ci": {
-      "previous_candidate_run": 39453513267,
-      "previous_candidate_sha": "f87df492e0e252379c01447e1aa8494373629679",
-      "status": "new independent-worker test will be checked by final candidate CI"
+      "status": "pending_push_of_combined_candidate",
+      "previous_success": "39454292839 at 6fb6413; foundation only"
     },
     "diff_check": "pass",
     "api_cleanup_finally": {
@@ -147,8 +150,10 @@
       "result": "all five jobs success; before compact UI and PR76 integration"
     },
     "compact_interface": {
-      "status": "in_progress",
-      "first_run": "Needs/layout cases pass; wallet selector corrected before rerun. New final code not yet fully verified."
+      "status": "final_candidate_pending",
+      "passed_previous_browser": 30,
+      "passed_previous_webkit": 6,
+      "scope": "phone/desktop RU/EN, hints/keyboard/outside/Escape/scroll, drafts/prices/overflows, partner tool wear UI; final compact storage styling being rerun"
     }
   },
   "open_questions": [
@@ -174,9 +179,9 @@
     "bot_deployed": false
   },
   "next_tasks": [
-    "PKG-T011: finish verification of existing transactional foundation on exact candidate CI",
-    "PKG-T012: after owner answers D101",
-    "PKG-T020: known-input cost propagation, after ownership/legacy/multi-output contract review"
+    "Finish exact combined UI/tools candidate CI and visual review",
+    "PKG-T012 after owner answers D101",
+    "PKG-T020 known-input cost propagation after ownership/legacy/multi-output policy review"
   ],
   "screenshots": [
     "screenshots/foundation/economic-gold-ru-phone.png",
@@ -190,6 +195,19 @@
   "partner_integration": {
     "pull_request": "https://github.com/desertod666/Desertovia/pull/76",
     "requested_head": "b617f8d9f38fcc700400dbf2e7239f931d8d2127",
-    "status": "owner_requested_review_and_integration_in_progress"
+    "status": "merged_into_development_branch_with_compatibility_fixes",
+    "merge_commit": "4c04f69",
+    "history_preserved": true,
+    "external_pr_closed": false,
+    "main_merged": false,
+    "limitations": [
+      "Tool multipliers increase yield, not work speed.",
+      "Count-only personal trading inventory accepts fresh tools only; worn tools remain in carried/communal storage with their wear."
+    ],
+    "checks": [
+      "547 domain tests",
+      "17 focused API tests: 15 economy plus 2 tool compatibility cases",
+      "6 WebKit component cases before final hand/storage compact styling; final run pending"
+    ]
   }
 }

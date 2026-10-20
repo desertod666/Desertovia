@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Catalog, Citizen, ResourceAmount, Storage } from '../api'
 import { useI18n } from '../i18n'
 import { ResourceIcon } from './TileIcon'
+import { Hint } from './Hint'
 
 /** Lets the player's citizen take goods out of the building into their hands. */
 export interface StorageTake {
@@ -22,10 +23,10 @@ export function StorageCard({ storage, catalog, take }: { storage: Storage; cata
       {info && (
         <p className="muted small">
           {storage.resourceLimit ? `До ${storage.resourceLimit} каждого ресурса${storage.totalLimit ? ` · всего ${storage.totalLimit}` : ''}` : t('inventory.slots', { used: storage.slots.length, total: info.slots, size: info.slotSize })}
-          {' · '}
-          {info.accepts.length === 0
+          {' '}
+          <Hint className="help-button" label={t('storage.acceptsHelp')} text={[(info.accepts.length === 0
             ? t('storage.acceptsAll')
-            : t('storage.accepts', { goods: info.accepts.map((kind) => i18n.resource(kind)).join(', ') })}
+            : t('storage.accepts', { goods: info.accepts.map((kind) => i18n.resource(kind)).join(', ') })), ...(take ? [t('storage.takeHint', {amount: limit})] : [])].join('\n')}>ⓘ</Hint>
         </p>
       )}
       {storage.goods.length === 0 && <span className="muted small">{t('inventory.emptyBuilding')}</span>}
@@ -52,7 +53,7 @@ export function StorageCard({ storage, catalog, take }: { storage: Storage; cata
           ))}
         </div>
       )}
-      {take && storage.goods.length > 0 && <p className="small muted">{t('storage.takeHint', { amount: i18n.amount(limit) })}</p>}
+      {!info && take && storage.goods.length > 0 && <p className="small muted">{t('storage.takeHint', { amount: i18n.amount(limit) })}</p>}
     </div>
   )
 }
