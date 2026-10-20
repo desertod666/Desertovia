@@ -1405,7 +1405,7 @@
       "id": "PKG-T023",
       "milestone": "M2",
       "title": "Рынок, заказы поставки и безопасный резерв",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "implemented_supply_orders_and_sale_reserves_local_verified_full_acceptance_pending",
       "dependencies": [
         "PKG-T020",
         "PKG-T021"
@@ -1441,9 +1441,10 @@
       "original_task_id": "T023",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "source_partial_target",
-        "evidence": "MarketLot/PersonalInventory/cost splitting есть; новый reserve/supply/contract integration предстоит.",
-        "runtime_verification": "not_run_this_assignment"
+        "status": "implemented_supply_and_reserve",
+        "evidence": "SUPPLY_ORDERS_1_0.md: escrow, actual delivery, cost/history, public-sale minimum, final-commit rollback, mobile UI and real API restart.",
+        "runtime_verification": "605 Domain,15 unique focused API,30 unique UI cases across existing/new suites; actual46→47 economic-data preservation and320px restart/delivery passed; current full CI pending.",
+        "remaining_acceptance": "T024/025 policy and full economic scenario T026/F006 remain separate; F004 physical personal Food claims still require integration."
       }
     },
     {
@@ -1675,7 +1676,7 @@
       "id": "PKG-T032",
       "milestone": "M3",
       "title": "Связанный групповой данж",
-      "status": "partially_implemented_durable_fight_checkpoint_local_verified",
+      "status": "partially_implemented_durable_fight_checkpoint_full_ci_verified",
       "dependencies": [
         "PKG-T030",
         "PKG-T013"
@@ -1713,7 +1714,7 @@
       "current_support": {
         "status": "checkpoint_recovery_source_implemented",
         "evidence": "DUNGEON_IMPLEMENTATION_1_0.md: exact saved fight plus atomic settlement; new party/supply/loot policy still pending",
-        "runtime_verification": "599 Domain and18 dungeon API passed; actual45→46 persistent migration and active-run process restart passed. Full acceptance and current full CI pending."
+        "runtime_verification": "Exact c4b14db full CI39503802255:599 Domain/329 API/338 browser +2 normal skips; DUNGEON_VERIFICATION_1_0.json. Broader party/supply/voluntary exit pending."
       }
     },
     {
@@ -3373,7 +3374,7 @@
     },
     {
       "id": "PKG-A08",
-      "status": "planned_not_executed",
+      "status": "verified_scoped_market_final_commit_and_competing_buyers",
       "title": "Два покупателя и сбой лота",
       "setup": "Один лот, два запроса, инъекция отказа финального commit.",
       "action": "Купить параллельно, повторить после восстановления.",
@@ -3381,7 +3382,8 @@
       "invariants": [
         "INV02",
         "INV03"
-      ]
+      ],
+      "evidence": "SupplyOrderApiTests.Two_market_buyers_can_retry_after_actual_commit_failure_without_duplicate_goods; PostgreSQL deferred trigger at actual COMMIT, two failures/rollback then competing exact retries and single ownership. Local pass; full CI pending."
     },
     {
       "id": "PKG-A09",

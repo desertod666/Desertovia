@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-20T22:12:16.223471+00:00",
+  "sha": "c4b14db38f1c29619acbf9fdefe875318c4ba7e3",
+  "run_id": 39503802255,
+  "url": "https://github.com/desertod666/Desertovia/actions/runs/39503802255",
+  "result": "success",
+  "jobs": {
+    "Backend tests": 118907566586,
+    "Frontend lint and build": 118907566875,
+    "Docker image": 118907567026,
+    "Browser tests (1/2)": 118907567126,
+    "Browser tests (2/2)": 118907567170
+  },
+  "test_summaries": {
+    "Backend tests": [
+      "Backend tests\tRun dotnet test Desertod.slnx -c Release --no-build --logger trx --results-directory TestResults\t2026-10-20T21:53:24.0618383Z Passed!  - Failed:     0, Passed:   599, Skipped:     0, Total:   599, Duration: 5 s - Desertod.Domain.Tests.dll (net10.0)",
+      "Backend tests\tRun dotnet test Desertod.slnx -c Release --no-build --logger trx --results-directory TestResults\t2026-10-20T21:55:22.8638064Z Passed!  - Failed:     0, Passed:   329, Skipped:     0, Total:   329, Duration: 2 m 4 s - Desertod.Api.Tests.dll (net10.0)"
+    ],
+    "Browser tests (1/2)": [
+      "Browser tests (1/2)\tUNKNOWN STEP\t2026-10-20T22:02:40.3790054Z   170 passed (9.0m)"
+    ],
+    "Browser tests (2/2)": [
+      "Browser tests (2/2)\tUNKNOWN STEP\t2026-10-20T22:07:49.1105059Z   2 skipped",
+      "Browser tests (2/2)\tUNKNOWN STEP\t2026-10-20T22:07:49.1105605Z   168 passed (13.7m)"
+    ]
+  },
+  "scope": "Durable dungeon fight/command checkpoint and atomic settlement, before funded supply orders",
+  "public_release": false
+}

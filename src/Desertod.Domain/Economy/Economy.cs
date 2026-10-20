@@ -12,6 +12,9 @@ public sealed class KingdomEconomy
     public bool WorkContractsEnabled { get; set; }
     public DateOnly FundDay { get; set; }
     public int CandlesIssuedToday { get; set; }
+    private List<TradeReserve>? tradeReserves = [];
+    /// <summary>Owner-selected minimum fresh stock excluded from voluntary public sales. Not a worker's personal claim.</summary>
+    public List<TradeReserve> TradeReserves { get => tradeReserves ??= []; set => tradeReserves = value; }
 }
 
 public sealed class GameWallet

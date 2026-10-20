@@ -17,6 +17,8 @@ const costFixture = new URLSearchParams(location.search).get('cost')
 const orderFixture = new URLSearchParams(location.search).get('orders')
 if(orderFixture){view.workContractsEnabled=orderFixture!=='legacy';view.canManageWorkOrders=orderFixture!=='worker';view.treasury=100;view.workOrders=orderFixture==='worker'?[{id:'11111111-1111-4111-8111-111111111111',taskId:'chop-wood',policyVersion:1,payPerCycle:10,availableCycles:1,acceptedCycles:0,completedCycles:0,reservedCoins:10,expiresAt:new Date(Date.now()+3600000).toISOString(),status:'Open'}]:[]}
 if (costFixture) view.inventory = [{kind:'Wood', amount:4, costBasis:9, costBasisKnown:costFixture==='known'}]
+const supplyFixture=new URLSearchParams(location.search).get('supply')
+if(supplyFixture){view.canManageWorkOrders=supplyFixture==='owner';view.treasury=100;view.inventory=[{kind:'Wood',amount:4,costBasis:9,costBasisKnown:true}];view.tradeReserves=[];view.stockForSale={Wood:supplyFixture==='worker'?0:10,Stone:8,Planks:2};view.supplyOrders=supplyFixture==='worker'?[{id:'22222222-2222-4222-8222-222222222222',resource:'Wood',requestedAmount:4,remainingAmount:4,deliveredAmount:0,unitPrice:3,reservedCoins:12,expiresAt:new Date(Date.now()+3600000).toISOString(),status:'Open'}]:[]}
 api.economy=async()=>structuredClone(view)
 api.economyAction=async(_slug,request)=>{
   window.economyCalls.push(structuredClone(request))
@@ -24,6 +26,9 @@ api.economyAction=async(_slug,request)=>{
   if(request.action==='buy-stock'){const amount=request.amount??1;view.coins-=amount*2;view.treasury+=amount*2;view.inventory=[{kind:'Wood',amount,costBasis:amount*2}]}
   if(request.action==='publish-work-order'){const cycles=request.cycles!,pay=request.pay!;view.treasury-=cycles*pay;view.workOrders=[...(view.workOrders??[]),{id:request.requestId,taskId:request.taskId!,policyVersion:1,payPerCycle:pay,availableCycles:cycles,acceptedCycles:0,completedCycles:0,reservedCoins:cycles*pay,expiresAt:request.expiresAt!,status:'Open'}]}
   if(request.action==='enable-work-contracts')view.workContractsEnabled=true
+  if(request.action==='publish-supply-order'){const amount=request.amount!,price=request.price!;view.treasury-=amount*price;view.stockForSale![request.resource!]=0;view.supplyOrders=[...(view.supplyOrders??[]),{id:request.requestId,resource:request.resource!,requestedAmount:amount,remainingAmount:amount,deliveredAmount:0,unitPrice:price,reservedCoins:amount*price,expiresAt:request.expiresAt!,status:'Open'}]}
+  if(request.action==='set-trade-reserve'){view.tradeReserves=[...(view.tradeReserves??[]).filter(r=>r.resource!==request.resource),...request.amount?[{resource:request.resource!,minimumAmount:request.amount}]:[]]}
+  if(request.action==='fulfill-supply-order'){const order=view.supplyOrders!.find(o=>o.id===request.target)!,amount=request.amount!;order.remainingAmount-=amount;order.deliveredAmount+=amount;order.reservedCoins-=amount*order.unitPrice;view.coins+=amount*order.unitPrice;const good=view.inventory.find(g=>g.kind===order.resource)!;good.amount-=amount;if(order.remainingAmount===0)order.status='Completed'}
   return structuredClone(view)
 }
 const village={id:'00000000-0000-0000-0000-000000000001',slug:'test',structures:[],storages:[],sites:[],bridgeOpened:false,completedProjects:[],kingdomArea:{x:-4,y:-3,width:32,height:32},resources:[{kind:'Wood',amount:10,capacity:30},{kind:'Stone',amount:8,capacity:30},{kind:'Planks',amount:2,capacity:30}]} as unknown as VillageState
@@ -36,7 +41,7 @@ api.startTask=async(_slug,taskId,_spot,_workplace,terms)=>{
   if(terms?.workOrderId){view.workOrders![0]!.availableCycles=0;view.workOrders![0]!.acceptedCycles=1}
   return {...citizen,state:'Working',restState:'Active',taskId,cycleOwnership:terms?.workOrderId?'PublicContract':terms?.ownership,cyclePaymentMode:terms?.workOrderId?'Reserved':'Voluntary'} as Citizen
 }
-function EconomyStand(){const [current,setCurrent]=useState(citizen);return <EconomyPanel village={village} catalog={catalog} citizen={current} accountId="me" onCitizen={setCurrent}/>}
+function EconomyStand(){const [current,setCurrent]=useState<Citizen|null>(new URLSearchParams(location.search).has('tsar')?null:citizen);return <EconomyPanel village={village} catalog={catalog} citizen={current} accountId="me" onCitizen={setCurrent}/>}
 function ToolStand() {
   const [taken,setTaken]=useState('')
   const held={...citizen,load:[{resource:'StoneAxe',amount:1,durability:3,maxDurability:8}]}

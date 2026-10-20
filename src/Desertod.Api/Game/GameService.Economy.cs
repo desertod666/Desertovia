@@ -41,7 +41,16 @@ public sealed record EconomyView(long Coins, long TestCandles, long EarnedToday,
     public bool CanManageWorkOrders { get; init; }
     public IReadOnlyList<WorkOrderDto> WorkOrders { get; init; } = [];
     public long WorkPayAwaitingRoom { get; init; }
+    public IReadOnlyList<SupplyOrderDto> SupplyOrders { get; init; } = [];
+    public IReadOnlyList<SupplyDeliveryDto> MySupplyDeliveries { get; init; } = [];
+    public IReadOnlyList<TradeReserveDto> TradeReserves { get; init; } = [];
+    public IReadOnlyDictionary<ResourceKind, int> StockForSale { get; init; } = new Dictionary<ResourceKind, int>();
 }
+public sealed record SupplyOrderDto(Guid Id, ResourceKind Resource, int RequestedAmount, int RemainingAmount,
+    int DeliveredAmount, long UnitPrice, long ReservedCoins, DateTimeOffset ExpiresAt, SupplyOrderStatus Status);
+public sealed record SupplyDeliveryDto(Guid Id, Guid SupplyOrderId, ResourceKind Resource, int Amount,
+    long PaidCoins, long CostBasis, bool CostBasisKnown, DateTimeOffset At);
+public sealed record TradeReserveDto(ResourceKind Resource, int MinimumAmount);
 public sealed record WorkOrderDto(Guid Id, string TaskId, int PolicyVersion, long PayPerCycle, int AvailableCycles,
     int AcceptedCycles, int CompletedCycles, long ReservedCoins, DateTimeOffset ExpiresAt, WorkOrderStatus Status);
 public sealed record SiteRecoveryDto(Guid Id,string PlotId,bool Personal,IReadOnlyList<ResourceAmount> Goods);
@@ -60,6 +69,7 @@ public sealed partial class GameService
     {
         // Keep receipts written before work-order fields were added retryable byte-for-byte.
         object body=request.Action is "enable-work-contracts" or "fund-treasury" or "publish-work-order" or "cancel-work-order" or "claim-work-pay"
+            or "publish-supply-order" or "cancel-supply-order" or "fulfill-supply-order" or "set-trade-reserve"
             ? request
             : new {request.RequestId,request.Action,request.Resource,request.Amount,request.Price,request.Target,request.X,request.Y,request.Building};
         return Convert.ToHexString(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(body)));
@@ -146,10 +156,16 @@ public sealed partial class GameService
             village.Explore(await LoadTripsAsync(db,village.Id,ct),now);
             var wallet = await WalletAsync(db, village.Id, account, now, ct);
             var state = await db.KingdomEconomies.SingleAsync(x => x.VillageId == village.Id, ct);
+            // Both funds share the available treasury. Release unused expired money before
+            // checking any new purchase/order, even when no menu was opened in between.
+            await ExpireWorkOrdersAsync(db, village, state, now, ct);
+            await ExpireSupplyOrdersAsync(db, village, state, now, ct);
             var citizen = await db.Citizens.SingleOrDefaultAsync(c => c.VillageId == village.Id && c.AccountId == account, ct);
             var affected = new HashSet<Guid>();
             if (citizen is not null) affected.Add(citizen.Id);
-            if (request.Amount is < 1 or > PersonalInventory.PerResource || request.Price is < 0 or > 1_000_000)
+            var maximumAmount = request.Action == "set-trade-reserve" ? 100_000
+                : request.Action == "publish-supply-order" ? 10_000 : PersonalInventory.PerResource;
+            if (request.Amount < (request.Action == "set-trade-reserve" ? 0 : 1) || request.Amount > maximumAmount || request.Price is < 0 or > 1_000_000)
                 throw new GameRuleException("economy.amount", "Choose an amount from 1 to 100 and a valid whole price.");
             Citizen Own()
             {
@@ -162,6 +178,13 @@ public sealed partial class GameService
             db.AuditActor = account; db.AuditOperation = request.Action;
             switch (request.Action)
             {
+                case "publish-supply-order":
+                case "cancel-supply-order":
+                case "set-trade-reserve":
+                case "fulfill-supply-order":
+                    await ChangeSupplyOrderAsync(db, village, state, wallet, account, request,
+                        request.Action == "fulfill-supply-order" ? Own() : null, now, ct);
+                    break;
                 case "enable-work-contracts":
                 case "fund-treasury":
                 case "publish-work-order":
@@ -228,17 +251,22 @@ public sealed partial class GameService
                     // Count-only personal inventory cannot preserve an edge or tool wear.
                     // Trade fresh tools only; a worn tool remains in communal storage with its uses intact.
                     var toolDurability = ToolCatalog.Get(request.Resource)?.MaxDurability;
-                    var plainStock = village.Storages.Where(s => s.OwnerAccountId is null && s.RuinedAt is null && s.Damage < 100)
-                        .SelectMany(s => s.Goods).Where(g => g.Kind == request.Resource && g.Sharpen == 0 &&
-                            (toolDurability is null || g.Durability == toolDurability)).Sum(g => g.Amount);
+                    var plainStock = TradeReserveRules.PlainPublicStock(village, request.Resource);
                     if (!StorageCatalog.IsGood(request.Resource) || plainStock < request.Amount)
                         throw new GameRuleException("inventory.stockMissing", "The common storage does not have this material.");
+                    if (await db.SupplyOrders.AnyAsync(o=>o.VillageId==village.Id && o.Resource==request.Resource
+                        && o.Status==SupplyOrderStatus.Open && o.ExpiresAt>now,ct))
+                        throw new GameRuleException("supplyOrder.publicSaleBlocked", "The kingdom is buying this resource. Public sales resume when the supply order closes.");
+                    if (TradeReserveRules.ForSale(village, state, request.Resource) < request.Amount)
+                        throw new GameRuleException("market.reserve", "This stock is reserved for the kingdom. Choose a smaller quantity.");
                     if (request.Price != 0 && request.Price != EconomyRules.StorePrice(request.Resource))
                         throw new GameRuleException("economy.priceChanged", "The price has changed. Refresh the menu.");
                     var cost = checked((long)EconomyRules.StorePrice(request.Resource) * request.Amount);
                     if (PersonalInventory.Room(buyer, request.Resource) < request.Amount)
                         throw new GameRuleException("inventory.full", "Your personal inventory is full.");
-                    EconomyRules.Spend(wallet, cost); village.Take(request.Resource, request.Amount, 0, toolDurability);
+                    EconomyRules.Spend(wallet, cost);
+                    if (village.Take(request.Resource, request.Amount, 0, toolDurability) != request.Amount)
+                        throw new GameRuleException("inventory.stockMissing", "The common stock changed. Refresh the menu.");
                     PersonalInventory.Add(buyer, request.Resource, request.Amount, cost);
                     state.TreasuryCoins = checked(state.TreasuryCoins + cost);
                     WalletChange(account, -cost, "buy-stock");
@@ -366,6 +394,7 @@ public sealed partial class GameService
         var now = time.GetUtcNow(); var wallet = await WalletAsync(db, village.Id, account, now, ct);
         var state = await db.KingdomEconomies.SingleAsync(x => x.VillageId == village.Id, ct);
         await ExpireWorkOrdersAsync(db, village, state, now, ct);
+        await ExpireSupplyOrdersAsync(db, village, state, now, ct);
         var citizen = await db.Citizens.SingleOrDefaultAsync(c => c.VillageId == village.Id && c.AccountId == account, ct);
         var query = db.LedgerEntries.AsNoTracking().Where(x => x.VillageId == village.Id);
         if (!string.IsNullOrWhiteSpace(asset) && asset.Length <= 40) query = query.Where(x => x.Asset == asset);
@@ -387,6 +416,8 @@ public sealed partial class GameService
             .OrderByDescending(x => x.CreatedAt).Take(100).ToListAsync(ct);
         var sellers = lots.Select(x=>x.SellerAccountId).Distinct().ToArray();
         var sellerNames = await db.Accounts.Where(a=>sellers.Contains(a.Id)).Select(a=>new{a.Id,a.DisplayName}).ToDictionaryAsync(a=>a.Id,a=>a.DisplayName,ct);
+        var supplyKinds=await db.SupplyOrders.Where(o=>o.VillageId==village.Id && o.Status==SupplyOrderStatus.Open && o.ExpiresAt>now)
+            .Select(o=>o.Resource).Distinct().ToArrayAsync(ct);
         await db.SaveChangesAsync(ct);
         return new(wallet.Coins, wallet.TestCandles, wallet.EarnedToday, wallet.ProfitToday,
             EconomyRules.TaxPreview(checked(wallet.EarnedToday + wallet.ProfitToday)), false,
@@ -404,6 +435,13 @@ public sealed partial class GameService
                 .Concat(village.Storages.Where(s=>s.OwnerAccountId==account).Select(s=>new PrivatePropertyDto(s.PlotId,BuildingCatalog.ForStorage(s.Kind)??BuildingKind.Heap,1,false,false)))
                 .Concat(village.Sites.Where(s=>s.OwnerAccountId==account).Select(s=>new PrivatePropertyDto(s.PlotId,s.Kind,s.TargetLevel,true,s.HasWork||s.Operation!=null))).ToArray(), citizen is null ? null : VigorDrinks.EnergyDrinkReadyAt(citizen))
         { WorkContractsEnabled=state.WorkContractsEnabled, CanManageWorkOrders=village.OwnerAccountId==account,
+            TradeReserves=state.TradeReserves.Select(r=>new TradeReserveDto(r.Resource,r.MinimumAmount)).ToArray(),
+            StockForSale=Enum.GetValues<ResourceKind>().Where(StorageCatalog.IsGood).ToDictionary(r=>r,r=>supplyKinds.Contains(r)?0:TradeReserveRules.ForSale(village,state,r)),
+            SupplyOrders=await db.SupplyOrders.Where(o=>o.VillageId==village.Id && (o.Status==SupplyOrderStatus.Open || o.CreatedAt>now.AddDays(-1)))
+                .OrderByDescending(o=>o.Status==SupplyOrderStatus.Open).ThenByDescending(o=>o.CreatedAt).Take(100)
+                .Select(o=>new SupplyOrderDto(o.Id,o.Resource,o.RequestedAmount,o.RemainingAmount,o.DeliveredAmount,o.UnitPrice,o.ReservedCoins,o.ExpiresAt,o.Status)).ToArrayAsync(ct),
+            MySupplyDeliveries=await db.SupplyDeliveries.Where(d=>d.VillageId==village.Id && d.SupplierAccountId==account)
+                .OrderByDescending(d=>d.At).Take(20).Select(d=>new SupplyDeliveryDto(d.Id,d.SupplyOrderId,d.Resource,d.Amount,d.PaidCoins,d.CostBasis,d.CostBasisKnown,d.At)).ToArrayAsync(ct),
             WorkOrders=await db.WorkOrders.Where(o=>o.VillageId==village.Id && (o.Status==WorkOrderStatus.Open || o.ReservedCoins>0))
                 .OrderBy(o=>o.ExpiresAt).Select(o=>new WorkOrderDto(o.Id,o.TaskId,o.PolicyVersion,o.PayPerCycle,o.AvailableCycles,o.AcceptedCycles,o.CompletedCycles,o.ReservedCoins,o.ExpiresAt,o.Status)).ToArrayAsync(ct),
             WorkPayAwaitingRoom=await db.WorkOrderClaims.Where(c=>c.VillageId==village.Id && c.AccountId==account && c.Status==WorkClaimStatus.Payable).SumAsync(c=>c.PromisedPay,ct),

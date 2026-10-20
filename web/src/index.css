@@ -2719,6 +2719,10 @@ button, input, select, textarea, .modal-header, .target-popup-header { font-fami
 .economy-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem),1fr)); gap: .5rem; margin-block: .65rem; align-items: end; }
 .work-orders .economy-controls > label:first-child,
 .work-orders .economy-controls > button { grid-column: 1 / -1; }
+.supply-orders .economy-controls > button, .supply-orders .economy-controls > p { grid-column: 1 / -1; }
+.supply-order-title { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: .5rem; align-items: center; }
+.supply-order-title strong { overflow-wrap: anywhere; }
+.supply-order { margin-block: .6rem; }
 .economy-panel label { display: flex; flex-direction: column; gap: .25rem; }
 .economy-panel input, .economy-panel select { width: 100%; max-width: 100%; }
 .economy-panel button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }

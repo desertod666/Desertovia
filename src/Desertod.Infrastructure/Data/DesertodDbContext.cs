@@ -55,6 +55,8 @@ public sealed class DesertodDbContext(DbContextOptions<DesertodDbContext> option
     public DbSet<EconomyReceipt> EconomyReceipts => Set<EconomyReceipt>();
     public DbSet<LedgerEntry> LedgerEntries => Set<LedgerEntry>();
     public DbSet<MarketLot> MarketLots => Set<MarketLot>();
+    public DbSet<SupplyOrder> SupplyOrders => Set<SupplyOrder>();
+    public DbSet<SupplyDelivery> SupplyDeliveries => Set<SupplyDelivery>();
     public DbSet<WorkOrder> WorkOrders => Set<WorkOrder>();
     public DbSet<WorkOrderClaim> WorkOrderClaims => Set<WorkOrderClaim>();
     public DbSet<FarmCropRecord> FarmCrops => Set<FarmCropRecord>();
@@ -97,7 +99,21 @@ public sealed class DesertodDbContext(DbContextOptions<DesertodDbContext> option
         modelBuilder.Entity<Village>().Property(v=>v.VigorEnergy).HasDefaultValue(8);
         modelBuilder.Entity<Village>().Property(v=>v.TsarRestState).HasConversion<string>().HasMaxLength(16).HasDefaultValue(Desertod.Domain.Rules.RestState.Active);
         modelBuilder.Entity<Village>().Property(v=>v.VigorCooldownMinutes).HasDefaultValue(240);
-        modelBuilder.Entity<KingdomEconomy>(b => { b.HasKey(x=>x.VillageId); b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade); });
+        modelBuilder.Entity<KingdomEconomy>(b => {
+            b.HasKey(x=>x.VillageId); b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade);
+            b.OwnsMany(x=>x.TradeReserves,r=>{r.ToJson();r.Property(x=>x.Resource).HasConversion<string>();});
+        });
+        modelBuilder.Entity<SupplyOrder>(b => {
+            b.HasKey(x=>x.Id);b.HasAlternateKey(x=>new{x.VillageId,x.Id});b.HasIndex(x=>new{x.VillageId,x.Status,x.ExpiresAt});
+            b.Property(x=>x.Resource).HasConversion<string>();b.Property(x=>x.Status).HasConversion<string>().HasMaxLength(16);
+            b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade);
+        });
+        modelBuilder.Entity<SupplyDelivery>(b => {
+            b.HasKey(x=>x.Id);b.HasIndex(x=>new{x.VillageId,x.SupplierAccountId,x.At});
+            b.Property(x=>x.Resource).HasConversion<string>();
+            b.HasOne<SupplyOrder>().WithMany().HasForeignKey(x=>new{x.VillageId,x.SupplyOrderId})
+                .HasPrincipalKey(x=>new{x.VillageId,x.Id}).OnDelete(DeleteBehavior.Cascade);
+        });
         modelBuilder.Entity<WorkOrder>(b => {
             b.HasKey(x=>x.Id); b.HasAlternateKey(x=>new{x.VillageId,x.Id});
             b.HasIndex(x=>new{x.VillageId,x.Status,x.ExpiresAt});
