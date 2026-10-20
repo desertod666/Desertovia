@@ -8,6 +8,8 @@ public sealed class WorkContext
 {
     public required Village Village { get; init; }
     public Citizen? RescuePatient { get; init; }
+    /// <summary>Fresh combat admission checked under the same world transaction before settlement.</summary>
+    public bool RestBlockedByCombat { get; set; }
 
     /// <summary>Active project with materials and all contributions loaded.</summary>
     public VillageProject? Project { get; init; }

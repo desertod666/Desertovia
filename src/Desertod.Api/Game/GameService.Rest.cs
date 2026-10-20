@@ -33,7 +33,7 @@ public sealed partial class GameService
                     village.TsarSpot = village.TsarTrip?.PositionAt(now) ?? village.TsarSpot;
                     village.TsarTrip = null;
                 }
-                else SafeRest.Request(citizen!, now);
+                else { SafeRest.Request(citizen!, now); SafeRest.AfterSettlement(citizen!, now); }
             }
             else if (tsar) { village.TsarRestState = RestState.Active; village.TsarRestRequestedAt = null; }
             else SafeRest.Wake(citizen!);
@@ -42,4 +42,16 @@ public sealed partial class GameService
             if (citizen is not null) await notifier.CitizenUpdated(slug, citizen.ToSummaryDto(now));
             return await BuildStateAsync(db, village, now, ct);
         }, ct);
+
+    private static async Task<CycleReport?> SettleWorkAsync(Desertod.Infrastructure.Data.DesertodDbContext db, Citizen citizen, WorkContext context, DateTimeOffset now, CancellationToken ct)
+    {
+        if (citizen.RestState == RestState.RestRequested)
+        {
+            // A raid may have reached the worker after the rest request. Work completion
+            // cannot remove an admitted fighter or grant immunity before retreat.
+            var battles = await db.RaidBattles.Where(b => b.VillageId == citizen.VillageId && b.FinishedAt == null).ToListAsync(ct);
+            context.RestBlockedByCombat = battles.Any(b => b.Fighters.Any(f => !f.IsTsar && f.CitizenId == citizen.Id && f.Active && f.Health > 0));
+        }
+        return CycleEngine.Settle(citizen, context, now);
+    }
 }

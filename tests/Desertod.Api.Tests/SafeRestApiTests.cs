@@ -19,6 +19,38 @@ public sealed class SafeRestApiTests(DesertodApiFactory factory)
     private Task<DesertodDbContext> Db() => factory.Services.GetRequiredService<IDbContextFactory<DesertodDbContext>>().CreateDbContextAsync();
 
     [Fact]
+    public async Task Encounter_admitted_after_rest_request_cannot_be_skipped_by_finishing_the_work()
+    {
+        var village = await players.FoundVillageAsync("Rest and later combat"); var resident = await players.JoinAsync(village);
+        var started = await OkJsonAsync(await resident.Client.PostAsJsonAsync(village.Path + "/me/task", new {taskId = "chop-wood"}));
+        await OkJsonAsync(await resident.Client.PutAsJsonAsync(village.Path + "/me/rest", new {resting = true}));
+        var battleId = Guid.NewGuid();
+        await using (var db = await Db())
+        {
+            var c = await db.Citizens.SingleAsync(c => c.Id == resident.Id); var now = factory.Clock.GetUtcNow();
+            db.RaidBattles.Add(new() {Id = battleId, VillageId = c.VillageId, Phase = "Fighting", Sector = "west", StartsAt = now, LastTickAt = now, EndsAt = now.AddMinutes(10),
+                Fighters = [new() {CitizenId = c.Id, Active = true, Health = 31, MaximumHealth = 40, X = 15.5, Y = 13.5}]});
+            await db.SaveChangesAsync();
+        }
+        factory.Clock.Advance(started.GetProperty("cycleEndsAt").GetDateTimeOffset() - factory.Clock.GetUtcNow() + TimeSpan.FromSeconds(1));
+        var after = await resident.Client.GetFromJsonAsync<JsonElement>(village.Path + "/me");
+        Assert.Equal("RestRequested", after.GetProperty("restState").GetString());
+        Assert.True((await players.LoadCitizenAsync(resident.Id)).CycleSettled);
+        Assert.Equal(System.Net.HttpStatusCode.OK, (await resident.Client.PutAsJsonAsync(village.Path + $"/battles/{battleId}/order", new {mode = "retreat"})).StatusCode);
+        await AssertRuleBrokenAsync(await resident.Client.PutAsJsonAsync(village.Path + "/me/rest", new {resting = true}), "rest.retreatRequired");
+        await using (var db = await Db())
+        {
+            var battle = await db.RaidBattles.SingleAsync(b => b.Id == battleId); var f = battle.Fighters.Single();
+            Assert.True(f.Active); Assert.Equal(31, f.Health);
+            f.DestinationX = f.X; f.DestinationY = f.Y;
+            BattleActions.StepRetreat(f, new RaidNavigation(await db.Villages.SingleAsync(v => v.Slug == village.Slug)));
+            await db.SaveChangesAsync();
+        }
+        await OkJsonAsync(await resident.Client.PutAsJsonAsync(village.Path + "/me/rest", new {resting = true}));
+        Assert.Equal(RestState.Resting, (await players.LoadCitizenAsync(resident.Id)).RestState);
+    }
+
+    [Fact]
     public async Task Accepted_work_survives_rest_request_and_reload_and_is_paid_and_settled_once()
     {
         var village = await players.FoundVillageAsync("Safe rest work");

@@ -462,7 +462,7 @@ public sealed partial class GameService(
             var context = (await LoadContextAsync(db, village, citizen.Id, now, cancellationToken)).Work;
             var raids = await FightDueRaidsAsync(db, village, context.CompletedProjects, now, cancellationToken);
 
-            var report = CycleEngine.Settle(citizen, context, now);
+            var report = await SettleWorkAsync(db, citizen, context, now, cancellationToken);
             await AfterSettleAsync(db, village, report, now, cancellationToken);
             var completion = await CompleteProjectIfDoneAsync(db, context, now, cancellationToken);
             if (completion is not null)
@@ -982,9 +982,21 @@ public sealed partial class GameService(
             }
             RaidRules.UpdateNextRaidAt(village);
         }
+        var restChanged = new HashSet<Guid>();
+        var waitingForRest = citizens.Where(c => c.RestState == RestState.RestRequested && c.CycleSettled).ToArray();
+        if (waitingForRest.Length > 0)
+        {
+            var activeBattles = await db.RaidBattles.Where(b => b.VillageId == village.Id && b.FinishedAt == null).ToListAsync(cancellationToken);
+            foreach (var citizen in waitingForRest)
+            {
+                var blocked = activeBattles.Any(b => b.Fighters.Any(f => !f.IsTsar && f.CitizenId == citizen.Id && f.Active && f.Health > 0));
+                SafeRest.AfterSettlement(citizen, now, blocked);
+                if (citizen.RestState == RestState.Resting) { restChanged.Add(citizen.Id); changed = true; }
+            }
+        }
         var worldAfter=(village.BridgeOpened,village.BridgeRuinedAt,village.DefeatedAt,
             Ruins:CombatRules.Buildings(village).Count(b=>b.Damage>=100));
-        return new RaidsFought(reports,citizens.Where(c=>updated.Any(b=>b.FinishedAt is not null&&b.Fighters.Any(f=>!f.IsTsar&&f.CitizenId==c.Id)) || reports.Any(r=>r.Defenders.Any(d=>d.CitizenId==c.Id)||r.Victims.Any(v=>v.CitizenId==c.Id))
+        return new RaidsFought(reports,citizens.Where(c=>restChanged.Contains(c.Id)||updated.Any(b=>b.FinishedAt is not null&&b.Fighters.Any(f=>!f.IsTsar&&f.CitizenId==c.Id)) || reports.Any(r=>r.Defenders.Any(d=>d.CitizenId==c.Id)||r.Victims.Any(v=>v.CitizenId==c.Id))
             || changed && (!injuredBefore.Contains(c.Id) && CombatRules.IsInjured(c,now)
                 || peopleBefore[c.Id]!=(c.HomePlotId,c.CurrentSiteId,c.CycleSettled,c.HospitalizedAt is not null?c.IdleSpot:null)))
             .ToArray(),changed,updated,village.Fortifications,worldBefore!=worldAfter);
@@ -1158,7 +1170,7 @@ public sealed partial class GameService(
         village.EnsureCamp(now);
         var context = (await LoadContextAsync(db, village, citizen.Id, now, cancellationToken)).Work;
         var raids = await FightDueRaidsAsync(db, village, context.CompletedProjects, now, cancellationToken);
-        var report = CycleEngine.Settle(citizen, context, now);
+        var report = await SettleWorkAsync(db, citizen, context, now, cancellationToken);
         if (report is null)
         {
             if (raids.Reports.Count > 0 || raids.Changed || resumed)

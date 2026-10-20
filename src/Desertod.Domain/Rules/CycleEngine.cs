@@ -343,7 +343,7 @@ public static class CycleEngine
     public static CycleReport? Settle(Citizen citizen, WorkContext context, DateTimeOffset now)
     {
         var report = SettleCore(citizen, context, now);
-        SafeRest.AfterSettlement(citizen, now);
+        SafeRest.AfterSettlement(citizen, now, context.RestBlockedByCombat);
         return report;
     }
 

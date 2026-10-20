@@ -278,6 +278,27 @@
         20
       ],
       "capacity_acceptance": false
+    },
+    "m1_candidate_ci": {
+      "run_id": 39470513420,
+      "sha": "bc9bd8180566aed7276c20f92ad639bdc8044e1b",
+      "status": "success",
+      "receipt": "M1_VERIFICATION_1_0.json"
+    },
+    "late_combat_rest": {
+      "domain": {
+        "passed": 551,
+        "failed": 0
+      },
+      "api_unique_cases": {
+        "passed": 3,
+        "failed": 0
+      },
+      "fresh_late_encounter_case": {
+        "passed": 1,
+        "failed": 0
+      },
+      "source_ci": "pending new candidate; bc9 receipt predates this fix"
     }
   },
   "open_questions": [],
@@ -337,10 +358,7 @@
     "F001": "Protect 10% of actual harvest immediately for contributors; community receives90%. Owner answer supersedes reserve-first deferral."
   },
   "active_tasks": [
-    "PKG-T012 server implemented and domain/API verified, browser running",
-    "PKG-T013 transport fixes and focused browser verified, broader regression pending",
-    "PKG-T015 current authority/serialization verified; future economic actions keep their own gates",
-    "PKG-T004 synthetic simulation/wire baseline measured; D114 capacity target pending",
-    "PKG-T020 owner-confirmed cost accounting implementation next"
+    "Late-combat safe rest transition verified locally; new full CI required",
+    "Continue main DAG through T020/T021/T022 and farm; no public release"
   ]
 }
