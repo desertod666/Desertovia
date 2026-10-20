@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-20T21:51:34.641655+00:00",
+  "sha": "2720719812816b487dfd018efdd15dcaf9e33f74",
+  "run_id": 39500437911,
+  "url": "https://github.com/desertod666/Desertovia/actions/runs/39500437911",
+  "result": "success",
+  "jobs": {
+    "Browser tests (1/2)": 118896258254,
+    "Frontend lint and build": 118896258562,
+    "Browser tests (2/2)": 118896258611,
+    "Docker image": 118896258709,
+    "Backend tests": 118896258717
+  },
+  "passed": {
+    "domain": 595,
+    "api": 323,
+    "desktop_browser": 170,
+    "phone_browser": 168
+  },
+  "browser_skipped": 2,
+  "scope": "District atlas over existing saved terrain; before durable dungeon checkpoints",
+  "public_release": false
+}

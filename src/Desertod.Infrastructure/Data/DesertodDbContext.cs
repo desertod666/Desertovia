@@ -410,6 +410,7 @@ public sealed class DesertodDbContext(DbContextOptions<DesertodDbContext> option
             run.Property(r => r.DungeonId).HasMaxLength(32);
             run.Property(r => r.Phase).HasConversion<string>().HasMaxLength(16);
             run.Property(r => r.Outcome).HasConversion<string>().HasMaxLength(16);
+            run.Property(r => r.CheckpointJson).HasColumnType("jsonb");
             run.Ignore(r => r.IsActive);
             run.Ignore(r => r.Tsar);
             run.HasOne<Village>().WithMany().HasForeignKey(r => r.VillageId);

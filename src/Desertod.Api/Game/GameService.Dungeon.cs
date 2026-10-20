@@ -17,7 +17,8 @@ public sealed record DungeonStart(
     int Seed,
     IReadOnlyList<DungeonFighter> Fighters,
     IReadOnlyList<DungeonRunHeroDto> Heroes,
-    IReadOnlyDictionary<Guid, Guid> Owners);
+    IReadOnlyDictionary<Guid, Guid> Owners,
+    DungeonSave? Save = null);
 
 /// <summary>A hero out of the fight, with what they did in it.</summary>
 public sealed record DungeonExit(Guid HeroId, DungeonHeroOutcome Outcome);
@@ -201,6 +202,10 @@ public sealed partial class GameService
             {
                 DungeonRules.Start(run, now);
                 start = await BuildStartAsync(db, run, village, citizens, cancellationToken);
+                var initial = new DungeonSimulation(start.Dungeon, start.Fighters);
+                var save = new DungeonSave(0, initial.Capture(), DungeonRandom.FromSeed(start.Seed).State, start.Heroes, []);
+                run.CheckpointJson = save.ToJson();
+                start = start with { Save = save };
             }
             else
             {
@@ -228,10 +233,20 @@ public sealed partial class GameService
         IReadOnlyList<DungeonExit> exits,
         DungeonOutcome? outcome,
         int slain,
-        CancellationToken cancellationToken) =>
-        WithVillageAsync(villageId, async db =>
+        CancellationToken cancellationToken,
+        DungeonSave? checkpoint = null)
+    {
+        // Movement-only checkpoints cannot alter stock. Avoid scanning the entire kingdom's
+        // inventory at combat frequency; exits and rewards still use the full accounting transaction.
+        if (checkpoint is not null && exits.Count == 0 && outcome is null)
+            return SaveDungeonCheckpointAsync(runId, villageId, checkpoint, cancellationToken);
+        return WithVillageAsync(villageId, async db =>
         {
             var run = await db.DungeonRuns.SingleAsync(r => r.Id == runId, cancellationToken);
+            if (checkpoint is not null)
+            {
+                if (!StageDungeonCheckpoint(run, checkpoint)) return true;
+            }
             var village = await db.Villages.SingleAsync(v => v.Id == villageId, cancellationToken);
             var citizens = await db.Citizens.Where(c => c.DungeonRunId == run.Id).ToListAsync(cancellationToken);
             var now = time.GetUtcNow();
@@ -244,7 +259,9 @@ public sealed partial class GameService
                 }
 
                 var citizen = citizens.FirstOrDefault(c => c.Id == hero.CitizenId);
-                DungeonRules.Settle(run, hero, citizen, village, exit.Outcome, Random.Shared, now);
+                // A retry after rollback must not reroll broken equipment.
+                var random = checkpoint is null ? Random.Shared : DungeonRandom.FromSeed(run.Seed ^ BitConverter.ToInt32(exit.HeroId.ToByteArray()));
+                DungeonRules.Settle(run, hero, citizen, village, exit.Outcome, random, now);
             }
 
             run.Slain = slain;
@@ -268,15 +285,43 @@ public sealed partial class GameService
             changes.Mark(village.Id);
             return true;
         }, cancellationToken);
+    }
 
-    /// <summary>After a restart nothing of a fight is left in memory: unfinished runs end as abandoned and everyone goes home.</summary>
+    private static bool StageDungeonCheckpoint(DungeonRun run, DungeonSave next)
+    {
+        // A commit acknowledgement can be lost. An identical retry succeeds without paying again.
+        if (run.CheckpointJson is { } json && DungeonSave.Read(json).Revision == next.Revision
+            && System.Text.Json.Nodes.JsonNode.DeepEquals(
+                System.Text.Json.Nodes.JsonNode.Parse(json), System.Text.Json.Nodes.JsonNode.Parse(next.ToJson())))
+            return false;
+        if (run.Phase != DungeonPhase.Running || run.CheckpointJson is null
+            || DungeonSave.Read(run.CheckpointJson).Revision != next.Revision - 1)
+            throw new GameRuleException("dungeon.staleCheckpoint", "The dungeon state changed; reconnect before continuing.");
+        run.CheckpointJson = next.ToJson();
+        return true;
+    }
+
+    private async Task SaveDungeonCheckpointAsync(Guid runId, Guid villageId, DungeonSave checkpoint, CancellationToken ct)
+    {
+        using var lease = await AcquireLockAsync(villageId, ct);
+        await using var db = await contextFactory.CreateDbContextAsync(ct);
+        await using var transaction = await db.Database.BeginTransactionAsync(ct);
+        var key = villageId.ToString();
+        await db.Database.ExecuteSqlInterpolatedAsync($"SELECT pg_advisory_xact_lock(hashtextextended({key}, 0))", ct);
+        var run = await db.DungeonRuns.SingleAsync(r => r.Id == runId && r.VillageId == villageId, ct);
+        StageDungeonCheckpoint(run, checkpoint);
+        await db.SaveChangesAsync(ct);
+        await transaction.CommitAsync(ct);
+    }
+
+    /// <summary>Compatibility recovery for running fights created before checkpoints. Gatherings and marches are already durable.</summary>
     public async Task AbandonDungeonsAsync(CancellationToken cancellationToken)
     {
         List<(Guid Id, Guid VillageId)> unfinished;
         await using (var db = await contextFactory.CreateDbContextAsync(cancellationToken))
         {
             unfinished = (await db.DungeonRuns
-                    .Where(r => r.Phase != DungeonPhase.Ended)
+                    .Where(r => r.Phase == DungeonPhase.Running && r.CheckpointJson == null)
                     .Select(r => new { r.Id, r.VillageId })
                     .ToListAsync(cancellationToken))
                 .Select(r => (r.Id, r.VillageId))
@@ -297,6 +342,26 @@ public sealed partial class GameService
                 return true;
             }, cancellationToken);
         }
+    }
+
+    public async Task<IReadOnlyList<DungeonStart>> RestoreDungeonsAsync(CancellationToken cancellationToken)
+    {
+        await AbandonDungeonsAsync(cancellationToken);
+        await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
+        var stored = await (from run in db.DungeonRuns.AsNoTracking()
+                            join village in db.Villages on run.VillageId equals village.Id
+                            where run.Phase == DungeonPhase.Running && run.CheckpointJson != null
+                            select new { Run = run, village.Slug }).ToListAsync(cancellationToken);
+        var starts = new List<DungeonStart>();
+        foreach (var row in stored)
+        {
+            try { starts.Add(DungeonSave.Read(row.Run.CheckpointJson!).Resume(row.Run, row.Slug)); }
+            catch (Exception exception) when (exception is System.Text.Json.JsonException or InvalidOperationException or ArgumentException)
+            {
+                logger.LogError(exception, "Dungeon run {RunId} cannot resume; its saved state is retained for repair.", row.Run.Id);
+            }
+        }
+        return starts;
     }
 
     /// <summary>A run as stored, for viewers of a run that is not fought in memory: not started yet, or over.</summary>

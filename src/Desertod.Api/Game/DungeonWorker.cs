@@ -20,16 +20,17 @@ public sealed class DungeonWorker(
     /// <summary>A late tick moves the fight by this much at most, so a stall does not teleport anyone.</summary>
     private const double LongestTickSeconds = 0.5;
     private readonly Dictionary<Guid, Task> settlements = [];
+    private readonly Dictionary<Guid, Task> durableTicks = [];
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         try
         {
-            await game.AbandonDungeonsAsync(stoppingToken);
+            foreach (var start in await game.RestoreDungeonsAsync(stoppingToken)) runtime.Start(start);
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            logger.LogError(exception, "Abandoning unfinished dungeon runs failed.");
+            logger.LogError(exception, "Restoring unfinished dungeon runs failed.");
         }
 
         // A village transaction (medical sync, marching or rewards) must never stop
@@ -63,8 +64,16 @@ public sealed class DungeonWorker(
                 lastTick = time.GetTimestamp();
                 foreach (var id in settlements.Where(pair => pair.Value.IsCompleted).Select(pair => pair.Key).ToList())
                     settlements.Remove(id);
+                foreach (var id in durableTicks.Where(pair => pair.Value.IsCompleted).Select(pair => pair.Key).ToList())
+                    durableTicks.Remove(id);
                 foreach (var live in runtime.Runs.ToList())
                 {
+                    if (live.Save is not null)
+                    {
+                        if (!durableTicks.ContainsKey(live.RunId))
+                            durableTicks[live.RunId] = TickDurableAsync(live, seconds, stoppingToken);
+                        continue;
+                    }
                     try
                     {
                         await TickAsync(live, seconds, stoppingToken);
@@ -79,7 +88,57 @@ public sealed class DungeonWorker(
         finally
         {
             await Task.WhenAll(settlements.Values);
+            await Task.WhenAll(durableTicks.Values);
         }
+    }
+
+    private async Task TickDurableAsync(LiveDungeon live, double seconds, CancellationToken cancellationToken)
+    {
+        if (!await live.Operation.WaitAsync(0, cancellationToken)) return;
+        try
+        {
+            if (runtime.Find(live.RunId) != live) return;
+            var tickTimestamp = time.GetTimestamp();
+            if (live.LastTickTimestamp != 0)
+                seconds = Math.Min(LongestTickSeconds, time.GetElapsedTime(live.LastTickTimestamp, tickTimestamp).TotalSeconds);
+            var previous = live.Save!;
+            // Mutate an unpublished copy. Failed persistence leaves the last committed fight intact.
+            var simulation = DungeonSimulation.Restore(previous.Fight);
+            var random = new DungeonRandom(previous.RandomState);
+            foreach (var hero in simulation.Heroes)
+                if (game.HasHospitalRestriction(hero.Fighter.AccountId)) simulation.WithdrawToHospital(hero.Id);
+            var events = simulation.Tick(seconds, random);
+            var exits = simulation.Heroes.Where(h => (h.State == HeroState.Left || simulation.IsOver)
+                    && !previous.Settled.Contains(h.Id))
+                .Select(h => new DungeonExit(h.Id, simulation.OutcomeOf(h))).ToArray();
+            var next = previous with
+            {
+                Revision = previous.Revision + 1, Fight = simulation.Capture(), RandomState = random.State,
+                Settled = previous.Settled.Concat(exits.Select(e => e.HeroId)).ToArray(),
+            };
+            DungeonOutcome? outcome = simulation.IsOver ? simulation.Outcome : null;
+            await game.SettleDungeonAsync(live.RunId, live.VillageId, exits, outcome, simulation.Slain, cancellationToken, next);
+            var snapshot = DungeonMapper.Snapshot(live.RunId, simulation, events);
+            live.Commit(next, simulation, random, snapshot);
+            live.LastTickTimestamp = tickTimestamp;
+            if (outcome is not null) runtime.Remove(live.RunId);
+            try
+            {
+                await hub.Clients.Group(DungeonHub.GroupName(live.RunId)).SendAsync("dungeonSnapshot", snapshot, cancellationToken);
+                if (outcome is not null)
+                    await hub.Clients.Group(DungeonHub.GroupName(live.RunId)).SendAsync("dungeonEnded", live.RunId, cancellationToken);
+            }
+            catch (Exception exception) when (exception is not OperationCanceledException)
+            {
+                logger.LogWarning(exception, "Dungeon {RunId} committed; reconnect will recover its snapshot.", live.RunId);
+            }
+        }
+        catch (Exception exception)
+        {
+            if (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
+                logger.LogError(exception, "Dungeon {RunId} was not advanced; retained at its committed checkpoint for retry.", live.RunId);
+        }
+        finally { live.Operation.Release(); }
     }
 
     private async Task AdvancePhasesAsync(CancellationToken cancellationToken)
