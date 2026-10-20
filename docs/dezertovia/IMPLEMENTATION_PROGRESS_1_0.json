@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T16:32:30.072352+00:00",
-  "status": "foundation_tools_and_compact_ui_candidate_verification_in_progress",
+  "recorded_at_utc": "2026-10-20T16:46:41.238359+00:00",
+  "status": "partner_tools_and_compact_ui_implemented_final_ci_pending",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
@@ -39,7 +39,11 @@
     "paid_model_enabled": false,
     "hospital_bridge_enabled": false,
     "original_game_container_replaced": false,
-    "bot_modified": false
+    "bot_modified": false,
+    "current_source_restarted": true,
+    "tool_recipes_verified_http": 8,
+    "local_world_migrations": 39,
+    "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container"
   },
   "checks": {
     "baseline_ci": {
@@ -125,8 +129,10 @@
       "telegramBrowserLogin": false
     },
     "full_candidate_ci": {
-      "status": "pending_push_of_combined_candidate",
-      "previous_success": "39454292839 at 6fb6413; foundation only"
+      "status": "next commit pending CI",
+      "previous_candidate_run": 39458408317,
+      "previous_candidate_sha": "d39f141339481a54d2e8d1ab2f5a3324500758cf",
+      "previous_result": "backend/frontend/Docker success; browser shard2 failed a test that assumed fixed scrollTop changed position; test now asserts actual scroll movement on a shorter viewport"
     },
     "diff_check": "pass",
     "api_cleanup_finally": {
@@ -150,10 +156,21 @@
       "result": "all five jobs success; before compact UI and PR76 integration"
     },
     "compact_interface": {
-      "status": "final_candidate_pending",
-      "passed_previous_browser": 30,
-      "passed_previous_webkit": 6,
-      "scope": "phone/desktop RU/EN, hints/keyboard/outside/Escape/scroll, drafts/prices/overflows, partner tool wear UI; final compact storage styling being rerun"
+      "chromium_combined_passed": 32,
+      "chromium_followup_passed": 14,
+      "failed": 0,
+      "scope": "combined economy/post-071/compact fixtures; followup includes real map and nested wallet Escape; final CI also checks small-height scroll and remembered phone guide"
+    },
+    "webkit": {
+      "component_passed": 6,
+      "real_map_isolated_passed": 1,
+      "transient_failure": "One concurrent full run lost WebGL context and raised Pixi updateRenderable while reloading real map. Isolated repeat passed; not suppressed or claimed to prove physical iPhone stability."
+    },
+    "live_local_phone": {
+      "result": "pass",
+      "viewport": "320x844",
+      "scope": "real map/canvas, synthetic local character, wallet, accessible hint inside aria-modal, first Escape closes hint and second closes wallet",
+      "physical_phone": false
     }
   },
   "open_questions": [
@@ -185,7 +202,9 @@
   ],
   "screenshots": [
     "screenshots/foundation/economic-gold-ru-phone.png",
-    "screenshots/foundation/economic-gold-en-phone.png"
+    "screenshots/foundation/economic-gold-en-phone.png",
+    "screenshots/compact-interface/map-320.png",
+    "screenshots/compact-interface/wallet-320.png"
   ],
   "implemented_task_scopes": [
     "PKG-T010: compatible currency identities and labels",
@@ -206,8 +225,10 @@
     ],
     "checks": [
       "547 domain tests",
-      "17 focused API tests: 15 economy plus 2 tool compatibility cases",
-      "6 WebKit component cases before final hand/storage compact styling; final run pending"
+      "17 focused API tests",
+      "32 combined Chromium UI cases plus14 followup cases",
+      "6 WebKit component cases plus isolated real-map repeat",
+      "local API exposes all8 new recipes"
     ]
   }
 }

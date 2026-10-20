@@ -1163,7 +1163,7 @@
       "id": "PKG-T014",
       "milestone": "M1",
       "title": "Мобильная оболочка и контекстные действия",
-      "status": "partial_independent_compact_ui_implementation_checks_pending",
+      "status": "independent_compact_slice_locally_verified_full_task_partial",
       "dependencies": [
         "PKG-T010",
         "PKG-T012",
@@ -1196,9 +1196,9 @@
       "original_task_id": "T014",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "independent_compact_slice_implemented",
-        "evidence": "INTERFACE_COMPACTNESS_1_0.md; 30 browser and 6 WebKit cases passed before final storage compactness iteration; final candidate checks pending. PR76 merged with wear preservation guards.",
-        "runtime_verification": "pending_final_ui_and_partner_candidate"
+        "status": "independent_slice_locally_verified",
+        "evidence": "INTERFACE_COMPACTNESS_1_0.md; current runtime/harness tests in IMPLEMENTATION_PROGRESS_1_0.json; T012/T013/T035 still required.",
+        "runtime_verification": "local real map and component cases; final CI pending; physical phones not tested"
       }
     },
     {

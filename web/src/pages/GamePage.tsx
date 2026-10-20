@@ -915,6 +915,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
           {(citizen !== undefined || tsar) && (
             <Guide
               key={tsar ? 'tsar' : 'citizen'}
+              phone={phone}
               slug={slug}
               tsar={tsar}
               inviteCode={live.inviteCode}
