@@ -2487,7 +2487,7 @@
   },
   "implementation_1_0": {
     "decision": "D-104",
-    "status": "partner_tools_and_compact_ui_implemented_final_ci_pending",
+    "status": "foundation_partner_tools_and_independent_compact_ui_verified_not_released",
     "document": "IMPLEMENTATION_PROGRESS_1_0.json",
     "implementation_authorized": true,
     "branch": "feat/desertovia-1-0-foundation",
@@ -2497,6 +2497,8 @@
     "deployed_to_public_game": false,
     "current_task": "PKG-T014 independent compact UI + owner-requested PR76 integration",
     "owner_question_pending": "PKG-D101",
-    "partner_pr": 76
+    "partner_pr": 76,
+    "verified_code_sha": "c2962e2dfafccb24e18267aee34b144b35749a47",
+    "verification_receipt": "FOUNDATION_TOOLS_UI_VERIFICATION_1_0.json"
   }
 }

@@ -1163,7 +1163,7 @@
       "id": "PKG-T014",
       "milestone": "M1",
       "title": "Мобильная оболочка и контекстные действия",
-      "status": "independent_compact_slice_locally_verified_full_task_partial",
+      "status": "partial_verified_independent_compact_ui_slice",
       "dependencies": [
         "PKG-T010",
         "PKG-T012",
@@ -1198,7 +1198,7 @@
       "current_support": {
         "status": "independent_slice_locally_verified",
         "evidence": "INTERFACE_COMPACTNESS_1_0.md; current runtime/harness tests in IMPLEMENTATION_PROGRESS_1_0.json; T012/T013/T035 still required.",
-        "runtime_verification": "local real map and component cases; final CI pending; physical phones not tested"
+        "runtime_verification": "combined full Chromium CI success at c2962e2dfafccb24e18267aee34b144b35749a47; local real map and scoped WebKit checks; physical phones not tested"
       }
     },
     {

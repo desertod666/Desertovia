@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T17:03:59.831901+00:00",
-  "status": "partner_tools_and_compact_ui_implemented_final_ci_pending",
+  "recorded_at_utc": "2026-10-20T17:21:54.026631+00:00",
+  "status": "foundation_partner_tools_and_independent_compact_ui_verified_not_released",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "PKG-T010",
+  "implemented_task": "PKG-T014 independent UI slice plus PR76 integration",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -129,9 +129,46 @@
       "telegramBrowserLogin": false
     },
     "full_candidate_ci": {
-      "status": "pending for Escape capture-order correction",
-      "previous_failed_run": 39460462281,
-      "correction": "Hint.stopImmediatePropagation plus later-capture listener regression"
+      "status": "success",
+      "run_id": 39462888181,
+      "sha": "c2962e2dfafccb24e18267aee34b144b35749a47",
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39462888181",
+      "jobs": [
+        {
+          "name": "Docker image",
+          "result": "success"
+        },
+        {
+          "name": "Browser tests (1/2)",
+          "result": "success"
+        },
+        {
+          "name": "Backend tests",
+          "result": "success"
+        },
+        {
+          "name": "Frontend lint and build",
+          "result": "success"
+        },
+        {
+          "name": "Browser tests (2/2)",
+          "result": "success"
+        }
+      ],
+      "summaries": {
+        "Browser tests (1/2)": [
+          "129 passed (4.2m)"
+        ],
+        "Backend tests": [
+          "Passed!  - Failed:     0, Passed:   547, Skipped:     0, Total:   547, Duration: 4 s - Desertod.Domain.Tests.dll (net10.0)",
+          "Passed!  - Failed:     0, Passed:   292, Skipped:     0, Total:   292, Duration: 1 m 44 s - Desertod.Api.Tests.dll (net10.0)"
+        ],
+        "Browser tests (2/2)": [
+          "2 skipped",
+          "127 passed (14.9m)"
+        ]
+      },
+      "receipt": "FOUNDATION_TOOLS_UI_VERIFICATION_1_0.json"
     },
     "diff_check": "pass",
     "api_cleanup_finally": {
@@ -163,7 +200,12 @@
     "webkit": {
       "component_passed": 6,
       "real_map_isolated_passed": 1,
-      "transient_failure": "One concurrent full run lost WebGL context and raised Pixi updateRenderable while reloading real map. Isolated repeat passed; not suppressed or claimed to prove physical iPhone stability."
+      "transient_failure": "One concurrent full run lost WebGL context and raised Pixi updateRenderable while reloading real map. Isolated repeat passed; not suppressed or claimed to prove physical iPhone stability.",
+      "escape_capture_order_latest": {
+        "passed": 1,
+        "failed": 0,
+        "scope": "isolated real-map case with deliberately later capture listener, after stopImmediatePropagation correction"
+      }
     },
     "live_local_phone": {
       "result": "pass",
@@ -196,6 +238,15 @@
       "passed": 2,
       "failed": 0,
       "scope": "real map in Chromium desktop/phone; deliberately later window capture listener does not receive first Escape; guide choice survives reload"
+    },
+    "local_database_after_tools": {
+      "accounts": 21,
+      "citizens": 18,
+      "migrations": 39,
+      "temporary_test_databases": 0,
+      "pre_tools_backup_readable": true,
+      "recorded_at_utc": "2026-10-20T17:12:11.083361+00:00",
+      "scope": "dedicated synthetic development cluster only; counts include intentional local UI QA characters"
     }
   },
   "open_questions": [
@@ -221,9 +272,9 @@
     "bot_deployed": false
   },
   "next_tasks": [
-    "Finish exact combined UI/tools candidate CI and visual review",
-    "PKG-T012 after owner answers D101",
-    "PKG-T020 known-input cost propagation after ownership/legacy/multi-output policy review"
+    "PKG-T012 after owner answers D101; only dependent rest work waits",
+    "Continue T014 full flow after T012/T013 and T035",
+    "PKG-T020 after ownership/legacy/multi-output policy review; private worn-tool trading needs an item-aware contract"
   ],
   "screenshots": [
     "screenshots/foundation/economic-gold-ru-phone.png",
@@ -239,7 +290,7 @@
   "partner_integration": {
     "pull_request": "https://github.com/desertod666/Desertovia/pull/76",
     "requested_head": "b617f8d9f38fcc700400dbf2e7239f931d8d2127",
-    "status": "merged_into_development_branch_with_compatibility_fixes",
+    "status": "integrated_code_and_tests_verified_in_development_branch",
     "merge_commit": "4c04f69",
     "history_preserved": true,
     "external_pr_closed": false,

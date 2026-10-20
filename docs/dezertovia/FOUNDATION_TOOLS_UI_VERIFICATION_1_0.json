@@ -1,0 +1,55 @@
+{
+  "recorded_at_utc": "2026-10-20T17:21:54.026631+00:00",
+  "verified_code_sha": "c2962e2dfafccb24e18267aee34b144b35749a47",
+  "ci_run": 39462888181,
+  "url": "https://github.com/desertod666/Desertovia/actions/runs/39462888181",
+  "result": "success",
+  "jobs": [
+    {
+      "name": "Docker image",
+      "result": "success"
+    },
+    {
+      "name": "Browser tests (1/2)",
+      "result": "success"
+    },
+    {
+      "name": "Backend tests",
+      "result": "success"
+    },
+    {
+      "name": "Frontend lint and build",
+      "result": "success"
+    },
+    {
+      "name": "Browser tests (2/2)",
+      "result": "success"
+    }
+  ],
+  "test_summaries": {
+    "Browser tests (1/2)": [
+      "129 passed (4.2m)"
+    ],
+    "Backend tests": [
+      "Passed!  - Failed:     0, Passed:   547, Skipped:     0, Total:   547, Duration: 4 s - Desertod.Domain.Tests.dll (net10.0)",
+      "Passed!  - Failed:     0, Passed:   292, Skipped:     0, Total:   292, Duration: 1 m 44 s - Desertod.Api.Tests.dll (net10.0)"
+    ],
+    "Browser tests (2/2)": [
+      "2 skipped",
+      "127 passed (14.9m)"
+    ]
+  },
+  "code_and_test_tree_ids": {
+    "src": "0d6b2eb9ad59b249de8a1e90da74637640ec8829",
+    "web": "4326ea28473a17643ed1c253285f9245d6977285",
+    "tests": "ccdbcdc28a746b7a795ac86fb942d6d291ab970c",
+    "tools": "652e5453ab1f29ac46c53e9c999461c48476cd0f",
+    ".vscode": "a6c4dd06f40a7cb0becb846f2126f589a13afde5"
+  },
+  "partner_head": "b617f8d9f38fcc700400dbf2e7239f931d8d2127",
+  "partner_merge": "4c04f69",
+  "public_game_deployed": false,
+  "bot_deployed": false,
+  "scope": "foundation, compatible gold labels, integrated PR76 tools and independent compact UI slice; not all Desertovia1.0",
+  "receipt_commit": "documentation-only follow-up; code/test tree identity must be checked after commit"
+}
