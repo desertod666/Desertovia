@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T22:27:56.977313+00:00",
-  "status": "main_plan_active_supply_and_adventures",
+  "recorded_at_utc": "2026-10-20T23:13:04.290053+00:00",
+  "status": "main_plan_active_notification_checks_and_world_next",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-supply",
+  "branch": "feat/desertovia-1-0-notifications",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "T023 funded personal-to-public supply orders, cost/payment receipts, explicit public-sale reserves and actual final-commit market recovery",
+  "implemented_task": "T064 browser notification preferences and bounded delivery; local verification passed, full CI pending",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -42,18 +42,19 @@
     "bot_modified": false,
     "current_source_restarted": true,
     "tool_recipes_verified_http": 8,
-    "local_world_migrations": 47,
+    "local_world_migrations": 48,
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "API migration47 and Vite funded supply orders. Existing24 citizen identities, all wallets/treasury/lots/orders and fields preserved at migration. Later one new synthetic supplier/kingdom arranged for real320px funded-order restart/delivery QA.",
+    "loaded_scope": "API migration48 notification settings and previous supply/dungeon/farm source; 25 existing synthetic citizens and saved economic/field state preserved",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
     "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
     "pre_farm_history_backup": "/tmp/foundation-before-restart-20261020T202837Z.dump",
     "pre_dungeon_backup": "/tmp/foundation-before-restart-20261020T214637Z.dump",
     "active_dungeon_restart_backup": "/tmp/foundation-before-restart-20261020T214839Z.dump",
-    "pre_supply_backup": "/tmp/foundation-before-restart-20261020T220853Z.dump"
+    "pre_supply_backup": "/tmp/foundation-before-restart-20261020T220853Z.dump",
+    "pre_notifications_backup": "/tmp/foundation-before-restart-20261020T230542Z.dump"
   },
   "checks": {
     "baseline_ci": {
@@ -987,6 +988,81 @@
     "frontend_build": "Final TypeScript/Vite/oxlint pass, including journal labels and ruler-only controls",
     "actual_mobile_browser_after_api_restart": true,
     "public_release": false,
-    "full_ci": "not_started_for_current_source"
+    "full_ci": {
+      "status": "in_progress",
+      "sha": "57f06d4a268ec036f50a5075bd73f083ef4cb377",
+      "run_id": 39513042169,
+      "previous_failures": [
+        "39508370375 raid fixture raced background writer; fixture now locked",
+        "39511733456 manual watering fixture randomly received rain; explicit dry forecast now arranged"
+      ]
+    }
+  },
+  "notifications": {
+    "status": "browser_channel_local_verified_full_ci_pending",
+    "implemented": [
+      "account-scoped opt-in and categories",
+      "IANA quiet hours",
+      "aggregation, freshness and duplicate protection",
+      "browser settings and account/device isolation"
+    ],
+    "api_focused": {
+      "passed": 10,
+      "failed": 0,
+      "scope": "NotificationPreferenceApiTests, CivicNotificationTests and committed notification batch",
+      "result_directory": "TestResults/notification-preferences"
+    },
+    "browser_validation": "pending",
+    "local_runtime": "API schema48 and Vite current source; synthetic account settings persisted through exact API process restart and read on another browser context",
+    "remaining": [
+      "draft PR CI",
+      "closed-tab delivery, Telegram consent/channel integration and group policy remain unfinished"
+    ],
+    "design": "NOTIFICATIONS_1_0.md",
+    "migration": "48 AccountNotificationPreferences",
+    "client_unit_passed": 15,
+    "browser_unique_passed": 14,
+    "browser_runs": {
+      "delivery_lifecycle_cases_passed": 10,
+      "settings_cases_passed_after_selector_fix": 4
+    },
+    "frontend_build": "TypeScript/Vite/oxlint passed",
+    "parent_regression": {
+      "raid_concurrency_passed": 1,
+      "farm_history_passed": 4,
+      "scope": "Fixture locking and explicit dry weather; no gameplay rule weakened"
+    },
+    "migration_preservation": {
+      "from": 47,
+      "to": 48,
+      "citizens": 25,
+      "same": [
+        "identities",
+        "wallets",
+        "treasury",
+        "lots",
+        "work_orders",
+        "complete_fields_json"
+      ],
+      "backup": "/tmp/foundation-before-restart-20261020T230542Z.dump"
+    },
+    "actual_ui_restart": {
+      "account": "synthetic existing supply-worker only",
+      "mobile_width": 320,
+      "desktop_width": 1280,
+      "revision": 1,
+      "time_zone": "Europe/Oslo",
+      "quiet_hours": [
+        1320,
+        480
+      ],
+      "api_restart_backup": "/tmp/foundation-before-restart-20261020T231019Z.dump",
+      "os_notifications": "mocked; no permission requested or external alert sent"
+    },
+    "domain": {
+      "passed": 608,
+      "failed": 0,
+      "directory": "TestResults/notification-domain"
+    }
   }
 }

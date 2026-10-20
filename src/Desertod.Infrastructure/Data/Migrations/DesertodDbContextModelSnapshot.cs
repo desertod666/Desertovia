@@ -1372,6 +1372,69 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.ToTable("FarmCrops");
                 });
 
+            modelBuilder.Entity("Desertod.Domain.Notifications.NotificationPreference", b =>
+                {
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("BrowserEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Categories")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset?>("ConsentedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("QuietEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("QuietEndMinute")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("QuietStartMinute")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("Revision")
+                        .IsConcurrencyToken()
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("TimeZoneId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("AccountId");
+
+                    b.ToTable("NotificationPreferences");
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Notifications.NotificationPreferenceReceipt", b =>
+                {
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RequestId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("At")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Fingerprint")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.HasKey("AccountId", "RequestId");
+
+                    b.HasIndex("AccountId", "At");
+
+                    b.ToTable("NotificationPreferenceReceipts");
+                });
+
             modelBuilder.Entity("Desertod.Domain.Projects.ProjectContribution", b =>
                 {
                     b.Property<Guid>("VillageProjectId")
@@ -4043,6 +4106,24 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Navigation("Lost");
 
                     b.Navigation("Produced");
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Notifications.NotificationPreference", b =>
+                {
+                    b.HasOne("Desertod.Domain.Entities.Account", null)
+                        .WithOne()
+                        .HasForeignKey("Desertod.Domain.Notifications.NotificationPreference", "AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Notifications.NotificationPreferenceReceipt", b =>
+                {
+                    b.HasOne("Desertod.Domain.Entities.Account", null)
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Desertod.Domain.Projects.ProjectContribution", b =>

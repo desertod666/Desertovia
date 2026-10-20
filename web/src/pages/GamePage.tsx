@@ -35,7 +35,7 @@ import type { JobChoice } from '../ui/SitesPanel'
 import { inForestArea, tileBuiltOver, type WorldTarget } from '../game/worldMap'
 import { TargetPopup } from '../ui/TargetPopup'
 import { watchable, WatchPopup } from '../ui/WatchPopup'
-import { flagTitle, notify, useTitleReset } from '../notifications'
+import { flagTitle, NotificationProvider, useGameNotifications, useTitleReset } from '../notifications'
 import { BackgroundMusic } from '../ui/BackgroundMusic'
 import { GameCanvas, type GameCanvasHandle, type Placement } from '../game/GameCanvas'
 import { HandsCard } from '../ui/HandsCard'
@@ -100,7 +100,7 @@ export function GamePage({primarySlug}:{primarySlug?:string}={}) {
       </div>
     )
   }
-  return <VillageView key={me.id} me={me} onAccountChanged={loadMe} primarySlug={primarySlug} />
+  return <NotificationProvider key={me.id} accountId={me.id}><VillageView key={me.id} me={me} onAccountChanged={loadMe} primarySlug={primarySlug} /></NotificationProvider>
 }
 
 function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountChanged: () => void; primarySlug?:string }) {
@@ -122,6 +122,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   const enemySelection=useRef(0)
   const [notice, setNotice] = useState<string | null>(null)
   const [serverOffset, setServerOffset] = useState(0)
+  const {notify,cancel:cancelNotification,now:notificationNow}=useGameNotifications(slug)
   const [patientFor,setPatientFor]=useState<string|null>(null)
   const [hospitalPatient,setHospitalPatient]=useState<string|null>(null)
   const [hospitalOpen, setHospitalOpen] = useState(false)
@@ -190,11 +191,13 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
     onCitizenUpdated: (summary) => {
       if (summary.id === citizenId.current) void loadCitizen()
     },
-    onCycleCompleted: (finished) => {
+    onCycleCompleted: (finished,at) => {
+      const occurredAt=Date.parse(finished.settledAt??at??'')
+      const cycleKey=`${finished.citizenId}:${finished.cycleStartedAt??at??''}`
       canvas.current?.say(finished.citizenId, i18n.speechFor(finished))
       if (finished.buildingCompleted) {
         const building = i18n.building(finished.buildingCompleted).name
-        notify(i18n.t('notify.builtTitle', { building }), i18n.t('notify.builtBody'), `built-${finished.siteId ?? building}`)
+        notify(i18n.t('notify.builtTitle', { building }), i18n.t('notify.builtBody'), `built:${finished.siteId??building}:${cycleKey}`,'building',occurredAt,occurredAt+3600000)
         flagTitle('★', titleRef.current)
       }
       if (finished.technologyDiscovered && finished.technologyId) {
@@ -202,7 +205,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
         notify(
           i18n.t('notify.discoveredTitle', { technology }),
           i18n.t('notify.discoveredBody'),
-          `discovered-${finished.technologyId}`,
+          `discovered-${finished.technologyId}`,'building',occurredAt,occurredAt+3600000,
         )
         flagTitle('★', titleRef.current)
       }
@@ -214,41 +217,48 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
           notify(
             i18n.t('notify.doneTitle', { task: i18n.task(finished.taskId) }),
             i18n.t('notify.doneBody', { seconds: catalogRef.current?.rules.graceSeconds ?? 60 }),
-            'cycle-done',
+            `cycle:${cycleKey}`,'work',occurredAt,occurredAt+300000,
           )
         }
         flagTitle('✓', titleRef.current)
       }
     },
-    onProjectCompleted: (completion) => {
+    onProjectCompleted: (completion,at) => {
+      const occurredAt=Date.parse(at??'')
       const project = i18n.project(completion.projectId).name
       canvas.current?.say(PRIEST_ID, i18n.t('priest.completed', { project }))
-      notify(i18n.t('notify.builtTitle', { building: project }), i18n.t('notify.builtBody'), `project-${completion.projectId}`)
+      notify(i18n.t('notify.builtTitle', { building: project }), i18n.t('notify.builtBody'), `project-${completion.projectId}`,'building',occurredAt,occurredAt+3600000)
       flagTitle('★', titleRef.current)
     },
     onChatMessage: (message) => {
       canvas.current?.say(message.isChaplain ? PRIEST_ID : message.citizenId ?? TSAR_ID, message.text, chatBubbleSeconds(message.text))
     },
-    onRaidFought: (fought) => {
+    onRaidFought: (fought,at) => {
+      const occurredAt=Date.parse(at??'')
+      cancelNotification(`raid-coming-${fought.raidId}`)
       const line = i18n.describeRaid(fought)
       setNotice(line)
       window.setTimeout(() => setNotice(null), 8000)
-      notify(i18n.t('notify.raidOverTitle'), line, `raid-${fought.raidId}`)
+      notify(i18n.t('notify.raidOverTitle'), line, `raid-${fought.raidId}`,'danger',occurredAt,occurredAt+600000)
       flagTitle(fought.repelled ? '★' : '!', titleRef.current)
     },
     onDungeonEnded: (run) => {
+      cancelNotification(`dungeon-${run.id}`)
       if (run.outcome === 'Cancelled') return
+      const occurredAt=Date.parse(run.endedAt??'')
+      notify(i18n.t('notify.dungeonTitle'),i18n.describeDungeon(run),`dungeon-ended:${run.id}`,'adventure',occurredAt,occurredAt+1800000)
       setNotice(i18n.describeDungeon(run))
       window.setTimeout(() => setNotice(null), 8000)
     },
-    onQuestCompleted: (completion) => {
+    onQuestCompleted: (completion,at) => {
+      const occurredAt=Date.parse(at??'')
       const done = i18n.t(isStoryQuest(completion.kind) ? 'quest.storyDone' : 'quest.done', {
         quest: i18n.quest(completion).title,
       })
       const renown = citizenId.current ? completion.renownByCitizen[citizenId.current] : undefined
       setNotice(renown ? `${done} ${i18n.t('quest.renown', { renown: i18n.amount(renown) })}` : done)
       window.setTimeout(() => setNotice(null), 6000)
-      notify(done, i18n.t('notify.questBody'), `quest-${completion.questId}`)
+      notify(done, i18n.t('notify.questBody'), `quest-${completion.questId}`,'work',occurredAt,occurredAt+1800000)
       flagTitle('★', titleRef.current)
     },
     onVillageDeleted: () => navigate('/'),
@@ -279,6 +289,26 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   // The village owner is the Tsar: rules and plans, never works. Governors are citizens the Tsar lets plan too.
   const tsar = live.isOwner
   const citizen = tsar ? null : ownCitizen
+  const observedCrops=useRef(new Map<string,{generation:string;ripe:boolean}>())
+  useEffect(()=>{
+    if(!live.state)return
+    const present=new Set<string>()
+    for(const bed of live.state.fields){
+      const key=`${bed.plotId}:${bed.index}`,generation=bed.generationId??'',previous=observedCrops.current.get(key)
+      present.add(key)
+      if(previous?.generation&&(previous.generation!==generation||!bed.crop))cancelNotification(`farm-ripe:${previous.generation}`)
+      const ripe=!!bed.crop&&bed.growth>=1
+      const farm=live.state.structures.find(s=>s.plotId===bed.plotId&&s.kind==='Farm')
+      const ownCare=bed.contributions?.some(c=>c.accountId===me.id)??false
+      const allowed=farm&&(!farm.ownerAccountId||farm.ownerAccountId===me.id)&&(tsar||!!citizen?.isFarmer||ownCare)
+      if(allowed&&generation&&previous?.generation===generation&&!previous.ripe&&ripe&&bed.crop){
+        const at=notificationNow(),crop=i18n.crop(bed.crop)
+        notify(i18n.language==='ru'?`${crop}: урожай готов`:`${crop}: harvest ready`,i18n.t('field.bed',{number:bed.index+1}),`farm-ripe:${generation}`,'farm',at,at+6*3600000)
+      }
+      observedCrops.current.set(key,{generation,ripe})
+    }
+    for(const [key,crop] of observedCrops.current)if(!present.has(key)){cancelNotification(`farm-ripe:${crop.generation}`);observedCrops.current.delete(key)}
+  },[live.state,tsar,citizen?.isFarmer,me.id,i18n,notify,cancelNotification,notificationNow])
   const ruler = tsar || citizen?.isGovernor === true
 
   const [joining, setJoining] = useState(false)
@@ -331,15 +361,19 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
     if (!live.state) return
     const previous = lastPoll.current
     lastPoll.current = poll ? { id: poll.id, open: poll.closedAt === null } : null
+    if(previous?.open&&(!poll||poll.id!==previous.id||poll.closedAt!==null))cancelNotification(`poll-open:${previous.id}`)
     if (previous === undefined || !poll) return
     if (poll.closedAt === null && previous?.id !== poll.id) {
-      notify(i18n.t('notify.pollTitle'), i18n.t('notify.pollBody'), `poll-${poll.id}`)
+      const occurredAt=Date.parse(poll.openedAt)
+      notify(i18n.t('notify.pollTitle'), i18n.t('notify.pollBody'), `poll-open:${poll.id}`,'civic',occurredAt,occurredAt+600000)
       flagTitle('?', titleRef.current)
     } else if (poll.winner && previous?.id === poll.id && previous.open) {
+      cancelNotification(`poll-open:${poll.id}`)
+      const occurredAt=Date.parse(poll.closedAt??'')
       notify(
         i18n.t('notify.pollClosedTitle', { technology: i18n.technology(poll.winner).name }),
         i18n.t('notify.pollClosedBody'),
-        `poll-${poll.id}`,
+        `poll-closed:${poll.id}`,'civic',occurredAt,occurredAt+600000,
       )
       flagTitle('★', titleRef.current)
     }
@@ -350,13 +384,14 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   const warnedRaids = useRef(new Set<string>())
   useEffect(() => {
     if (!live.state) return
+    for(const raid of live.state.raids)if(raid.resolvedAt)cancelNotification(`raid-coming-${raid.id}`)
     for (const raid of comingRaids(live.state.raids, raidClock)) {
       if (warnedRaids.current.has(raid.id)) continue
       warnedRaids.current.add(raid.id)
       notify(
         i18n.t('notify.raidTitle', { enemy: i18n.enemy(raid.enemy) }),
         i18n.t('notify.raidBody', { minutes: Math.max(1, Math.ceil((Date.parse(raid.strikesAt) - raidClock) / 60_000)) }),
-        `raid-coming-${raid.id}`,
+        `raid-coming-${raid.id}`,'danger',Date.parse(raid.announcedAt),Date.parse(raid.strikesAt),
       )
       flagTitle('!', titleRef.current)
     }
@@ -368,15 +403,17 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   const invitedRuns = useRef(new Set<string>())
   const citizenReady = !!citizen && (!citizen.restState || citizen.restState === 'Active')
   useEffect(() => {
+    for(const id of invitedRuns.current)if(id!==dungeon?.id||dungeon.phase!=='Gathering'||myHero(dungeon,citizen?.id??null,tsar))cancelNotification(`dungeon-${id}`)
     if (!dungeon || dungeon.phase !== 'Gathering' || !citizenReady) return
     if (invitedRuns.current.has(dungeon.id)) return
     invitedRuns.current.add(dungeon.id)
     if (declinedDungeon(dungeon.id)) return
     setInviteFor(dungeon.id)
-    notify(i18n.t('notify.dungeonTitle'), i18n.t('notify.dungeonBody', { seconds: 60 }), `dungeon-${dungeon.id}`)
+    notify(i18n.t('notify.dungeonTitle'), i18n.t('notify.dungeonBody', { seconds: 60 }), `dungeon-${dungeon.id}`,'adventure',Date.parse(dungeon.openedAt),Date.parse(dungeon.gatheringEndsAt))
     flagTitle('!', titleRef.current)
   }, [dungeon, citizenReady, i18n])
   const closeInvite = () => {
+    if(inviteFor)cancelNotification(`dungeon-${inviteFor}`)
     if (inviteFor && dungeon && !myHero(dungeon, citizen?.id ?? null, false)) declineDungeon(inviteFor)
     setInviteFor(null)
   }

@@ -2723,6 +2723,14 @@ button, input, select, textarea, .modal-header, .target-popup-header { font-fami
 .supply-order-title { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: .5rem; align-items: center; }
 .supply-order-title strong { overflow-wrap: anywhere; }
 .supply-order { margin-block: .6rem; }
+.notification-settings fieldset { margin-block: .7rem; min-width: 0; }
+.notification-settings fieldset.notification-options { border: 0; margin: 0; padding: 0; }
+.notification-settings .notification-choice { display: flex; align-items: center; gap: .5rem; min-height: 44px; }
+.notification-choice input { flex: 0 0 auto; }
+.notification-times { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .5rem; }
+.notification-times label, .notification-settings details > label { display: flex; flex-direction: column; gap: .25rem; }
+.notification-settings input[type=text], .notification-settings input[type=time] { width: 100%; min-width: 0; min-height: 44px; }
+.notification-settings details > .notification-choice { flex-direction: row; }
 .economy-panel label { display: flex; flex-direction: column; gap: .25rem; }
 .economy-panel input, .economy-panel select { width: 100%; max-width: 100%; }
 .economy-panel button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }

@@ -87,6 +87,7 @@ public sealed record VillageEventsDto(
     IReadOnlyList<Guid> Away,
     IReadOnlyList<Guid> Back)
 {
+    public DateTimeOffset? At { get; init; }
     public IReadOnlyList<RaidBattleDto> Battles { get; init; } = [];
     public IReadOnlyList<Fortification>? Fortifications { get; init; }
 }
@@ -95,7 +96,7 @@ public sealed record VillageEventsDto(
 /// Sends the village state at once, and queues the other events, which <see cref="VillageStatePublisher"/> sends
 /// as one <c>villageEvents</c> message per village, so a busy village costs each viewer a few messages a second.
 /// </summary>
-public sealed class VillageNotifier(IHubContext<VillageHub> hub, VillageStateChanges changes)
+public sealed class VillageNotifier(IHubContext<VillageHub> hub, VillageStateChanges changes, TimeProvider clock)
 {
     private readonly Dictionary<string, PendingEvents> pending = new(StringComparer.OrdinalIgnoreCase);
 
@@ -183,7 +184,7 @@ public sealed class VillageNotifier(IHubContext<VillageHub> hub, VillageStateCha
                     entry.Value.Dungeons,
                     [.. entry.Value.Left],
                     [.. entry.Value.Away],
-                    [.. entry.Value.Back]) { Battles = [..entry.Value.Battles.Values], Fortifications = entry.Value.Fortifications }))
+                    [.. entry.Value.Back]) { At=clock.GetUtcNow(), Battles = [..entry.Value.Battles.Values], Fortifications = entry.Value.Fortifications }))
                 .ToList();
             pending.Clear();
             return taken;

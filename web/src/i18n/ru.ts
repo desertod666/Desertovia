@@ -1267,6 +1267,10 @@ export const ru: Dictionary = {
   },
 
   errors: {
+    'notifications.settings':'Выберите события и два разных времени для тихих часов.',
+    'notifications.timeZone':'Укажите действующий часовой пояс, например Europe/Oslo.',
+    'notifications.changed':'Настройки изменены на другом устройстве. Загрузите настройки аккаунта перед сохранением.',
+    'notifications.reusedRequest':'Эта попытка уже сохранила другие настройки. Загрузите настройки аккаунта.',
     'rest.activeRequired': 'Сначала выйди из безопасного отдыха.',
     'rest.retreatRequired': 'Сначала отступи из боя и дождись выхода героя.',
     'rest.dungeonRequired': 'Сначала вернись из данжа или покинь сбор.',
