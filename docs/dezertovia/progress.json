@@ -2341,5 +2341,23 @@
     },
     "parallel_news_source": "90f55e322198c040b05ec1bcd088c5e19f569537",
     "physical_mobile_hardware_tested": false
+  },
+  "manual_garden_d102": {
+    "status": "planned_discussion",
+    "recorded_on": "2026-10-20",
+    "document": "docs/dezertovia/PERSONAL_GARDEN_PLAN.md",
+    "owner_request": [
+      "manual_planting_watering_fertilizing_harvest",
+      "click_beds_opens_overlay_with_actions"
+    ],
+    "open_questions": [
+      "ownership_and_harvest_destination",
+      "profession_access",
+      "timing_costs_fertilizer_effect",
+      "offline_wilting_and_neighbor_help"
+    ],
+    "implementation_authorized": false,
+    "game_code_changed": false,
+    "deployed": false
   }
 }
