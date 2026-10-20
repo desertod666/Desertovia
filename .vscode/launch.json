@@ -1,0 +1,41 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Desertovia: attach API",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:pickProcess}"
+    },
+    {
+      "name": "Desertovia: API",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Desertovia: build backend",
+      "program": "${workspaceFolder}/src/Desertod.Api/bin/Debug/net10.0/Desertod.Api.dll",
+      "windows": {"program": "${workspaceFolder}/src/Desertod.Api/bin/Debug/net10.0/Desertod.Api.exe"},
+      "cwd": "${workspaceFolder}/src/Desertod.Api",
+      "console": "integratedTerminal",
+      "env": {
+        "DOTNET_ROOT": "${workspaceFolder}/../tools/dotnet",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://127.0.0.1:5180",
+        "ConnectionStrings__Desertod": "Host=127.0.0.1;Port=55432;Database=desertovia_foundation;Username=desertovia_dev;Password=desertovia_dev_only",
+        "Game__AlmightyEnabled": "false",
+        "Game__HospitalEnabled": "false",
+        "Authentication__Telegram__BotToken": "",
+        "Authentication__Telegram__BotUsername": "",
+        "Authentication__Telegram__BrowserBridgeUrl": ""
+      }
+    },
+    {
+      "name": "Desertovia: browser",
+      "type": "pwa-chrome",
+      "request": "launch",
+      "preLaunchTask": "Desertovia: frontend",
+      "url": "http://127.0.0.1:5190",
+      "webRoot": "${workspaceFolder}/web"
+    }
+  ],
+  "compounds": [{"name": "Desertovia: local game", "configurations": ["Desertovia: API", "Desertovia: browser"], "stopAll": true}]
+}

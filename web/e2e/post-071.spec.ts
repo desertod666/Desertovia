@@ -22,7 +22,7 @@ test('application actions follow the copy without a giant blank region; wallet s
  await page.locator('.civic-applications summary').click()
  const copy=await page.locator('.civic-order>span').boundingBox(),action=await page.locator('.civic-order .row').boundingBox()
  expect(action!.y-copy!.y-copy!.height).toBeLessThan(24)
- await expect(page.locator('.wallet-hud')).toContainText('123');await expect(page.locator('.wallet-hud')).toContainText('Dcoin');await expect(page.locator('.wallet-hud')).toContainText('4');await expect(page.locator('.wallet-hud')).toContainText('тест')
+ await expect(page.locator('.wallet-hud')).toContainText('123');await expect(page.locator('.wallet-hud')).toContainText('Золото');await expect(page.locator('.wallet-hud')).toContainText('4');await expect(page.locator('.wallet-hud')).toContainText('тест')
  await page.locator('.wallet-hud').click();await expect(page.getByRole('dialog',{name:'Кошелёк',exact:true})).toBeVisible();await expect(page.locator('.economy-balances')).toContainText('123');await page.getByRole('button',{name:'Вернуться к карте'}).click();await expect(page.getByRole('dialog',{name:'Кошелёк',exact:true})).toHaveCount(0)
  await page.screenshot({path:`test-results/post-071-${test.info().project.name}.png`,fullPage:true})
 })

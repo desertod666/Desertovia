@@ -1,3 +1,7 @@
+> **D-104:** реализация начата; текущие статусы находятся в
+> [IMPLEMENTATION_PROGRESS_1_0.json](IMPLEMENTATION_PROGRESS_1_0.json) и машинном backlog.
+> Ниже — порядок и критерии, составленные при документальной сверке D-103.
+
 # Порядок задач 1.0 и точки интеграции
 
 20.10.2026. Машинная очередь: [INTEGRATED_BACKLOG_1_0.json](INTEGRATED_BACKLOG_1_0.json).

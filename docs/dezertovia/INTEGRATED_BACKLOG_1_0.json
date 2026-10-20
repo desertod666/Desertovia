@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "status": "documentation_reconciled_implementation_not_started",
+  "status": "implementation_in_progress",
   "recorded_on": "2026-10-20",
-  "implementation_authorized": false,
+  "implementation_authorized": true,
   "source_package": {
     "thread_id": "01a1272e-16a0-73ab-898b-ab855823c04b",
     "path": "/workspace/shared/Dezertovia_1_0_AI_Agent_Package.zip",
@@ -793,7 +793,7 @@
       "id": "PKG-T000",
       "milestone": "M0",
       "title": "Сверить свежую базу и инструкции",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "verified",
       "dependencies": [],
       "module_ids": [
         "validation",
@@ -817,13 +817,14 @@
         "status": "analysis_documented",
         "evidence": "Репозитории, инструкции, SHA, архив и source diff сверены; это не выполнение будущего runtime M0.",
         "runtime_verification": "not_run_this_assignment"
-      }
+      },
+      "verification_scope": "M0 baseline/current-command fixtures and local disposable environment; not future product rules or a release. See IMPLEMENTATION_PROGRESS_1_0.json."
     },
     {
       "id": "PKG-T001",
       "milestone": "M0",
       "title": "Разобрать существенные открытые решения",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "verified",
       "dependencies": [
         "PKG-T000"
       ],
@@ -855,13 +856,14 @@
         "status": "registry_documented_open_choices_retained",
         "evidence": "19 исходных решений сохранены отдельно от D-102/D-103; существенные OPEN не закрыты молча.",
         "runtime_verification": "not_run_this_assignment"
-      }
+      },
+      "verification_scope": "M0 baseline/current-command fixtures and local disposable environment; not future product rules or a release. See IMPLEMENTATION_PROGRESS_1_0.json."
     },
     {
       "id": "PKG-T002",
       "milestone": "M0",
       "title": "Изолированная тестовая среда",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "verified",
       "dependencies": [
         "PKG-T000"
       ],
@@ -892,13 +894,14 @@
         "status": "plan",
         "evidence": "В этом поручении отдельная runtime-среда не создавалась.",
         "runtime_verification": "not_run_this_assignment"
-      }
+      },
+      "verification_scope": "M0 baseline/current-command fixtures and local disposable environment; not future product rules or a release. See IMPLEMENTATION_PROGRESS_1_0.json."
     },
     {
       "id": "PKG-T003",
       "milestone": "M0",
       "title": "Воспроизводимая регрессия и часы",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "verified",
       "dependencies": [
         "PKG-T002"
       ],
@@ -930,7 +933,8 @@
         "status": "source",
         "evidence": "Существуют CI/test suites; результаты 0.7.16 исторические, нового прогона нет.",
         "runtime_verification": "not_run_this_assignment"
-      }
+      },
+      "verification_scope": "M0 baseline/current-command fixtures and local disposable environment; not future product rules or a release. See IMPLEMENTATION_PROGRESS_1_0.json."
     },
     {
       "id": "PKG-T004",
@@ -975,7 +979,7 @@
       "id": "PKG-T010",
       "milestone": "M1",
       "title": "Идентичность валют и совместимые labels",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "implemented",
       "dependencies": [
         "PKG-T001",
         "PKG-T003"
@@ -1016,7 +1020,8 @@
         "status": "partial",
         "evidence": "Coins/TestCandles и свечной счёт различны; нынешний UI Dcoin не целевая entertainment-идентичность.",
         "runtime_verification": "not_run_this_assignment"
-      }
+      },
+      "verification_scope": "Local API/English+Russian browser checks pass; full source CI pending. Labels/identities only; no D105 conversion."
     },
     {
       "id": "PKG-T011",
@@ -1107,7 +1112,8 @@
         "status": "plan",
         "evidence": "Safe Resting не найден; Idle/Paused/absence и offline settlement не новый безопасный отдых.",
         "runtime_verification": "not_run_this_assignment"
-      }
+      },
+      "blocking_question": "PKG-D101: finish accepted work before safe rest versus cancel; owner reply pending, no dependent code begun."
     },
     {
       "id": "PKG-T013",

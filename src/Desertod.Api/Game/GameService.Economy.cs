@@ -19,6 +19,12 @@ public sealed record EconomyRequest(Guid RequestId, string Action, ResourceKind 
 public sealed record MarketLotDto(Guid Id, Guid SellerAccountId, ResourceKind Resource, int Amount, long Price, string Status, string Seller);
 public sealed record PersonalGoodDto(ResourceKind Kind, int Amount, long CostBasis);
 public sealed record LedgerDto(Guid Id, DateTimeOffset At, string Operation, string Asset, string Location, long Delta, string? Actor);
+/// <summary>Stable display identities mapped to existing ledger assets; this does not convert balances.</summary>
+public sealed record EconomyCurrencyDto(string Id, string LedgerAsset);
+public sealed record EconomyCurrenciesDto(EconomyCurrencyDto Coins, EconomyCurrencyDto TestCandles)
+{
+    public static readonly EconomyCurrenciesDto Current = new(new("economic-gold", "DZK"), new("test-candle", "TEST_CANDLE"));
+}
 public sealed record EconomyView(long Coins, long TestCandles, long EarnedToday, long ProfitToday, long TaxPreview,
     bool TaxEnabled, int ExchangeRate, int DailyExchangeLimit, int ExchangedToday, int KingdomCandleRoom,
     DateTimeOffset DayResetsAt, long Treasury, IReadOnlyList<PersonalGoodDto> Inventory, IReadOnlyList<MarketLotDto> Lots,
@@ -26,6 +32,7 @@ public sealed record EconomyView(long Coins, long TestCandles, long EarnedToday,
     int WorkPay, int ConstructionPay, IReadOnlyList<EconomyResident> Residents, IReadOnlyList<PrivateStorageDto> PrivateStorages, IReadOnlyDictionary<ResourceKind, int> StockPrices, IReadOnlyList<PrivatePropertyDto> PrivateProperty, DateTimeOffset? EnergyDrinkReadyAt)
 {
     public IReadOnlyList<SiteRecoveryDto> SiteRecoveries { get; init; } = [];
+    public EconomyCurrenciesDto Currencies { get; init; } = EconomyCurrenciesDto.Current;
 }
 public sealed record SiteRecoveryDto(Guid Id,string PlotId,bool Personal,IReadOnlyList<ResourceAmount> Goods);
 public sealed record PrivatePropertyDto(string PlotId, BuildingKind Kind, int Level, bool Site, bool HasWork);

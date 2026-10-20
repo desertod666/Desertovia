@@ -2678,6 +2678,10 @@ button, input, select, textarea, .modal-header, .target-popup-header { font-fami
 .wallet-hud>span{display:inline-flex;align-items:center;gap:4px;min-width:0}
 .wallet-hud .dcoin-icon{width:18px;height:18px}.wallet-hud small{font-size:.65rem;font-weight:400}
 .dcoin-icon{display:inline-block;vertical-align:middle;width:24px;height:24px;object-fit:contain;image-rendering:pixelated;flex:none}
+.economic-gold-icon{display:inline-flex;align-items:center;vertical-align:middle;flex:none}
+.wallet-hud .economic-gold-icon{width:18px;height:18px}
+.wallet-hud .economic-gold-icon>.tile-icon{transform:scale(.75);transform-origin:top left}
+@media(max-width:720px){.wallet-hud .economic-gold-icon{width:16px;height:16px}.wallet-hud .economic-gold-icon>.tile-icon{transform:scale(.666667)}}
 .wallet-stale{opacity:.8}.wallet-dialog .economy-panel{margin:0}.wallet-dialog .modal-header h2{margin:0;font-size:1.2rem}
 .civic-home,.civic-order{align-items:stretch;flex-wrap:nowrap}.civic-order>.row{justify-content:flex-start}.civic-home>span,.civic-order>span{min-height:0}
 .site-management{border-top:1px solid var(--parchment-dark);margin-top:.5rem;padding-top:.5rem}.site-actions{display:flex;flex-wrap:wrap;gap:.5rem}.site-actions p{flex-basis:100%}

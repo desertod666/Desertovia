@@ -1,4 +1,4 @@
-import { DcoinIcon } from './DcoinIcon'
+import { EconomicGoldIcon } from './EconomicGoldIcon'
 import {useEffect, useRef, useState} from 'react'
 import {api, createOperationId, type Citizen, type EconomyView} from '../api'
 import {useServerNow} from '../hooks'
@@ -10,10 +10,10 @@ export function EnergyDrinkCard({view,citizen,busy,onBuy}:{view:EconomyView;citi
   const unavailable=!!(citizen.exhaustedUntil&&Date.parse(citizen.exhaustedUntil)>now)||!!(citizen.injuredUntil&&Date.parse(citizen.injuredUntil)>now)||!!(citizen.recovery?.until&&Date.parse(citizen.recovery.until)>now)||citizen.recovery?.available===false
   return <section className="card energy-shop"><h3>{ru?'Энергетик батюшки':'Chaplain energy drink'}</h3>
     <p>{ru?'Сразу восстановить все силы. Раз в 12 реальных часов. Не лечит ранения и потерю сознания.':'Restore all energy immediately. Once per 12 real hours. Does not heal injuries or unconsciousness.'}</p>
-    <p className="small"><DcoinIcon/> {view.coins} {ru?'Dcoin':'Dcoin'} · 🕯 {view.testCandles} {ru?'тестовых свечей':'test candles'}</p>
+    <p className="small"><EconomicGoldIcon/> {view.coins} {i18n.t('currency.goldUnit')} · 🕯 {view.testCandles} {ru?'тестовых свечей':'test candles'}</p>
     {cooling&&<p role="status">{ru?'Снова доступен':'Available again'}: {new Date(view.energyDrinkReadyAt!).toLocaleString(i18n.language)}</p>}
     <div className="row">{(['coins','candles'] as const).map(currency=><button key={currency} disabled={busy||cooling||unavailable||citizen.energy>=citizen.maximumEnergy||(currency==='coins'?view.coins<300:view.testCandles<3)} onClick={()=>onBuy(currency)}>
-      {ru?'Выпить':'Drink'} · {currency==='coins'?'300 '+(ru?'Dcoin':'Dcoin'):'3 '+(ru?'тестовые свечи':'test candles')}
+      {ru?'Выпить':'Drink'} · {currency==='coins'?'300 '+i18n.t('currency.goldUnit'):'3 '+(ru?'тестовые свечи':'test candles')}
     </button>)}</div>
   </section>
 }

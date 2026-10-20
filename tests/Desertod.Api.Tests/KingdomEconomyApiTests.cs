@@ -34,6 +34,46 @@ public sealed class KingdomEconomyApiTests(DesertodApiFactory factory)
     }
 
     [Fact]
+    public async Task Currency_identity_projection_preserves_legacy_balances_and_material_gold()
+    {
+        var v = await players.FoundVillageAsync("Separate currency identities");
+        var a = await players.JoinAsync(v, "Account holder");
+        await View(a.Client, v.Path);
+        await players.ArrangeVillageAsync(v.Slug, (city, now) =>
+        {
+            var storage = StorageBuilding.Create(StorageKind.TownHall, "3,3", now);
+            storage.Put(ResourceKind.Gold, 7);
+            city.Storages.Add(storage);
+        });
+        await using (var db = await Db())
+        {
+            var citizen = await db.Citizens.SingleAsync(c => c.Id == a.Id);
+            var wallet = await db.GameWallets.SingleAsync(w => w.AccountId == citizen.AccountId && w.VillageId == citizen.VillageId);
+            wallet.Coins = 1234;
+            wallet.TestCandles = 9;
+            await db.SaveChangesAsync();
+        }
+        for (var repeat = 0; repeat < 2; repeat++)
+        {
+            using var response = await a.Client.GetAsync(v.Path + "/economy");
+            await Players.OkJsonAsync(response);
+            using var json = System.Text.Json.JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+            var view = json.RootElement;
+            Assert.Equal(1234, view.GetProperty("coins").GetInt64());
+            Assert.Equal(9, view.GetProperty("testCandles").GetInt64());
+            var currencies = view.GetProperty("currencies");
+            Assert.Equal("economic-gold", currencies.GetProperty("coins").GetProperty("id").GetString());
+            Assert.Equal("DZK", currencies.GetProperty("coins").GetProperty("ledgerAsset").GetString());
+            Assert.Equal("test-candle", currencies.GetProperty("testCandles").GetProperty("id").GetString());
+            Assert.Equal("TEST_CANDLE", currencies.GetProperty("testCandles").GetProperty("ledgerAsset").GetString());
+        }
+        await using var check = await Db();
+        var city = await check.Villages.SingleAsync(x => x.Slug == v.Slug);
+        Assert.Equal(7, city.Stock(ResourceKind.Gold));
+        Assert.Empty(await check.EconomyReceipts.Where(x => x.VillageId == city.Id).ToArrayAsync());
+    }
+
+    [Fact]
     public async Task Candle_energy_purchase_burns_only_test_candles_and_preserves_coins_and_character_progress()
     {
         var v=await players.FoundVillageAsync("Candle energy");var a=await players.JoinAsync(v,"Buyer");await View(a.Client,v.Path);

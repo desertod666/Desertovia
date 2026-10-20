@@ -2,6 +2,16 @@ import type { Dictionary } from './en'
 
 export const ru: Dictionary = {
   ui: {
+    "currency.gold": "Золото",
+    "currency.economicGold": "Хозяйственное золото",
+    "currency.goldUnit": "золота",
+    "wallet.open": "Открыть кошелёк золота и тестовых свечей",
+    "economy.goldDescription": "Золото служит для работы и торговли в царстве. Развлекательный счёт батюшки учитывается отдельно.",
+    "economy.privateConstructionPay": "золота. Личная стройка не оплачивается царством.",
+    "economy.lotPrice": "Цена всего лота в золоте",
+    "economy.exchangeGold": "Обмен золота",
+    "economy.goldToTestCandle": "золота → 1 тестовая свеча",
+    "economy.goldTaxPreview": "золота · списание выключено",
     'hospital.title': 'Больница',
     'hospital.open': 'Лечение',
     'hospital.level': 'Больница · уровень {level}/3',
@@ -1285,8 +1295,8 @@ export const ru: Dictionary = {
     "economy.reusedRequest": "Этот запрос уже использован для другой операции.",
     "economy.amount": "Количество: от 1 до 100. Цена — положительное целое число.",
     "economy.citizen": "Для этого действия нужен персонаж в городе.",
-    "economy.candles": "Не хватает тестовых свечей. Их можно получить за Dcoin через обмен.",
-    "economy.funds": "Не хватает Dcoin. Заработай полезной работой или торговлей.",
+    "economy.candles": "Не хватает тестовых свечей. Их можно получить за золото через обмен.",
+    "economy.funds": "Не хватает золота. Заработай полезной работой или торговлей.",
     "economy.limit": "Достигнут предел игрового кошелька.",
     "economy.action": "Такое действие недоступно. Обнови меню.",
     "market.limit": "У тебя уже 10 открытых лотов.",

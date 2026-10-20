@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { api, type BuildingDefinition, type Catalog, type Citizen, type VillageState } from '../api'
 import { useI18n } from '../i18n'
-import { DcoinIcon } from './DcoinIcon'
+import { EconomicGoldIcon } from './EconomicGoldIcon'
 import { EconomyPanel } from './EconomyPanel'
 
 /** The existing server wallet, refreshed independently of the combat animation tick. */
@@ -29,8 +29,8 @@ export function WalletHud({slug,onOpen}:{slug:string;onOpen:()=>void}) {
     return()=>{active=false;window.clearInterval(timer);window.removeEventListener('desertovia-wallet-changed',changed);window.removeEventListener('focus',refresh);window.removeEventListener('online',refresh);document.removeEventListener('visibilitychange',refresh)}
   },[slug])
   const amount=(n:number)=>new Intl.NumberFormat(i18n.language,{notation:n>=100000?'compact':'standard',maximumFractionDigits:1}).format(n)
-  return <button className="wallet-hud" onClick={onOpen} aria-label={ru?'Открыть кошелёк Dcoin и тестовых свечей':'Open Dcoin and test candle wallet'} title={balance?`Dcoin: ${balance.coins} · ${ru?'Тестовые свечи':'Test candles'}: ${balance.testCandles}`:ru?'Кошелёк':'Wallet'}>
-    <span><DcoinIcon/><strong>{balance?amount(balance.coins):failed?'—':'…'}</strong><span className="wallet-label"> Dcoin</span></span>
+  return <button className="wallet-hud" onClick={onOpen} aria-label={i18n.t('wallet.open')} title={balance?`${i18n.t('currency.gold')}: ${balance.coins} · ${ru?'Тестовые свечи':'Test candles'}: ${balance.testCandles}`:ru?'Кошелёк':'Wallet'}>
+    <span><EconomicGoldIcon/><strong>{balance?amount(balance.coins):failed?'—':'…'}</strong><span className="wallet-label"> {i18n.t('currency.gold')}</span></span>
     <span><span aria-hidden="true">🕯</span><strong>{balance?amount(balance.testCandles):failed?'—':'…'}</strong><span className="wallet-label"> {ru?'свечи':'candles'}</span><small>{ru?'тест':'test'}</small></span>
     {failed&&<span role="status" className="wallet-stale" title={ru?'Не удалось обновить баланс':'Could not refresh balance'}>↻</span>}
   </button>

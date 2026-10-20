@@ -1,6 +1,16 @@
 /** English is the primary language; every other dictionary must provide the same keys. */
 export const en = {
   ui: {
+    "currency.gold": "Gold",
+    "currency.economicGold": "Economic gold",
+    "currency.goldUnit": "gold",
+    "wallet.open": "Open gold and test candle wallet",
+    "economy.goldDescription": "Gold pays for work and trade in the kingdom. The chaplain’s entertainment account is separate.",
+    "economy.privateConstructionPay": "gold. Private construction earns no kingdom wages.",
+    "economy.lotPrice": "Total lot price in gold",
+    "economy.exchangeGold": "Gold exchange",
+    "economy.goldToTestCandle": "gold → 1 test candle",
+    "economy.goldTaxPreview": "gold · no deduction",
     'hospital.title': 'Hospital',
     'hospital.open': 'Treatment',
     'hospital.level': 'Hospital level {level}/3',
@@ -1288,8 +1298,8 @@ export const en = {
     "economy.reusedRequest": "This request was already used for another operation.",
     "economy.amount": "Amount: 1 to 100. Price must be a positive whole number.",
     "economy.citizen": "A resident character is required for this action.",
-    "economy.candles": "Not enough test candles. Exchange Dcoin for them first.",
-    "economy.funds": "Not enough Dcoin. Earn them through useful work or trade.",
+    "economy.candles": "Not enough test candles. Exchange gold for them first.",
+    "economy.funds": "Not enough gold. Earn it through useful work or trade.",
     "economy.limit": "The game wallet limit has been reached.",
     "economy.action": "This action is unavailable. Refresh the menu.",
     "market.limit": "You already have ten open lots.",

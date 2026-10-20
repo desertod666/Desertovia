@@ -1504,7 +1504,11 @@ export function createOperationId() {
 export interface EconomyRequest {
   requestId: string; action: string; resource?: string; amount?: number; price?: number; target?: string; x?: number; y?: number; building?: string
 }
+export interface EconomyCurrencyIdentity { id: string; ledgerAsset: string }
+
 export interface EconomyView {
+  /** Optional while old servers still expose only coins/testCandles. Balances and asset keys do not change. */
+  currencies?: { coins: EconomyCurrencyIdentity; testCandles: EconomyCurrencyIdentity }
   siteRecoveries?:{id:string;plotId:string;personal:boolean;goods:{resource:string;amount:number}[]}[]
   energyDrinkReadyAt: string | null
   stockPrices: Record<string,number>

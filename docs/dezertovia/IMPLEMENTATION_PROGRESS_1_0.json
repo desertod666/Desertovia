@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "decision": "D-104",
+  "recorded_at_utc": "2026-10-20T15:53:30.365042+00:00",
+  "status": "first_foundation_slice_implemented_local_checks_pass_ci_pending",
+  "authorization": {
+    "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
+    "implementation": true,
+    "test_environment": true,
+    "previous_analysis_only_scope_superseded": true
+  },
+  "branch": "feat/desertovia-1-0-foundation",
+  "source_baseline": {
+    "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
+    "documentation": "462f450",
+    "bot": "76de289b00a99c8e40fb2c061beab6e7af216b5c",
+    "operator_inspected_read_only": "f0fc6dd57c98fe73098e4402c87e304ab838a9ba"
+  },
+  "completed_task_scopes": {
+    "T000": "fresh branches/instructions/source/code/CI and D104 recorded",
+    "T001": "confirmed directions and dependent OPEN registry reviewed; labels use working economic gold without balance conversion",
+    "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
+    "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
+  },
+  "implemented_task": "PKG-T010",
+  "runtime": {
+    "local_api": "http://127.0.0.1:5180",
+    "local_frontend": "http://127.0.0.1:5190",
+    "database_container": "desertovia-foundation-dev-postgres",
+    "postgres_port": "Oracle loopback55432 via SSH to local loopback55432",
+    "memory_limit_mib": 384,
+    "cpu_limit": 0.5,
+    "local_world_database": "desertovia_foundation",
+    "e2e_database": "desertovia_foundation_e2e",
+    "test_factory_database": "fresh desertod_test_<guid>, removed by owning fixture",
+    "sdk": "10.0.300 private ../tools/dotnet",
+    "node": "24.19.0 bundled runtime",
+    "telegram_enabled": false,
+    "paid_model_enabled": false,
+    "hospital_bridge_enabled": false,
+    "original_game_container_replaced": false,
+    "bot_modified": false
+  },
+  "checks": {
+    "baseline_ci": {
+      "run_id": 39410274130,
+      "sha": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39410274130",
+      "result": "all five jobs success; historical baseline, not new candidate CI"
+    },
+    "domain": {
+      "passed": 537,
+      "failed": 0,
+      "command": "dotnet test tests/Desertod.Domain.Tests -c Release",
+      "fresh": true
+    },
+    "api_focused": {
+      "passed": 14,
+      "failed": 0,
+      "command": "dotnet test tests/Desertod.Api.Tests -c Release --filter FullyQualifiedName~KingdomEconomyApiTests",
+      "external_fixture_override": true,
+      "fresh": true
+    },
+    "client_unit": {
+      "passed": 4,
+      "failed": 0
+    },
+    "frontend_lint": {
+      "result": "pass",
+      "new_errors": 0,
+      "existing_baseline_warnings": true
+    },
+    "frontend_build": {
+      "result": "pass",
+      "typescript": true
+    },
+    "browser_focused": {
+      "passed": 20,
+      "failed": 0,
+      "projects": [
+        "desktop",
+        "phone"
+      ],
+      "languages": [
+        "en",
+        "ru"
+      ],
+      "scenarios": [
+        "currency labels and unchanged legacy purchase requests",
+        "existing economy retry/idempotency fixture",
+        "wallet/HUD 320/390/430/960px and themes"
+      ]
+    },
+    "visual_review": {
+      "images": [
+        "wallet-320.png",
+        "wallet-960.png"
+      ],
+      "result": "no HUD overflow; harness screenshots, not a full world rendering review"
+    },
+    "backup_restore": {
+      "database": "synthetic local world only",
+      "format": "pg_dump custom/pg_restore exit-on-error",
+      "source": {
+        "accounts": 15,
+        "citizens": 13,
+        "migrations": 38
+      },
+      "restored": {
+        "accounts": 15,
+        "citizens": 13,
+        "migrations": 38
+      },
+      "result": "pass"
+    },
+    "local_auth": {
+      "http": 200,
+      "developmentLogin": true,
+      "twitch": false,
+      "google": false,
+      "telegramBrowserLogin": false
+    },
+    "full_candidate_ci": "pending",
+    "diff_check": "pass",
+    "api_cleanup_finally": {
+      "passed": 1,
+      "failed": 0,
+      "scope": "same currency identity case after cleanup-finally hardening"
+    },
+    "browser_artifact_capture": {
+      "passed": 4,
+      "failed": 0,
+      "scope": "currency cases repeated to capture English/Russian component screenshots"
+    }
+  },
+  "open_questions": [
+    {
+      "id": "PKG-D101",
+      "question": "Accepted work finishes before safe rest, or cancel with unused-input return?",
+      "status": "asked_owner_waiting",
+      "blocks": "PKG-T012 and dependent rest behavior only"
+    }
+  ],
+  "known_followups": [
+    {
+      "id": "SEC-001",
+      "observed": "Existing test-project SignalR.Common 10.0.12 emits NU1903 during fresh restore; direct SignalR.Client reference predates this change.",
+      "advisory": "https://github.com/advisories/GHSA-334f-vvp4-7g6p",
+      "patched_common_version": "10.0.13",
+      "disposition": "Track dependency/runtime patch separately before public 1.0 release; no suppression, no claim of mitigation by currency work."
+    }
+  ],
+  "release": {
+    "version_changed": false,
+    "public_game_deployed": false,
+    "bot_deployed": false
+  },
+  "next_tasks": [
+    "PKG-T011: finish verification of existing transactional foundation on exact candidate CI",
+    "PKG-T012: after owner answers D101",
+    "PKG-T020: known-input cost propagation, after ownership/legacy/multi-output contract review"
+  ],
+  "screenshots": [
+    "screenshots/foundation/economic-gold-ru-phone.png",
+    "screenshots/foundation/economic-gold-en-phone.png"
+  ]
+}
