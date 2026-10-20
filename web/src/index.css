@@ -2660,7 +2660,11 @@ button, input, select, textarea, .modal-header, .target-popup-header { font-fami
 .economy-panel summary { cursor: pointer; font-weight: 700; padding-block: .5rem; overflow-wrap: anywhere; }
 .economy-panel details { border-top: 1px solid #b994513d; margin-top: .65rem; }
 .economy-balances { display: flex; flex-wrap: wrap; gap: .5rem 1rem; padding-block: .75rem; }
+.work-order-balances { display: flex; align-items: center; gap: .5rem; padding-block: .5rem; }
+.work-order-balances > span { flex: 1; min-width: 0; }
 .economy-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem),1fr)); gap: .5rem; margin-block: .65rem; align-items: end; }
+.work-orders .economy-controls > label:first-child,
+.work-orders .economy-controls > button { grid-column: 1 / -1; }
 .economy-panel label { display: flex; flex-direction: column; gap: .25rem; }
 .economy-panel input, .economy-panel select { width: 100%; max-width: 100%; }
 .economy-panel button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
@@ -2815,3 +2819,5 @@ button, input, select, textarea, .modal-header, .target-popup-header { font-fami
 .safe-rest-control { display:flex; align-items:center; gap:4px; flex-wrap:wrap; max-width:100%; }
 .safe-rest-control > button { min-height:44px; min-width:44px; }
 .safe-rest-control > .error { flex-basis:100%; max-width:280px; font-size:12px; }
+.economy-panel .inventory-grid .slot { position:relative; }
+.economy-panel .inventory-cost { position:absolute; top:0; right:0; }

@@ -2486,19 +2486,14 @@
     }
   },
   "implementation_1_0": {
-    "decision": "D-104",
-    "status": "foundation_partner_tools_and_independent_compact_ui_verified_not_released",
-    "document": "IMPLEMENTATION_PROGRESS_1_0.json",
-    "implementation_authorized": true,
-    "branch": "feat/desertovia-1-0-foundation",
-    "local_runtime_started": true,
-    "game_code_changed": true,
-    "bot_code_changed": false,
-    "deployed_to_public_game": false,
-    "current_task": "PKG-T014 independent compact UI + owner-requested PR76 integration",
-    "owner_question_pending": "PKG-D101",
-    "partner_pr": 76,
-    "verified_code_sha": "c2962e2dfafccb24e18267aee34b144b35749a47",
-    "verification_receipt": "FOUNDATION_TOOLS_UI_VERIFICATION_1_0.json"
+    "decision": "D-104/D-105",
+    "status": "active_not_complete",
+    "branch": "feat/desertovia-1-0-economy",
+    "details": "IMPLEMENTATION_PROGRESS_1_0.json",
+    "latest_full_ci": "ECONOMY_COST_VERIFICATION_1_0.json",
+    "current_work": "explicit ownership and bounded treasury-funded production orders, then shared farm",
+    "farm_loss_owner_confirmed": "proportional actual loss across communal food and unclaimed reserve",
+    "public_deployed": false,
+    "planning_1_0_is_historical_completed_phase": true
   }
 }

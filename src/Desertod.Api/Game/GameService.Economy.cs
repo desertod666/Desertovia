@@ -15,9 +15,13 @@ using Microsoft.EntityFrameworkCore;
 namespace Desertod.Api.Game;
 
 public sealed record EconomyRequest(Guid RequestId, string Action, ResourceKind Resource = ResourceKind.Wood,
-    int Amount = 1, long Price = 0, Guid? Target = null, int X = 0, int Y = 0, BuildingKind Building = BuildingKind.Hut);
+    int Amount = 1, long Price = 0, Guid? Target = null, int X = 0, int Y = 0, BuildingKind Building = BuildingKind.Hut,
+    string? TaskId = null, int Cycles = 1, long Pay = 0, DateTimeOffset? ExpiresAt = null);
 public sealed record MarketLotDto(Guid Id, Guid SellerAccountId, ResourceKind Resource, int Amount, long Price, string Status, string Seller);
-public sealed record PersonalGoodDto(ResourceKind Kind, int Amount, long CostBasis);
+public sealed record PersonalGoodDto(ResourceKind Kind, int Amount, long CostBasis)
+{
+    public bool CostBasisKnown { get; init; }
+}
 public sealed record LedgerDto(Guid Id, DateTimeOffset At, string Operation, string Asset, string Location, long Delta, string? Actor);
 /// <summary>Stable display identities mapped to existing ledger assets; this does not convert balances.</summary>
 public sealed record EconomyCurrencyDto(string Id, string LedgerAsset);
@@ -33,7 +37,13 @@ public sealed record EconomyView(long Coins, long TestCandles, long EarnedToday,
 {
     public IReadOnlyList<SiteRecoveryDto> SiteRecoveries { get; init; } = [];
     public EconomyCurrenciesDto Currencies { get; init; } = EconomyCurrenciesDto.Current;
+    public bool WorkContractsEnabled { get; init; }
+    public bool CanManageWorkOrders { get; init; }
+    public IReadOnlyList<WorkOrderDto> WorkOrders { get; init; } = [];
+    public long WorkPayAwaitingRoom { get; init; }
 }
+public sealed record WorkOrderDto(Guid Id, string TaskId, int PolicyVersion, long PayPerCycle, int AvailableCycles,
+    int AcceptedCycles, int CompletedCycles, long ReservedCoins, DateTimeOffset ExpiresAt, WorkOrderStatus Status);
 public sealed record SiteRecoveryDto(Guid Id,string PlotId,bool Personal,IReadOnlyList<ResourceAmount> Goods);
 public sealed record PrivatePropertyDto(string PlotId, BuildingKind Kind, int Level, bool Site, bool HasWork);
 public sealed record EconomyResident(Guid AccountId, string Name);
@@ -46,6 +56,14 @@ public sealed partial class GameService
 
     private static DateOnly EconomyDay(DateTimeOffset now) => DateOnly.FromDateTime(now.UtcDateTime);
     private static Guid StableOperation(string value) => new(SHA256.HashData(Encoding.UTF8.GetBytes(value)).AsSpan(0, 16));
+    private static string EconomyFingerprint(EconomyRequest request)
+    {
+        // Keep receipts written before work-order fields were added retryable byte-for-byte.
+        object body=request.Action is "enable-work-contracts" or "fund-treasury" or "publish-work-order" or "cancel-work-order" or "claim-work-pay"
+            ? request
+            : new {request.RequestId,request.Action,request.Resource,request.Amount,request.Price,request.Target,request.X,request.Y,request.Building};
+        return Convert.ToHexString(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(body)));
+    }
 
     private static async Task<GameWallet> WalletAsync(DesertodDbContext db, Guid village, Guid account, DateTimeOffset now, CancellationToken ct)
     {
@@ -72,6 +90,12 @@ public sealed partial class GameService
         if (citizen.CyclePrivateOutput) return;
         var useful = report.ProjectContribution > 0 || report.Repaired > 0 || report.TechnologyId is not null && report.PrimaryExperience > 0
             || report.Produced.Sum(x => x.Amount) > report.Lost.Sum(x => x.Amount);
+        if (citizen.CyclePaymentMode == WorkPaymentMode.Reserved)
+        {
+            await FinishWorkOrderAsync(db, village, citizen, useful, false, now, ct);
+            return;
+        }
+        if (citizen.CyclePaymentMode == WorkPaymentMode.Voluntary) return;
         if (!useful && !(GameCatalog.FindTask(report.TaskId)?.Effect == TaskEffect.Guard && report.PrimaryExperience > 0)) return;
         var id = StableOperation($"work:{citizen.Id}:{citizen.CycleStartedAt:O}:{report.TaskId}");
         if (await db.EconomyReceipts.AnyAsync(x => x.VillageId == village.Id && x.RequestId == id, ct)) return;
@@ -108,7 +132,7 @@ public sealed partial class GameService
             await RequireEconomyMemberAsync(db, village, account, ct);
             if (request.RequestId == Guid.Empty || !Enum.IsDefined(request.Resource))
                 throw new GameRuleException("economy.request", "Refresh the operation and try again.");
-            var fingerprint = Convert.ToHexString(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(request)));
+            var fingerprint = EconomyFingerprint(request);
             var prior = await db.EconomyReceipts.SingleOrDefaultAsync(x => x.VillageId == village.Id && x.RequestId == request.RequestId, ct);
             if (prior is not null)
             {
@@ -138,6 +162,13 @@ public sealed partial class GameService
             db.AuditActor = account; db.AuditOperation = request.Action;
             switch (request.Action)
             {
+                case "enable-work-contracts":
+                case "fund-treasury":
+                case "publish-work-order":
+                case "cancel-work-order":
+                case "claim-work-pay":
+                    await ChangeWorkOrderAsync(db, village, state, wallet, account, request, now, ct);
+                    break;
                 case "donate-stock":
                 {
                     var donor = Own();
@@ -160,7 +191,7 @@ public sealed partial class GameService
                         var recipient=Own();
                         foreach(var good in recovery.Goods)
                             if(PersonalInventory.Room(recipient,good.Kind)<good.Amount)throw new GameRuleException("inventory.full","Make room for the recovered materials.");
-                        foreach(var good in recovery.Goods)PersonalInventory.Add(recipient,good.Kind,good.Amount,0);
+                        foreach(var good in recovery.Goods)PersonalInventory.Add(recipient,good.Kind,good.Amount,0,basisKnown:false);
                     }
                     else
                     {
@@ -228,8 +259,8 @@ public sealed partial class GameService
                         ?? throw new GameRuleException("inventory.recipient", "Choose a resident in this kingdom.");
                     if (recipient.AccountId == account) throw new GameRuleException("inventory.recipient", "Choose another resident.");
                     if (PersonalInventory.Room(recipient, request.Resource) < request.Amount) throw new GameRuleException("inventory.full", "The recipient's inventory is full.");
-                    var basis = PersonalInventory.Remove(sender, request.Resource, request.Amount);
-                    PersonalInventory.Add(recipient, request.Resource, request.Amount, basis);
+                    var cost = PersonalInventory.RemoveWithCost(sender, request.Resource, request.Amount);
+                    PersonalInventory.Add(recipient, request.Resource, request.Amount, cost.Basis, cost.Known);
                     affected.Add(recipient.Id);
                     break;
                 }
@@ -238,9 +269,9 @@ public sealed partial class GameService
                     if (request.Price < 1) throw new GameRuleException("economy.amount", "Choose a positive whole price for the lot.");
                     if (await db.MarketLots.CountAsync(x => x.VillageId == village.Id && x.SellerAccountId == account && x.Status == "open", ct) >= 10)
                         throw new GameRuleException("market.limit", "You already have ten open lots.");
-                    var basis = PersonalInventory.Remove(Own(), request.Resource, request.Amount);
+                    var cost = PersonalInventory.RemoveWithCost(Own(), request.Resource, request.Amount);
                     db.MarketLots.Add(new MarketLot { Id = request.RequestId, VillageId = village.Id, SellerAccountId = account,
-                        Resource = request.Resource, Amount = request.Amount, Price = request.Price, CostBasis = basis, Status = "open", CreatedAt = now });
+                        Resource = request.Resource, Amount = request.Amount, Price = request.Price, CostBasis = cost.Basis, CostBasisKnown = cost.Known, Status = "open", CreatedAt = now });
                     break;
                 }
                 case "buy-lot":
@@ -255,7 +286,7 @@ public sealed partial class GameService
                     if (request.Action == "cancel-lot")
                     {
                         if (lot.SellerAccountId != account) throw new UnauthorizedAccessException();
-                        PersonalInventory.Add(seller, lot.Resource, lot.Amount, lot.CostBasis); lot.Status = "cancelled";
+                        PersonalInventory.Add(seller, lot.Resource, lot.Amount, lot.CostBasis, lot.CostBasisKnown); lot.Status = "cancelled";
                     }
                     else
                     {
@@ -263,7 +294,7 @@ public sealed partial class GameService
                         if (PersonalInventory.Room(Own(), lot.Resource) < lot.Amount) throw new GameRuleException("inventory.full", "Your personal inventory is full.");
                         var sellerWallet = await WalletAsync(db, village.Id, lot.SellerAccountId, now, ct);
                         EconomyRules.Spend(wallet, lot.Price); EconomyRules.Credit(sellerWallet, lot.Price);
-                        sellerWallet.ProfitToday = checked(sellerWallet.ProfitToday + lot.Price - lot.CostBasis);
+                        if (lot.CostBasisKnown) sellerWallet.ProfitToday = checked(sellerWallet.ProfitToday + lot.Price - lot.CostBasis);
                         PersonalInventory.Add(Own(), lot.Resource, lot.Amount, lot.Price);
                         lot.Status = "sold"; lot.BuyerAccountId = account;
                         WalletChange(account, -lot.Price, "trade"); WalletChange(lot.SellerAccountId, lot.Price, "trade");
@@ -334,6 +365,7 @@ public sealed partial class GameService
     {
         var now = time.GetUtcNow(); var wallet = await WalletAsync(db, village.Id, account, now, ct);
         var state = await db.KingdomEconomies.SingleAsync(x => x.VillageId == village.Id, ct);
+        await ExpireWorkOrdersAsync(db, village, state, now, ct);
         var citizen = await db.Citizens.SingleOrDefaultAsync(c => c.VillageId == village.Id && c.AccountId == account, ct);
         var query = db.LedgerEntries.AsNoTracking().Where(x => x.VillageId == village.Id);
         if (!string.IsNullOrWhiteSpace(asset) && asset.Length <= 40) query = query.Where(x => x.Asset == asset);
@@ -361,7 +393,7 @@ public sealed partial class GameService
             EconomyNumber("ExchangeRate", 100, 1, 100_000), EconomyNumber("DailyExchangeLimit", 5, 1, 20), wallet.ExchangedToday,
             Math.Max(0, EconomyNumber("KingdomDailyCandles", 50, 1, 1000) - (state.FundDay == EconomyDay(now) ? state.CandlesIssuedToday : 0)),
             new DateTimeOffset(now.UtcDateTime.Date.AddDays(1), TimeSpan.Zero), state.TreasuryCoins,
-            citizen?.PersonalGoods.Select(x => new PersonalGoodDto(x.Kind, x.Amount, x.CostBasis)).ToArray() ?? [],
+            citizen?.PersonalGoods.Select(x => new PersonalGoodDto(x.Kind, x.Amount, x.CostBasis) { CostBasisKnown = x.CostBasisKnown }).ToArray() ?? [],
             lots.Select(x=>new MarketLotDto(x.Id,x.SellerAccountId,x.Resource,x.Amount,x.Price,x.Status,sellerNames.GetValueOrDefault(x.SellerAccountId,"Resident"))).ToArray(), journal, rows.Count > 50 ? rows[49].Id : null, state.StartedAt,
             EconomyNumber("WorkPay", 10, 1, 1000), EconomyNumber("ConstructionPay", 20, 1, 1000),
             await db.Citizens.AsNoTracking().Where(c => c.VillageId == village.Id && c.Status == CitizenStatus.Active)
@@ -371,7 +403,11 @@ public sealed partial class GameService
             village.Structures.Where(s=>s.OwnerAccountId==account).Select(s=>new PrivatePropertyDto(s.PlotId,s.Kind,s.Level,false,false))
                 .Concat(village.Storages.Where(s=>s.OwnerAccountId==account).Select(s=>new PrivatePropertyDto(s.PlotId,BuildingCatalog.ForStorage(s.Kind)??BuildingKind.Heap,1,false,false)))
                 .Concat(village.Sites.Where(s=>s.OwnerAccountId==account).Select(s=>new PrivatePropertyDto(s.PlotId,s.Kind,s.TargetLevel,true,s.HasWork||s.Operation!=null))).ToArray(), citizen is null ? null : VigorDrinks.EnergyDrinkReadyAt(citizen))
-        { SiteRecoveries=village.SiteRecoveries.Where(r=>r.OwnerAccountId is null||r.OwnerAccountId==account)
+        { WorkContractsEnabled=state.WorkContractsEnabled, CanManageWorkOrders=village.OwnerAccountId==account,
+            WorkOrders=await db.WorkOrders.Where(o=>o.VillageId==village.Id && (o.Status==WorkOrderStatus.Open || o.ReservedCoins>0))
+                .OrderBy(o=>o.ExpiresAt).Select(o=>new WorkOrderDto(o.Id,o.TaskId,o.PolicyVersion,o.PayPerCycle,o.AvailableCycles,o.AcceptedCycles,o.CompletedCycles,o.ReservedCoins,o.ExpiresAt,o.Status)).ToArrayAsync(ct),
+            WorkPayAwaitingRoom=await db.WorkOrderClaims.Where(c=>c.VillageId==village.Id && c.AccountId==account && c.Status==WorkClaimStatus.Payable).SumAsync(c=>c.PromisedPay,ct),
+            SiteRecoveries=village.SiteRecoveries.Where(r=>r.OwnerAccountId is null||r.OwnerAccountId==account)
             .Select(r=>new SiteRecoveryDto(r.Id,r.PlotId,r.OwnerAccountId is not null,r.Goods.Select(g=>new ResourceAmount(g.Kind,g.Amount)).ToArray())).ToArray() };
     }
 }

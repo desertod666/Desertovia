@@ -106,6 +106,9 @@ public sealed class Citizen
     public DateTimeOffset? CycleEndsAt { get; set; }
     public bool CycleSettled { get; set; } = true;
     public bool CycleTired { get; set; }
+    public long CycleInputCostBasis { get; set; }
+    /// <summary>Legacy unfinished cycles have unknown input cost until explicitly reconciled.</summary>
+    public bool CycleInputCostBasisKnown { get; set; }
     /// <summary>Голод при старте оплаченного цикла; null для работ, начатых до обновления.</summary>
     public bool? CycleHungry { get; set; }
     public int Streak { get; set; }
@@ -173,6 +176,9 @@ public sealed class Citizen
     public List<CarriedGood> Load { get; set; } = [];
     public List<Desertod.Domain.Economy.PersonalGood> PersonalGoods { get; set; } = [];
     public bool CyclePrivateOutput { get; set; }
+    public Desertod.Domain.Economy.WorkOwnership CycleOwnership { get; set; }
+    public Desertod.Domain.Economy.WorkPaymentMode CyclePaymentMode { get; set; }
+    public Guid? CycleWorkOrderClaimId { get; set; }
 
     /// <summary>Mirrors <c>Load.Count &gt; 0</c> so the server can find waiting carriers with a simple query.</summary>
     public bool IsCarrying { get; set; }

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-20T18:44:09.190001+00:00",
+  "source_sha": "28dc1a641536fd9fe8879d9b42143659a7cee481",
+  "run_id": 39474200795,
+  "url": "https://github.com/desertod666/Desertovia/actions/runs/39474200795",
+  "jobs": [
+    {
+      "name": "Backend tests",
+      "result": "success",
+      "id": 118805812700
+    },
+    {
+      "name": "Frontend lint and build",
+      "result": "success",
+      "id": 118805812801
+    },
+    {
+      "name": "Browser tests (2/2)",
+      "result": "success",
+      "id": 118805813126
+    },
+    {
+      "name": "Browser tests (1/2)",
+      "result": "success",
+      "id": 118805813269
+    },
+    {
+      "name": "Docker image",
+      "result": "success",
+      "id": 118805814226
+    }
+  ],
+  "counts": {
+    "domain": 558,
+    "api": 301,
+    "browser_desktop": 140,
+    "browser_phone": 138,
+    "browser_normal_skips": 2,
+    "client_unit": 7
+  },
+  "trees": {
+    "src": "563f10ce86cce0af56da5cf546f07c29dd8ce149",
+    "web": "61a60771baea648e11ec8769235ab992a47ad2fd",
+    "tests": "1aeae82c6419669b7f5e758b67fddfd8f49584d6",
+    "tools": "260b321a252eddaec065e58f99c879317b6a7053",
+    ".vscode": "a6c4dd06f40a7cb0becb846f2126f589a13afde5"
+  },
+  "scope": "Production acquisition cost and M1 late-combat rest followup on top of foundation. Later funded-work implementation is not covered by this source receipt. Not whole1.0.",
+  "released": false
+}

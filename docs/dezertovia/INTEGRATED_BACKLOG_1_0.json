@@ -1255,7 +1255,7 @@
       "id": "PKG-T020",
       "milestone": "M2",
       "title": "Себестоимость материалов и производства",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "cost_core_full_ci_verified_capital_and_farm_extensions_follow",
       "dependencies": [
         "PKG-T011"
       ],
@@ -1292,13 +1292,14 @@
         "status": "defect_confirmed_source",
         "evidence": "CycleEngine.Keep: PersonalInventory.Add(citizen, kind, kept, 0), потеря себестоимости private production.",
         "runtime_verification": "not_run_this_assignment"
-      }
+      },
+      "implementation_evidence": "PRODUCTION_COST_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json"
     },
     {
       "id": "PKG-T021",
       "milestone": "M2",
       "title": "Явная собственность вида работы",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "production_order_slice_implemented_focused_checks_pass_full_ci_pending",
       "dependencies": [
         "PKG-T020",
         "PKG-T015"
@@ -1336,13 +1337,14 @@
         "status": "partial",
         "evidence": "CyclePrivateOutput зависит от места/владельца, явного нового WorkContract нет.",
         "runtime_verification": "not_run_this_assignment"
-      }
+      },
+      "implementation_evidence": "WORK_ORDERS_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json; construction, research and farm shared-result contracts follow, not full task PASS"
     },
     {
       "id": "PKG-T022",
       "milestone": "M2",
       "title": "Ограниченные госзаказы и резерв зарплаты",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "production_order_slice_implemented_focused_checks_pass_full_ci_pending",
       "dependencies": [
         "PKG-T011",
         "PKG-T021"
@@ -1382,7 +1384,8 @@
         "status": "plan",
         "evidence": "CivicOrder не ограниченный зарплатный договор; PayUsefulWorkAsync сейчас эмиссионная WorkPay.",
         "runtime_verification": "not_run_this_assignment"
-      }
+      },
+      "implementation_evidence": "WORK_ORDERS_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json; construction, research and farm shared-result contracts follow, not full task PASS"
     },
     {
       "id": "PKG-T023",
@@ -2911,7 +2914,8 @@
       ],
       "implementation_steps": [
         "Выбрать защищённый физический резерв 10% либо ограниченную отсрочку; не скрывать отличие от D-102.",
-        "Зафиксировать общность земли/семян, узкий допуск owner/deputy, рецепты, полезные веса, фонд зарплаты и policyVersion."
+        "Зафиксировать общность земли/семян, узкий допуск owner/deputy, рецепты, полезные веса, фонд зарплаты и policyVersion.",
+        "Проверить пропорциональные потери обоих запасов: ноль/весь склад/нечётные количества, несколько участников, перезапуск, повтор и конкурентная выдача; сумма ущерба точно совпадает с фактической потерей."
       ],
       "done_when": "Записаны право на долю, физическое хранение, округление, политика потерь/выдачи и отсутствие новых работ/XP при отдыхе.",
       "status": "planned_not_implemented_by_this_assignment",
@@ -2925,7 +2929,8 @@
         "status": "plan",
         "evidence": "Существующие FieldBed/FarmRules/FieldsCard — основа; адресный допуск/вклад/90:10 не реализованы. См. CODE_AUDIT_1_0.md."
       },
-      "owner_resolution": "Protect 10% of actual harvest immediately for contributors; 90% community. This owner answer supersedes the former reserve-first deferral alternative."
+      "owner_resolution": "Protect 10% of actual harvest immediately for contributors; 90% community. This owner answer supersedes the former reserve-first deferral alternative.",
+      "owner_confirmed_loss_policy": "Proportional actual warehouse Food loss across communal stock and unclaimed protected reserve, reducing backed claims in the same transaction; claimed personal food follows normal rules. No compensating money emission."
     },
     {
       "id": "F002",

@@ -495,6 +495,9 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<long>("TreasuryCoins")
                         .HasColumnType("bigint");
 
+                    b.Property<bool>("WorkContractsEnabled")
+                        .HasColumnType("boolean");
+
                     b.HasKey("VillageId");
 
                     b.ToTable("KingdomEconomies");
@@ -563,6 +566,9 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<long>("CostBasis")
                         .HasColumnType("bigint");
 
+                    b.Property<bool>("CostBasisKnown")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -589,6 +595,106 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.HasIndex("VillageId", "Status", "CreatedAt");
 
                     b.ToTable("MarketLots");
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.WorkOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AcceptedCycles")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("AvailableCycles")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CompletedCycles")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("IssuerAccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("PayPerCycle")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("PolicyVersion")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("ReservedCoins")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<string>("TaskId")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
+
+                    b.Property<Guid>("VillageId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VillageId", "Status", "ExpiresAt");
+
+                    b.ToTable("WorkOrders");
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.WorkOrderClaim", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("AcceptedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CitizenId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CycleStartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("FinishedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("PromisedPay")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<Guid>("VillageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("WorkOrderId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CitizenId", "CycleStartedAt")
+                        .IsUnique();
+
+                    b.HasIndex("VillageId", "WorkOrderId");
+
+                    b.HasIndex("VillageId", "AccountId", "Status");
+
+                    b.ToTable("WorkOrderClaims");
                 });
 
             modelBuilder.Entity("Desertod.Domain.Entities.Account", b =>
@@ -657,6 +763,18 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<bool?>("CycleHungry")
                         .HasColumnType("boolean");
 
+                    b.Property<long>("CycleInputCostBasis")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("CycleInputCostBasisKnown")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("CycleOwnership")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CyclePaymentMode")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("CyclePrivateOutput")
                         .HasColumnType("boolean");
 
@@ -668,6 +786,9 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                     b.Property<bool>("CycleTired")
                         .HasColumnType("boolean");
+
+                    b.Property<Guid?>("CycleWorkOrderClaimId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("CyclesSinceMeal")
                         .HasColumnType("integer");
@@ -1915,6 +2036,25 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Desertod.Domain.Economy.WorkOrder", b =>
+                {
+                    b.HasOne("Desertod.Domain.Entities.Village", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.WorkOrderClaim", b =>
+                {
+                    b.HasOne("Desertod.Domain.Economy.WorkOrder", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId", "WorkOrderId")
+                        .HasPrincipalKey("VillageId", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Desertod.Domain.Entities.Account", b =>
                 {
                     b.OwnsOne("Desertod.Domain.Entities.Character", "Character", b1 =>
@@ -2044,6 +2184,8 @@ namespace Desertod.Infrastructure.Data.Migrations
                             b1.Property<int>("Amount");
 
                             b1.Property<long>("CostBasis");
+
+                            b1.Property<bool>("CostBasisKnown");
 
                             b1.Property<string>("Kind")
                                 .IsRequired();
@@ -3195,6 +3337,8 @@ namespace Desertod.Infrastructure.Data.Migrations
                                     b2.Property<int>("Amount");
 
                                     b2.Property<long>("CostBasis");
+
+                                    b2.Property<bool>("CostBasisKnown");
 
                                     b2.Property<string>("Kind")
                                         .IsRequired();

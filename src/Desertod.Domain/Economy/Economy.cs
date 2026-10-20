@@ -9,6 +9,7 @@ public sealed class KingdomEconomy
     public Guid VillageId { get; set; }
     public DateTimeOffset StartedAt { get; set; }
     public long TreasuryCoins { get; set; }
+    public bool WorkContractsEnabled { get; set; }
     public DateOnly FundDay { get; set; }
     public int CandlesIssuedToday { get; set; }
 }
@@ -57,6 +58,7 @@ public sealed class MarketLot
     public int Amount { get; set; }
     public long Price { get; set; }
     public long CostBasis { get; set; }
+    public bool CostBasisKnown { get; set; }
     public required string Status { get; set; } = "open";
     public Guid? BuyerAccountId { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
@@ -68,7 +70,11 @@ public sealed class PersonalGood
     public ResourceKind Kind { get; set; }
     public int Amount { get; set; }
     public long CostBasis { get; set; }
+    /// <summary>False for legacy JSON without a recorded acquisition cost; zero is not proof of free acquisition.</summary>
+    public bool CostBasisKnown { get; set; }
 }
+
+public readonly record struct InventoryCost(long Basis, bool Known);
 
 public static class PersonalInventory
 {
@@ -79,25 +85,28 @@ public static class PersonalInventory
     public static int Room(Citizen citizen, ResourceKind kind) =>
         Amount(citizen, kind) == 0 && citizen.PersonalGoods.Count >= MaximumKinds ? 0 : PerResource - Amount(citizen, kind);
 
-    public static void Add(Citizen citizen, ResourceKind kind, int amount, long basis)
+    public static void Add(Citizen citizen, ResourceKind kind, int amount, long basis, bool basisKnown = true)
     {
         if (amount < 1 || basis < 0 || amount > Room(citizen, kind))
             throw new GameRuleException("inventory.full", "Not enough room in the personal inventory.");
         var good = citizen.PersonalGoods.SingleOrDefault(x => x.Kind == kind);
-        if (good is null) { good = new PersonalGood { Kind = kind }; citizen.PersonalGoods.Add(good); }
+        if (good is null) { good = new PersonalGood { Kind = kind, CostBasisKnown = basisKnown }; citizen.PersonalGoods.Add(good); }
+        else good.CostBasisKnown &= basisKnown;
         good.Amount = checked(good.Amount + amount);
         good.CostBasis = checked(good.CostBasis + basis);
     }
 
-    public static long Remove(Citizen citizen, ResourceKind kind, int amount)
+    public static long Remove(Citizen citizen, ResourceKind kind, int amount) => RemoveWithCost(citizen, kind, amount).Basis;
+
+    public static InventoryCost RemoveWithCost(Citizen citizen, ResourceKind kind, int amount)
     {
         var good = citizen.PersonalGoods.SingleOrDefault(x => x.Kind == kind);
         if (amount < 1 || good is null || good.Amount < amount)
             throw new GameRuleException("inventory.missing", "You do not own enough of this material.");
-        var basis = amount == good.Amount ? good.CostBasis : good.CostBasis * amount / good.Amount;
+        var basis = amount == good.Amount ? good.CostBasis : (long)((Int128)good.CostBasis * amount / good.Amount);
         good.Amount -= amount; good.CostBasis -= basis;
         if (good.Amount == 0) citizen.PersonalGoods.Remove(good);
-        return basis;
+        return new(basis, good.CostBasisKnown);
     }
 }
 
@@ -140,11 +149,12 @@ public static class PrivateWarehouse
     {
         if (storage.OwnerAccountId != citizen.AccountId) throw new GameRuleException("building.private", "This is not your private storage.");
         if (amount < 1 || storage.FreeSpace(kind) < amount) throw new GameRuleException("inventory.full", "Not enough storage space.");
-        var basis = PersonalInventory.Remove(citizen, kind, amount);
+        var costRemoved = PersonalInventory.RemoveWithCost(citizen, kind, amount);
         storage.Put(kind, amount);
         var cost = storage.PersonalCosts.SingleOrDefault(x => x.Kind == kind);
-        if (cost is null) { cost = new PersonalGood { Kind = kind }; storage.PersonalCosts.Add(cost); }
-        cost.Amount += amount; cost.CostBasis = checked(cost.CostBasis + basis);
+        if (cost is null) { cost = new PersonalGood { Kind = kind, CostBasisKnown = costRemoved.Known }; storage.PersonalCosts.Add(cost); }
+        else cost.CostBasisKnown &= costRemoved.Known;
+        cost.Amount += amount; cost.CostBasis = checked(cost.CostBasis + costRemoved.Basis);
     }
 
     public static int Withdraw(Citizen citizen, Desertod.Domain.Storage.StorageBuilding storage, ResourceKind kind, int requested)
@@ -157,10 +167,10 @@ public static class PrivateWarehouse
         if (amount < 1) throw new GameRuleException("inventory.full", "Nothing can be taken into the personal inventory.");
         var cost = storage.PersonalCosts.SingleOrDefault(x => x.Kind == kind);
         if (cost is null || cost.Amount < amount) throw new GameRuleException("inventory.basis", "The private warehouse needs reconciliation.");
-        var basis = amount == cost.Amount ? cost.CostBasis : cost.CostBasis * amount / cost.Amount;
+        var basis = amount == cost.Amount ? cost.CostBasis : (long)((Int128)cost.CostBasis * amount / cost.Amount);
         cost.Amount -= amount; cost.CostBasis -= basis;
         if (cost.Amount == 0) storage.PersonalCosts.Remove(cost);
-        storage.Take(kind, amount, 0, durability); PersonalInventory.Add(citizen, kind, amount, basis);
+        storage.Take(kind, amount, 0, durability); PersonalInventory.Add(citizen, kind, amount, basis, cost.CostBasisKnown);
         return amount;
     }
 }

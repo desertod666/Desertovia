@@ -1,0 +1,41 @@
+import {test,expect} from './fixtures.ts'
+declare global {interface Window {economyCalls:{requestId:string;action:string;[key:string]:unknown}[];workCalls:unknown[];failEconomyOnce:boolean}}
+
+for(const language of ['en','ru']) {
+  test(`public order publication retry preserves its deadline and request (${language})`,async({page})=>{
+    await page.addInitScript(value=>localStorage.setItem('desertod.language',value),language)
+    await page.setViewportSize({width:320,height:760})
+    await page.goto('/e2e/economy-harness.html?orders=owner')
+    await page.locator('.economy-panel > summary').click()
+    await page.locator('.work-orders > summary').click()
+    await page.getByText(language==='ru'?'Новый заказ':'New work order',{exact:true}).click()
+    await page.getByLabel(language==='ru'?'Полезных циклов':'Useful cycles',{exact:true}).fill('2')
+    await page.evaluate(()=>{window.failEconomyOnce=true})
+    const publish=page.getByRole('button',{name:language==='ru'?'Зарезервировать 20':'Reserve 20',exact:true})
+    await publish.click();await expect(page.getByRole('alert')).toBeVisible()
+    await publish.click();await expect(page.getByRole('alert')).toHaveCount(0)
+    const calls=await page.evaluate(()=>window.economyCalls.filter(c=>c.action==='publish-work-order'))
+    expect(calls).toHaveLength(2);expect(calls[0]).toEqual(calls[1])
+    await expect(page.locator('.work-orders')).toContainText(language==='ru'?'Свободная казна: 80':'Available treasury: 80')
+    const overflow=await page.locator('.modal').evaluate(el=>el.scrollWidth>el.clientWidth)
+    expect(overflow).toBe(false)
+    await page.screenshot({path:test.info().outputPath(`orders-${language}.png`)})
+  })
+  test(`worker accepts one funded cycle and personal work remains explicit (${language})`,async({page})=>{
+    await page.addInitScript(value=>localStorage.setItem('desertod.language',value),language)
+    await page.goto('/e2e/economy-harness.html?orders=worker')
+    await page.locator('.economy-panel > summary').click();await page.locator('.work-orders > summary').click()
+    await expect(page.getByText(language==='ru'?'Новый заказ':'New work order',{exact:true})).toHaveCount(0)
+    const accept=page.getByRole('button',{name:language==='ru'?'Взять цикл':'Accept one cycle',exact:true})
+    await accept.click();await expect(accept).toBeDisabled()
+    const calls=await page.evaluate(()=>window.workCalls)
+    expect(calls).toHaveLength(1);expect(calls[0]).toMatchObject({taskId:'chop-wood',workOrderId:'11111111-1111-4111-8111-111111111111'})
+    expect(calls[0]).toHaveProperty('requestId')
+    await page.goto('/e2e/economy-harness.html?orders=worker')
+    await page.locator('.economy-panel > summary').click();await page.locator('.work-orders > summary').click()
+    await page.getByText(language==='ru'?'Личная работа':'Personal work',{exact:true}).click()
+    await page.getByRole('button',{name:language==='ru'?'Начать для себя':'Start personal work',exact:true}).click()
+    await expect.poll(()=>page.evaluate(()=>window.workCalls.length)).toBe(1)
+    expect(await page.evaluate(()=>window.workCalls[0])).toMatchObject({taskId:'chop-wood',ownership:'PrivateExtraction'})
+  })
+}

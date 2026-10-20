@@ -7,9 +7,10 @@ import { EnergyDrinkCard } from './EnergyDrinkShop'
 import { EconomicGoldIcon } from './EconomicGoldIcon'
 import { ResourceIcon } from './TileIcon'
 import { Hint } from './Hint'
+import { WorkOrdersPanel } from './WorkOrdersPanel'
 
 /** Extends the existing City/Inventory menu. The server owns money, stock and request receipts. */
-export function EconomyPanel({ village, catalog, citizen, accountId, onPrivatePlace, initialOpen=false }: {village: VillageState; catalog: Catalog; citizen?: Citizen|null; accountId?: string; initialOpen?:boolean; onPrivatePlace?: (building:BuildingDefinition)=>void}) {
+export function EconomyPanel({ village, catalog, citizen, accountId, onPrivatePlace, onCitizen, initialOpen=false }: {village: VillageState; catalog: Catalog; citizen?: Citizen|null; accountId?: string; initialOpen?:boolean; onPrivatePlace?: (building:BuildingDefinition)=>void; onCitizen?: (citizen:Citizen)=>void}) {
   const i18n = useI18n(), ru = i18n.language === 'ru'
   const text = (r: string, e: string) => ru ? r : e
   const [open, setOpen] = useState(initialOpen), [view, setView] = useState<EconomyView|null>(null)
@@ -46,8 +47,8 @@ export function EconomyPanel({ village, catalog, citizen, accountId, onPrivatePl
       requests.current.set(key, request)
     }
     locked.current = true; setBusy(true); setError(''); setNotice('')
-    try { setView(await api.economyAction(village.slug, request)); setHistoryCursor(undefined); requests.current.delete(key); setNotice(text('Готово', 'Done')) }
-    catch (e) { setError(i18n.error(e)) }
+    try { setView(await api.economyAction(village.slug, request)); setHistoryCursor(undefined); requests.current.delete(key); setNotice(text('Готово', 'Done')); return true }
+    catch (e) { setError(i18n.error(e)); return false }
     finally { locked.current = false; setBusy(false) }
   }
   const units = Number(amount), validAmount = /^\d+$/.test(amount) && units >= 1 && units <= 100
@@ -76,7 +77,9 @@ export function EconomyPanel({ village, catalog, citizen, accountId, onPrivatePl
         <details><summary>{text('Моё имущество и передача','My possessions and transfers')}</summary>
           <p className="small">{text('Личное имущество хранится отдельно от общей ноши и склада. До 100 каждого материала.','Personal goods are separate from communal loads and storage. Up to 100 of each material.')}</p>
           {citizen && <p>{text('Общая экипировка на время работы','Communal gear borrowed for work')}: {citizen.weapon ? <><ResourceIcon kind={citizen.weapon} scale={1} sharpen={citizen.weaponSharpen ?? 0} /> {i18n.resource(citizen.weapon)}</> : '—'} · {citizen.armor ? i18n.resource(citizen.armor) : '—'}. {text('Вернётся на склад после работы.','Returned after work.')}</p>}
-          <div className="inventory-grid">{view.inventory.map(g => <div className="slot" key={g.kind}><ResourceIcon kind={g.kind} scale={2}/><span>{i18n.resource(g.kind)}</span><strong>{g.amount}/100</strong></div>)}</div>
+          <div className="inventory-grid">{view.inventory.map(g => <div className="slot" key={g.kind}><ResourceIcon kind={g.kind} scale={2}/><span>{i18n.resource(g.kind)}</span><strong>{g.amount}/100</strong><Hint className="help-button inventory-cost" label={text('Себестоимость','Acquisition cost')} text={g.costBasisKnown
+            ? `${text('Себестоимость всей партии','Whole stack acquisition cost')}: ${g.costBasis} ${i18n.t('currency.goldUnit')}`
+            : text('История стоимости этой партии не подтверждена. Продажа не включается в налогооблагаемую прибыль до уточнения учёта. Это не означает нулевую стоимость.','This stack’s cost history is unverified. Its sale is excluded from taxable profit until reconciliation. This does not mean its cost was zero.')}>ⓘ</Hint></div>)}</div>
           {view.inventory.length === 0 && <p className="muted small">{text('Личных вещей пока нет. Их можно купить у царства или добыть за его границей.','No personal goods yet. Buy from the kingdom or gather outside its boundary.')}</p>}
         </details>
         {citizen && <section className="economy-controls">
@@ -129,6 +132,7 @@ export function EconomyPanel({ village, catalog, citizen, accountId, onPrivatePl
           {historyCursor&&<button onClick={()=>setHistoryCursor(undefined)}>{text('К новым записям','Latest entries')}</button>}
         </details>
         <button disabled={busy} onClick={()=>void refresh()}>{text('Обновить','Refresh')}</button>
+        <WorkOrdersPanel village={village} catalog={catalog} citizen={citizen} view={view} busy={busy} onAction={act} onCitizen={onCitizen} onRefresh={refresh}/>
       </>}
     </>}
   </details>
