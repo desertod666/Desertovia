@@ -1,5 +1,77 @@
 {
   "schema_version": 1,
+  "planning_1_0": {
+    "decision": "D-103",
+    "recorded_on": "2026-10-20",
+    "status": "waiting_for_source_package",
+    "scope": "analysis_and_repository_documentation_only",
+    "implementation_authorized": false,
+    "deployment_authorized": false,
+    "game_code_changed": false,
+    "bot_code_changed": false,
+    "runtime_started": false,
+    "runtime_tests_run": false,
+    "deployed": false,
+    "pushed": false,
+    "branch": "docs/desertovia-1-0-audit",
+    "source_commits": {
+      "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
+      "bot": "76de289b00a99c8e40fb2c061beab6e7af216b5c",
+      "vadim_original_main": "e23bc943bac17e55d4d5a0b0805d07d53de02108",
+      "vadim_continuation_main": "c42973fe38a8934fdfdabe1ab65512d3f13aa949",
+      "vadim_tiered_tools_review_only": "b617f8d9f38fcc700400dbf2e7239f931d8d2127"
+    },
+    "source_package": {
+      "entrypoint": "00_START_HERE.txt",
+      "located": false,
+      "read": false,
+      "reconciled": false,
+      "question_sent_to_owner": true
+    },
+    "documents": [
+      "UNIFIED_PLAN_1_0.md",
+      "CODE_AUDIT_1_0.md",
+      "FARM_BALANCE_1_0.md",
+      "PLANNING_PROGRESS_1_0.md"
+    ],
+    "completed": [
+      "pinned_game_bot_and_vadim_refs",
+      "existing_systems_source_audit",
+      "reviewed_new_upstream_tools_without_merge",
+      "unified_preliminary_plan_all_requested_systems",
+      "farm_food_workpay_trade_rest_dependencies",
+      "arithmetic_scenarios_5_10_20",
+      "historical_document_navigation_updated"
+    ],
+    "pending": [
+      "obtain_source_package_path",
+      "read_all_package_documents",
+      "record_package_manifest_and_hashes",
+      "map_each_package_requirement_to_DV1_id",
+      "resolve_product_contracts_from_package",
+      "finalize_farm_balance_parameters",
+      "finalize_documentation_after_package_reconciliation"
+    ],
+    "validation": {
+      "status": "passed_documentation_checks",
+      "checked_at_utc": "2026-10-20T14:14:28.256926+00:00",
+      "json_parsed": true,
+      "local_markdown_links_checked": 16,
+      "task_ids_checked": 23,
+      "arithmetic_scenarios_checked": true,
+      "historical_progress_preserved": true,
+      "instruction_headers_synchronized": true,
+      "diff_check": "pass",
+      "mutations": "documentation_only_15_files",
+      "bot_checkout_clean": true,
+      "vscode_workspace_confirmed": true,
+      "game_runtime_tree_equals_recorded_0_7_16_source": true,
+      "gameplay_tests": "not_run_documentation_only",
+      "package_requirements_check": "waiting_for_source_package",
+      "production_check": "not_performed"
+    },
+    "historical_release_fields_below_are_not_1_0_status": true
+  },
   "recorded_on": "2026-10-19",
   "phase": "released_verified",
   "architecture": "adapt_existing_dotnet_react_pixi",

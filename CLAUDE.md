@@ -1,3 +1,23 @@
+# D-103 · Дезертовия 1.0: только анализ и документация — 20.10.2026
+
+Последнее поручение владельца: «Сейчас выполняй анализ и уточнение документации.
+Написание игрового кода и выкладку этим поручением не запускай».
+Это текущая граница работы; исторические разрешения на 0.7.x ниже не разрешают
+новую реализацию/выкладку. Игровая версия не меняется.
+
+Точка входа: docs/dezertovia/UNIFIED_PLAN_1_0.md; доказательства и source SHA:
+CODE_AUDIT_1_0.md; ферма/питание/труд: FARM_BALANCE_1_0.md;
+состояние: PLANNING_PROGRESS_1_0.md и progress.json.planning_1_0.
+Внешний пакет с 00_START_HERE.txt пока не найден, путь запрошен. До получения
+не объявлять требования пакета прочитанными или полностью сверенными.
+Работать в отдельной docs-ветке, через открытый VS Code, сохранять progress.
+Оба репозитория и новая ветка инструментов Вадима прочитаны без интеграции.
+Ни игровые entrypoint, ни старые rollout requests, ни production пробы не запускать.
+
+Исторические записи прошлых этапов ниже сохраняются.
+
+---
+
 # 0.7.16 УСТАНОВЛЕНА И НЕЗАВИСИМО ПРОВЕРЕНА — 19 октября 2026
 
 Verified 2026-10-19T10:40:06.689723+00:00. Gameexact4bb125f2dc05711ebaf4dac2723f3ee19eae3ea9, CI39236625836 SUCCESS537Domain/288API/238browser+2normalSkip (120+120 cases, both shards required),4unit/lint/build/Docker. Botexact8dbbc3a000367a84c12869f6aed0a2b12318c148, CI39236650441 SUCCESS1104/serverSKIPPED.45operatorguards and16additional Chromium/WebKit checks. SourcePR71 merged72521742; botPR95/96/98 finalmerge1366a0b8, exact tested trees.
