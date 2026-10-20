@@ -3,6 +3,8 @@ using System.Text.Json;
 using Desertod.Domain;
 using Desertod.Domain.Entities;
 using Desertod.Domain.Economy;
+using Desertod.Domain.Farming;
+using Desertod.Domain.Rules;
 using Desertod.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +12,48 @@ namespace Desertod.Api.Game;
 
 public sealed partial class GameService
 {
+    private static async Task RecordFarmChangesAsync(DesertodDbContext db,Village village,CycleReport? report,CancellationToken ct)
+    {
+        foreach(var snapshot in report?.FarmChanges??[])
+        {
+            var record=await db.FarmCrops.SingleOrDefaultAsync(c=>c.Id==snapshot.Id,ct);
+            if(record is null)
+            {
+                record=new(){Id=snapshot.Id,VillageId=village.Id,PlotId=snapshot.PlotId,BedIndex=snapshot.Index,
+                    Crop=snapshot.Crop,ContributionVersion=snapshot.ContributionVersion,SownAt=snapshot.SownAt};
+                db.FarmCrops.Add(record);
+            }
+            if(record.VillageId!=village.Id || record.PlotId!=snapshot.PlotId || record.BedIndex!=snapshot.Index || record.Crop!=snapshot.Crop
+                || record.ContributionVersion!=snapshot.ContributionVersion || record.SownAt!=snapshot.SownAt)
+                throw new GameRuleException("farm.changed","The crop history does not match this accepted work.");
+            if(record.HarvestedAt is not null)continue;
+            foreach(var action in snapshot.Contributions)
+                if(!record.Contributions.Any(c=>FarmContributionRules.SameWork(c,action)))record.Contributions.Add(FarmContributionRules.Copy(action));
+            if(snapshot.HarvestedAt is {} harvested)
+            {
+                record.HarvestedAt=harvested;record.YieldFactor=snapshot.YieldFactor;
+                record.Produced.AddRange(snapshot.Produced);record.Lost.AddRange(snapshot.Lost);
+            }
+        }
+    }
+
+    /// <summary>Public shared-farm history, like the village's visible fields; bounded and scoped to the selected world.</summary>
+    public async Task<IReadOnlyList<FarmCropHistoryDto>> GetFarmHistoryAsync(string slug,string? plotId,Guid? before,CancellationToken ct)
+    {
+        var villageId=await FindVillageIdAsync(slug,ct);
+        await using var db=await contextFactory.CreateDbContextAsync(ct);
+        var village=await db.Villages.AsNoTracking().SingleAsync(v=>v.Id==villageId,ct);
+        var query=db.FarmCrops.AsNoTracking().Where(c=>c.VillageId==villageId);
+        if(plotId is not null)query=query.Where(c=>c.PlotId==plotId);
+        if(before is {} cursor)query=query.Where(c=>c.Id.CompareTo(cursor)<0);
+        var records=await query.OrderByDescending(c=>c.Id).Take(20).ToListAsync(ct);
+        var living=village.Fields.Where(b=>b.Crop is not null).Select(b=>b.GenerationId).ToHashSet();
+        return records.Select(c=>new FarmCropHistoryDto(c.Id,c.PlotId,c.BedIndex,c.Crop,c.SownAt,c.HarvestedAt,
+            c.HarvestedAt is not null ? "Harvested" : living.Contains(c.Id) ? "Growing" : "Lost",
+            c.Contributions.Select(FarmCareDto.From).ToArray(),
+            c.Produced.Select(p=>new Desertod.Domain.Catalog.ResourceAmount(p.Resource,Math.Max(0,p.Amount-c.Lost.Where(l=>l.Resource==p.Resource).Sum(l=>l.Amount)))).Where(p=>p.Amount>0).ToArray(),c.Lost)).ToArray();
+    }
+
     private static async Task<bool> FarmReceiptAsync(DesertodDbContext db, Village village, Guid actor,
         Guid requestId, object payload, DateTimeOffset now, CancellationToken ct)
     {

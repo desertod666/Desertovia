@@ -115,7 +115,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   /** Citizen the Tsar clicked: appoints them Governor or writes their subtitle. */
   const [subtitleFor, setSubtitleFor] = useState<string | null>(null)
   /** Place on the map the player clicked to send their citizen there. */
-  const [picked, setPicked] = useState<{ target: WorldTarget; screen: { x: number; y: number } } | null>(null)
+  const [picked, setPicked] = useState<{ target: WorldTarget; screen: { x: number; y: number };farmTaskId?:string } | null>(null)
   const [enemyPick,setEnemyPick]=useState<{battleId:string;unitId:string;selectionToken:number}|null>(null)
   const enemySelection=useRef(0)
   const [notice, setNotice] = useState<string | null>(null)
@@ -461,6 +461,12 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   }
 
   const start = (task: Task, spot: TilePoint | null = null, workplacePlotId?: string, farmTarget?:FarmWorkTarget) => {
+    if(!farmTarget&&(['Sow','Water','Harvest'].includes(task.effect)||task.id==='tend-fields')) {
+      const farms=live.state?.structures.filter(s=>s.kind==='Farm')??[]
+      const farm=workplacePlotId?farms.find(s=>s.plotId===workplacePlotId):farms.find(s=>!s.ownerAccountId)??farms.find(s=>s.ownerAccountId===me.id)
+      const beds=farm?live.state?.fields.filter(b=>b.plotId===farm.plotId)??[]:[]
+      if(farm&&beds.length>0&&beds.every(b=>!!b.generationId)){setPanel('none');setPicked({target:{kind:'building',building:'Farm',plotId:farm.plotId,area:null,storage:false},screen:{x:innerWidth/2,y:innerHeight/3},farmTaskId:task.id});return}
+    }
     const key=JSON.stringify([slug,task.id,spot,workplacePlotId,farmTarget])
     let requestId=taskStartRequests.current.get(key)
     if(!requestId){requestId=createOperationId();taskStartRequests.current.set(key,requestId)}
@@ -485,7 +491,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
     }
     const task = catalog?.tasks.find((t) => t.id === finished.taskId)
     if (task) {
-      if(['Sow','Water','Harvest'].includes(task.effect)){openMenu('tasks');return}
+      if(['Sow','Water','Harvest'].includes(task.effect)){void start(task,null,finished.targetPlotId??undefined);return}
       const ownership=citizen?.cycleOwnership
       if(ownership==='PrivateExtraction'||ownership==='PrivateCraft')void run(()=>api.startTask(slug,task.id,againAt(task),finished.targetPlotId??undefined,{ownership}))
       else void start(task, againAt(task), finished.targetPlotId ?? undefined)
@@ -867,9 +873,12 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
       )}
 
       {showPicked && citizen && (
-        <ServerClock key={`${picked.screen.x},${picked.screen.y}`} offsetMs={serverOffset}>
+        <ServerClock key={`${picked.screen.x},${picked.screen.y},${picked.farmTaskId??''},${'plotId' in picked.target?picked.target.plotId:''}`} offsetMs={serverOffset}>
           {(now) => (
             <TargetPopup
+              slug={slug}
+              workers={citizens}
+              initialFarmTaskId={picked.farmTaskId}
               target={picked.target}
               screen={picked.screen}
               phone={phone}

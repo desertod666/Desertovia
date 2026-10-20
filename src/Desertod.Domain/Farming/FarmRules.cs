@@ -116,7 +116,8 @@ public static class FarmRules
     }
 
     /// <summary>Sows the crop in the first empty bed. Returns false when someone sowed the last one first.</summary>
-    public static bool Sow(Village village, CropKind crop, DateTimeOffset now, Guid? owner = null, FarmWorkTarget? target = null)
+    public static bool Sow(Village village, CropKind crop, DateTimeOffset now, Guid? owner = null, FarmWorkTarget? target = null,
+        FarmWorker? worker=null,int contributionVersion=0,ICollection<FarmCropSnapshot>? changes=null)
     {
         EnsureBeds(village);
         if ((target is null ? EmptyBed(village, owner) : TargetBed(village,owner,target)) is not { Crop:null } bed)
@@ -128,27 +129,41 @@ public static class FarmRules
         bed.GenerationId=Guid.CreateVersion7();
         bed.Growth = 0;
         bed.UpdatedAt = now;
+        bed.ContributionVersion=owner is null && worker is not null ? contributionVersion : 0;
+        bed.SownAt=now;
+        bed.Contributions.Clear();
+        if(worker is not null)FarmContributionRules.Record(bed,FarmStep.Sow,worker,now);
+        if(FarmContributionRules.Snapshot(bed) is {} snapshot)changes?.Add(snapshot);
         return true;
     }
 
     /// <summary>Waters the thirstiest beds. Returns how many were watered.</summary>
-    public static int Water(Village village, DateTimeOffset now, Guid? owner = null, IReadOnlyList<FarmWorkTarget>? targets = null)
+    public static int Water(Village village, DateTimeOffset now, Guid? owner = null, IReadOnlyList<FarmWorkTarget>? targets = null,
+        FarmWorker? worker=null,ICollection<FarmCropSnapshot>? changes=null,DateTimeOffset? completedAt=null)
     {
         EnsureBeds(village);
+        DateTimeOffset At(FieldBed bed)=>owner is null && worker is not null && bed.ContributionVersion==FarmContributionRules.Version ? completedAt??now : now;
         var watered = (targets is null ? ThirstyBeds(village, now, owner).Take(FarmCatalog.BedsPerWatering)
-            : targets.Select(t=>TargetBed(village,owner,t)).OfType<FieldBed>().Distinct().Where(b=>IsThirsty(village,b,now))).ToList();
+            : targets.Select(t=>TargetBed(village,owner,t)).OfType<FieldBed>().Distinct().Where(b=>IsThirsty(village,b,At(b)))).ToList();
         foreach (var bed in watered)
         {
-            bed.Growth = GrowthOf(village, bed, now);
-            bed.UpdatedAt = now;
-            bed.WateredUntil = now + FarmCatalog.WaterDuration;
+            var at=At(bed);
+            bed.Growth = GrowthOf(village, bed, at);
+            bed.UpdatedAt = at;
+            bed.WateredUntil = at + FarmCatalog.WaterDuration;
+            if(owner is null && worker is not null)
+            {
+                FarmContributionRules.Record(bed,FarmStep.Water,worker,at);
+                if(FarmContributionRules.Snapshot(bed) is {} snapshot)changes?.Add(snapshot);
+            }
         }
 
         return watered.Count;
     }
 
     /// <summary>Empties the first ripe bed and returns its crop; null when someone harvested it first.</summary>
-    public static CropDefinition? Harvest(Village village, DateTimeOffset now, Guid? owner = null, FarmWorkTarget? target = null)
+    public static CropDefinition? Harvest(Village village, DateTimeOffset now, Guid? owner = null, FarmWorkTarget? target = null,
+        FarmWorker? worker=null,ICollection<FarmCropSnapshot>? changes=null)
     {
         EnsureBeds(village);
         if ((target is null ? RipeBed(village, now, owner) : TargetBed(village,owner,target)) is not { Crop: { } crop } bed || !IsRipe(village,bed,now))
@@ -156,10 +171,18 @@ public static class FarmRules
             return null;
         }
 
+        if(owner is null && worker is not null)
+        {
+            FarmContributionRules.Record(bed,FarmStep.Harvest,worker,now);
+            if(FarmContributionRules.Snapshot(bed,now) is {} snapshot)changes?.Add(snapshot);
+        }
         bed.Crop = null;
         bed.GenerationId=Guid.CreateVersion7();
         bed.Growth = 0;
         bed.UpdatedAt = now;
+        bed.SownAt=null;
+        bed.Contributions.Clear();
+        bed.ContributionVersion=0;
         return FarmCatalog.Get(crop);
     }
 

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-20T20:44:45.797446+00:00",
+  "sha": "7ff51bbd190ad2fb790d5046221088fd266c1de9",
+  "run_id": 39489047549,
+  "url": "https://github.com/desertod666/Desertovia/actions/runs/39489047549",
+  "result": "success",
+  "jobs": {
+    "backend": 118856963871,
+    "frontend": 118856963730,
+    "docker": 118856963813,
+    "desktop": 118856963872,
+    "phone": 118856963225
+  },
+  "passed": {
+    "domain": 577,
+    "api": 317,
+    "desktop_browser": 158,
+    "phone_browser": 156
+  },
+  "browser_skipped": 2,
+  "scope": "narrow admission, allocator component and persistent dev-world setup; before per-crop history",
+  "public_release": false
+}

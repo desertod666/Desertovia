@@ -108,7 +108,18 @@ public sealed record WildsDto(
 /// <param name="WateredUntil">The bed is wet until then.</param>
 /// <param name="Thirsty">Growing and drying out soon: watering reaches it.</param>
 public sealed record FieldBedDto(string PlotId, int Index, CropKind? Crop, double Growth, DateTimeOffset? WateredUntil, bool Thirsty)
-{ [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.Never)] public Guid GenerationId { get; init; } }
+{
+    [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.Never)] public Guid GenerationId { get; init; }
+    public int ContributionVersion { get; init; }
+    public DateTimeOffset? SownAt { get; init; }
+    public IReadOnlyList<FarmCareDto> Contributions { get; init; } = [];
+}
+public sealed record FarmCareDto(Guid AccountId,string Name,FarmStep Step,DateTimeOffset StartedAt,DateTimeOffset CompletedAt)
+{
+    public static FarmCareDto From(FarmContribution c)=>new(c.AccountId,c.Name,c.Step,c.StartedAt,c.CompletedAt);
+}
+public sealed record FarmCropHistoryDto(Guid Id,string PlotId,int BedIndex,CropKind Crop,DateTimeOffset SownAt,DateTimeOffset? HarvestedAt,
+    string Status,IReadOnlyList<FarmCareDto> Contributions,IReadOnlyList<ResourceAmount> Received,IReadOnlyList<ResourceAmount> Lost);
 
 /// <param name="Available">Not discovered and every technology it builds on is; the Tsar or a Governor can put it to the vote.</param>
 /// <param name="CrewNeeded">Different citizens the research needs, scaled down for small streams.</param>
@@ -289,6 +300,7 @@ public sealed record CitizenSummaryDto(
     ResourceKind? Weapon,
     ExternalRecovery? Recovery = null)
 {
+    public IReadOnlyList<FarmWorkTarget> FarmTargets { get; init; } = [];
     public bool IsFarmer { get; init; }
     public bool CanManageFarm { get; init; }
     public RestState RestState { get; init; }
@@ -575,7 +587,7 @@ public static class DtoMapper
         village.Fields
             .OrderBy(b => b.PlotId)
             .ThenBy(b => b.Index)
-            .Select(b => new FieldBedDto(b.PlotId, b.Index, b.Crop, FarmRules.GrowthOf(village, b, now), b.WateredUntil, FarmRules.IsThirsty(village, b, now)){GenerationId=b.GenerationId})
+            .Select(b => new FieldBedDto(b.PlotId, b.Index, b.Crop, FarmRules.GrowthOf(village, b, now), b.WateredUntil, FarmRules.IsThirsty(village, b, now)){GenerationId=b.GenerationId,ContributionVersion=b.ContributionVersion,SownAt=b.SownAt,Contributions=b.Contributions.Select(FarmCareDto.From).ToArray()})
             .ToList(),
         village.ToWeatherDto(now),
         tsar,
@@ -716,7 +728,7 @@ public static class DtoMapper
             citizen.CycleEndsAt,
             citizen.Load.Select(g => g.Kind).ToList(),
             CombatRules.IsInjured(citizen, now) ? citizen.InjuredUntil : null,
-            citizen.Weapon, citizen.Recovery) {IsFarmer=citizen.IsFarmer,CanManageFarm=citizen.CanManageFarm&&citizen.IsGovernor,RestState=citizen.RestState,WeaponSharpen=citizen.WeaponSharpen,HospitalizedAt=citizen.HospitalizedAt,RescueByCitizenId=citizen.RescueByCitizenId,RescuePatientId=citizen.RescuePatientId,RescueJourney=citizen.RescueJourney,RescueRequestedAt=citizen.RescueRequestedAt,DefenseSector=citizen.DefenseSector,DefenseReadyAt=citizen.DefenseReadyAt};
+            citizen.Weapon, citizen.Recovery) {FarmTargets=citizen.CycleSettled ? [] : citizen.CycleFarmTargets,IsFarmer=citizen.IsFarmer,CanManageFarm=citizen.CanManageFarm&&citizen.IsGovernor,RestState=citizen.RestState,WeaponSharpen=citizen.WeaponSharpen,HospitalizedAt=citizen.HospitalizedAt,RescueByCitizenId=citizen.RescueByCitizenId,RescuePatientId=citizen.RescuePatientId,RescueJourney=citizen.RescueJourney,RescueRequestedAt=citizen.RescueRequestedAt,DefenseSector=citizen.DefenseSector,DefenseReadyAt=citizen.DefenseReadyAt};
     }
 
     public static CitizenDto ToDto(this Citizen citizen, Village village, DateTimeOffset now) => new(

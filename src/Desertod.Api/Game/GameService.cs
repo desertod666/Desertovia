@@ -703,6 +703,7 @@ public sealed partial class GameService(
         DateTimeOffset now,
         CancellationToken cancellationToken)
     {
+        await RecordFarmChangesAsync(db,village,report,cancellationToken);
         await PayUsefulWorkAsync(db, village, report, now, cancellationToken);
         await RescueSweepAsync(db,village,now,cancellationToken);
         if (report?.BuildingCompleted is not { } kind || BuildingCatalog.Get(kind).Shelter == 0)

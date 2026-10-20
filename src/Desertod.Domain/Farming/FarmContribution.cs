@@ -20,6 +20,26 @@ public static class FarmContributionRules
     /// <summary>Fractional Food and money claims use integer units; this does not create physical goods.</summary>
     public const long UnitsPerWhole = 1_000_000;
 
+    public static FarmContribution Copy(FarmContribution action) => new()
+    {AccountId=action.AccountId,Name=action.Name,Step=action.Step,StartedAt=action.StartedAt,CompletedAt=action.CompletedAt};
+
+    public static bool SameWork(FarmContribution a,FarmContribution b) =>
+        a.AccountId==b.AccountId && a.Step==b.Step && a.StartedAt==b.StartedAt;
+
+    /// <summary>Call only after useful work. One sow/fertilizer/harvest, multiple necessary waters.</summary>
+    public static void Record(FieldBed bed,FarmStep step,FarmWorker worker,DateTimeOffset completedAt)
+    {
+        if(bed.ContributionVersion!=Version)return;
+        var action=new FarmContribution{AccountId=worker.AccountId,Name=worker.Name,Step=step,StartedAt=worker.StartedAt,CompletedAt=completedAt};
+        if(bed.Contributions.Any(c=>SameWork(c,action) || step!=FarmStep.Water && c.Step==step))return;
+        bed.Contributions.Add(action);
+    }
+
+    public static FarmCropSnapshot? Snapshot(FieldBed bed,DateTimeOffset? harvestedAt=null) =>
+        bed.ContributionVersion==Version && bed.Crop is {} crop && bed.SownAt is {} sown
+            ? new(bed.GenerationId,bed.PlotId,bed.Index,crop,bed.ContributionVersion,sown,bed.Contributions.Select(Copy).ToArray(),harvestedAt)
+            : null;
+
     private static int Weight(FarmStep step) => step switch
     {
         FarmStep.Sow=>40, FarmStep.Water=>30, FarmStep.Fertilize=>10, FarmStep.Harvest=>20,

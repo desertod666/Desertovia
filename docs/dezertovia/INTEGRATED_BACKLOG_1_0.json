@@ -445,11 +445,19 @@
         "web/src/ui/FieldsCard.tsx",
         "web/src/ui/TargetPopup.tsx",
         "web/src/ui/TaskList.tsx",
-        "web/src/game/VillageWorld.ts"
+        "web/src/game/VillageWorld.ts",
+        "src/Desertod.Domain/Farming/FarmContribution.cs",
+        "src/Desertod.Domain/Farming/FarmCropRecord.cs",
+        "src/Desertod.Api/Game/GameService.Farm.cs",
+        "web/src/ui/FarmPlotBoard.tsx",
+        "web/src/ui/FarmCare.tsx",
+        "web/src/ui/FarmHistory.tsx"
       ],
       "existing_test_files": [
         "tests/Desertod.Domain.Tests/FarmingTests.cs",
-        "tests/Desertod.Domain.Tests/WeatherTests.cs"
+        "tests/Desertod.Domain.Tests/WeatherTests.cs",
+        "tests/Desertod.Domain.Tests/FarmHistoryTests.cs",
+        "tests/Desertod.Api.Tests/FarmHistoryApiTests.cs"
       ],
       "observed_facts": [
         "Три грядки на ферму, текущие Sow/Harvest выбирают первую подходящую цель; Water до трёх сухих.",
@@ -3023,7 +3031,7 @@
         "Закрытие окна не отменяет действие; допустимая отмена отдельная с последствиями. Нет автоухода, автопосева и отдельного XP за подготовительную кнопку."
       ],
       "done_when": "Любой назначенный фермер продолжает растение; дождь, снятие допуска, отдых и отсутствие 24ч сохраняют полезный вклад.",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partial_durable_contribution_and_harvest_history_locally_verified_inputs_fertilizer_pending",
       "source": "shared_farm_addendum_and_current_code",
       "acceptance_scope": {
         "FA02": "full_case",
@@ -3032,7 +3040,7 @@
       },
       "current_support": {
         "status": "partial",
-        "evidence": "Addressed useful sow/water/harvest already exists. Exact stage-weight allocator implemented/5 Domain cases; per-crop contributor persistence, history and fertilizer pending."
+        "evidence": "FarmCropRecord/FieldBed useful history, accepted version/timestamp, generation-keyed one-time harvest, durable departed/lost-crop history and exact allocator.585 Domain,4 new API cases plus expanded legacy null case; seeds/compost/financial issuance pending."
       }
     },
     {
@@ -3123,7 +3131,7 @@
       },
       "current_support": {
         "status": "partial",
-        "evidence": "FarmPlotBoard tool→bed prototype and seed selection,16 RU/EN desktop/phone checks before D106. Detailed timing/yield/participants/admission/reserve claims/final art not complete; no full FA03/FA04 PASS."
+        "evidence": "Named helpers/worker/rain/busy state, lazy paged history and manual menu/repeat routing.32 component RU/EN browser+2 real-map composition cases; quotes/financial claims/owner-spectator view/final art remain incomplete."
       }
     },
     {

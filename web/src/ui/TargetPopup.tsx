@@ -12,6 +12,7 @@ import {
   takesSpot,
   type Catalog,
   type Citizen,
+  type CitizenSummary,
   type FarmWorkTarget,
   type Task,
   type TilePoint,
@@ -22,6 +23,7 @@ import { useI18n, type Translator } from '../i18n'
 import type { UiKey } from '../i18n/en'
 import { FieldsCard } from './FieldsCard'
 import { FarmPlotBoard } from './FarmPlotBoard'
+import { FarmHistory } from './FarmHistory'
 import { SiteCard, type JobChoice } from './SitesPanel'
 import { StorageCard } from './StorageCard'
 import { TaskList } from './TaskList'
@@ -151,6 +153,9 @@ export function TargetPopup({
   onCivic,
   ruler,
   onClose,
+  slug,
+  workers=[],
+  initialFarmTaskId,
 }: {
   target: WorldTarget
   /** Where the map was clicked, in pixels from the top-left corner of the game. */
@@ -168,6 +173,9 @@ export function TargetPopup({
   onCivic: (plotId:string, operation:string)=>Promise<void>
   onTake: (plotId: string, resource: string, amount: number, sharpen?: number, durability?: number) => void
   onClose: () => void
+  slug?:string
+  workers?:CitizenSummary[]
+  initialFarmTaskId?:string
 }) {
   const [confirm,setConfirm]=useState(false),[operationError,setOperationError]=useState('')
   const operate=async(operation:string)=>{if(target.kind!=='building')return;try{await onCivic(target.plotId,operation);setConfirm(false)}catch(e){setOperationError(e instanceof Error?e.message:'Не удалось выполнить действие')}}
@@ -217,7 +225,8 @@ export function TargetPopup({
           <SiteCard site={site} catalog={catalog} village={village} citizen={citizen} disabled={disabled} onStartJob={onStartJob} />
         )}
         {farmDenied&&<p className="small warning">{i18n.language==='ru'?'Для работы нужен допуск фермера. Обратитесь к царю или управляющему фермой.':'A farmer appointment is required. Ask the Tsar or farm manager.'}</p>}
-        {addressedFarm?<FarmPlotBoard beds={beds} shared={!village.structures.find(s=>s.plotId===beds[0].plotId)?.ownerAccountId} now={now} raining={village.weather.raining} catalog={catalog} citizen={citizen} disabled={disabled||!!farmDenied} onWork={(task,bed)=>onStart(task,null,bed.plotId,{plotId:bed.plotId,index:bed.index,generationId:bed.generationId!})}/>:beds.length>0&&<FieldsCard beds={beds} now={now} raining={village.weather.raining}/>}
+        {addressedFarm?<FarmPlotBoard beds={beds} shared={!village.structures.find(s=>s.plotId===beds[0].plotId)?.ownerAccountId} now={now} raining={village.weather.raining} catalog={catalog} citizen={citizen} disabled={disabled||!!farmDenied} workers={workers} initialTaskId={initialFarmTaskId} onWork={(task,bed)=>onStart(task,null,bed.plotId,{plotId:bed.plotId,index:bed.index,generationId:bed.generationId!})}/>:beds.length>0&&<FieldsCard beds={beds} now={now} raining={village.weather.raining}/>}
+        {addressedFarm&&slug&&<FarmHistory slug={slug} plotId={beds[0].plotId} version={beds.map(b=>`${b.generationId}:${b.contributions?.length??0}`).join('|')}/>}
         {storage?.ownerAccountId&&<p className="small muted">{i18n.language==='ru'?'Пополнить личный склад можно из личного имущества в кошельке.':'Deposit personal goods through your wallet’s private warehouse controls.'}</p>}
         {storage && (
           <StorageCard

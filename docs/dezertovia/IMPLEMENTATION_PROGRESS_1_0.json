@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T19:58:42.916784+00:00",
+  "recorded_at_utc": "2026-10-20T20:44:45.798514+00:00",
   "status": "main_plan_active_farm_implementation",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "M1/cost/funded production orders verified at separate source checkpoints; addressed farm and spatial tool prototype partial. D106 current request only refines docs.",
+  "implemented_task": "F003 durable useful-work/crop history and late-settlement timing; F005 manual global farm commands and participant/history UI. Seeds/compost, protected Food reserve and funded harvest settlement pending.",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -42,14 +42,15 @@
     "bot_modified": false,
     "current_source_restarted": true,
     "tool_recipes_verified_http": 8,
-    "local_world_migrations": 44,
+    "local_world_migrations": 45,
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "FarmerAdmission migration44, role/access/allocator source and DevelopmentWorldSetup preservation followup. Persistent restart verification recorded separately.",
+    "loaded_scope": "FarmContributionHistory migration45, history/late timing/legacy null fixes; frontend Vite current. VS Code API launch also preserves dev worlds.",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
-    "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump"
+    "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
+    "pre_farm_history_backup": "/tmp/foundation-before-restart-20261020T202837Z.dump"
   },
   "checks": {
     "baseline_ci": {
@@ -526,8 +527,77 @@
       "scope": "real local Debug API restart with Hosting:PreserveDevelopmentWorlds=true, following correction of inherited Development demo reset behavior"
     },
     "farm_admission_full_ci": {
-      "status": "pending_after_checkpoint_push",
-      "scope": "admission, exact allocator and development persistence; earlier42e63c5 CI does not cover this source"
+      "schema_version": 1,
+      "recorded_at_utc": "2026-10-20T20:44:45.797446+00:00",
+      "sha": "7ff51bbd190ad2fb790d5046221088fd266c1de9",
+      "run_id": 39489047549,
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39489047549",
+      "result": "success",
+      "jobs": {
+        "backend": 118856963871,
+        "frontend": 118856963730,
+        "docker": 118856963813,
+        "desktop": 118856963872,
+        "phone": 118856963225
+      },
+      "passed": {
+        "domain": 577,
+        "api": 317,
+        "desktop_browser": 158,
+        "phone_browser": 156
+      },
+      "browser_skipped": 2,
+      "scope": "narrow admission, allocator component and persistent dev-world setup; before per-crop history",
+      "public_release": false,
+      "receipt": "FARM_ADMISSION_VERIFICATION_1_0.json"
+    },
+    "farm_history_domain": {
+      "passed": 585,
+      "failed": 0,
+      "scope": "whole Domain;8 new cases for cooperative history, snapshot isolation, rest/revocation, rain, late growth/water, legacy/private compatibility and null JSON"
+    },
+    "farm_history_api_initial": {
+      "passed": 11,
+      "failed": 1,
+      "unique_cases": 12,
+      "scope": "4 new history+4 addressed-bed+4 admission cases. Legacy missing JSON collection gave500; fixed defensive collection access, no old crop reset."
+    },
+    "farm_history_api_corrected": {
+      "passed": 4,
+      "failed": 0,
+      "scope": "all FarmHistoryApiTests after missing-field fix, before expanding old-cycle-null fixture",
+      "result_file": "TestResults/farm-history-final/Admin_DESKTOP-FQ85FTD_2026-10-20_22_25_35_net10.0.trx"
+    },
+    "farm_history_legacy_cycle_final": {
+      "passed": 1,
+      "failed": 0,
+      "scope": "expanded old field JSON plus NULL CycleFarmTargets and version0 accepted harvest, after defensive Citizen getter; no invented contributors",
+      "result_file": "TestResults/farm-history-legacy/Admin_DESKTOP-FQ85FTD_2026-10-20_22_29_52_net10.0.trx"
+    },
+    "farm_history_browser": {
+      "passed": 32,
+      "failed": 0,
+      "scope": "final component source, RU/EN desktop960/phone320, lazy20+1 history pages, named helpers, accepted worker, rain, busy no-request and existing access/target scenarios",
+      "visual_review": "phone social care screenshot inspected; duplicate worker notice removed and32 cases rerun successfully"
+    },
+    "farm_real_menu_browser": {
+      "passed": 2,
+      "failed": 0,
+      "scope": "actual Pixi GamePage on desktop/phone with real demo world/login/join/read state; task-menu Harvest opens farm with zero mutations, selected bed then emits generation-bound POST; final mutation mocked, not a natural full harvest run"
+    },
+    "farm_history_full_ci": {
+      "status": "pending_new_checkpoint",
+      "scope": "new history/late timing/UI/migration45 source is newer than7ff51bb"
+    },
+    "farm_history_local_migration": {
+      "from": 44,
+      "to": 45,
+      "result": "pass",
+      "citizen_and_crop_identity_hashes_unchanged": true,
+      "profiles_before": 13,
+      "fields_before": 3,
+      "worlds": 2,
+      "scope": "real Debug API restart before the2 real-menu test accounts joined; snapshots outside repo qa/farm-admission-world-history-before.json and history-after.json"
     }
   },
   "open_questions": [],
@@ -546,9 +616,10 @@
     "bot_deployed": false
   },
   "next_tasks": [
-    "F001 narrow admission implementation and verification",
-    "F003 persist useful contribution/harvest history and wire exact allocator",
-    "F004 protected physical food reserve and one funded harvest payment",
+    "F003 real seeds and bounded compost",
+    "F004 physical Food reserve and one funded harvest payment using existing orders",
+    "F005 forecasts/quotes, owner/spectator view and remaining complete farm UI",
+    "F006/T026 food/labor/market/recovery simulation",
     "remaining complete1.0 DAG"
   ],
   "screenshots": [
@@ -592,9 +663,10 @@
     "FARM-DESTROYED-PAY": "Owner chose no money before actual harvest. Destroyed crop creates neither Food nor cash wage. Reserved funds for an unharvested crop must be returned; completed work remains historical, not a money debt."
   },
   "active_tasks": [
-    "F001 narrow admission implementation and verification",
-    "F003 persist useful contribution/harvest history and wire exact allocator",
-    "F004 protected physical food reserve and one funded harvest payment",
+    "F003 real seeds and bounded compost",
+    "F004 physical Food reserve and one funded harvest payment using existing orders",
+    "F005 forecasts/quotes, owner/spectator view and remaining complete farm UI",
+    "F006/T026 food/labor/market/recovery simulation",
     "remaining complete1.0 DAG"
   ],
   "owner_menu_visual_requirement": {

@@ -534,6 +534,9 @@ export interface CropDefinition {
 
 /** One bed of a farm. */
 export interface FieldBed {
+  contributionVersion?:number
+  sownAt?:string|null
+  contributions?:FarmCare[]
   generationId?:string
   /** Plot of the farm. */
   plotId: string
@@ -549,6 +552,9 @@ export interface FieldBed {
   /** Growing and drying out soon: watering reaches it. */
   thirsty: boolean
 }
+
+export interface FarmCare {accountId:string;name:string;step:'Sow'|'Water'|'Fertilize'|'Harvest';startedAt:string;completedAt:string}
+export interface FarmCropHistory {id:string;plotId:string;bedIndex:number;crop:CropKind;sownAt:string;harvestedAt:string|null;status:'Growing'|'Harvested'|'Lost';contributions:FarmCare[];received:ResourceAmount[];lost:ResourceAmount[]}
 export interface FarmWorkTarget {plotId:string;index:number;generationId:string}
 
 /** Mirrors the server's tolerance for a ripe bed. */
@@ -1146,6 +1152,7 @@ export interface RescueJourney {
 }
 
 export interface CitizenSummary {
+  farmTargets?:FarmWorkTarget[]
   isFarmer?:boolean
   canManageFarm?:boolean
   restState?: RestState
@@ -1658,6 +1665,8 @@ export const api = {
     request<CitizenSummary>('PUT',`/api/villages/${encodeURIComponent(slug)}/citizens/${encodeURIComponent(citizenId)}/farm-access`,conditions),
   enableFarmerAdmission: (slug:string,requestId:string) =>
     request<VillageState>('PUT',`/api/villages/${encodeURIComponent(slug)}/farm/admission`,{requestId}),
+  farmHistory: (slug:string,plotId:string,before?:string) =>
+    request<FarmCropHistory[]>('GET',`/api/villages/${encodeURIComponent(slug)}/farm/history?plotId=${encodeURIComponent(plotId)}${before?`&before=${encodeURIComponent(before)}`:''}`),
   openDungeon: (slug: string, dungeonId: string = DEAD_LANDS) =>
     request<VillageState>('POST', `/api/villages/${encodeURIComponent(slug)}/dungeon`, { dungeonId }),
   cancelDungeon: (slug: string) => request<VillageState>('DELETE', `/api/villages/${encodeURIComponent(slug)}/dungeon`),

@@ -1,10 +1,11 @@
 import {useState} from 'react'
-import {isRipe,type Catalog,type Citizen,type FieldBed,type Task} from '../api'
+import {isRipe,type Catalog,type Citizen,type CitizenSummary,type FieldBed,type Task} from '../api'
 import {cropTile} from '../game/worldMap'
 import {useI18n} from '../i18n'
 import {ActionEnergy} from './ActionEnergy'
 import {Hint} from './Hint'
 import {TileIcon} from './TileIcon'
+import {FarmCare} from './FarmCare'
 
 type Tool='inspect'|'sow'|'water'|'harvest'
 function ToolIcon({tool}:{tool:Tool}) {
@@ -18,28 +19,33 @@ function ToolIcon({tool}:{tool:Tool}) {
 }
 
 /** Select a tool, then apply it to a real bed. Cards and implicit first-bed actions are not the interaction model. */
-export function FarmPlotBoard({beds,shared,now,raining,catalog,citizen,disabled,onWork}:{beds:FieldBed[];shared:boolean;now:number;raining:boolean;catalog:Catalog;citizen:Citizen;disabled:boolean;onWork:(task:Task,bed:FieldBed)=>void}) {
+export function FarmPlotBoard({beds,shared,now,raining,catalog,citizen,disabled,workers=[],initialTaskId,onWork}:{beds:FieldBed[];shared:boolean;now:number;raining:boolean;catalog:Catalog;citizen:Citizen;disabled:boolean;workers?:CitizenSummary[];initialTaskId?:string;onWork:(task:Task,bed:FieldBed)=>void}) {
  const i18n=useI18n(),text=(ru:string,en:string)=>i18n.language==='ru'?ru:en
- const [tool,setTool]=useState<Tool>('inspect'),[selected,setSelected]=useState<number|null>(null),[seedId,setSeedId]=useState('sow-turnips'),[notice,setNotice]=useState('')
+ const [tool,setTool]=useState<Tool>(()=>initialTaskId?.startsWith('sow-')?'sow':initialTaskId==='water-fields'?'water':initialTaskId==='harvest'?'harvest':'inspect'),[selected,setSelected]=useState<number|null>(null),[seedId,setSeedId]=useState(initialTaskId?.startsWith('sow-')?initialTaskId:'sow-turnips'),[notice,setNotice]=useState('')
  const labels:Record<Tool,string>={inspect:text('Осмотр','Inspect'),sow:text('Семена','Seeds'),water:text('Лейка','Water'),harvest:text('Сбор','Harvest')}
  const farming=citizen.skills.find(s=>s.skill==='Farming')?.level??0
  const seeds=catalog.tasks.filter(t=>t.effect==='Sow'&&t.skillLevel<=farming)
  const sow=seeds.find(t=>t.id===seedId)??seeds[0]
  const task=tool==='sow'?sow:catalog.tasks.find(t=>t.effect===(tool==='water'?'Water':tool==='harvest'?'Harvest':undefined))
  const chosen=beds.find(b=>b.index===selected)
+ const workingOn=(bed:FieldBed)=>workers.find(w=>w.farmTargets?.some(t=>t.plotId===bed.plotId&&t.index===bed.index&&t.generationId===bed.generationId))
+ const worker=chosen&&workingOn(chosen)
  const useful=(bed:FieldBed)=>tool==='inspect'||tool==='sow'&&bed.crop===null||tool==='water'&&bed.thirsty&&!raining||tool==='harvest'&&isRipe(bed)
  const status=(bed:FieldBed)=>bed.crop===null?i18n.t('field.empty'):isRipe(bed)?i18n.t('field.ripe'):
   `${i18n.crop(bed.crop)} · ${Math.floor(bed.growth*100)}% · ${raining?i18n.t('field.rain'):bed.wateredUntil&&Date.parse(bed.wateredUntil)>now?text('Влажно','Wet'):text('Сухо','Dry')}`
  const apply=(bed:FieldBed)=>{
   setSelected(bed.index);setNotice('')
   if(tool==='inspect'||disabled)return
+  const assigned=workingOn(bed)
+  if(assigned){setNotice(text('Грядка занята.','This bed is busy.'));return}
   if(!useful(bed)||!task){setNotice(text('Этому участку сейчас не нужно выбранное действие.','This bed does not need the selected action right now.'));return}
   onWork(task,bed)
  }
  return <section className="farm-board" aria-label={text('Участок фермы','Farm plot')}>
   <div className="farm-board-heading"><span>🌱 {shared?text('Общие грядки','Shared beds'):text('Личные грядки','Private beds')}</span><Hint className="help-button" label={text('Как работать с грядками','How to work on beds')} text={text('Выберите инструмент внизу, затем нажмите на нужную грядку. Для посадки сначала выберите семена. Осмотр показывает рост и влажность.','Select a tool below, then tap the bed you want to work on. Choose seeds before planting. Inspect shows growth and moisture.')}>ⓘ</Hint></div>
+  {raining&&<p className="farm-rain">{text('Поливает дождь','Rain waters the beds')}</p>}
   <div className="farm-ground" role="group" aria-label={text('Грядки','Beds')}>
-   {beds.map(bed=><button key={bed.index} type="button" className={`farm-plot ${bed.crop===null?'empty':''} ${isRipe(bed)?'ripe':''} ${bed.thirsty?'thirsty':''} ${selected===bed.index?'selected':''} ${!useful(bed)?'not-needed':''}`} disabled={disabled&&tool!=='inspect'} aria-pressed={selected===bed.index} aria-label={i18n.t('field.bed',{number:bed.index+1})} onClick={()=>apply(bed)}>
+   {beds.map(bed=><button key={bed.index} type="button" className={`farm-plot ${bed.crop===null?'empty':''} ${isRipe(bed)?'ripe':''} ${bed.thirsty?'thirsty':''} ${raining||bed.wateredUntil&&Date.parse(bed.wateredUntil)>now?'wet':'dry'} ${selected===bed.index?'selected':''} ${!useful(bed)?'not-needed':''}`} disabled={disabled&&tool!=='inspect'} aria-pressed={selected===bed.index} aria-label={i18n.t('field.bed',{number:bed.index+1})} onClick={()=>apply(bed)}>
     <span className="farm-soil" aria-hidden="true"/>
     {bed.crop&&<span className="farm-crop"><TileIcon tile={cropTile(bed.crop,bed.growth,isRipe(bed))} scale={3}/></span>}
     <span className="farm-bed-mark" aria-hidden="true">{isRipe(bed)?'✓':bed.thirsty?'💧':bed.crop?'🌱':'+'}</span>
@@ -48,10 +54,12 @@ export function FarmPlotBoard({beds,shared,now,raining,catalog,citizen,disabled,
    </button>)}
   </div>
   <div className="farm-selection" role="status">{notice|| (chosen?`${i18n.t('field.bed',{number:chosen.index+1})}: ${status(chosen)}`:text('Выберите инструмент и грядку','Choose a tool and a bed'))}</div>
+  {worker&&<p className="farm-worker">{text('Работает','Working')}: {worker.name}</p>}
   <div className="farm-toolbelt" role="toolbar" aria-label={text('Инструменты фермы','Farm tools')}>
-   {(['inspect','sow','water','harvest'] as const).map(item=><button type="button" key={item} aria-pressed={tool===item} aria-label={labels[item]} disabled={item!=='inspect'&&disabled} onClick={()=>{setTool(item);setNotice('')}}><ToolIcon tool={item}/><span>{labels[item]}</span></button>)}
+   {(['inspect','sow','water','harvest'] as const).map(item=><button type="button" key={item} aria-pressed={tool===item} aria-label={labels[item]} disabled={item!=='inspect'&&disabled||item==='water'&&raining} onClick={()=>{setTool(item);setNotice('')}}><ToolIcon tool={item}/><span>{labels[item]}</span></button>)}
   </div>
   {tool==='sow'&&<div className="farm-seeds" role="group" aria-label={text('Выбор семян','Choose seeds')}>{seeds.map(seed=><button key={seed.id} aria-pressed={sow?.id===seed.id} onClick={()=>setSeedId(seed.id)}>{seed.crop&&<TileIcon tile={cropTile(seed.crop,.5,false)} scale={1}/>} {seed.crop?i18n.crop(seed.crop):i18n.task(seed.id)}</button>)}</div>}
   {tool!=='inspect'&&task&&<div className="farm-tool-note"><span>{tool==='sow'&&sow?.crop?`${labels[tool]}: ${i18n.crop(sow.crop)}`:labels[tool]} · {text('нажмите на грядку','tap a bed')}</span><ActionEnergy citizen={citizen} action={task.id}/></div>}
+  {chosen?.crop&&<details className="farm-care"><summary>{text('Кто помогал','Who helped')}</summary>{chosen.contributions?.length?<FarmCare actions={chosen.contributions}/>:<p className="small">{text('История ухода за этой старой посадкой неизвестна.','Care history of this older crop is unknown.')}</p>}</details>}
  </section>
 }

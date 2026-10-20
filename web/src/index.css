@@ -1365,6 +1365,15 @@ button.farm-plot:hover { background: transparent; }
 .farm-tool-note { display: flex; flex-wrap: wrap; gap: .25rem; align-items: center; padding: .3rem .5rem; font-size: .8rem; }
 .farm-tool-note .task-meta { margin: 0; }
 .farm-access-field { min-height:44px; }
+.farm-worker,.farm-rain { margin:0; padding:.3rem .6rem; font-size:.85rem; }
+.farm-care,.farm-history { padding:.35rem .5rem; }
+.farm-care>summary,.farm-history>summary,.farm-history-crop>summary { min-height:44px; align-content:center; cursor:pointer; }
+.farm-care-list { margin:.3rem 0; padding-left:1.2rem; font-size:.85rem; }
+.farm-care-list li { margin:.25rem 0; }
+.farm-history { flex:0 0 auto; }
+.farm-history-crop { border-top:1px solid #a78954; }
+.farm-history button { min-height:44px; }
+.farm-plot.wet:not(.selected) .farm-soil { background:repeating-linear-gradient(155deg,#67422d 0 7px,#3e281c 8px 12px,#83603f 13px 15px); }
 
 .watch-stages {
   list-style: none;

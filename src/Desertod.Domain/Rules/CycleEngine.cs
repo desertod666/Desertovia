@@ -57,6 +57,8 @@ public sealed record CycleReport(
 
     /// <summary>Tools that broke during this cycle and left the citizen's hands.</summary>
     public IReadOnlyList<ResourceKind> ToolsBroken { get; init; } = [];
+    [System.Text.Json.Serialization.JsonIgnore]
+    public IReadOnlyList<FarmCropSnapshot> FarmChanges { get; init; } = [];
 }
 
 public static class CycleEngine
@@ -234,6 +236,9 @@ public static class CycleEngine
         Begin(citizen, task.Id, work + walk, WorkEnergy.TaskCost(village, task, now), village, now, walk);
         citizen.CycleInputCostBasis = inputBasis;
         citizen.CycleFarmTargets=farmTargets;
+        citizen.CycleFarmContributionVersion=!citizen.CyclePrivateOutput && farmTargets.Count>0 &&
+            (task.Effect==TaskEffect.Sow ? village.FarmerAdmissionEnabled : farmTargets.Any(t=>village.Fields.Any(b=>b.PlotId==t.PlotId && b.Index==t.Index && b.GenerationId==t.GenerationId && b.ContributionVersion==FarmContributionRules.Version)))
+            ? FarmContributionRules.Version : 0;
         citizen.CycleInputCostBasisKnown = inputBasisKnown;
         if (projectKey is not null && context.Project is { } acceptedProject)
         {
@@ -477,6 +482,10 @@ public static class CycleEngine
         double experienceShare = 1;
         var toolsBroken = new List<ResourceKind>();
         var production = new List<(ResourceKind Kind, int Amount, int Kept)>();
+        var farmChanges=new List<FarmCropSnapshot>();
+        var farmWorker=citizen.CycleFarmContributionVersion==FarmContributionRules.Version && !citizen.CyclePrivateOutput
+            ? new FarmWorker(citizen.AccountId,citizen.Name,citizen.CycleStartedAt!.Value) : null;
+        var farmAt=farmWorker is not null && citizen.CycleEndsAt is {} due && due<now ? due : now;
         var recipeOutput = false;
 
         void Produce(ResourceKind kind, int amount)
@@ -619,21 +628,23 @@ public static class CycleEngine
                 break;
 
             case TaskEffect.Sow:
-                overflowed = !FarmRules.Sow(village, task.Crop!.Value, now, citizen.CyclePrivateOutput ? citizen.AccountId : null, citizen.CycleFarmTargets.FirstOrDefault());
+                overflowed = !FarmRules.Sow(village, task.Crop!.Value, farmAt, citizen.CyclePrivateOutput ? citizen.AccountId : null, citizen.CycleFarmTargets.FirstOrDefault(),farmWorker,citizen.CycleFarmContributionVersion,farmChanges);
                 break;
 
             case TaskEffect.Water:
-                overflowed = FarmRules.Water(village, now, citizen.CyclePrivateOutput ? citizen.AccountId : null, citizen.CycleFarmTargets.Count==0 ? null : citizen.CycleFarmTargets) == 0;
+                overflowed = FarmRules.Water(village, now, citizen.CyclePrivateOutput ? citizen.AccountId : null, citizen.CycleFarmTargets.Count==0 ? null : citizen.CycleFarmTargets,farmWorker,farmChanges,farmAt) == 0;
                 break;
 
             case TaskEffect.Harvest:
             {
-                var crop = FarmRules.Harvest(village, now, citizen.CyclePrivateOutput ? citizen.AccountId : null, citizen.CycleFarmTargets.FirstOrDefault());
+                var producedBefore=produced.Count;var lostBefore=lost.Count;
+                var crop = FarmRules.Harvest(village, farmAt, citizen.CyclePrivateOutput ? citizen.AccountId : null, citizen.CycleFarmTargets.FirstOrDefault(),farmWorker,farmChanges);
                 overflowed = crop is null;
                 foreach (var output in crop?.Harvest ?? [])
                 {
                     Produce(output.Resource, YieldMath.Whole(output.Amount * factor));
                 }
+                if(farmChanges.Count>0)farmChanges[^1]=farmChanges[^1] with {Produced=produced.Skip(producedBefore).ToArray(),Lost=lost.Skip(lostBefore).ToArray(),YieldFactor=factor};
 
                 break;
             }
@@ -786,7 +797,7 @@ public static class CycleEngine
         var report = Finish(citizen, village, task.Id, task.Primary, task.Secondary, task.Skill,
             SkillRules.Challenge(citizen, task.Skill, task.SkillLevel), experienceShare, hungry,
             produced, carried, moraleGained, contributed, rareFind, overflowed, experienceHungry);
-        return report with { Fight = fight, Repaired = repaired, Lost = lost, TargetPlotId = citizen.CurrentTargetPlotId, ToolsBroken = toolsBroken };
+        return report with { Fight = fight, Repaired = repaired, Lost = lost, TargetPlotId = citizen.CurrentTargetPlotId, ToolsBroken = toolsBroken,FarmChanges=farmChanges };
     }
 
     /// <summary>
@@ -1077,6 +1088,7 @@ public static class CycleEngine
         citizen.CyclePaymentMode = WorkPaymentMode.Legacy;
         citizen.CycleWorkOrderClaimId = null;
         citizen.CycleFarmTargets=[];
+        citizen.CycleFarmContributionVersion=0;
     }
 
     private static void ApplyOwnership(Citizen citizen, TaskDefinition task, bool privateWorkplace, WorkOwnership? ownership)

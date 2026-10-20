@@ -24,6 +24,8 @@ public static class GameEndpoints
             return Results.Ok(new { result });
         });
         var player = app.MapGroup("/api").RequireAuthorization();
+        player.MapGet("/villages/{slug}/farm/history", (string slug,string? plotId,Guid? before,GameService game,CancellationToken ct)=>
+            game.GetFarmHistoryAsync(slug,plotId,before,ct));
         player.MapPut("/villages/{slug}/farm/admission", (string slug, FarmAdmissionRequest request, ClaimsPrincipal user, GameService game, CancellationToken ct) =>
             game.EnableFarmerAdmissionAsync(slug,user.RequireAccountId(),request,ct));
         player.MapPut("/villages/{slug}/citizens/{citizenId:guid}/farm-access", (string slug, Guid citizenId, FarmAccessRequest request, ClaimsPrincipal user, GameService game, CancellationToken ct) =>
