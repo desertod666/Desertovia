@@ -2,6 +2,7 @@ import { MonasteryPanel } from '../ui/MonasteryPanel'
 import { WalletDialog, WalletHud } from '../ui/WalletHud'
 import { PersonalBattlePanel } from '../ui/PersonalBattlePanel'
 import { SafeRestControl } from '../ui/SafeRestControl'
+import {WorldAtlas} from '../ui/WorldAtlas'
 import { createOperationId,type FarmWorkTarget } from '../api'
 import { HospitalPanel } from '../ui/HospitalPanel'
 import { RescuePatientPanel } from '../ui/RescuePatientPanel'
@@ -116,6 +117,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   const [subtitleFor, setSubtitleFor] = useState<string | null>(null)
   /** Place on the map the player clicked to send their citizen there. */
   const [picked, setPicked] = useState<{ target: WorldTarget; screen: { x: number; y: number };farmTaskId?:string } | null>(null)
+  const [atlasOpen,setAtlasOpen]=useState(false)
   const [enemyPick,setEnemyPick]=useState<{battleId:string;unitId:string;selectionToken:number}|null>(null)
   const enemySelection=useRef(0)
   const [notice, setNotice] = useState<string | null>(null)
@@ -818,13 +820,14 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
 
   return (
     <div className={`game-root${uiHidden ? ' ui-hidden' : ''}${chatFull ? ' chat-full-active' : ''}`}>
+      {atlasOpen&&<WorldAtlas routes={village.worldRoutes??[]} onFocus={point=>canvas.current?.focus(point)} onClose={()=>setAtlasOpen(false)}/>}
       <GameCanvas
         ref={canvas}
         village={live.state}
         citizens={shownCitizens}
         highlightId={citizen?.id ?? null}
         nightOverride={catalog.devTools ? nightOverride : null}
-        obscured={monasteryOpen || walletOpen || chatFull || (panel !== 'none' && panel !== 'done') || hospitalOpen || patientFor!==null || chaplainOpen || pollSetup || subtitleFor !== null}
+        obscured={atlasOpen || monasteryOpen || walletOpen || chatFull || (panel !== 'none' && panel !== 'done') || hospitalOpen || patientFor!==null || chaplainOpen || pollSetup || subtitleFor !== null}
         catalog={catalog}
         placement={placement}
         selectedEnemyId={enemyPick?.unitId??null}
@@ -969,7 +972,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
           key={slug}
           mentionCandidates={citizens.filter(c=>!live.away.has(c.id)).map(c=>({id:c.id,name:c.name}))}
           incoming={live.chatArrivals}
-          interrupted={walletOpen || showPicked || showWatched || panel !== 'none' || hospitalOpen || patientFor!==null || chaplainOpen || pollSetup || pollShown || subtitleFor !== null || inviteFor !== null}
+          interrupted={atlasOpen || walletOpen || showPicked || showWatched || panel !== 'none' || hospitalOpen || patientFor!==null || chaplainOpen || pollSetup || pollShown || subtitleFor !== null || inviteFor !== null}
           onModeChange={mode => setChatFull(mode === 'full')}
           feed={live.feed}
           messages={live.chat}
@@ -980,6 +983,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
           phone={phone}
           onSend={live.sendChat}
         />
+        {!!village.worldRoutes?.length&&<button className="world-atlas-launch" aria-label={i18n.language==='ru'?'Открыть округу':'Open district atlas'} onClick={()=>{setAtlasOpen(true);setPicked(null)}}><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m16 8-2 6-6 2 2-6Z"/><path d="M12 1v3m0 16v3M1 12h3m16 0h3"/></svg></button>}
         {(citizen || tsar) && (
           <button
             className="minimap-locate"

@@ -1,0 +1,22 @@
+import {test,expect} from './fixtures.ts'
+
+for(const language of ['ru','en'])test(`district atlas explains discovery and bridge without issuing a walk (${language})`,async({page},info)=>{
+ await page.addInitScript(value=>localStorage.setItem('desertod.language',value),language)
+ await page.setViewportSize({width:info.project.name==='phone'?320:960,height:760})
+ const writes:string[]=[];page.on('request',request=>{if(request.method()!=='GET')writes.push(request.url())})
+ await page.goto('/e2e/world-harness.html')
+ const atlas=page.getByRole('dialog',{name:language==='ru'?'Округа':'District atlas',exact:true})
+ await expect(atlas).toBeVisible();await expect(atlas.locator('.world-route-list button')).toHaveCount(5)
+ await atlas.getByRole('button',{name:language==='ru'?/Оленьи леса/:/Deer woods/}).click()
+ await expect(atlas.locator('.world-route-detail')).toContainText(language==='ru'?'Сначала разведайте':'Explore this district first')
+ await expect(atlas.getByRole('button',{name:language==='ru'?'Показать на карте':'Show on map'})).toBeDisabled()
+ await atlas.getByRole('button',{name:language==='ru'?/Золотая жила/:/Gold vein/}).click()
+ await expect(atlas.locator('.world-route-detail')).toContainText(language==='ru'?'Нужен царский мост':'The Tsar Bridge is required')
+ await atlas.getByRole('button',{name:language==='ru'?'О карте округи':'About the district atlas'}).click()
+ await expect(page.getByRole('tooltip')).toContainText(language==='ru'?'только камеру':'only the camera')
+ await page.keyboard.press('Escape');await expect(atlas).toBeVisible()
+ expect(await atlas.evaluate(el=>el.scrollWidth>el.clientWidth)).toBe(false)
+ await page.screenshot({path:test.info().outputPath(`world-atlas-${language}.png`)})
+ await atlas.getByRole('button',{name:language==='ru'?'Показать на карте':'Show on map'}).click()
+ await expect(atlas).toHaveCount(0);expect(await page.evaluate(()=>(window as unknown as {atlasFocus:{x:number;y:number}[]}).atlasFocus)).toEqual([{x:40,y:17}]);expect(writes).toEqual([])
+})

@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T21:05:38.334034+00:00",
-  "status": "main_plan_active_farm_implementation",
+  "recorded_at_utc": "2026-10-20T21:26:03.843524+00:00",
+  "status": "main_plan_active_adventure_implementation",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-farm",
+  "branch": "feat/desertovia-1-0-world",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "F005 read-only farm inspection during rest/for Tsar, bounded maturity forecast, precise minimap selection and compact phone rest HUD; F003 seed/compost proposal awaiting owner; F004 backed rewards pending.",
+  "implemented_task": "T033 first district atlas on existing terrain: stable places, shared fog/bridge projection and camera-only navigation. No land-area increase or completed expedition lifecycle yet.",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -46,7 +46,7 @@
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "Migration45; current Debug API includes maturity estimate; Vite includes readonly farm/minimap/status HUD. No public release.",
+    "loaded_scope": "Migration45; Debug API and Vite include district atlas on current existing map, parent farm core retained. No public deployment.",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
     "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
@@ -670,8 +670,76 @@
       "backup": "/tmp/foundation-before-restart-20261020T205549Z.dump"
     },
     "farm_inspection_full_ci": {
-      "status": "pending_new_checkpoint",
-      "scope": "Maturity/readonly/minimap/phone rest HUD source is newer than0e6443e"
+      "schema_version": 1,
+      "recorded_at_utc": "2026-10-20T21:26:03.841890+00:00",
+      "sha": "5b399ad60e2086a8c38deb0cb1b97aa73d2c2adf",
+      "run_id": 39497631675,
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39497631675",
+      "result": "success",
+      "jobs": {
+        "Docker image": 118886679911,
+        "Frontend lint and build": 118886680283,
+        "Backend tests": 118886680310,
+        "Browser tests (1/2)": 118886680526,
+        "Browser tests (2/2)": 118886680714
+      },
+      "passed": {
+        "domain": 592,
+        "api": 321,
+        "desktop_browser": 167,
+        "phone_browser": 165
+      },
+      "browser_skipped": 2,
+      "scope": "Farm care/history, maturity/readonly inspection, minimap precision and compact phone rest HUD; before district atlas",
+      "public_release": false,
+      "receipt": "FARM_INSPECTION_VERIFICATION_1_0.json"
+    },
+    "district_atlas_domain": {
+      "passed": 595,
+      "failed": 0,
+      "scope": "Whole Domain;3 new route projection/fog/bridge/persistence cases; explored remains1350 bytes"
+    },
+    "district_atlas_api": {
+      "passed": 2,
+      "failed": 0,
+      "scope": "Shared world projection, byte-for-byte fog/fields/buildings and citizen identities, and real closed-bridge movement rejection",
+      "result_file": "TestResults/world-routes/Admin_DESKTOP-FQ85FTD_2026-10-20_23_20_51_net10.0.trx"
+    },
+    "district_atlas_component_browser": {
+      "passed": 4,
+      "failed": 0,
+      "scope": "RU/EN desktop/320px phone: undiscovered place disabled, known bridge barrier explained, help/Escape, no write request, focus callback and no horizontal overflow"
+    },
+    "district_atlas_real_browser_initial": {
+      "passed": 0,
+      "failed": 2,
+      "scope": "Test read citizen JSON before asynchronous village join returned200;204 empty response. Fixed test to wait for persisted membership before snapshot, matching existing farm real-map fixture."
+    },
+    "district_atlas_real_browser_final": {
+      "passed": 2,
+      "failed": 0,
+      "scope": "Real Pixi map/login/join/API, desktop+320px phone, atlas focus changes no hero/cycle/fog and emits no game write. Final SVG icon-only refinement followed by build; no additional whole-browser rerun for icon."
+    },
+    "district_atlas_visual_review": {
+      "result": "pass",
+      "scope": "RU phone atlas and actual320px map focus screenshots inspected; no generated menu art"
+    },
+    "district_atlas_build": {
+      "result": "pass",
+      "scope": "Final TypeScript/Vite/oxlint source including atlas icon"
+    },
+    "district_atlas_persistent_restart": {
+      "result": "pass",
+      "migrations": 45,
+      "citizens_at_restart": 22,
+      "fields": 3,
+      "worlds": 2,
+      "identities_and_crop_generations_preserved": true,
+      "backup": "/tmp/foundation-before-restart-20261020T212030Z.dump",
+      "scope": "Before additional real-atlas test accounts joined; no migration added"
+    },
+    "district_atlas_full_ci": {
+      "status": "pending_checkpoint_push"
     }
   },
   "open_questions": [],
@@ -690,11 +758,12 @@
     "bot_deployed": false
   },
   "next_tasks": [
-    "F004 protected physical Food reserve and one funded harvest settlement",
-    "F003 seeds/compost only after pending owner reply",
-    "F005 authoritative action quotes and final art/claim interface",
-    "F006/T026 food/labor/market/recovery simulation",
-    "remaining complete1.0 DAG"
+    "PKG-T030/T031/T032 party contract, manual combat and connected dungeon",
+    "PKG-T033 actual route constraints/events and new territory data beyond the atlas",
+    "PKG-T023–026/F003–006 economy integration and supplied T034 when dependent rules selected",
+    "PKG-T040–055 siege/recovery/autonomous director",
+    "available PKG-T060–065 and PKG-T070–072 Dcoin/subscriptions/notifications/music",
+    "PKG-T080–083 full-world final verification"
   ],
   "screenshots": [
     "screenshots/foundation/economic-gold-ru-phone.png",
@@ -737,11 +806,12 @@
     "FARM-DESTROYED-PAY": "Owner chose no money before actual harvest. Destroyed crop creates neither Food nor cash wage. Reserved funds for an unharvested crop must be returned; completed work remains historical, not a money debt."
   },
   "active_tasks": [
-    "F004 protected physical Food reserve and one funded harvest settlement",
-    "F003 seeds/compost only after pending owner reply",
-    "F005 authoritative action quotes and final art/claim interface",
-    "F006/T026 food/labor/market/recovery simulation",
-    "remaining complete1.0 DAG"
+    "PKG-T030/T031/T032 party contract, manual combat and connected dungeon",
+    "PKG-T033 actual route constraints/events and new territory data beyond the atlas",
+    "PKG-T023–026/F003–006 economy integration and supplied T034 when dependent rules selected",
+    "PKG-T040–055 siege/recovery/autonomous director",
+    "available PKG-T060–065 and PKG-T070–072 Dcoin/subscriptions/notifications/music",
+    "PKG-T080–083 full-world final verification"
   ],
   "owner_menu_visual_requirement": {
     "status": "style1_selected_spatial_farm_revision_delivered_implementation_active",
@@ -774,5 +844,22 @@
       "F003 seed inputs and compost"
     ],
     "independent_work_continues": true
+  },
+  "execution_sequence": "EXECUTION_SEQUENCE_1_0.md",
+  "farm_reward_cost_proposal": {
+    "status": "awaiting_owner_reply",
+    "terms": "Fix acquisition cost of natural Food share at base Food price at harvest; no tax on receipt, tax only resale profit above it",
+    "dependent_task": "F004 inventory issuance and subsequent cost basis"
+  },
+  "farm_settlement_design_audit": {
+    "status": "design_audit_only_no_reserve_code_added",
+    "findings": [
+      "Protect before FinishMeal",
+      "StorageBuilding/StorageRules raw takes must honor reserve",
+      "buy-stock must check available stock and actual taken amount",
+      "Physical raid loss must reduce unclaimed and common pools proportionately; ruin with retained goods is not physical loss",
+      "Reward policy must be separate from contribution version; preserve accepted legacy conditions"
+    ],
+    "next": "Resume backed issuance and one harvest fund after its dependent policy decisions; do not monopolize the whole1.0 queue"
   }
 }

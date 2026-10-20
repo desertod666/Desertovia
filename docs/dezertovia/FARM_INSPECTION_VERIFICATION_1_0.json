@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-20T21:26:03.841890+00:00",
+  "sha": "5b399ad60e2086a8c38deb0cb1b97aa73d2c2adf",
+  "run_id": 39497631675,
+  "url": "https://github.com/desertod666/Desertovia/actions/runs/39497631675",
+  "result": "success",
+  "jobs": {
+    "Docker image": 118886679911,
+    "Frontend lint and build": 118886680283,
+    "Backend tests": 118886680310,
+    "Browser tests (1/2)": 118886680526,
+    "Browser tests (2/2)": 118886680714
+  },
+  "passed": {
+    "domain": 592,
+    "api": 321,
+    "desktop_browser": 167,
+    "phone_browser": 165
+  },
+  "browser_skipped": 2,
+  "scope": "Farm care/history, maturity/readonly inspection, minimap precision and compact phone rest HUD; before district atlas",
+  "public_release": false
+}

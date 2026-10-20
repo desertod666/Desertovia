@@ -10,6 +10,8 @@ export interface GameCanvasHandle {
   zoom(factor: number): void
   /** Centres the view on a walker. */
   locate(walkerId: string): void
+  /** Camera only: looking at a known route never moves a citizen or reveals fog. */
+  focus(point:TilePoint):void
   /** What stops a walker from walking to a spot, in tiles; null when the way is open. */
   wayBlock(walkerId: string, spot: TilePoint): WalkBlock | null
 }
@@ -117,6 +119,7 @@ export const GameCanvas = forwardRef<GameCanvasHandle, Props>(function GameCanva
       say: (ownerId, text, seconds) => world?.say(ownerId, text, seconds),
       zoom: (factor) => world?.zoomBy(factor),
       locate: (walkerId) => void world?.locate(walkerId),
+      focus: point => world?.focus(point),
       wayBlock: (walkerId, spot) => world?.wayBlock(walkerId, spot) ?? null,
     }),
     [world],
