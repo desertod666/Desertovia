@@ -1,0 +1,161 @@
+{
+  "status": "planned verification links, not executed results",
+  "requirements": [
+    {
+      "requirement_id": "C01",
+      "task_ids": [
+        "T015",
+        "T040",
+        "T055"
+      ],
+      "acceptance_ids": [
+        "A14",
+        "A16",
+        "A36"
+      ]
+    },
+    {
+      "requirement_id": "C02",
+      "task_ids": [
+        "T004",
+        "T014",
+        "T035",
+        "T081"
+      ],
+      "acceptance_ids": [
+        "A32",
+        "A35"
+      ]
+    },
+    {
+      "requirement_id": "C03",
+      "task_ids": [
+        "T012",
+        "T013"
+      ],
+      "acceptance_ids": [
+        "A12",
+        "A13"
+      ]
+    },
+    {
+      "requirement_id": "C04",
+      "task_ids": [
+        "T021",
+        "T022",
+        "T030",
+        "T034",
+        "T040"
+      ],
+      "acceptance_ids": [
+        "A07",
+        "A15",
+        "A16",
+        "A36",
+        "A37",
+        "A38"
+      ]
+    },
+    {
+      "requirement_id": "C05",
+      "task_ids": [
+        "T041",
+        "T042",
+        "T043"
+      ],
+      "acceptance_ids": [
+        "A18",
+        "A19",
+        "A40"
+      ]
+    },
+    {
+      "requirement_id": "C06",
+      "task_ids": [
+        "T050",
+        "T051",
+        "T052",
+        "T053",
+        "T054",
+        "T055"
+      ],
+      "acceptance_ids": [
+        "A20",
+        "A21",
+        "A22",
+        "A23",
+        "A39"
+      ]
+    },
+    {
+      "requirement_id": "C07",
+      "task_ids": [
+        "T010",
+        "T060"
+      ],
+      "acceptance_ids": [
+        "A01",
+        "A29",
+        "A34"
+      ]
+    },
+    {
+      "requirement_id": "C08",
+      "task_ids": [
+        "T061",
+        "T062"
+      ],
+      "acceptance_ids": [
+        "A24",
+        "A25",
+        "A26"
+      ]
+    },
+    {
+      "requirement_id": "C09",
+      "task_ids": [
+        "T061",
+        "T063"
+      ],
+      "acceptance_ids": [
+        "A26",
+        "A27",
+        "A28"
+      ]
+    },
+    {
+      "requirement_id": "C10",
+      "task_ids": [
+        "T015",
+        "T064"
+      ],
+      "acceptance_ids": [
+        "A30"
+      ]
+    },
+    {
+      "requirement_id": "C11",
+      "task_ids": [
+        "T013",
+        "T014",
+        "T035"
+      ],
+      "acceptance_ids": [
+        "A13",
+        "A17",
+        "A32"
+      ]
+    },
+    {
+      "requirement_id": "C12",
+      "task_ids": [
+        "T070",
+        "T071",
+        "T072"
+      ],
+      "acceptance_ids": [
+        "A33"
+      ]
+    }
+  ]
+}

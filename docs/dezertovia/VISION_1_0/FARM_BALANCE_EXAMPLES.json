@@ -1,0 +1,149 @@
+{
+  "status": "illustrative_planning_calculation_not_live_balance",
+  "date": "2026-10-20 Europe/Oslo",
+  "code_sha": "4bb125f2dc05711ebaf4dac2723f3ee19eae3ea9",
+  "source_plan": "https://github.com/desertod666/Desertovia/blob/main/docs/dezertovia/SHARED_FARM_PLAN.md",
+  "assumptions": {
+    "beds_per_farm": 3,
+    "successful_harvests_per_bed_per_day": 2,
+    "cycles_per_meal": 3,
+    "cycles_include_farm_actions": true,
+    "food_share_community": 0.9,
+    "food_share_farmers": 0.1,
+    "planning_capacity_margin": 0.25,
+    "additional_recipe_raid_losses_or_other_food_sources": false,
+    "fertilizer_bonus_included": false,
+    "seed_water_recipe_and_input_costs_not_yet_selected": true,
+    "total_yield_factor_includes_all_character_weather_skill_technology_modifiers": true,
+    "fractional_outputs_are_equivalents_not_fractional_items": true,
+    "inventory_safety_stock_is_distinct_from_daily_capacity_margin": true
+  },
+  "formulas": {
+    "D": "sum(meal-counted work cycles) / 3, adjusted for actual cycle counters and hunger retries",
+    "H": "Whole(catalog_food * total_yield_factor)",
+    "P": "beds * harvests_per_day * H",
+    "farm_count": "ceil(1.25 * D / (0.9 * P))"
+  },
+  "rows": [
+    {
+      "active_workers": 5,
+      "meal_counted_cycles_per_worker_per_day": 30,
+      "food_demand_per_day": 50.0,
+      "planning_capacity_target": 62.5,
+      "two_portions_inventory_proposal": 10,
+      "production_examples": [
+        {
+          "id": "turnip_newcomer",
+          "crop": "Turnip",
+          "catalog_food": 15,
+          "total_yield_factor": 0.4,
+          "actual_food_per_bed_harvest": 6,
+          "gross_food_per_farm_per_day": 36,
+          "community_food_equivalent_per_farm_per_day": 32.4,
+          "required_farms": 2,
+          "required_beds": 6,
+          "total_food_equivalent_per_day": 72,
+          "community_food_equivalent_per_day": 64.8,
+          "farmers_food_share_equivalent_per_day": 7.2
+        },
+        {
+          "id": "cabbage_example",
+          "crop": "Cabbage",
+          "catalog_food": 36,
+          "total_yield_factor": 1.0,
+          "actual_food_per_bed_harvest": 36,
+          "gross_food_per_farm_per_day": 216,
+          "community_food_equivalent_per_farm_per_day": 194.4,
+          "required_farms": 1,
+          "required_beds": 3,
+          "total_food_equivalent_per_day": 216,
+          "community_food_equivalent_per_day": 194.4,
+          "farmers_food_share_equivalent_per_day": 21.6
+        }
+      ]
+    },
+    {
+      "active_workers": 10,
+      "meal_counted_cycles_per_worker_per_day": 30,
+      "food_demand_per_day": 100.0,
+      "planning_capacity_target": 125.0,
+      "two_portions_inventory_proposal": 20,
+      "production_examples": [
+        {
+          "id": "turnip_newcomer",
+          "crop": "Turnip",
+          "catalog_food": 15,
+          "total_yield_factor": 0.4,
+          "actual_food_per_bed_harvest": 6,
+          "gross_food_per_farm_per_day": 36,
+          "community_food_equivalent_per_farm_per_day": 32.4,
+          "required_farms": 4,
+          "required_beds": 12,
+          "total_food_equivalent_per_day": 144,
+          "community_food_equivalent_per_day": 129.6,
+          "farmers_food_share_equivalent_per_day": 14.4
+        },
+        {
+          "id": "cabbage_example",
+          "crop": "Cabbage",
+          "catalog_food": 36,
+          "total_yield_factor": 1.0,
+          "actual_food_per_bed_harvest": 36,
+          "gross_food_per_farm_per_day": 216,
+          "community_food_equivalent_per_farm_per_day": 194.4,
+          "required_farms": 1,
+          "required_beds": 3,
+          "total_food_equivalent_per_day": 216,
+          "community_food_equivalent_per_day": 194.4,
+          "farmers_food_share_equivalent_per_day": 21.6
+        }
+      ]
+    },
+    {
+      "active_workers": 20,
+      "meal_counted_cycles_per_worker_per_day": 30,
+      "food_demand_per_day": 200.0,
+      "planning_capacity_target": 250.0,
+      "two_portions_inventory_proposal": 40,
+      "production_examples": [
+        {
+          "id": "turnip_newcomer",
+          "crop": "Turnip",
+          "catalog_food": 15,
+          "total_yield_factor": 0.4,
+          "actual_food_per_bed_harvest": 6,
+          "gross_food_per_farm_per_day": 36,
+          "community_food_equivalent_per_farm_per_day": 32.4,
+          "required_farms": 8,
+          "required_beds": 24,
+          "total_food_equivalent_per_day": 288,
+          "community_food_equivalent_per_day": 259.2,
+          "farmers_food_share_equivalent_per_day": 28.8
+        },
+        {
+          "id": "cabbage_example",
+          "crop": "Cabbage",
+          "catalog_food": 36,
+          "total_yield_factor": 1.0,
+          "actual_food_per_bed_harvest": 36,
+          "gross_food_per_farm_per_day": 216,
+          "community_food_equivalent_per_farm_per_day": 194.4,
+          "required_farms": 2,
+          "required_beds": 6,
+          "total_food_equivalent_per_day": 432,
+          "community_food_equivalent_per_day": 388.8,
+          "farmers_food_share_equivalent_per_day": 43.2
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Not a measurement of current active users or production configuration.",
+    "Two harvests per day require actual planting/collection and enough storage/access.",
+    "30 cycles includes sow/water/harvest and other work; additional farming cycles add meal demand.",
+    "The second scenario is a full factor of 1.0, not a claim that an average current farmer has this factor.",
+    "Cabbage sowing requires Farming3; that is not the same as a full yield factor of1.",
+    "Fractional distribution needs persisted cumulative remainders, never rounding each recipient upwards.",
+    "No new runtime code or real game tests executed."
+  ]
+}

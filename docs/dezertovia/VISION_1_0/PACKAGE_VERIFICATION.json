@@ -1,0 +1,56 @@
+{
+  "scope": "Document validation only. No new game/bot tests, payments, messages, repository pushes or production rollout executed.",
+  "checks": {
+    "unique_ids": true,
+    "references_valid": true,
+    "acyclic_task_graph": true,
+    "all_tasks_in_final_dependency_closure": true,
+    "explicit_acceptance_scopes": true,
+    "full_integration_case_dependencies_valid": true,
+    "source_paths_exist": true,
+    "requirements_C01_to_C12_linked": true,
+    "all_acceptance_results_planned": true
+  },
+  "counts": {
+    "tasks": 47,
+    "acceptance_cases": 40,
+    "decisions": 19,
+    "modules": 19,
+    "unique_source_test_paths": 131,
+    "topological_layers": 21
+  },
+  "full_case_implementation_owners_checked": {
+    "A18": "T043",
+    "A19": "T042",
+    "A23": "T054",
+    "A26": "T061",
+    "A27": "T063",
+    "A28": "T063",
+    "A30": "T064",
+    "A31": "T064",
+    "A32": "T035",
+    "A33": "T072",
+    "A34": "T082",
+    "A36": "T080",
+    "A37": "T026",
+    "A38": "T034",
+    "A39": "T055",
+    "A40": "T041"
+  },
+  "document_rendering": {
+    "pdf_pages": 9,
+    "farm_supplement_listed": true
+  },
+  "independent_document_review": {
+    "base_plan": "passed_after_corrections",
+    "farm_supplement": "arithmetic_and_contracts_reviewed; earlier contribution settlement clarified",
+    "reviewer": "agent_plan_review",
+    "runtime_tests": false
+  },
+  "farm_supplement_checks": {
+    "examples_verified": 6,
+    "no_resource_creation_in_split": true,
+    "source_main_compare": "documentation-only changes from inspected source",
+    "scope": "planning only; no current village measurement"
+  }
+}
