@@ -120,7 +120,11 @@
       "google": false,
       "telegramBrowserLogin": false
     },
-    "full_candidate_ci": "pending",
+    "full_candidate_ci": {
+      "previous_candidate_run": 39453513267,
+      "previous_candidate_sha": "f87df492e0e252379c01447e1aa8494373629679",
+      "status": "new independent-worker test will be checked by final candidate CI"
+    },
     "diff_check": "pass",
     "api_cleanup_finally": {
       "passed": 1,
@@ -131,6 +135,11 @@
       "passed": 4,
       "failed": 0,
       "scope": "currency cases repeated to capture English/Russian component screenshots"
+    },
+    "independent_economic_workers": {
+      "passed": 1,
+      "failed": 0,
+      "scope": "two independent GameService instances, one PG database, concurrent request replay, altered payload rejection, conserved coins/treasury/stock/cost basis"
     }
   },
   "open_questions": [
@@ -163,5 +172,9 @@
   "screenshots": [
     "screenshots/foundation/economic-gold-ru-phone.png",
     "screenshots/foundation/economic-gold-en-phone.png"
+  ],
+  "implemented_task_scopes": [
+    "PKG-T010: compatible currency identities and labels",
+    "PKG-T011: existing transaction contracts verified locally, including independent GameService locks"
   ]
 }

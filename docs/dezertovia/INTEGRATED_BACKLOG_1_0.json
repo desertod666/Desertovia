@@ -1027,7 +1027,7 @@
       "id": "PKG-T011",
       "milestone": "M1",
       "title": "Проверить учёт и границы денежных команд",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "implemented",
       "dependencies": [
         "PKG-T003",
         "PKG-T010"
@@ -1063,7 +1063,8 @@
         "status": "source_partial_target",
         "evidence": "GameWallet/Ledger/Receipt, PG transaction/advisory lock/fingerprint существуют; новые контракты требуют интеграционных проверок.",
         "runtime_verification": "not_run_this_assignment"
-      }
+      },
+      "verification_scope": "Existing commands passed 14 economy API cases; independent service-instance replay/conservation case also passed. Exact final CI pending; future work-contract/tax commands require their own acceptance."
     },
     {
       "id": "PKG-T012",

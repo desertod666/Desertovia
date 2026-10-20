@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Desertod.Domain;
 using Desertod.Api.Game;
 using Desertod.Domain.Buildings;
 using Desertod.Domain.Catalog;
@@ -136,6 +137,51 @@ public sealed class KingdomEconomyApiTests(DesertodApiFactory factory)
         await using var db=await Db();var city=await db.Villages.SingleAsync(x=>x.Slug==v.Slug);Assert.Equal(7,city.Stock(ResourceKind.Wood));
         Assert.Equal(1,await db.EconomyReceipts.CountAsync(x=>x.VillageId==city.Id&&x.RequestId==request.requestId));
         Assert.Contains(after.Journal,x=>x.Asset=="Wood"&&x.Delta==-3);Assert.Contains(after.Journal,x=>x.Asset=="Wood"&&x.Delta==3);
+    }
+
+    [Fact]
+    public async Task Independent_service_instances_share_receipts_and_conserve_money_and_goods()
+    {
+        var v = await players.FoundVillageAsync("Independent economic workers");
+        var a = await players.JoinAsync(v, "Buyer");
+        await players.ArrangeVillageAsync(v.Slug, (city, now) =>
+        {
+            var storage = StorageBuilding.Create(StorageKind.TownHall, "3,3", now);
+            storage.Put(ResourceKind.Wood, 10);
+            city.Storages.Add(storage);
+        });
+        await View(a.Client, v.Path);
+        await SeedWallet(v.Slug, a.Id, 1000);
+        Guid account;
+        await using (var db = await Db()) account = (await db.Citizens.SingleAsync(c => c.Id == a.Id)).AccountId;
+
+        // Each GameService owns a separate in-process VillageLocks instance. Only PostgreSQL
+        // transactions/advisory locks and durable receipts can serialize these two commands.
+        var first = ActivatorUtilities.CreateInstance<GameService>(factory.Services);
+        var second = ActivatorUtilities.CreateInstance<GameService>(factory.Services);
+        var request = new EconomyRequest(Guid.NewGuid(), "buy-stock", ResourceKind.Wood, 3, 2);
+        var results = await Task.WhenAll(
+            first.ChangeEconomyAsync(v.Slug, account, request, default),
+            second.ChangeEconomyAsync(v.Slug, account, request, default));
+        foreach (var result in results)
+        {
+            Assert.Equal(994, result.Coins);
+            Assert.Equal(6, result.Treasury);
+            Assert.Equal(3, Assert.Single(result.Inventory).Amount);
+        }
+        var conflict = await Assert.ThrowsAsync<GameRuleException>(() =>
+            second.ChangeEconomyAsync(v.Slug, account, request with { Amount = 4 }, default));
+        Assert.Equal("economy.reusedRequest", conflict.Code);
+        await using var check = await Db();
+        var city = await check.Villages.SingleAsync(x => x.Slug == v.Slug);
+        var wallet = await check.GameWallets.SingleAsync(x => x.VillageId == city.Id && x.AccountId == account);
+        var treasury = await check.KingdomEconomies.SingleAsync(x => x.VillageId == city.Id);
+        Assert.Equal(1000, wallet.Coins + treasury.TreasuryCoins);
+        Assert.Equal(7, city.Stock(ResourceKind.Wood));
+        var citizen = await check.Citizens.SingleAsync(x => x.Id == a.Id);
+        Assert.Equal(3, PersonalInventory.Amount(citizen, ResourceKind.Wood));
+        Assert.Equal(6, citizen.PersonalGoods.Sum(x => x.CostBasis));
+        Assert.Equal(1, await check.EconomyReceipts.CountAsync(x => x.VillageId == city.Id && x.RequestId == request.RequestId));
     }
 
     [Fact]
