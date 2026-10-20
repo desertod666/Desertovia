@@ -92,7 +92,7 @@ public sealed partial class GameService
                 if (request.ExpiresAt is not {} expires || expires<=now || expires>now.AddDays(30))
                     throw new GameRuleException("workOrder.deadline","Choose a deadline within the next 30 days.");
                 if (state.TreasuryCoins<budget) throw new GameRuleException("economy.funds","The treasury cannot reserve this work order.");
-                if (await db.WorkOrders.CountAsync(o=>o.VillageId==village.Id && o.Status==WorkOrderStatus.Open,ct)>=50)
+                if (await db.WorkOrders.CountAsync(o=>o.VillageId==village.Id && o.Status==WorkOrderStatus.Open && o.ExpiresAt>now,ct)>=50)
                     throw new GameRuleException("workOrder.limit","Close an existing order before publishing another.");
                 var order=new WorkOrder{VillageId=village.Id,IssuerAccountId=account,TaskId=task.Id,
                     PayPerCycle=request.Pay,AvailableCycles=request.Cycles,ReservedCoins=budget,CreatedAt=now,ExpiresAt=expires};

@@ -1544,6 +1544,10 @@ export interface WorkOrder { id:string;taskId:string;policyVersion:number;payPer
 export interface EconomyCurrencyIdentity { id: string; ledgerAsset: string }
 
 export interface EconomyView {
+  supplyOrders?:SupplyOrder[]
+  mySupplyDeliveries?:{id:string;supplyOrderId:string;resource:string;amount:number;paidCoins:number;costBasis:number;costBasisKnown:boolean;at:string}[]
+  tradeReserves?:{resource:string;minimumAmount:number}[]
+  stockForSale?:Record<string,number>
   workContractsEnabled?:boolean
   canManageWorkOrders?:boolean
   workOrders?:WorkOrder[]
@@ -1563,6 +1567,7 @@ export interface EconomyView {
   residents: {accountId: string; name: string}[]
   privateStorages: {plotId: string; kind: string; goods: ResourceAmount[]}[]
 }
+export interface SupplyOrder {id:string;resource:string;requestedAmount:number;remainingAmount:number;deliveredAmount:number;unitPrice:number;reservedCoins:number;expiresAt:string;status:'Open'|'Cancelled'|'Expired'|'Completed'}
 export const api = {
   submitReport: (body: {id:string;kind:string;text:string;slug:string|null;capturedAt:string;screen:unknown;screenshot:string|null}) =>
     request<{id:string;state:string;screenshotIncluded?:boolean}>('POST', '/api/reports', body, AbortSignal.timeout(20000)),

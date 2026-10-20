@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T21:51:34.641655+00:00",
-  "status": "main_plan_active_adventure_implementation",
+  "recorded_at_utc": "2026-10-20T22:27:56.977313+00:00",
+  "status": "main_plan_active_supply_and_adventures",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-dungeons",
+  "branch": "feat/desertovia-1-0-supply",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "T032 durable active dungeon checkpoint/recovery foundation; party readiness, ownership of new loot, supply and connected adventure remain open",
+  "implemented_task": "T023 funded personal-to-public supply orders, cost/payment receipts, explicit public-sale reserves and actual final-commit market recovery",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -42,17 +42,18 @@
     "bot_modified": false,
     "current_source_restarted": true,
     "tool_recipes_verified_http": 8,
-    "local_world_migrations": 46,
+    "local_world_migrations": 47,
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "Debug API migration46 includes durable dungeon checkpoints; existing24 citizens and3 crop generations preserved across migration. Additional new synthetic QA kingdom used for actual active-run restart, then its invulnerable run ended for cleanup.",
+    "loaded_scope": "API migration47 and Vite funded supply orders. Existing24 citizen identities, all wallets/treasury/lots/orders and fields preserved at migration. Later one new synthetic supplier/kingdom arranged for real320px funded-order restart/delivery QA.",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
     "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
     "pre_farm_history_backup": "/tmp/foundation-before-restart-20261020T202837Z.dump",
     "pre_dungeon_backup": "/tmp/foundation-before-restart-20261020T214637Z.dump",
-    "active_dungeon_restart_backup": "/tmp/foundation-before-restart-20261020T214839Z.dump"
+    "active_dungeon_restart_backup": "/tmp/foundation-before-restart-20261020T214839Z.dump",
+    "pre_supply_backup": "/tmp/foundation-before-restart-20261020T220853Z.dump"
   },
   "checks": {
     "baseline_ci": {
@@ -769,9 +770,47 @@
       "after_elapsed": 45.7231552,
       "scope": "Actual local API process killed/restarted with a newly created synthetic active run; same fighters, Running/Pending and resumed progression. No public game actions.",
       "cleanup": "Only this newly created invulnerable QA run ended, then local API restarted to remove its runtime. Other worlds retained."
+    },
+    "dungeon_full_ci": {
+      "result": "success",
+      "receipt": "DUNGEON_VERIFICATION_1_0.json"
+    },
+    "supply_migration": {
+      "result": "pass",
+      "from": 46,
+      "to": 47,
+      "citizens_at_migration": 24,
+      "preserved": [
+        "citizen identities",
+        "wallet balances",
+        "test candle balances",
+        "treasury",
+        "market lots",
+        "work orders",
+        "complete fields JSON"
+      ],
+      "backup": "/tmp/foundation-before-restart-20261020T220853Z.dump"
+    },
+    "supply_real_mobile_restart": {
+      "result": "pass",
+      "arranged_fixture_only": true,
+      "steps": "Ruler publishes2 Wood at5 from100 treasury in actual320px UI; API process restarts; same fund10/order recovered; supplier delivers2 personal Wood and receives10 once",
+      "after": {
+        "treasury": 90,
+        "coins": 110,
+        "profit": 8,
+        "reservedCoins": 0,
+        "personalWood": 3
+      },
+      "backup": "/tmp/foundation-before-restart-20261020T221643Z.dump"
     }
   },
-  "open_questions": [],
+  "open_questions": [
+    "Party composition and explicit readiness proposal awaiting owner",
+    "Ownership of new group loot proposal awaiting owner",
+    "Farm seed/compost inputs and numeric action cadence awaiting owner",
+    "Acquisition basis of natural Food share awaiting owner"
+  ],
   "known_followups": [
     {
       "id": "SEC-001",
@@ -904,7 +943,11 @@
       "scope": "All DungeonTests, DungeonLatencyTests and six new DungeonCheckpointApiTests",
       "result_directory": "TestResults/dungeon-checkpoints-verified"
     },
-    "full_ci": "not_started_for_current_source",
+    "full_ci": {
+      "status": "success",
+      "receipt": "DUNGEON_VERIFICATION_1_0.json",
+      "sha": "c4b14db38f1c29619acbf9fdefe875318c4ba7e3"
+    },
     "public_release": false,
     "performance": "Target IO and combat SLO not yet verified; plain checkpoints skip inventory accounting, settlements retain it"
   },
@@ -913,5 +956,37 @@
     "composition": "Ordinary group2–5, optional Tsar, explicit readiness, return reserved gear for those who miss departure",
     "loot": "Recommended backed equal personal shares with explicit overflow; no new allocation implemented"
   },
-  "world_verification": "WORLD_VERIFICATION_1_0.json"
+  "world_verification": "WORLD_VERIFICATION_1_0.json",
+  "supply_orders": {
+    "status": "implemented_local_verified_full_ci_pending",
+    "design": "SUPPLY_ORDERS_1_0.md",
+    "migration": "47 FundedSupplyOrders",
+    "domain_passed": 605,
+    "api_unique_passed": 15,
+    "api_runs": [
+      {
+        "directory": "TestResults/supply-orders",
+        "passed": 12
+      },
+      {
+        "directory": "TestResults/supply-final-commit",
+        "passed": 3,
+        "overlap": 1
+      },
+      {
+        "directory": "TestResults/supply-fund-integration",
+        "passed": 3,
+        "overlap": 2
+      }
+    ],
+    "browser_unique_passed": 30,
+    "browser_runs": {
+      "legacy_cases_passed": 22,
+      "new_supply_cases_passed_after_selector_fix": 8
+    },
+    "frontend_build": "Final TypeScript/Vite/oxlint pass, including journal labels and ruler-only controls",
+    "actual_mobile_browser_after_api_restart": true,
+    "public_release": false,
+    "full_ci": "not_started_for_current_source"
+  }
 }

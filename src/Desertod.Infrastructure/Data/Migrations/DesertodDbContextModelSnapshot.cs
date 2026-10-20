@@ -600,6 +600,101 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.ToTable("MarketLots");
                 });
 
+            modelBuilder.Entity("Desertod.Domain.Economy.SupplyDelivery", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("At")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("CostBasis")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("CostBasisKnown")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("PaidCoins")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Resource")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("SupplierAccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SupplyOrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("VillageId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VillageId", "SupplyOrderId");
+
+                    b.HasIndex("VillageId", "SupplierAccountId", "At");
+
+                    b.ToTable("SupplyDeliveries");
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.SupplyOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DeliveredAmount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("IssuerAccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("PolicyVersion")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RemainingAmount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RequestedAmount")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("ReservedCoins")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Resource")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<long>("UnitPrice")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("VillageId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VillageId", "Status", "ExpiresAt");
+
+                    b.ToTable("SupplyOrders");
+                });
+
             modelBuilder.Entity("Desertod.Domain.Economy.WorkOrder", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2071,6 +2166,32 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .HasForeignKey("VillageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.OwnsMany("Desertod.Domain.Economy.TradeReserve", "TradeReserves", b1 =>
+                        {
+                            b1.Property<Guid>("KingdomEconomyVillageId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd();
+
+                            b1.Property<int>("MinimumAmount");
+
+                            b1.Property<string>("Resource")
+                                .IsRequired();
+
+                            b1.HasKey("KingdomEconomyVillageId", "__synthesizedOrdinal");
+
+                            b1.ToTable("KingdomEconomies");
+
+                            b1
+                                .ToJson("TradeReserves")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("KingdomEconomyVillageId");
+                        });
+
+                    b.Navigation("TradeReserves");
                 });
 
             modelBuilder.Entity("Desertod.Domain.Economy.LedgerEntry", b =>
@@ -2083,6 +2204,25 @@ namespace Desertod.Infrastructure.Data.Migrations
                 });
 
             modelBuilder.Entity("Desertod.Domain.Economy.MarketLot", b =>
+                {
+                    b.HasOne("Desertod.Domain.Entities.Village", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.SupplyDelivery", b =>
+                {
+                    b.HasOne("Desertod.Domain.Economy.SupplyOrder", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId", "SupplyOrderId")
+                        .HasPrincipalKey("VillageId", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.SupplyOrder", b =>
                 {
                     b.HasOne("Desertod.Domain.Entities.Village", null)
                         .WithMany()

@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Desertod.Domain.Buildings;
 using Desertod.Domain.Farming;
+using Desertod.Domain.Weather;
 using Desertod.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +19,13 @@ public sealed class FarmHistoryApiTests(DesertodApiFactory factory)
     private async Task<(FoundedVillage V,Resident A,Resident B,Resident C)> Setup()
     {
         var v=await players.FoundVillageAsync("Crop history");var a=await players.JoinAsync(v,"Andrey");var b=await players.JoinAsync(v,"Maria");var c=await players.JoinAsync(v,"Ivan");
-        await players.ArrangeVillageAsync(v.Slug,(world,now)=>{world.FarmerAdmissionEnabled=true;world.Structures.Add(new(){Kind=BuildingKind.Farm,PlotId="21,12",BuiltAt=now});FarmRules.EnsureBeds(world);});
+        await players.ArrangeVillageAsync(v.Slug,(world,now)=>{
+            world.FarmerAdmissionEnabled=true;world.Structures.Add(new(){Kind=BuildingKind.Farm,PlotId="21,12",BuiltAt=now});FarmRules.EnsureBeds(world);
+            // This fixture exercises useful manual watering, not the random sky drawn from the village ID.
+            // Cover the work/settlement advances too, including a crossing into the next weather period.
+            for(var period=DayCycle.PeriodOf(now);period<=DayCycle.PeriodOf(now.AddHours(2));period++)
+                world.Forecasts.Add(new(){Day=period,Rain=false,MadeAt=now});
+        });
         foreach(var person in new[]{a,b,c})await players.ArrangeCitizenAsync(person.Id,(citizen,_)=>citizen.IsFarmer=true);
         return(v,a,b,c);
     }

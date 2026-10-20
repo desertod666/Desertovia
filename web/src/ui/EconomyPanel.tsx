@@ -8,6 +8,7 @@ import { EconomicGoldIcon } from './EconomicGoldIcon'
 import { ResourceIcon } from './TileIcon'
 import { Hint } from './Hint'
 import { WorkOrdersPanel } from './WorkOrdersPanel'
+import { SupplyOrdersPanel } from './SupplyOrdersPanel'
 
 /** Extends the existing City/Inventory menu. The server owns money, stock and request receipts. */
 export function EconomyPanel({ village, catalog, citizen, accountId, onPrivatePlace, onCitizen, initialOpen=false }: {village: VillageState; catalog: Catalog; citizen?: Citizen|null; accountId?: string; initialOpen?:boolean; onPrivatePlace?: (building:BuildingDefinition)=>void; onCitizen?: (citizen:Citizen)=>void}) {
@@ -55,6 +56,7 @@ export function EconomyPanel({ village, catalog, citizen, accountId, onPrivatePl
   const validPrice = /^\d+$/.test(price) && Number(price) >= 1 && Number(price) <= 1000000
   const unitPrice = (kind: string) => view?.stockPrices[kind] ?? 0
   const choices = village.resources.filter(r => r.kind !== 'ResearchPoints')
+  const supplyVerbs:Record<string,string>={'supply-reserve':text('Фонд поставки','Supply fund'),'supply-payment':text('Оплата поставки','Supply payment'),'supply-refund':text('Возврат фонда','Supply fund returned')}
   const location = (value: string) => {
     const [scope,...parts] = value.split(':'); const plot=parts.join(':')
     if(scope==='village')return text('общий запас','communal stock')
@@ -62,6 +64,7 @@ export function EconomyPanel({ village, catalog, citizen, accountId, onPrivatePl
     if(scope==='recovery'||scope==='private-recovery')return text('материалы после разборки','recovered construction materials')
     if(scope==='hands')return text('ноша','load')
     if(scope==='market')return text('резерв рынка','market reserve')
+    if(scope==='supply-order')return text('фонд поставки','supply fund')
     const target=[...(village.structures??[]),...(village.sites??[])].find(b=>b.plotId===plot)
     const storage=(village.storages??[]).find(b=>b.plotId===plot)
     return target?`${i18n.building(target.kind).name} · ${buildingNumber(village,plot)}`:storage?`${i18n.storage(storage.kind)} · ${buildingNumber(village,plot)}`:value==='wallet'?text('кошелёк','wallet'):value==='treasury'?text('казна','treasury'):value
@@ -85,9 +88,10 @@ export function EconomyPanel({ village, catalog, citizen, accountId, onPrivatePl
         {citizen && <section className="economy-controls">
           <label>{text('Материал','Material')}<select value={resource} onChange={e=>setResource(e.target.value)}>{choices.map(r=><option key={r.kind} value={r.kind}>{i18n.resource(r.kind)}</option>)}</select></label>
           <label>{text('Количество','Amount')}<input inputMode="numeric" type="text" value={amount} onChange={e=>setAmount(e.target.value)} aria-invalid={!validAmount}/></label>
-          <button disabled={busy||!validAmount} onClick={()=>void act({action:'buy-stock',resource,amount:units,price:unitPrice(resource)})}>{text('Купить у царства','Buy from kingdom')} · {validAmount ? unitPrice(resource)*units : '—'} {i18n.t('currency.goldUnit')}</button>
+          <button disabled={busy||!validAmount||(view.stockForSale?.[resource]??Infinity)<units} onClick={()=>void act({action:'buy-stock',resource,amount:units,price:unitPrice(resource)})}>{text('Купить у царства','Buy from kingdom')} · {validAmount ? unitPrice(resource)*units : '—'} {i18n.t('currency.goldUnit')}</button>
           <button disabled={busy||!validAmount||(view.inventory.find(g=>g.kind===resource)?.amount??0)<units} onClick={()=>void act({action:'donate-stock',resource,amount:units})}>{text('В общий запас · бесплатно','Donate · free')}</button>
           <p className="small muted">{text('Что не поместится, останется у тебя.','Anything that does not fit stays with you.')}</p>
+          {view.stockForSale&&<p className="small muted">{text('В продаже','For sale')}: {view.stockForSale[resource]??0}{view.supplyOrders?.some(o=>o.status==='Open'&&o.resource===resource)?text(' · царство закупает этот ресурс',' · the kingdom is buying this resource'):''}</p>}
         </section>}
         {citizen && <details className="economy-transfer"><summary>{text('Передать или выставить на рынок','Transfer or list on market')}</summary>
           <p className="small">{i18n.resource(resource)} × {validAmount ? units : '—'} · {text('Материал и количество выбери выше.','Choose the material and amount above.')}</p>
@@ -127,12 +131,15 @@ export function EconomyPanel({ village, catalog, citizen, accountId, onPrivatePl
         <details><summary>{text('Журнал царства','Kingdom journal')}</summary>
           <p className="small muted">{text('Учёт с','Recorded since')} {new Date(view.startedAt).toLocaleString(i18n.language)} · {text('Казна','Treasury')}: {view.treasury} {i18n.t('currency.goldUnit')}.</p>
           <label>{text('Фильтр','Filter')}<select value={filter} onChange={e=>{setHistoryCursor(undefined);setFilter(e.target.value)}}><option value="">{text('Все операции','All entries')}</option><option value={view.currencies?.coins.ledgerAsset??'DZK'}>{i18n.t('currency.economicGold')}</option>{choices.map(r=><option value={r.kind} key={r.kind}>{i18n.resource(r.kind)}</option>)}</select></label>
-          <ol className="economy-journal">{view.journal.map(row=><li key={row.id}><time>{new Date(row.at).toLocaleTimeString(i18n.language,{hour:'2-digit',minute:'2-digit'})}</time> <strong>{row.delta>0?'+':''}{row.delta}</strong> {row.asset===(view.currencies?.coins.ledgerAsset??'DZK')?i18n.t('currency.goldUnit'):row.asset==='TEST_CANDLE'?text('тестовых свечей','test candles'):row.asset.startsWith('work:')?text('вклад','contribution'):i18n.resource(row.asset)}<br/><small>{verb(row.operation)} · {row.actor??text('Царство','Kingdom')} · {location(row.location)}</small></li>)}</ol>
+          <ol className="economy-journal">{view.journal.map(row=><li key={row.id}><time>{new Date(row.at).toLocaleTimeString(i18n.language,{hour:'2-digit',minute:'2-digit'})}</time> <strong>{row.delta>0?'+':''}{row.delta}</strong> {row.asset===(view.currencies?.coins.ledgerAsset??'DZK')?i18n.t('currency.goldUnit'):row.asset==='TEST_CANDLE'?text('тестовых свечей','test candles'):row.asset.startsWith('work:')?text('вклад','contribution'):i18n.resource(row.asset)}<br/><small>{supplyVerbs[row.operation]??verb(row.operation)} · {row.actor??text('Царство','Kingdom')} · {location(row.location)}</small></li>)}</ol>
           {view.nextJournalBefore&&<button disabled={busy} onClick={()=>setHistoryCursor(view.nextJournalBefore!)}>{text('Раньше','Older entries')}</button>}
           {historyCursor&&<button onClick={()=>setHistoryCursor(undefined)}>{text('К новым записям','Latest entries')}</button>}
         </details>
         <button disabled={busy} onClick={()=>void refresh()}>{text('Обновить','Refresh')}</button>
         <WorkOrdersPanel village={village} catalog={catalog} citizen={citizen} view={view} busy={busy} onAction={act} onCitizen={onCitizen} onRefresh={refresh}/>
+        <SupplyOrdersPanel view={view} busy={busy} hasResident={!!citizen} canSupply={!!citizen&&citizen.status!=='Dormant'&&citizen.state!=='Paused'
+          &&!(Date.parse(citizen.injuredUntil??'')>Date.now())&&!(Date.parse(citizen.exhaustedUntil??'')>Date.now())
+          &&!village.dungeon?.heroes.some(h=>h.citizenId===citizen.id&&!h.settled)} onAction={act}/>
       </>}
     </>}
   </details>

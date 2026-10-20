@@ -137,7 +137,13 @@ public sealed class LiveRaidApiTests(DesertodApiFactory factory)
         Guid villageId;
         await using(var db=await Db())
         {
-            var city=await db.Villages.SingleAsync(x=>x.Slug==v.Slug);villageId=city.Id;
+            villageId=await db.Villages.Where(x=>x.Slug==v.Slug).Select(x=>x.Id).SingleAsync();
+            // Preparation is a real writer too. Freeze its row snapshot with the same
+            // database lock as the worker; the parallel tick assertions below stay concurrent.
+            await using var transaction=await db.Database.BeginTransactionAsync();
+            var lockKey=villageId.ToString();
+            await db.Database.ExecuteSqlInterpolatedAsync($"SELECT pg_advisory_xact_lock(hashtextextended({lockKey}, 0))");
+            var city=await db.Villages.SingleAsync(x=>x.Id==villageId);
             var battle=await db.RaidBattles.SingleAsync(b=>b.Id==raidId);var now=factory.Clock.GetUtcNow();
             battle.StartsAt=now.AddSeconds(-1);battle.LastTickAt=battle.StartsAt;battle.EndsAt=now.AddMinutes(4);
             city.Raids.Single(r=>r.Id==raidId).StrikesAt=battle.StartsAt;RaidRules.UpdateNextRaidAt(city);
@@ -147,6 +153,7 @@ public sealed class LiveRaidApiTests(DesertodApiFactory factory)
             // Every prepared variant needs one real guard hit, keeping the time bound stable.
             foreach(var unit in battle.Units){unit.X=14.5;unit.Y=13.5;unit.Health=unit.MaximumHealth=1;unit.Speed=0;unit.Attack=0;}
             await db.SaveChangesAsync();
+            await transaction.CommitAsync();
         }
         var service=factory.Services.GetRequiredService<GameService>();
         await service.RaidVillageAsync(villageId,default);
