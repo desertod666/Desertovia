@@ -1,4 +1,5 @@
 using Desertod.Api.Auth;
+using Desertod.Domain.Dungeons;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -36,15 +37,15 @@ public sealed class DungeonHub(DungeonRuntime runtime, GameService game) : Hub
     public Task LeaveRun(Guid runId) => Groups.RemoveFromGroupAsync(Context.ConnectionId, GroupName(runId));
 
     public Task<bool> MoveTo(Guid runId, Guid heroId, double x, double y) =>
-        Act(runId, heroId, live => live.Simulation.MoveTo(heroId, x, y));
+        Act(runId, heroId, simulation => simulation.MoveTo(heroId, x, y));
 
     public Task<bool> Attack(Guid runId, Guid heroId, int foeId) =>
-        Act(runId, heroId, live => live.Simulation.Attack(heroId, foeId));
+        Act(runId, heroId, simulation => simulation.Attack(heroId, foeId));
 
     public Task<bool> Heal(Guid runId, Guid heroId, Guid allyId) =>
-        Act(runId, heroId, live => live.Simulation.Heal(heroId, allyId));
+        Act(runId, heroId, simulation => simulation.Heal(heroId, allyId));
 
-    private async Task<bool> Act(Guid runId, Guid heroId, Func<LiveDungeon, bool> intent)
+    private async Task<bool> Act(Guid runId, Guid heroId, Func<DungeonSimulation, bool> intent)
     {
         if (Context.User?.GetAccountId() is not { } accountId || runtime.Find(runId) is not { } live || !live.Owns(heroId, accountId) || game.HasHospitalRestriction(accountId))
         {
@@ -52,9 +53,22 @@ public sealed class DungeonHub(DungeonRuntime runtime, GameService game) : Hub
         }
 
         if (!await game.CheckDungeonHospitalAsync(live.VillageId, accountId, Context.ConnectionAborted)) return false;
-        lock (live.Gate)
+        if (live.Save is null)
         {
-            return intent(live);
+            lock (live.Gate) return intent(live.Simulation);
         }
+        await live.Operation.WaitAsync(Context.ConnectionAborted);
+        try
+        {
+            if (runtime.Find(runId) != live || game.HasHospitalRestriction(accountId)) return false;
+            var previous = live.Save!;
+            var simulation = DungeonSimulation.Restore(previous.Fight);
+            if (simulation.IsOver || !intent(simulation)) return false;
+            var next = previous with { Revision = previous.Revision + 1, Fight = simulation.Capture() };
+            await game.SettleDungeonAsync(runId, live.VillageId, [], null, simulation.Slain, Context.ConnectionAborted, next);
+            live.Commit(next, simulation, new DungeonRandom(next.RandomState), DungeonMapper.Snapshot(runId, simulation, []));
+            return true;
+        }
+        finally { live.Operation.Release(); }
     }
 }

@@ -363,6 +363,9 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("CheckpointJson")
+                        .HasColumnType("jsonb");
+
                     b.Property<string>("DungeonId")
                         .IsRequired()
                         .HasMaxLength(32)

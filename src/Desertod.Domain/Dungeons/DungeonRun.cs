@@ -57,6 +57,9 @@ public sealed class DungeonRun
     public int Slain { get; set; }
     public int Foes { get; set; }
 
+    /// <summary>Versioned full fight state, saved atomically with exits and rewards. Null for pre-checkpoint runs.</summary>
+    public string? CheckpointJson { get; set; }
+
     public List<DungeonHero> Heroes { get; set; } = [];
 
     public bool IsActive => Phase != DungeonPhase.Ended;

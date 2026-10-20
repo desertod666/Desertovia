@@ -101,7 +101,7 @@ public sealed class SimulatedFoe
 /// chases the nearest hero who comes within its aggro range, or anyone who strikes it, and never lets go. Each slain
 /// foe rewards every hero still fighting. Pure and deterministic: the same intents and seed play out the same.
 /// </summary>
-public sealed class DungeonSimulation
+public sealed partial class DungeonSimulation
 {
     /// <summary>A walker this close to a waypoint has reached it.</summary>
     private const double Reach = 0.05;
@@ -116,11 +116,13 @@ public sealed class DungeonSimulation
     private readonly List<SimulatedFoe> foes = [];
     private readonly IReadOnlyList<DungeonDefinition> floors;
     private readonly TimeSpan timeLimit;
+    private readonly DungeonDefinition definition;
     private int slainBefore;
     private int floor = -1;
 
     public DungeonSimulation(DungeonDefinition dungeon, IEnumerable<DungeonFighter> fighters)
     {
+        definition = dungeon;
         floors = dungeon.Floors.Count > 0 ? dungeon.Floors : [dungeon];
         timeLimit = dungeon.TimeLimit;
         heroes = fighters.Select(fighter => new SimulatedHero

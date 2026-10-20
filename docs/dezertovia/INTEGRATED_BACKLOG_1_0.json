@@ -1675,7 +1675,7 @@
       "id": "PKG-T032",
       "milestone": "M3",
       "title": "Связанный групповой данж",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partially_implemented_durable_fight_checkpoint_local_verified",
       "dependencies": [
         "PKG-T030",
         "PKG-T013"
@@ -1711,9 +1711,9 @@
       "original_task_id": "T032",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "source_partial_target",
-        "evidence": "DungeonRun/Hub/Worker/settlement есть; runtime в памяти, abandon после остановки; целевой withdrawal/resume не подтверждён.",
-        "runtime_verification": "not_run_this_assignment"
+        "status": "checkpoint_recovery_source_implemented",
+        "evidence": "DUNGEON_IMPLEMENTATION_1_0.md: exact saved fight plus atomic settlement; new party/supply/loot policy still pending",
+        "runtime_verification": "599 Domain and18 dungeon API passed; actual45→46 persistent migration and active-run process restart passed. Full acceptance and current full CI pending."
       }
     },
     {
