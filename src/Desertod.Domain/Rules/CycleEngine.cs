@@ -68,11 +68,17 @@ public static class CycleEngine
     /// Renewing inside the grace window keeps the streak; inputs are consumed up front.
     /// </summary>
     /// <param name="spot">Where on the map the player wants the goods gathered; see <see cref="WorkSpots"/>.</param>
-    public static void Start(Citizen citizen, TaskDefinition task, WorkContext context, DateTimeOffset now, TilePoint? spot = null, string? workplacePlotId = null, WorkOwnership? ownership = null)
+    public static void Start(Citizen citizen, TaskDefinition task, WorkContext context, DateTimeOffset now, TilePoint? spot = null, string? workplacePlotId = null, WorkOwnership? ownership = null, FarmWorkTarget? farmTarget = null)
     {
         var village = context.Village;
         if (context.CompletedProjects.Contains(ProjectCatalog.TsarBridge) && village.BridgeRuinedAt is null) village.BridgeOpened=true;
         CheckReady(citizen, now);
+        if(farmTarget is not null)
+        {
+            if(workplacePlotId is not null && workplacePlotId!=farmTarget.PlotId)
+                throw new GameRuleException("farm.changed","Choose the farm containing the selected bed.");
+            workplacePlotId=farmTarget.PlotId;
+        }
         task=ProjectTask(task,context);
         if(task.Id==RescueRules.TaskId)throw new GameRuleException("rescue.target","Click a wounded citizen to carry them.");
         if (spot is { } picked && !Wilderness.IsWild(task))
@@ -131,12 +137,15 @@ public static class CycleEngine
         if (task.RequiredBuilding is {} productionKind && (selectedWorkplace ?? village.Structures.Where(s => s.Kind == productionKind && s.OwnerAccountId == (privateWorkplace ? citizen.AccountId : null) && !s.Decommissioning).OrderBy(s=>s.RuinedAt is not null||s.Damage>=100).FirstOrDefault()) is { } production && (production.Damage >= 100 || production.RuinedAt is not null))
             throw new GameRuleException("building.repairFirst", "Repair this building before working inside.");
 
-        if (task.Effect is TaskEffect.Sow or TaskEffect.Water or TaskEffect.Harvest)
+        if(farmTarget is not null && !FarmRules.IsFarmWork(task))
+            throw new GameRuleException("farm.changed","Choose a farm action for the selected bed.");
+        List<FarmWorkTarget> farmTargets=[];
+        if (FarmRules.IsFarmWork(task))
         {
-            FarmRules.Check(village, task, now, citizen.CyclePrivateOutput ? citizen.AccountId : null);
+            farmTargets=FarmRules.PrepareTargets(village,task,now,citizen.CyclePrivateOutput ? citizen.AccountId : null,farmTarget,context.FarmWork,citizen.Id,workplacePlotId);
         }
 
-        CheckHands(citizen, village, task, now);
+        CheckHands(citizen, village, task, now, farmTargets.FirstOrDefault());
         CheckProjectTask(citizen, task, context);
         var projectRoom = int.MaxValue;
         var projectKey = ProjectWorkKey(task);
@@ -203,18 +212,22 @@ public static class CycleEngine
 
         var repairYard = repairAt is null ? (TilePoint?)null : CombatRules.RepairYard(village,repairAt);
         var unloadYard = task.Effect == TaskEffect.Unload && workplacePlotId is not null ? WorldMap.Yard(workplacePlotId) : (TilePoint?)null;
-        if ((spot ?? repairYard ?? unloadYard ?? NaturalPlace(task)) is { } destination)
+        var farmYard = farmTargets.FirstOrDefault() is {} farm ? WorldMap.Yard(farm.PlotId) : (TilePoint?)null;
+        if ((spot ?? repairYard ?? unloadYard ?? farmYard ?? NaturalPlace(task)) is { } destination)
         {
             citizen.SetOut(destination, village, now);
         }
 
         var work = SkillRules.WorkTime(citizen, task.Skill, task.SkillLevel, TimeSpan.FromSeconds(task.WorkSeconds));
         if (task.Effect is TaskEffect.Build or TaskEffect.Repair or TaskEffect.Supervise && DayCycle.IsNight(now)) work *= 1.25;
-        if (task.RequiredBuilding is {} used && village.Structures.FirstOrDefault(s => s.Kind == used && (citizen.CyclePrivateOutput ? s.OwnerAccountId == citizen.AccountId : s.OwnerAccountId == null)) is {} worn)
+        if (task.RequiredBuilding is {} used && (selectedWorkplace??village.Structures.FirstOrDefault(s => s.Kind == used && (citizen.CyclePrivateOutput ? s.OwnerAccountId == citizen.AccountId : s.OwnerAccountId == null))) is {} worn)
             work *= worn.Damage > 75 ? 1.25 : worn.Damage > 50 ? 1.1 : 1;
-        var walk = (repairYard ?? unloadYard) is { } yard ? WorldMap.Walk(WorldMap.Places[WorldMap.Camp], yard) : Walk(citizen, village, task, spot, now);
+        var walk = (repairYard ?? unloadYard) is { } yard ? WorldMap.Walk(WorldMap.Places[WorldMap.Camp], yard)
+            : farmTargets.Count>0 ? FarmRules.Walk(village,task,now,citizen.CyclePrivateOutput ? citizen.AccountId : null,farmTargets)!.Value
+            : Walk(citizen, village, task, spot, now);
         Begin(citizen, task.Id, work + walk, WorkEnergy.TaskCost(village, task, now), village, now, walk);
         citizen.CycleInputCostBasis = inputBasis;
+        citizen.CycleFarmTargets=farmTargets;
         citizen.CycleInputCostBasisKnown = inputBasisKnown;
         if (projectKey is not null && context.Project is { } acceptedProject)
         {
@@ -226,8 +239,8 @@ public static class CycleEngine
         citizen.SupervisedProgress = task.Effect==TaskEffect.Supervise ? context.Project?.BuildProgress : null;
         citizen.CurrentSiteId = null;
         citizen.CurrentSiteStage = null;
-        citizen.Spot = spot ?? repairYard ?? unloadYard;
-        citizen.CurrentTargetPlotId = task.Effect == TaskEffect.Repair ? repairAt : task.Effect == TaskEffect.Unload ? workplacePlotId : null;
+        citizen.Spot = spot ?? repairYard ?? unloadYard ?? farmYard;
+        citizen.CurrentTargetPlotId = task.Effect == TaskEffect.Repair ? repairAt : task.Effect == TaskEffect.Unload ? workplacePlotId : farmTargets.FirstOrDefault()?.PlotId;
         if (IsArmed(task))
         {
             CombatRules.Arm(citizen, village);
@@ -600,16 +613,16 @@ public static class CycleEngine
                 break;
 
             case TaskEffect.Sow:
-                overflowed = !FarmRules.Sow(village, task.Crop!.Value, now, citizen.CyclePrivateOutput ? citizen.AccountId : null);
+                overflowed = !FarmRules.Sow(village, task.Crop!.Value, now, citizen.CyclePrivateOutput ? citizen.AccountId : null, citizen.CycleFarmTargets.FirstOrDefault());
                 break;
 
             case TaskEffect.Water:
-                overflowed = FarmRules.Water(village, now, citizen.CyclePrivateOutput ? citizen.AccountId : null) == 0;
+                overflowed = FarmRules.Water(village, now, citizen.CyclePrivateOutput ? citizen.AccountId : null, citizen.CycleFarmTargets.Count==0 ? null : citizen.CycleFarmTargets) == 0;
                 break;
 
             case TaskEffect.Harvest:
             {
-                var crop = FarmRules.Harvest(village, now, citizen.CyclePrivateOutput ? citizen.AccountId : null);
+                var crop = FarmRules.Harvest(village, now, citizen.CyclePrivateOutput ? citizen.AccountId : null, citizen.CycleFarmTargets.FirstOrDefault());
                 overflowed = crop is null;
                 foreach (var output in crop?.Harvest ?? [])
                 {
@@ -757,11 +770,13 @@ public static class CycleEngine
         if(task.Effect is TaskEffect.Survey or TaskEffect.Build && contributed>0)
             experienceShare*=Math.Min(1,(double)contributed/Math.Max(1,YieldMath.Whole(task.BaseYield*factor)));
         if(task.Effect==TaskEffect.Repair && repaired>0)experienceShare*=Math.Min(1,repaired/(double)task.BaseYield);
-        if (task.RequiredBuilding is {} producedAt && !overflowed && village.Structures.FirstOrDefault(s => s.Kind == producedAt && (citizen.CyclePrivateOutput ? s.OwnerAccountId == citizen.AccountId : s.OwnerAccountId == null)) is {} producer)
+        if (task.RequiredBuilding is {} producedAt && !overflowed && village.Structures.FirstOrDefault(s => s.Kind == producedAt && (citizen.CyclePrivateOutput ? s.OwnerAccountId == citizen.AccountId : s.OwnerAccountId == null)
+            && (!FarmRules.IsFarmWork(task) || citizen.CycleFarmTargets.Count==0 || citizen.CycleFarmTargets.Any(t=>t.PlotId==s.PlotId))) is {} producer)
         {
             producer.ProductionCycles++;
             if (producer.ProductionCycles % 10 == 0) producer.Damage = Math.Min(100, producer.Damage + 1);
         }
+        if(FarmRules.IsFarmWork(task) && citizen.CycleFarmTargets.Count>0 && overflowed)experienceShare=0;
         var report = Finish(citizen, village, task.Id, task.Primary, task.Secondary, task.Skill,
             SkillRules.Challenge(citizen, task.Skill, task.SkillLevel), experienceShare, hungry,
             produced, carried, moraleGained, contributed, rareFind, overflowed, experienceHungry);
@@ -1055,6 +1070,7 @@ public static class CycleEngine
             : WorkOwnership.PublicService;
         citizen.CyclePaymentMode = WorkPaymentMode.Legacy;
         citizen.CycleWorkOrderClaimId = null;
+        citizen.CycleFarmTargets=[];
     }
 
     private static void ApplyOwnership(Citizen citizen, TaskDefinition task, bool privateWorkplace, WorkOwnership? ownership)
@@ -1238,7 +1254,7 @@ public static class CycleEngine
     /// A citizen whose hands and storage are both full of every good a task produces cannot start it.
     /// Expedition and roaming loot is random, so they need empty hands. Carrying to storage needs a load and room.
     /// </summary>
-    private static void CheckHands(Citizen citizen, Village village, TaskDefinition task, DateTimeOffset now)
+    private static void CheckHands(Citizen citizen, Village village, TaskDefinition task, DateTimeOffset now, FarmWorkTarget? farmTarget=null)
     {
         if (task.Effect == TaskEffect.Unload)
         {
@@ -1268,7 +1284,8 @@ public static class CycleEngine
         var outputs = task.Effect switch
         {
             TaskEffect.Resources => task.Outputs,
-            TaskEffect.Harvest when FarmRules.RipeBed(village, now, citizen.CyclePrivateOutput ? citizen.AccountId : null) is { Crop: { } crop } => FarmCatalog.Get(crop).Harvest,
+            TaskEffect.Harvest when (farmTarget is null ? FarmRules.RipeBed(village, now, citizen.CyclePrivateOutput ? citizen.AccountId : null)
+                : village.Fields.SingleOrDefault(b=>b.PlotId==farmTarget.PlotId && b.Index==farmTarget.Index && b.GenerationId==farmTarget.GenerationId)) is { Crop: { } crop } => FarmCatalog.Get(crop).Harvest,
             _ => [],
         };
         bool NoRoom(ResourceAmount output) =>

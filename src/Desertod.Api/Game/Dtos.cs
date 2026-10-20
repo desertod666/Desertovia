@@ -107,7 +107,8 @@ public sealed record WildsDto(
 /// <param name="Growth">0 when sown, 1 when ripe; 0 for an empty bed.</param>
 /// <param name="WateredUntil">The bed is wet until then.</param>
 /// <param name="Thirsty">Growing and drying out soon: watering reaches it.</param>
-public sealed record FieldBedDto(string PlotId, int Index, CropKind? Crop, double Growth, DateTimeOffset? WateredUntil, bool Thirsty);
+public sealed record FieldBedDto(string PlotId, int Index, CropKind? Crop, double Growth, DateTimeOffset? WateredUntil, bool Thirsty)
+{ [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.Never)] public Guid GenerationId { get; init; } }
 
 /// <param name="Available">Not discovered and every technology it builds on is; the Tsar or a Governor can put it to the vote.</param>
 /// <param name="CrewNeeded">Different citizens the research needs, scaled down for small streams.</param>
@@ -466,7 +467,8 @@ public sealed record JoinVillageRequest(string? InviteCode = null);
 
 /// <param name="Spot">Where on the map to gather, for tasks that allow it; null works at the task's workplace.</param>
 public sealed record StartTaskRequest(string TaskId, TilePoint? Spot = null, string? WorkplacePlotId = null,
-    Desertod.Domain.Economy.WorkOwnership? Ownership = null, Guid? WorkOrderId = null, Guid? RequestId = null);
+    Desertod.Domain.Economy.WorkOwnership? Ownership = null, Guid? WorkOrderId = null, Guid? RequestId = null,
+    Desertod.Domain.Farming.FarmWorkTarget? FarmTarget = null);
 
 /// <param name="Spot">Where on the land the idle citizen walks to and waits.</param>
 public sealed record GoToRequest(TilePoint Spot);
@@ -566,7 +568,7 @@ public static class DtoMapper
         village.Fields
             .OrderBy(b => b.PlotId)
             .ThenBy(b => b.Index)
-            .Select(b => new FieldBedDto(b.PlotId, b.Index, b.Crop, FarmRules.GrowthOf(village, b, now), b.WateredUntil, FarmRules.IsThirsty(village, b, now)))
+            .Select(b => new FieldBedDto(b.PlotId, b.Index, b.Crop, FarmRules.GrowthOf(village, b, now), b.WateredUntil, FarmRules.IsThirsty(village, b, now)){GenerationId=b.GenerationId})
             .ToList(),
         village.ToWeatherDto(now),
         tsar,

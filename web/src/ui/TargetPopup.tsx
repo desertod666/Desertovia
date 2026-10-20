@@ -12,6 +12,7 @@ import {
   takesSpot,
   type Catalog,
   type Citizen,
+  type FarmWorkTarget,
   type Task,
   type TilePoint,
   type VillageState,
@@ -20,6 +21,7 @@ import { canReachBank, inForestArea, type NatureKind, type WorldTarget } from '.
 import { useI18n, type Translator } from '../i18n'
 import type { UiKey } from '../i18n/en'
 import { FieldsCard } from './FieldsCard'
+import { FarmPlotBoard } from './FarmPlotBoard'
 import { SiteCard, type JobChoice } from './SitesPanel'
 import { StorageCard } from './StorageCard'
 import { TaskList } from './TaskList'
@@ -119,13 +121,13 @@ function spotFor(target: WorldTarget, task: Task): TilePoint | null {
 }
 
 /** Opens below the click in the top half of the screen and above it in the bottom half; phones get a bottom sheet. */
-export function popupStyle(screen: { x: number; y: number }, phone: boolean) {
+export function popupStyle(screen: { x: number; y: number }, phone: boolean, width = 340) {
   if (phone) return undefined
   const below = screen.y < window.innerHeight / 2
   const gap = 18
   const margin = 8
   return {
-    left: Math.max(margin, Math.min(screen.x - 170, window.innerWidth - 348)),
+    left: Math.max(margin, Math.min(screen.x - width / 2, window.innerWidth - width - margin)),
     ...(below
       ? { top: screen.y + gap, maxHeight: window.innerHeight - screen.y - gap - margin }
       : { bottom: window.innerHeight - screen.y + gap, maxHeight: screen.y - gap - margin }),
@@ -160,7 +162,7 @@ export function TargetPopup({
   now: number
   pending: boolean
   error: string | null
-  onStart: (task: Task, spot: TilePoint | null, workplacePlotId?: string) => void
+  onStart: (task: Task, spot: TilePoint | null, workplacePlotId?: string, farmTarget?:FarmWorkTarget) => void
   onStartJob: (choice: JobChoice) => void
   ruler: boolean
   onCivic: (plotId:string, operation:string)=>Promise<void>
@@ -174,10 +176,11 @@ export function TargetPopup({
   const { t } = i18n
   const working = citizen.cycleEndsAt ? now < Date.parse(citizen.cycleEndsAt) : false
   const blockedBank='spot' in target && !canReachBank(village,target.spot)
-  const disabled = blockedBank || pending || working || citizen.state === 'Paused'
+  const disabled = blockedBank || pending || working || citizen.state === 'Paused'||citizen.restState==='Resting'||citizen.restState==='RestRequested'
   const site = target.kind === 'site' ? village.sites.find((s) => s.plotId === target.plotId) : undefined
-  const tasks = tasksFor(target, catalog, village)
   const beds = target.kind === 'building' ? village.fields.filter((bed) => bed.plotId === target.plotId) : []
+  const addressedFarm=beds.length>0&&beds.every(b=>!!b.generationId)
+  const tasks = tasksFor(target, catalog, village).filter(task=>!addressedFarm||!['Sow','Water','Harvest'].includes(task.effect)&&task.id!=='tend-fields')
   const storage =
     target.kind === 'building' && target.storage ? village.storages.find((s) => s.plotId === target.plotId) : undefined
   const built = new Set<string>([...builtKinds(village, catalog), ...village.structures.filter(s=>s.ownerAccountId===citizen.accountId).map(s=>s.kind), ...village.completedProjects])
@@ -187,7 +190,7 @@ export function TargetPopup({
   const damage = target.kind === 'building' ? damageOf(village, target.plotId) : 0
 
   return (
-    <div {...gesture} className={`target-popup ${phone ? 'sheet' : ''}`} style={popupStyle(screen, phone)} role="dialog" aria-label={titleOf(target, catalog, citizen, i18n, village)}>
+    <div {...gesture} className={`target-popup ${phone ? 'sheet' : ''} ${addressedFarm ? 'farm-popup' : ''}`} style={popupStyle(screen, phone, addressedFarm ? 520 : 340)} role="dialog" aria-label={titleOf(target, catalog, citizen, i18n, village)}>
       <header className="target-popup-header">
         <strong>{titleOf(target, catalog, citizen, i18n, village)}</strong>
         <button className="close" onClick={onClose} title={`${t('close')} (Esc)`}>
@@ -212,7 +215,7 @@ export function TargetPopup({
         {site && (
           <SiteCard site={site} catalog={catalog} village={village} citizen={citizen} disabled={disabled} onStartJob={onStartJob} />
         )}
-        {beds.length > 0 && <FieldsCard beds={beds} now={now} raining={village.weather.raining} />}
+        {addressedFarm?<FarmPlotBoard beds={beds} shared={!village.structures.find(s=>s.plotId===beds[0].plotId)?.ownerAccountId} now={now} raining={village.weather.raining} catalog={catalog} citizen={citizen} disabled={disabled} onWork={(task,bed)=>onStart(task,null,bed.plotId,{plotId:bed.plotId,index:bed.index,generationId:bed.generationId!})}/>:beds.length>0&&<FieldsCard beds={beds} now={now} raining={village.weather.raining}/>}
         {storage?.ownerAccountId&&<p className="small muted">{i18n.language==='ru'?'Пополнить личный склад можно из личного имущества в кошельке.':'Deposit personal goods through your wallet’s private warehouse controls.'}</p>}
         {storage && (
           <StorageCard
@@ -242,7 +245,7 @@ export function TargetPopup({
             onStart={(task) => onStart(task, spotFor(target, task), (target.kind === 'building'||target.kind==='site') && (task.requiredBuilding === target.building || task.effect === 'Repair' || task.id === CARRY_TO_STORAGE) ? target.plotId : undefined)}
           />
         )}
-        {!site && !storage && tasks.length === 0 && <p className="small muted">{t('target.nothing')}</p>}
+        {!site && !storage && !addressedFarm && tasks.length === 0 && <p className="small muted">{t('target.nothing')}</p>}
       </div>
     </div>
   )

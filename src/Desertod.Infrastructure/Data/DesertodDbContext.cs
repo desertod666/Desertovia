@@ -306,6 +306,7 @@ public sealed class DesertodDbContext(DbContextOptions<DesertodDbContext> option
             citizen.Property(c => c.Subtitle).HasMaxLength(Citizen.SubtitleMaximumLength);
             citizen.Property(c => c.Status).HasConversion<string>().HasMaxLength(16);
             citizen.Property(c => c.RestState).HasConversion<string>().HasMaxLength(16).HasDefaultValue(Desertod.Domain.Rules.RestState.Active);
+            citizen.OwnsMany(c=>c.CycleFarmTargets,target=>{target.ToJson();target.Property(t=>t.PlotId).HasMaxLength(40);});
             citizen.Property(c => c.CurrentTaskId).HasMaxLength(32);
             citizen.Property(c => c.CurrentSiteId).HasMaxLength(16);
             citizen.Property(c => c.CurrentTechnologyId).HasMaxLength(32);

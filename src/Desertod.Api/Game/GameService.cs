@@ -1,5 +1,6 @@
 using Desertod.Domain.Skills;
 using Desertod.Domain.Economy;
+using Desertod.Domain.Farming;
 using System.Text;
 using Desertod.Domain;
 using Desertod.Domain.Buildings;
@@ -377,10 +378,18 @@ public sealed partial class GameService(
             "startTask",
             $"{request.TaskId} {request.Spot}",
             (citizen, context, now) => CycleEngine.Start(citizen, task, context, now, request.Spot, request.WorkplacePlotId,
-                request.WorkOrderId is null ? request.Ownership : WorkOwnership.PublicContract),
+                request.WorkOrderId is null ? request.Ownership : WorkOwnership.PublicContract,request.FarmTarget),
             cancellationToken,
             request.WorkOrderId, request.RequestId,
-            "start:" + Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request))));
+            StartTaskFingerprint(request));
+    }
+
+    private static string StartTaskFingerprint(StartTaskRequest request)
+    {
+        object body=request.FarmTarget is null
+            ? new {request.TaskId,request.Spot,request.WorkplacePlotId,request.Ownership,request.WorkOrderId,request.RequestId}
+            : request;
+        return "start:"+Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body)));
     }
 
     /// <summary>The citizen researches the technology the village voted for, at its building.</summary>
@@ -1413,9 +1422,10 @@ public sealed partial class GameService(
             .ToListAsync(cancellationToken);
 
         var projectTaskIds = GameCatalog.Tasks.Where(task => CycleEngine.ProjectWorkKey(task) is not null).Select(task => task.Id).ToArray();
+        var farmTaskIds=GameCatalog.Tasks.Where(FarmRules.IsFarmWork).Select(task=>task.Id).ToArray();
         var unfinished = await db.Citizens.AsNoTracking()
             .Where(c => c.VillageId == village.Id && !c.CycleSettled && c.CurrentTechnologyId == null
-                && (c.CurrentSiteId != null || projectTaskIds.Contains(c.CurrentTaskId!)))
+                && (c.CurrentSiteId != null || projectTaskIds.Contains(c.CurrentTaskId!) || farmTaskIds.Contains(c.CurrentTaskId!)))
             .ToListAsync(cancellationToken);
         foreach (var entry in db.ChangeTracker.Entries<Citizen>().Where(e => e.Entity.VillageId == village.Id))
         {
@@ -1444,6 +1454,8 @@ public sealed partial class GameService(
             Village = village,
             RescuePatient = rescuePatient,
             SiteWork = siteWork,
+            FarmWork=unfinished.Where(c=>farmTaskIds.Contains(c.CurrentTaskId??""))
+                .Select(c=>new FarmWorkClaim(c.Id,c.CyclePrivateOutput ? c.AccountId : null,c.CycleFarmTargets)).ToArray(),
             Project = project,
             CompletedProjects = completedProjects.ToHashSet(),
             ActiveCitizenCount = Math.Max(1, citizens.Count(c => c.IsActive && c.CycleStartedAt >= now.AddHours(-2))),

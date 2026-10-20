@@ -534,6 +534,7 @@ export interface CropDefinition {
 
 /** One bed of a farm. */
 export interface FieldBed {
+  generationId?:string
   /** Plot of the farm. */
   plotId: string
   number?: number
@@ -548,6 +549,7 @@ export interface FieldBed {
   /** Growing and drying out soon: watering reaches it. */
   thirsty: boolean
 }
+export interface FarmWorkTarget {plotId:string;index:number;generationId:string}
 
 /** Mirrors the server's tolerance for a ripe bed. */
 const RIPE = 1 - 1e-6
@@ -1596,7 +1598,7 @@ export const api = {
   /** The Tsar deletes the village with everything in it. */
   deleteVillage: (slug: string) => request<void>('DELETE', `/api/villages/${encodeURIComponent(slug)}`),
   startTask: (slug: string, taskId: string, spot: TilePoint | null = null, workplacePlotId?: string,
-    terms?:{ownership?:'PublicService'|'PrivateExtraction'|'PrivateCraft';workOrderId?:string;requestId?:string}) =>
+    terms?:{ownership?:'PublicService'|'PrivateExtraction'|'PrivateCraft';workOrderId?:string;requestId?:string;farmTarget?:FarmWorkTarget}) =>
     request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/me/task`, { taskId, spot, workplacePlotId, ...terms }),
   cancelTask: (slug: string) => request<Citizen>('DELETE', `/api/villages/${encodeURIComponent(slug)}/me/task`),
   startJob: (slug: string, plotId: string, stage: number, jobId: string) =>

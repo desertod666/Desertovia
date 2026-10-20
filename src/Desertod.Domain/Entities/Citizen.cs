@@ -179,6 +179,7 @@ public sealed class Citizen
     public Desertod.Domain.Economy.WorkOwnership CycleOwnership { get; set; }
     public Desertod.Domain.Economy.WorkPaymentMode CyclePaymentMode { get; set; }
     public Guid? CycleWorkOrderClaimId { get; set; }
+    public List<Desertod.Domain.Farming.FarmWorkTarget> CycleFarmTargets { get; set; } = [];
 
     /// <summary>Mirrors <c>Load.Count &gt; 0</c> so the server can find waiting carriers with a simple query.</summary>
     public bool IsCarrying { get; set; }

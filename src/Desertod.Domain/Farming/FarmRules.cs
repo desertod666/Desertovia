@@ -13,6 +13,38 @@ namespace Desertod.Domain.Farming;
 public static class FarmRules
 {
     private const double Epsilon = 1e-6;
+    public static bool IsFarmWork(TaskDefinition task) => task.Effect is TaskEffect.Sow or TaskEffect.Water or TaskEffect.Harvest;
+
+    public static List<FarmWorkTarget> PrepareTargets(Village village, TaskDefinition task, DateTimeOffset now,
+        Guid? owner, FarmWorkTarget? requested, IReadOnlyList<FarmWorkClaim> work, Guid citizenId, string? workplacePlotId=null)
+    {
+        EnsureBeds(village);
+        var beds= Beds(village,owner).Where(b=>workplacePlotId is null || b.PlotId==workplacePlotId).ToArray();
+        FieldBed? picked=null;
+        if(requested is not null)
+        {
+            picked=beds.SingleOrDefault(b=>b.PlotId==requested.PlotId && b.Index==requested.Index && b.GenerationId==requested.GenerationId)
+                ?? throw new GameRuleException("farm.stale","This bed has changed. Open it again before starting work.");
+        }
+        Check(village,task,now,owner);
+        var others=work.Where(c=>c.CitizenId!=citizenId && c.OwnerAccountId==owner).ToArray();
+        bool Busy(FieldBed bed)=>others.Any(c=>c.Targets.Count==0 || c.Targets.Any(t=>t.PlotId==bed.PlotId && t.Index==bed.Index));
+        bool Eligible(FieldBed bed)=>task.Effect switch {
+            TaskEffect.Sow=>bed.Crop is null,
+            TaskEffect.Water=>IsThirsty(village,bed,now),
+            TaskEffect.Harvest=>IsRipe(village,bed,now),
+            _=>false
+        };
+        if(picked is not null && !Eligible(picked))
+            throw new GameRuleException("farm.changed","This action is not needed on the selected bed.");
+        var selected=(picked is null ? (task.Effect==TaskEffect.Water ? beds.OrderBy(b=>b.WateredUntil??DateTimeOffset.MinValue) : beds.AsEnumerable()) : [picked])
+            .Where(Eligible).Where(b=>!Busy(b)).Take(requested is null && task.Effect==TaskEffect.Water ? FarmCatalog.BedsPerWatering : 1).ToArray();
+        if(selected.Length==0)throw new GameRuleException("farm.busy","The selected beds already have accepted work. Wait for it to finish.");
+        return selected.Select(b=>new FarmWorkTarget{PlotId=b.PlotId,Index=b.Index,GenerationId=b.GenerationId}).ToList();
+    }
+
+    private static FieldBed? TargetBed(Village village, Guid? owner, FarmWorkTarget target) =>
+        Beds(village,owner).SingleOrDefault(b=>b.PlotId==target.PlotId && b.Index==target.Index && b.GenerationId==target.GenerationId);
 
     /// <summary>Gives every farm its beds, also farms built before beds existed. Returns true if any bed was added.</summary>
     public static bool EnsureBeds(Village village)
@@ -27,7 +59,7 @@ public static class FarmRules
                     continue;
                 }
 
-                village.Fields.Add(new FieldBed { PlotId = farm.PlotId, Index = index, UpdatedAt = farm.BuiltAt });
+                village.Fields.Add(new FieldBed { PlotId = farm.PlotId, Index = index, GenerationId=Guid.CreateVersion7(), UpdatedAt = farm.BuiltAt });
                 added = true;
             }
         }
@@ -84,25 +116,27 @@ public static class FarmRules
     }
 
     /// <summary>Sows the crop in the first empty bed. Returns false when someone sowed the last one first.</summary>
-    public static bool Sow(Village village, CropKind crop, DateTimeOffset now, Guid? owner = null)
+    public static bool Sow(Village village, CropKind crop, DateTimeOffset now, Guid? owner = null, FarmWorkTarget? target = null)
     {
         EnsureBeds(village);
-        if (EmptyBed(village, owner) is not { } bed)
+        if ((target is null ? EmptyBed(village, owner) : TargetBed(village,owner,target)) is not { Crop:null } bed)
         {
             return false;
         }
 
         bed.Crop = crop;
+        bed.GenerationId=Guid.CreateVersion7();
         bed.Growth = 0;
         bed.UpdatedAt = now;
         return true;
     }
 
     /// <summary>Waters the thirstiest beds. Returns how many were watered.</summary>
-    public static int Water(Village village, DateTimeOffset now, Guid? owner = null)
+    public static int Water(Village village, DateTimeOffset now, Guid? owner = null, IReadOnlyList<FarmWorkTarget>? targets = null)
     {
         EnsureBeds(village);
-        var watered = ThirstyBeds(village, now, owner).Take(FarmCatalog.BedsPerWatering).ToList();
+        var watered = (targets is null ? ThirstyBeds(village, now, owner).Take(FarmCatalog.BedsPerWatering)
+            : targets.Select(t=>TargetBed(village,owner,t)).OfType<FieldBed>().Distinct().Where(b=>IsThirsty(village,b,now))).ToList();
         foreach (var bed in watered)
         {
             bed.Growth = GrowthOf(village, bed, now);
@@ -114,15 +148,16 @@ public static class FarmRules
     }
 
     /// <summary>Empties the first ripe bed and returns its crop; null when someone harvested it first.</summary>
-    public static CropDefinition? Harvest(Village village, DateTimeOffset now, Guid? owner = null)
+    public static CropDefinition? Harvest(Village village, DateTimeOffset now, Guid? owner = null, FarmWorkTarget? target = null)
     {
         EnsureBeds(village);
-        if (RipeBed(village, now, owner) is not { Crop: { } crop } bed)
+        if ((target is null ? RipeBed(village, now, owner) : TargetBed(village,owner,target)) is not { Crop: { } crop } bed || !IsRipe(village,bed,now))
         {
             return null;
         }
 
         bed.Crop = null;
+        bed.GenerationId=Guid.CreateVersion7();
         bed.Growth = 0;
         bed.UpdatedAt = now;
         return FarmCatalog.Get(crop);
@@ -132,7 +167,7 @@ public static class FarmRules
     /// Walking time of farm work: water is carried from the river to the beds, the harvest from the beds to storage.
     /// Null for other tasks.
     /// </summary>
-    public static TimeSpan? Walk(Village village, TaskDefinition task, DateTimeOffset now, Guid? owner = null)
+    public static TimeSpan? Walk(Village village, TaskDefinition task, DateTimeOffset now, Guid? owner = null, IReadOnlyList<FarmWorkTarget>? targets = null)
     {
         switch (task.Effect)
         {
@@ -140,13 +175,13 @@ public static class FarmRules
                 return TimeSpan.Zero;
             case TaskEffect.Water:
             {
-                var bed = ThirstyBeds(village, now, owner).FirstOrDefault();
+                var bed = targets?.FirstOrDefault() is {} waterTarget ? TargetBed(village,owner,waterTarget) : ThirstyBeds(village, now, owner).FirstOrDefault();
                 return bed is null ? TimeSpan.Zero : WorldMap.Walk(WorldMap.Places[WorldMap.Ford], WorldMap.Yard(bed.PlotId));
             }
 
             case TaskEffect.Harvest:
             {
-                if (RipeBed(village, now, owner) is not { Crop: { } crop } bed)
+                if ((targets?.FirstOrDefault() is {} harvestTarget ? TargetBed(village,owner,harvestTarget) : RipeBed(village, now, owner)) is not { Crop: { } crop } bed)
                 {
                     return TimeSpan.Zero;
                 }

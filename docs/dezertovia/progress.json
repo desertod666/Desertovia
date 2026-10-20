@@ -2488,12 +2488,13 @@
   "implementation_1_0": {
     "decision": "D-104/D-105",
     "status": "active_not_complete",
-    "branch": "feat/desertovia-1-0-economy",
+    "branch": "feat/desertovia-1-0-farm",
     "details": "IMPLEMENTATION_PROGRESS_1_0.json",
-    "latest_full_ci": "ECONOMY_COST_VERIFICATION_1_0.json",
-    "current_work": "explicit ownership and bounded treasury-funded production orders, then shared farm",
+    "latest_full_ci": "IMPLEMENTATION_PROGRESS_1_0.json#checks.work_order_full_ci",
+    "current_work": "farm addressed work, admission and useful contribution",
     "farm_loss_owner_confirmed": "proportional actual loss across communal food and unclaimed reserve",
     "public_deployed": false,
-    "planning_1_0_is_historical_completed_phase": true
+    "planning_1_0_is_historical_completed_phase": true,
+    "current_assignment": "D107 implementation resumed; whole goal active"
   }
 }

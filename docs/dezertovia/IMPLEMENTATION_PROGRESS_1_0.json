@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T18:50:03.094885+00:00",
-  "status": "main_plan_active_reconnect_authority_rest_economy_farm",
+  "recorded_at_utc": "2026-10-20T19:44:48.180890+00:00",
+  "status": "main_plan_active_farm_implementation",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-economy",
+  "branch": "feat/desertovia-1-0-farm",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "PKG-T020 cost core verified; PKG-T021/T022 funded production-order slice implemented, full CI pending",
+  "implemented_task": "M1/cost/funded production orders verified at separate source checkpoints; addressed farm and spatial tool prototype partial. D106 current request only refines docs.",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -40,13 +40,14 @@
     "hospital_bridge_enabled": false,
     "original_game_container_replaced": false,
     "bot_modified": false,
-    "current_source_restarted": false,
+    "current_source_restarted": true,
     "tool_recipes_verified_http": 8,
-    "local_world_migrations": 42,
+    "local_world_migrations": 43,
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "migration42 initial funded-work source; later DTO/UI followups not restarted yet"
+    "loaded_scope": "AddressedFarmWork migration43; local restart was initiated before the D106 documentation-only message, completion observed afterwards. No further restart requested by D106.",
+    "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL"
   },
   "checks": {
     "baseline_ci": {
@@ -373,8 +374,20 @@
       "scope": "final form CSS, RU/EN desktop/phone at320px, publication request/deadline retry, public and personal work; screenshot inspected"
     },
     "work_order_full_ci": {
-      "status": "pending_new_source_push",
-      "scope": "current work-order source including latest receipt compatibility and departure cleanup"
+      "status": "success_with_one_browser_case_retried",
+      "run_id": 39481592557,
+      "sha": "ddf0c22581b6aef569d75ff8f7b8c8b956b08d33",
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39481592557",
+      "all_five_jobs": "success",
+      "domain": 564,
+      "api": 308,
+      "browser_desktop": 144,
+      "browser_phone_first_attempt_passed": 141,
+      "browser_phone_passed_on_retry": 1,
+      "browser_skipped": 2,
+      "retry_case": "phone chat-modes viewport resize: immediate bound read412 versus320, retry passed",
+      "previous_failed_run": 39478205987,
+      "scope": "parent economy source only; not current farm source"
     },
     "m1_late_combat_full_ci": {
       "status": "success",
@@ -382,9 +395,74 @@
       "sha": "ace2cff2eb874e8a82169664b18d282704ce28b2",
       "url": "https://github.com/desertod666/Desertovia/actions/runs/39473906108",
       "scope": "all five jobs success; details of M1 parent, later economy receipt separately recorded"
+    },
+    "work_order_api_expanded": {
+      "passed": 7,
+      "failed": 0,
+      "scope": "all308 API CI at ddf0c22 includes7 WorkOrder cases; distinct farm source checks recorded separately"
+    },
+    "farm_target_domain": {
+      "passed": 571,
+      "failed": 0,
+      "scope": "whole Domain after preserving CurrentTargetPlotId for accepted bed; completed before D106"
+    },
+    "farm_target_api": {
+      "unique_cases": 4,
+      "first_combined_run": "10 passed/1 failed: legacy JSON test read wrapper instead of state. Corrected focused legacy case passed. Fresh combined11-case run started before D106; final result recorded separately.",
+      "work_order_cases_passed": 7,
+      "scope": "real PostgreSQL, migration43 in throwaway fixture; not full current API PASS",
+      "corrected_legacy_case": {
+        "passed": 1,
+        "failed": 0,
+        "log": "outside-repo qa/farm-legacy-api-corrected.log"
+      },
+      "fresh_combined_run": {
+        "passed": 11,
+        "failed": 0,
+        "farm_cases": 4,
+        "work_order_cases": 7,
+        "result_file": "TestResults/farm-targets/Admin_DESKTOP-FQ85FTD_2026-10-20_21_25_13_net10.0.trx",
+        "scope": "run started before D106, completion observed during docs work. API compiled before the later CurrentTargetPlotId followup;571 Domain covers that followup. Not full farm-source CI."
+      }
+    },
+    "farm_target_browser": {
+      "passed": 16,
+      "failed": 0,
+      "scope": "spatial tool→bed, specific seeds, inspect/inapplicable no command, tap hints,44px and no horizontal overflow; RU/EN actual960px desktop and320/390px phone emulation; before D106",
+      "visual_review": "desktop and390px phone seed-selection screenshots inspected; headings/tool labels fully visible after flex sizing fix; not final menu art"
+    },
+    "farm_concept_documentation": {
+      "decision": "D-106",
+      "checked_at_utc": "2026-10-20T19:33:01.817654+00:00",
+      "result": "passed_documentation_consistency_checks",
+      "scope": "local_docs_only_not_game_runtime_validation",
+      "tasks": 53,
+      "acceptance_cases": 46,
+      "layers": 23,
+      "all_tasks_reach_final_readiness": true,
+      "farm_to_economy_dependencies_acyclic": true,
+      "local_markdown_links_checked": 66,
+      "concept_sections": 12,
+      "manifest_hashes_verified": 22,
+      "source_package_unchanged": true,
+      "instruction_headers_synchronized": true,
+      "game_code_and_existing_uncommitted_work": "not changed by the concept integration scripts",
+      "new_github_publication": false,
+      "new_server_action_by_this_request": false
     }
   },
-  "open_questions": [],
+  "open_questions": [
+    {
+      "id": "FARM-WEIGHTS",
+      "status": "awaiting_owner",
+      "question": "40 sow/30 all useful waters/10 fertilizer/20 harvest, normalize absent stages?"
+    },
+    {
+      "id": "FARM-DESTROYED-PAY",
+      "status": "awaiting_owner",
+      "question": "Pay completed useful work from reserved fund if crop dies before harvest?"
+    }
+  ],
   "known_followups": [
     {
       "id": "SEC-001",
@@ -400,9 +478,9 @@
     "bot_deployed": false
   },
   "next_tasks": [
-    "PKG-T021/T022 verify current source including explicit ownership and bounded funded production orders",
-    "F001/F002 farm rules contract and addressed bed generations; owner confirmed proportional losses",
-    "Continue T023/T024/T025/F003–006 and the rest of the integrated DAG"
+    "F002 addressed bed work and spatial instrument UI in chosen style1",
+    "F001/F003–006 farm permissions, preparation/compost, contribution/reserve accounting, simulations",
+    "PKG-T014 character/menu visual redesign in style1 and remaining main DAG"
   ],
   "screenshots": [
     "screenshots/foundation/economic-gold-ru-phone.png",
@@ -439,11 +517,30 @@
     "PKG-D101": "Owner confirmed: finish already accepted work, settle its result once, then Resting without new work/XP; retreat from combat before rest. Disconnect is not rest.",
     "PKG-D108": "Owner confirmed: transfer actual consumed personal input costs; allocate multi-output cost by recipe base prices with deterministic remainder. Legacy unknown basis stays explicitly unknown; no profit tax on its sale until a separate decision.",
     "F001": "Protect 10% of actual harvest immediately for contributors; community receives90%. Owner answer supersedes reserve-first deferral.",
-    "F001-reserve-loss": "Owner confirmed proportional actual warehouse Food loss across communal stock and unclaimed farmer reserve, with corresponding claim reduction; claimed personal food follows normal rules. No money debt replaces destroyed harvest."
+    "F001-reserve-loss": "Owner confirmed proportional actual warehouse Food loss across communal stock and unclaimed farmer reserve, with corresponding claim reduction; claimed personal food follows normal rules. No money debt replaces destroyed harvest.",
+    "D106": "Farm gameplay concept integrated locally. Soil preparation may be part of sowing, no mandatory extra waiting/action. Selected-bed costs/forecast/history, close does not cancel, pixel palette and short sessions. No new code/server/GitHub/archive changes by this request."
   },
   "active_tasks": [
-    "PKG-T021/T022 verify current source including explicit ownership and bounded funded production orders",
-    "F001/F002 farm rules contract and addressed bed generations; owner confirmed proportional losses",
-    "Continue T023/T024/T025/F003–006 and the rest of the integrated DAG"
-  ]
+    "F002 addressed work checkpoint and CI",
+    "F001 narrow farmer admission and delegated management",
+    "F003 useful contribution data"
+  ],
+  "owner_menu_visual_requirement": {
+    "status": "style1_selected_spatial_farm_revision_delivered_implementation_active",
+    "evidence": "MENU_VISUAL_DESIGN_1_0.md",
+    "first_examples": [
+      "shared farm",
+      "character menu"
+    ],
+    "scope": "richer graphics across menus and dedicated mobile layout, beyond tooltip/text compaction",
+    "concepts": "menu-concepts/manifest.json",
+    "selected_style": "Живое царство",
+    "interaction_correction": "Farm is a spatial plot with tools applied directly to beds, not a set of plant cards. FARM_INTERACTION_REFERENCE_1_0.md."
+  },
+  "current_assignment": {
+    "decision": "D-107",
+    "scope": "implementation_testing_local_runtime_github",
+    "goal": "GOAL_1_0.md",
+    "status": "active_not_complete"
+  }
 }

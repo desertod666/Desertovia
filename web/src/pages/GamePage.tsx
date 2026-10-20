@@ -2,7 +2,7 @@ import { MonasteryPanel } from '../ui/MonasteryPanel'
 import { WalletDialog, WalletHud } from '../ui/WalletHud'
 import { PersonalBattlePanel } from '../ui/PersonalBattlePanel'
 import { SafeRestControl } from '../ui/SafeRestControl'
-import { createOperationId } from '../api'
+import { createOperationId,type FarmWorkTarget } from '../api'
 import { HospitalPanel } from '../ui/HospitalPanel'
 import { RescuePatientPanel } from '../ui/RescuePatientPanel'
 import { SramoslavPanel } from '../ui/SramoslavPanel'
@@ -159,6 +159,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   const canvas = useRef<GameCanvasHandle>(null)
   const citizenId = useRef<string | null>(null)
   const lastCitizenSnapshot = useRef(-Infinity)
+  const taskStartRequests=useRef(new Map<string,string>())
   const applyCitizen = useCallback((next: Citizen | null) => {
     if(next && Date.parse(next.serverNow)<lastCitizenSnapshot.current)return
     lastCitizenSnapshot.current=next?Date.parse(next.serverNow):-Infinity
@@ -459,7 +460,12 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
     }
   }
 
-  const start = (task: Task, spot: TilePoint | null = null, workplacePlotId?: string) => run(() => api.startTask(slug, task.id, spot, workplacePlotId))
+  const start = (task: Task, spot: TilePoint | null = null, workplacePlotId?: string, farmTarget?:FarmWorkTarget) => {
+    const key=JSON.stringify([slug,task.id,spot,workplacePlotId,farmTarget])
+    let requestId=taskStartRequests.current.get(key)
+    if(!requestId){requestId=createOperationId();taskStartRequests.current.set(key,requestId)}
+    return run(async()=>{const next=await api.startTask(slug,task.id,spot,workplacePlotId,{requestId,farmTarget});taskStartRequests.current.delete(key);return next})
+  }
   const startJob = (choice: JobChoice) => run(() => api.startJob(slug, choice.plotId, choice.stage, choice.jobId))
   const carry = () => run(() => api.startTask(slug, CARRY_TO_STORAGE))
   const research = () => run(() => api.research(slug))
@@ -479,6 +485,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
     }
     const task = catalog?.tasks.find((t) => t.id === finished.taskId)
     if (task) {
+      if(['Sow','Water','Harvest'].includes(task.effect)){openMenu('tasks');return}
       const ownership=citizen?.cycleOwnership
       if(ownership==='PrivateExtraction'||ownership==='PrivateCraft')void run(()=>api.startTask(slug,task.id,againAt(task),finished.targetPlotId??undefined,{ownership}))
       else void start(task, againAt(task), finished.targetPlotId ?? undefined)

@@ -2267,6 +2267,33 @@ namespace Desertod.Infrastructure.Data.Migrations
                                 .HasForeignKey("CitizenId");
                         });
 
+                    b.OwnsMany("Desertod.Domain.Farming.FarmWorkTarget", "CycleFarmTargets", b1 =>
+                        {
+                            b1.Property<Guid>("CitizenId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd();
+
+                            b1.Property<Guid>("GenerationId");
+
+                            b1.Property<int>("Index");
+
+                            b1.Property<string>("PlotId")
+                                .IsRequired()
+                                .HasMaxLength(40);
+
+                            b1.HasKey("CitizenId", "__synthesizedOrdinal");
+
+                            b1.ToTable("Citizens");
+
+                            b1
+                                .ToJson("CycleFarmTargets")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CitizenId");
+                        });
+
                     b.OwnsOne("Desertod.Domain.Rules.RescueJourney", "RescueJourney", b1 =>
                         {
                             b1.Property<Guid>("CitizenId");
@@ -2393,6 +2420,8 @@ namespace Desertod.Infrastructure.Data.Migrations
                         });
 
                     b.Navigation("Appearance");
+
+                    b.Navigation("CycleFarmTargets");
 
                     b.Navigation("Load");
 
@@ -3213,6 +3242,8 @@ namespace Desertod.Infrastructure.Data.Migrations
                                 .ValueGeneratedOnAdd();
 
                             b1.Property<string>("Crop");
+
+                            b1.Property<Guid>("GenerationId");
 
                             b1.Property<double>("Growth");
 

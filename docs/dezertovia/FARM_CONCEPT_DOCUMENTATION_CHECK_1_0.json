@@ -1,0 +1,19 @@
+{
+  "decision": "D-106",
+  "checked_at_utc": "2026-10-20T19:33:01.817654+00:00",
+  "result": "passed_documentation_consistency_checks",
+  "scope": "local_docs_only_not_game_runtime_validation",
+  "tasks": 53,
+  "acceptance_cases": 46,
+  "layers": 23,
+  "all_tasks_reach_final_readiness": true,
+  "farm_to_economy_dependencies_acyclic": true,
+  "local_markdown_links_checked": 66,
+  "concept_sections": 12,
+  "manifest_hashes_verified": 22,
+  "source_package_unchanged": true,
+  "instruction_headers_synchronized": true,
+  "game_code_and_existing_uncommitted_work": "not changed by the concept integration scripts",
+  "new_github_publication": false,
+  "new_server_action_by_this_request": false
+}

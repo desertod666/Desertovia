@@ -10,6 +10,8 @@ public sealed class FieldBed
     public required string PlotId { get; set; }
 
     public int Index { get; set; }
+    /// <summary>Legacy beds start at Empty; every sow/harvest creates another generation, including empty beds.</summary>
+    public Guid GenerationId { get; set; }
 
     /// <summary>Null while the bed is empty.</summary>
     public CropKind? Crop { get; set; }
