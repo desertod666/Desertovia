@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T19:44:48.180890+00:00",
+  "recorded_at_utc": "2026-10-20T19:58:42.916784+00:00",
   "status": "main_plan_active_farm_implementation",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
@@ -42,12 +42,14 @@
     "bot_modified": false,
     "current_source_restarted": true,
     "tool_recipes_verified_http": 8,
-    "local_world_migrations": 43,
+    "local_world_migrations": 44,
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "AddressedFarmWork migration43; local restart was initiated before the D106 documentation-only message, completion observed afterwards. No further restart requested by D106.",
-    "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL"
+    "loaded_scope": "FarmerAdmission migration44, role/access/allocator source and DevelopmentWorldSetup preservation followup. Persistent restart verification recorded separately.",
+    "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
+    "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
+    "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump"
   },
   "checks": {
     "baseline_ci": {
@@ -449,20 +451,86 @@
       "game_code_and_existing_uncommitted_work": "not changed by the concept integration scripts",
       "new_github_publication": false,
       "new_server_action_by_this_request": false
+    },
+    "farm_admission_domain": {
+      "passed": 577,
+      "failed": 0,
+      "scope": "whole Domain includes legacy private farm admission compatibility and5 exact-allocation cases; allocator is not yet wired to crop/financial settlement"
+    },
+    "farm_admission_api_initial": {
+      "passed": 10,
+      "failed": 0,
+      "scope": "4 FarmAccess+4 FarmTarget+2 AuthorityMatrix in real PostgreSQL with migration44; before final post-commit notification refactor"
+    },
+    "farm_admission_api_final": {
+      "passed": 4,
+      "failed": 0,
+      "scope": "final FarmAccess API source including post-commit notification. Real PostgreSQL; separate initial10-case authority/bed regression also passed.",
+      "result_file": "TestResults/farm-access-final/Admin_DESKTOP-FQ85FTD_2026-10-20_22_00_08_net10.0.trx"
+    },
+    "farm_admission_ui_initial": {
+      "passed": 20,
+      "failed": 4,
+      "cause": "Controlled async checkbox reverted until server reply; Playwright check() demanded immediate state. Snapshot already showed checked. Test changed to click then awaited checked; no forced click or assertion removal."
+    },
+    "farm_admission_ui_final": {
+      "passed": 28,
+      "failed": 0,
+      "scope": "final RU/EN desktop960/phone320px; owner delegation/enrollment, limited manager, inspect-only resident,16 spatial bed scenarios. TS/build/lint pass.",
+      "visual_review": "phone delegated-manager screenshot inspected; no clipping,44px label target."
+    },
+    "addressed_farm_full_ci": {
+      "schema_version": 1,
+      "recorded_at_utc": "2026-10-20T20:04:54.078357+00:00",
+      "sha": "42e63c5f3d5670b06c963d58858c0a4d39b68dec",
+      "run_id": 39486283151,
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39486283151",
+      "result": "success",
+      "jobs": {
+        "backend": 118847411941,
+        "frontend": 118847411605,
+        "docker": 118847411529,
+        "desktop": 118847411752,
+        "phone": 118847411239
+      },
+      "passed": {
+        "domain": 571,
+        "api": 312,
+        "browser_desktop": 152,
+        "browser_phone": 150
+      },
+      "browser_skipped": 2,
+      "scope": "addressed farm work and spatial tool prototype, before narrow farmer admission and allocator",
+      "public_release": false,
+      "receipt": "FARM_ADDRESSED_VERIFICATION_1_0.json"
+    },
+    "development_world_restart_initial": {
+      "status": "failed_identity_check_expected_original_demo_reset_identified",
+      "scope": "43→44 local restart preserved counts but regenerated13 synthetic demo citizens and3 field identities. Existing DemoVillage/BuiltVillage unconditionally rebuild on Development startup; no public/user world affected.",
+      "fix": "local Hosting:PreserveDevelopmentWorlds opt-in and integration coverage; defaults for disposable CI demos unchanged"
+    },
+    "development_world_persistence_api": {
+      "passed": 1,
+      "failed": 0,
+      "scope": "actual PostgreSQL fixture preserves world/citizen/admission/crop identity, rollback-isolated from other cases",
+      "result_file": "TestResults/dev-world-persistence/Admin_DESKTOP-FQ85FTD_2026-10-20_22_04_45_net10.0.trx"
+    },
+    "development_world_persistent_restart": {
+      "result": "pass",
+      "migrations": 44,
+      "worlds": 2,
+      "citizens": 13,
+      "fields": 3,
+      "identity_and_crop_generation_hashes_match": true,
+      "snapshots": "outside-repo qa/farm-admission-world-keep-before.json and keep-after.json",
+      "scope": "real local Debug API restart with Hosting:PreserveDevelopmentWorlds=true, following correction of inherited Development demo reset behavior"
+    },
+    "farm_admission_full_ci": {
+      "status": "pending_after_checkpoint_push",
+      "scope": "admission, exact allocator and development persistence; earlier42e63c5 CI does not cover this source"
     }
   },
-  "open_questions": [
-    {
-      "id": "FARM-WEIGHTS",
-      "status": "awaiting_owner",
-      "question": "40 sow/30 all useful waters/10 fertilizer/20 harvest, normalize absent stages?"
-    },
-    {
-      "id": "FARM-DESTROYED-PAY",
-      "status": "awaiting_owner",
-      "question": "Pay completed useful work from reserved fund if crop dies before harvest?"
-    }
-  ],
+  "open_questions": [],
   "known_followups": [
     {
       "id": "SEC-001",
@@ -478,9 +546,10 @@
     "bot_deployed": false
   },
   "next_tasks": [
-    "F002 addressed bed work and spatial instrument UI in chosen style1",
-    "F001/F003–006 farm permissions, preparation/compost, contribution/reserve accounting, simulations",
-    "PKG-T014 character/menu visual redesign in style1 and remaining main DAG"
+    "F001 narrow admission implementation and verification",
+    "F003 persist useful contribution/harvest history and wire exact allocator",
+    "F004 protected physical food reserve and one funded harvest payment",
+    "remaining complete1.0 DAG"
   ],
   "screenshots": [
     "screenshots/foundation/economic-gold-ru-phone.png",
@@ -518,12 +587,15 @@
     "PKG-D108": "Owner confirmed: transfer actual consumed personal input costs; allocate multi-output cost by recipe base prices with deterministic remainder. Legacy unknown basis stays explicitly unknown; no profit tax on its sale until a separate decision.",
     "F001": "Protect 10% of actual harvest immediately for contributors; community receives90%. Owner answer supersedes reserve-first deferral.",
     "F001-reserve-loss": "Owner confirmed proportional actual warehouse Food loss across communal stock and unclaimed farmer reserve, with corresponding claim reduction; claimed personal food follows normal rules. No money debt replaces destroyed harvest.",
-    "D106": "Farm gameplay concept integrated locally. Soil preparation may be part of sowing, no mandatory extra waiting/action. Selected-bed costs/forecast/history, close does not cancel, pixel palette and short sessions. No new code/server/GitHub/archive changes by this request."
+    "D106": "Farm gameplay concept integrated locally. Soil preparation may be part of sowing, no mandatory extra waiting/action. Selected-bed costs/forecast/history, close does not cancel, pixel palette and short sessions. No new code/server/GitHub/archive changes by this request.",
+    "FARM-WEIGHTS": "Owner accepted40 sow/30 all necessary waters together/10 fertilizer/20 harvest. Normalize stages that did not happen; repeated requests add no weight.",
+    "FARM-DESTROYED-PAY": "Owner chose no money before actual harvest. Destroyed crop creates neither Food nor cash wage. Reserved funds for an unharvested crop must be returned; completed work remains historical, not a money debt."
   },
   "active_tasks": [
-    "F002 addressed work checkpoint and CI",
-    "F001 narrow farmer admission and delegated management",
-    "F003 useful contribution data"
+    "F001 narrow admission implementation and verification",
+    "F003 persist useful contribution/harvest history and wire exact allocator",
+    "F004 protected physical food reserve and one funded harvest payment",
+    "remaining complete1.0 DAG"
   ],
   "owner_menu_visual_requirement": {
     "status": "style1_selected_spatial_farm_revision_delivered_implementation_active",
@@ -542,5 +614,11 @@
     "scope": "implementation_testing_local_runtime_github",
     "goal": "GOAL_1_0.md",
     "status": "active_not_complete"
+  },
+  "farm_pull_request": {
+    "url": "https://github.com/desertod666/Desertovia/pull/78",
+    "draft": true,
+    "base": "feat/desertovia-1-0-economy",
+    "first_source": "42e63c5f3d5670b06c963d58858c0a4d39b68dec"
   }
 }

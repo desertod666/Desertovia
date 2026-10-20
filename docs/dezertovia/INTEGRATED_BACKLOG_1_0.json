@@ -2930,10 +2930,11 @@
         "Применить подтверждённые90/10, немедленный физический резерв10% и пропорциональные складские потери; отсрочка до излишка больше не вариант выбора.",
         "Зафиксировать общность земли/семян, узкий допуск owner/deputy, рецепты, полезные веса, фонд зарплаты и policyVersion.",
         "Проверить пропорциональные потери обоих запасов: ноль/весь склад/нечётные количества, несколько участников, перезапуск, повтор и конкурентная выдача; сумма ущерба точно совпадает с фактической потерей.",
-        "Согласовать договор погибшего посева, цены/сроки/материалы/веса и бесплатное восстановление; общие новые грядки не изымают старые личные участки."
+        "Согласовать договор погибшего посева, цены/сроки/материалы/веса и бесплатное восстановление; общие новые грядки не изымают старые личные участки.",
+        "По ответу владельца до фактического сбора денег нет; гибель посева возвращает неиспользованный обеспеченный фонд, не создаёт Food/зарплатный долг."
       ],
       "done_when": "Записаны право на долю, физическое хранение, округление, политика потерь/выдачи и отсутствие новых работ/XP при отдыхе.",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partial_narrow_admission_implemented_shared_settlement_pending",
       "source": "shared_farm_addendum_and_current_code",
       "acceptance_scope": {
         "FA01": "full_case",
@@ -2941,10 +2942,10 @@
         "FA06": "full_case"
       },
       "current_support": {
-        "status": "plan",
-        "evidence": "Существующие FieldBed/FarmRules/FieldsCard — основа; адресный допуск/вклад/90:10 не реализованы. См. CODE_AUDIT_1_0.md."
+        "status": "partial",
+        "evidence": "FarmerAdmissionEnabled opt-in, IsFarmer and separately delegated CanManageFarm, authority/receipt/legacy-work/private-farm checks. Full crop policy, seeds/compost and reward settlement remain pending."
       },
-      "owner_resolution": "Protect 10% of actual harvest immediately for contributors; 90% community. This owner answer supersedes the former reserve-first deferral alternative.",
+      "owner_resolution": "Protect 10% of actual harvest immediately for contributors; 90% community. This owner answer supersedes the former reserve-first deferral alternative. Owner accepted useful weights40/30/10/20; no money before actual harvest.",
       "owner_confirmed_loss_policy": "Proportional actual warehouse Food loss across communal stock and unclaimed protected reserve, reducing backed claims in the same transaction; claimed personal food follows normal rules. No compensating money emission."
     },
     {
@@ -2986,7 +2987,7 @@
       },
       "current_support": {
         "status": "partial",
-        "evidence": "FarmWorkTarget/GenerationId and persisted accepted reservations implemented before D106;571 Domain,4 unique farm API cases previously passed,16 browser cases. Admission and complete shared policy pending; no full FA02/FA03 PASS."
+        "evidence": "FarmWorkTarget/GenerationId and persisted accepted reservations implemented before D106;571 Domain,4 unique farm API cases previously passed,16 browser cases. Admission and complete shared policy pending; no full FA02/FA03 PASS. Narrow admission source now implemented; expanded API checks recorded separately in progress."
       }
     },
     {
@@ -3030,8 +3031,8 @@
         "FA05": "full_case"
       },
       "current_support": {
-        "status": "plan",
-        "evidence": "Существующие FieldBed/FarmRules/FieldsCard — основа; адресный допуск/вклад/90:10 не реализованы. См. CODE_AUDIT_1_0.md."
+        "status": "partial",
+        "evidence": "Addressed useful sow/water/harvest already exists. Exact stage-weight allocator implemented/5 Domain cases; per-crop contributor persistence, history and fertilizer pending."
       }
     },
     {
@@ -3865,5 +3866,17 @@
     "public_deployment": false,
     "real_payments": false,
     "goal": "GOAL_1_0.md"
+  },
+  "latest_owner_farm_decisions": {
+    "weights": {
+      "sow": 40,
+      "all_useful_waters": 30,
+      "fertilizer": 10,
+      "harvest": 20
+    },
+    "absent_stages": "normalize performed stages",
+    "cash_before_harvest": false,
+    "destroyed_crop": "no Food/no wage; return reserved fund, keep work history",
+    "owner_confirmed": true
   }
 }

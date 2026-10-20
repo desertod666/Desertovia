@@ -1010,6 +1010,7 @@ export interface CivicOrder { buildingKind?:BuildingKind|null; id:string; plotId
 export interface Housing { plotId:string; beds:number; occupied:number; level:number; number?:number; ownerAccountId?:string|null; ownerName?:string|null; builtAt?:string|null }
 export interface MonasteryView {open:boolean;inRange:boolean;knowsRemedy:boolean;readyAt:string|null;wood:number;food:number;remedyRoom:number;yard:TilePoint}
 export interface VillageState {
+  farmerAdmissionEnabled?:boolean
   workContractsEnabled?:boolean
   snapshotAt?: string
   bridgeDamage?:number
@@ -1145,6 +1146,8 @@ export interface RescueJourney {
 }
 
 export interface CitizenSummary {
+  isFarmer?:boolean
+  canManageFarm?:boolean
   restState?: RestState
   rescueJourney?:RescueJourney|null
   rescueRequestedAt?:string|null
@@ -1243,6 +1246,8 @@ export interface SkillValue {
 }
 
 export interface Citizen {
+  isFarmer?:boolean
+  canManageFarm?:boolean
   restState?: RestState
   restRequestedAt?: string | null
   mealKind?: string | null
@@ -1649,6 +1654,10 @@ export const api = {
       `/api/villages/${encodeURIComponent(slug)}/citizens/${encodeURIComponent(citizenId)}/governor`,
       { isGovernor },
     ),
+  setFarmAccess: (slug:string,citizenId:string,conditions:{requestId:string;isFarmer?:boolean;canManageFarm?:boolean}) =>
+    request<CitizenSummary>('PUT',`/api/villages/${encodeURIComponent(slug)}/citizens/${encodeURIComponent(citizenId)}/farm-access`,conditions),
+  enableFarmerAdmission: (slug:string,requestId:string) =>
+    request<VillageState>('PUT',`/api/villages/${encodeURIComponent(slug)}/farm/admission`,{requestId}),
   openDungeon: (slug: string, dungeonId: string = DEAD_LANDS) =>
     request<VillageState>('POST', `/api/villages/${encodeURIComponent(slug)}/dungeon`, { dungeonId }),
   cancelDungeon: (slug: string) => request<VillageState>('DELETE', `/api/villages/${encodeURIComponent(slug)}/dungeon`),

@@ -106,6 +106,12 @@ public static class CycleEngine
             spot = WorldMap.Yard((selectedWorkplace ?? village.Structures.First(b=>b.Kind==ownKind && b.OwnerAccountId==citizen.AccountId && !b.Decommissioning && b.RuinedAt is null && b.Damage<100)).PlotId);
         citizen.CyclePrivateOutput = privateWorkplace || spot is {} ownSpot && !KingdomRules.Area(village).Contains(ownSpot.ToTile());
         ApplyOwnership(citizen, task, privateWorkplace, ownership);
+        if(village.FarmerAdmissionEnabled && !citizen.CyclePrivateOutput)
+        {
+            if(task.Id=="tend-fields")throw new GameRuleException("farm.manualOnly","Use the actual beds for farm work.");
+            if(FarmRules.IsFarmWork(task) && !citizen.IsFarmer)
+                throw new GameRuleException("farm.admission","Ask the Tsar or the farm manager for a farmer appointment.");
+        }
         if (task.RequiredBuilding is { } building && !village.Has(building) && !privateWorkplace)
         {
             throw new GameRuleException("task.needsBuilding", $"\"{task.Name}\" needs a {BuildingCatalog.Get(building).Name}.",

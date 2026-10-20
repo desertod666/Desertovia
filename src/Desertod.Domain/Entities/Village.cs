@@ -75,6 +75,8 @@ public sealed class Village
 
     /// <summary>Beds of every farm, each sown with one crop or empty.</summary>
     public List<FieldBed> Fields { get; set; } = [];
+    /// <summary>Explicit migration step: new public farm work requires an appointment; accepted cycles are untouched.</summary>
+    public bool FarmerAdmissionEnabled { get; set; }
 
     /// <summary>Technologies being researched or discovered.</summary>
     public List<TechnologyProgress> Research { get; set; } = [];

@@ -90,4 +90,13 @@ public sealed class FarmTargetTests
         FarmRules.Harvest(v,Now);var report=Finish(c,WorkContext.For(v));
         Assert.Equal(GameRules.BaseExperiencePerCycle*GameRules.OverflowExperienceMultiplier,report.PrimaryExperience,6);
     }
+
+    [Fact]
+    public void Farmer_admission_does_not_take_over_a_legacy_private_farm()
+    {
+        var v=Farm();v.FarmerAdmissionEnabled=true;var c=NewCitizen(v);c.AccountId=Guid.NewGuid();
+        v.Structures.Single().OwnerAccountId=c.AccountId;
+        CycleEngine.Start(c,Task("sow-turnips"),WorkContext.For(v),Now,workplacePlotId:"21,12",farmTarget:Target(v.Fields[2]));
+        Assert.True(c.CyclePrivateOutput);Finish(c,WorkContext.For(v));Assert.Equal(CropKind.Turnip,v.Fields[2].Crop);
+    }
 }

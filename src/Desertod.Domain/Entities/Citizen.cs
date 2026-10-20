@@ -52,6 +52,9 @@ public sealed class Citizen
 
     /// <summary>Appointed by the Tsar: still a citizen who works and votes, who may also plan buildings and call votes.</summary>
     public bool IsGovernor { get; set; }
+    public bool IsFarmer { get; set; }
+    /// <summary>An additional narrow delegation, effective only while this citizen is a Governor.</summary>
+    public bool CanManageFarm { get; set; }
 
     /// <summary>Null for citizens created before character creation; they get a sprite picked from their id.</summary>
     public Appearance? Appearance { get; set; }

@@ -205,6 +205,7 @@ public sealed record VillageStateDto(
 {
     public DateTimeOffset SnapshotAt { get; init; }
     public bool WorkContractsEnabled { get; init; }
+    public bool FarmerAdmissionEnabled { get; init; }
     public TileArea KingdomArea { get; init; } = WorldMap.BuildArea;
     public FortificationQuote? FortificationUpgrade { get; init; }
     public int CastleLevel { get; init; }
@@ -288,6 +289,8 @@ public sealed record CitizenSummaryDto(
     ResourceKind? Weapon,
     ExternalRecovery? Recovery = null)
 {
+    public bool IsFarmer { get; init; }
+    public bool CanManageFarm { get; init; }
     public RestState RestState { get; init; }
     public int WeaponSharpen { get; init; }
     public DateTimeOffset? HospitalizedAt { get; init; }
@@ -379,6 +382,8 @@ public sealed record CitizenDto(
     double Power,
     ExternalRecovery? Recovery = null)
 {
+    public bool IsFarmer { get; init; }
+    public bool CanManageFarm { get; init; }
     public RestState RestState { get; init; }
     public DateTimeOffset? RestRequestedAt { get; init; }
     public int WeaponSharpen { get; init; }
@@ -492,6 +497,8 @@ public sealed record SetSubtitleRequest(string? Subtitle);
 
 /// <param name="IsGovernor">True appoints the citizen Governor, false dismisses them.</param>
 public sealed record SetGovernorRequest(bool IsGovernor);
+public sealed record FarmAccessRequest(Guid RequestId, bool? IsFarmer = null, bool? CanManageFarm = null);
+public sealed record FarmAdmissionRequest(Guid RequestId);
 
 /// <param name="Rain">The Synoptic announces rain for the next day or night; false announces a clear sky.</param>
 public sealed record ForecastRequest(bool Rain);
@@ -579,7 +586,7 @@ public static class DtoMapper
             village.Wilds?.Lookout)),
         village.Raids.OrderBy(r => r.StrikesAt).Select(r => r.ToDto()).ToList(),
         village.Wilds?.ToDto(),
-        dungeon?.ToDto()) { SnapshotAt = now };
+        dungeon?.ToDto()) { SnapshotAt = now, FarmerAdmissionEnabled=village.FarmerAdmissionEnabled };
     }
 
     public static WildsDto ToDto(this Wilds wilds) => new(
@@ -709,7 +716,7 @@ public static class DtoMapper
             citizen.CycleEndsAt,
             citizen.Load.Select(g => g.Kind).ToList(),
             CombatRules.IsInjured(citizen, now) ? citizen.InjuredUntil : null,
-            citizen.Weapon, citizen.Recovery) {RestState=citizen.RestState,WeaponSharpen=citizen.WeaponSharpen,HospitalizedAt=citizen.HospitalizedAt,RescueByCitizenId=citizen.RescueByCitizenId,RescuePatientId=citizen.RescuePatientId,RescueJourney=citizen.RescueJourney,RescueRequestedAt=citizen.RescueRequestedAt,DefenseSector=citizen.DefenseSector,DefenseReadyAt=citizen.DefenseReadyAt};
+            citizen.Weapon, citizen.Recovery) {IsFarmer=citizen.IsFarmer,CanManageFarm=citizen.CanManageFarm&&citizen.IsGovernor,RestState=citizen.RestState,WeaponSharpen=citizen.WeaponSharpen,HospitalizedAt=citizen.HospitalizedAt,RescueByCitizenId=citizen.RescueByCitizenId,RescuePatientId=citizen.RescuePatientId,RescueJourney=citizen.RescueJourney,RescueRequestedAt=citizen.RescueRequestedAt,DefenseSector=citizen.DefenseSector,DefenseReadyAt=citizen.DefenseReadyAt};
     }
 
     public static CitizenDto ToDto(this Citizen citizen, Village village, DateTimeOffset now) => new(
@@ -768,7 +775,7 @@ public static class DtoMapper
         citizen.Armor,
         citizen.Arrows,
         Math.Round(CombatRules.Power(citizen), 1), citizen.Recovery)
-        { RestState=citizen.RestState, RestRequestedAt=citizen.RestRequestedAt, WeaponSharpen=citizen.WeaponSharpen, ArrowSharpen=citizen.ArrowSharpen, MealKind=citizen.MealKind,MealUntil=citizen.MealUntil,MealReadyAt=citizen.LastMealAt+PreparedMeals.Cooldown, VigorEnergy = village.VigorEnergy, VigorCooldownMinutes = village.VigorCooldownMinutes, AccountId = citizen.AccountId, CyclePrivateOutput = citizen.CyclePrivateOutput, CycleOwnership = citizen.CycleOwnership, CyclePaymentMode = citizen.CyclePaymentMode, PersonalGoods = citizen.PersonalGoods, ActionEnergyCosts = GameCatalog.Tasks.Select(task => new KeyValuePair<string, double>(task.Id, WorkEnergy.WithMedical(citizen, WorkEnergy.TaskCost(village, task, now), now)))
+        { IsFarmer=citizen.IsFarmer, CanManageFarm=citizen.CanManageFarm&&citizen.IsGovernor, RestState=citizen.RestState, RestRequestedAt=citizen.RestRequestedAt, WeaponSharpen=citizen.WeaponSharpen, ArrowSharpen=citizen.ArrowSharpen, MealKind=citizen.MealKind,MealUntil=citizen.MealUntil,MealReadyAt=citizen.LastMealAt+PreparedMeals.Cooldown, VigorEnergy = village.VigorEnergy, VigorCooldownMinutes = village.VigorCooldownMinutes, AccountId = citizen.AccountId, CyclePrivateOutput = citizen.CyclePrivateOutput, CycleOwnership = citizen.CycleOwnership, CyclePaymentMode = citizen.CyclePaymentMode, PersonalGoods = citizen.PersonalGoods, ActionEnergyCosts = GameCatalog.Tasks.Select(task => new KeyValuePair<string, double>(task.Id, WorkEnergy.WithMedical(citizen, WorkEnergy.TaskCost(village, task, now), now)))
             .Concat(BuildingCatalog.Jobs.Select(job => new KeyValuePair<string, double>(job.Id, WorkEnergy.WithMedical(citizen, WorkEnergy.JobCost(village, job, now), now))))
             .GroupBy(pair => pair.Key).ToDictionary(group => group.Key, group => group.Last().Value),
             DefenseSector=citizen.DefenseSector,DefenseReadyAt=citizen.DefenseReadyAt,

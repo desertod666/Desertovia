@@ -688,7 +688,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
     villageRef.current = live.state
   })
   const citizens = useMemo(() => [...live.citizens.values()], [live.citizens])
-  const pickCitizen = useMemo(() => (id: string) => { setEnemyPick(null); if (id === PRIEST_ID) setChaplainOpen(true); else if(id===TSAR_ID&&live.state?.tsar.injuredUntil||live.citizens.get(id)?.injuredUntil||live.citizens.get(id)?.recovery?.until)setPatientFor(id); else if (tsar) setSubtitleFor(id) }, [tsar,live.citizens,live.state?.tsar.injuredUntil])
+  const pickCitizen = useMemo(() => (id: string) => { setEnemyPick(null); if (id === PRIEST_ID) setChaplainOpen(true); else if(id===TSAR_ID&&live.state?.tsar.injuredUntil||live.citizens.get(id)?.injuredUntil||live.citizens.get(id)?.recovery?.until)setPatientFor(id); else if (tsar||citizen?.isGovernor&&citizen.canManageFarm) setSubtitleFor(id) }, [tsar,citizen?.isGovernor,citizen?.canManageFarm,live.citizens,live.state?.tsar.injuredUntil])
   // Only a citizen can be sent to work; the Tsar watches and walks around, players without a character just look.
   const canWork = !tsar && !!citizen && (!citizen.restState || citizen.restState === 'Active')
   const working = citizen?.state === 'Paused' || citizen?.state === 'Working' && !!citizen.cycleEndsAt && Date.parse(citizen.cycleEndsAt)>raidClock
@@ -1179,11 +1179,14 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
         </ServerClock>
       )}
 
-      {tsar && subtitleCitizen && (
+      {(tsar||citizen?.isGovernor&&citizen.canManageFarm) && subtitleCitizen && (
         <CitizenDialog
           key={subtitleCitizen.id}
           slug={slug}
           citizen={subtitleCitizen}
+          canRule={tsar}
+          admissionEnabled={!!village.farmerAdmissionEnabled}
+          onEnableAdmission={async()=>setVillageState(await api.enableFarmerAdmission(slug,createOperationId()))}
           onSaved={live.updateCitizen}
           onClose={() => setSubtitleFor(null)}
         />

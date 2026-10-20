@@ -592,7 +592,7 @@ public sealed partial class GameService(
             accountId,
             citizenId,
             isGovernor ? "appointGovernor" : "dismissGovernor",
-            citizen => citizen.IsGovernor = isGovernor,
+            citizen => {citizen.IsGovernor = isGovernor;if(!isGovernor)citizen.CanManageFarm=false;},
             cancellationToken);
 
     /// <summary>A change the Tsar makes to one citizen of the village.</summary>

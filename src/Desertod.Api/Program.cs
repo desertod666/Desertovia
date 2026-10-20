@@ -94,8 +94,8 @@ await using (var scope = app.Services.CreateAsyncScope())
     await db.Database.MigrateAsync();
     if (app.Environment.IsDevelopment())
     {
-        await DemoVillage.SeedAsync(db, app.Services.GetRequiredService<TimeProvider>(), CancellationToken.None);
-        await BuiltVillage.SeedAsync(db, app.Services.GetRequiredService<TimeProvider>(), CancellationToken.None);
+        await DevelopmentWorldSetup.EnsureAsync(db,app.Services.GetRequiredService<TimeProvider>(),
+            app.Configuration.GetValue<bool>("Hosting:PreserveDevelopmentWorlds"),CancellationToken.None);
     }
 }
 

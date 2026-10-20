@@ -1364,6 +1364,7 @@ button.farm-plot:hover { background: transparent; }
 .farm-seeds > button[aria-pressed="true"] { outline: 2px solid #5f7336; outline-offset: -2px; }
 .farm-tool-note { display: flex; flex-wrap: wrap; gap: .25rem; align-items: center; padding: .3rem .5rem; font-size: .8rem; }
 .farm-tool-note .task-meta { margin: 0; }
+.farm-access-field { min-height:44px; }
 
 .watch-stages {
   list-style: none;

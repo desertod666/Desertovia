@@ -1,8 +1,9 @@
 import {createRoot} from 'react-dom/client'
 import {useState} from 'react'
-import {api,type Catalog,type Citizen,type FarmWorkTarget,type VillageState} from '../src/api'
+import {api,createOperationId,type Catalog,type Citizen,type CitizenSummary,type FarmWorkTarget,type VillageState} from '../src/api'
 import {I18nProvider} from '../src/i18n'
 import {TargetPopup} from '../src/ui/TargetPopup'
+import {CitizenDialog} from '../src/ui/CitizenDialog'
 import '../src/index.css'
 
 declare global {interface Window {farmCalls:unknown[]}}
@@ -16,7 +17,9 @@ const village={id:'farm',slug:'farm-fixture',structures:[{kind:'Farm',plotId:'21
 const citizen={id:'farmer',accountId:'worker',name:'Farmer',state:'Idle',serverNow:iso,cycleEndsAt:null,energy:36,maximumEnergy:36,skills:[{skill:'Farming',level:2}],load:[],personalGoods:[],armor:null,weapon:null,carryLimit:20} as unknown as Citizen
 function FarmStand({catalog}:{catalog:Catalog}) {
  const[pending,setPending]=useState(false)
+ const mode=new URLSearchParams(location.search),[summary,setSummary]=useState({id:'10000000-0000-4000-8000-000000000001',name:'Farmer',isGovernor:true,isFarmer:false,canManageFarm:false,subtitle:null} as CitizenSummary),[admission,setAdmission]=useState(mode.has('admission'))
  const start=(task:Catalog['tasks'][number],_spot:unknown,plot?:string,target?:FarmWorkTarget)=>{window.farmCalls.push({taskId:task.id,workplacePlotId:plot,farmTarget:target});setPending(true)}
- return <TargetPopup target={{kind:'building',building:'Farm',plotId:'21,12',area:null,storage:false}} screen={{x:160,y:100}} phone={innerWidth<=720} village={village} catalog={catalog} citizen={citizen} now={now} pending={pending} error={null} onStart={start} onStartJob={()=>{}} ruler={false} onCivic={async()=>{}} onTake={()=>{}} onClose={()=>{}}/>
+ if(mode.has('manage'))return <CitizenDialog slug="farm-fixture" citizen={summary} canRule={mode.get('manage')==='owner'} admissionEnabled={admission} onEnableAdmission={async()=>{await api.enableFarmerAdmission('farm-fixture',createOperationId());setAdmission(true)}} onSaved={setSummary} onClose={()=>{}}/>
+ return <TargetPopup target={{kind:'building',building:'Farm',plotId:'21,12',area:null,storage:false}} screen={{x:160,y:100}} phone={innerWidth<=720} village={{...village,farmerAdmissionEnabled:admission}} catalog={catalog} citizen={citizen} now={now} pending={pending} error={null} onStart={start} onStartJob={()=>{}} ruler={false} onCivic={async()=>{}} onTake={()=>{}} onClose={()=>{}}/>
 }
 api.catalog().then(catalog=>createRoot(document.getElementById('app')!).render(<I18nProvider><FarmStand catalog={catalog}/></I18nProvider>))

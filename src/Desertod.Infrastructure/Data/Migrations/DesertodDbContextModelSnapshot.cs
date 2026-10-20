@@ -735,6 +735,9 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<int>("Arrows")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("CanManageFarm")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -827,6 +830,9 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsCarrying")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsFarmer")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsGovernor")
@@ -1119,6 +1125,9 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<byte[]>("Explored")
                         .IsRequired()
                         .HasColumnType("bytea");
+
+                    b.Property<bool>("FarmerAdmissionEnabled")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("GoldVeinMined")
                         .HasColumnType("integer");

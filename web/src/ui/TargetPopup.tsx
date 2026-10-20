@@ -180,6 +180,7 @@ export function TargetPopup({
   const site = target.kind === 'site' ? village.sites.find((s) => s.plotId === target.plotId) : undefined
   const beds = target.kind === 'building' ? village.fields.filter((bed) => bed.plotId === target.plotId) : []
   const addressedFarm=beds.length>0&&beds.every(b=>!!b.generationId)
+  const farmDenied=addressedFarm&&village.farmerAdmissionEnabled&&!citizen.isFarmer&&!village.structures.find(s=>s.plotId===beds[0].plotId)?.ownerAccountId
   const tasks = tasksFor(target, catalog, village).filter(task=>!addressedFarm||!['Sow','Water','Harvest'].includes(task.effect)&&task.id!=='tend-fields')
   const storage =
     target.kind === 'building' && target.storage ? village.storages.find((s) => s.plotId === target.plotId) : undefined
@@ -215,7 +216,8 @@ export function TargetPopup({
         {site && (
           <SiteCard site={site} catalog={catalog} village={village} citizen={citizen} disabled={disabled} onStartJob={onStartJob} />
         )}
-        {addressedFarm?<FarmPlotBoard beds={beds} shared={!village.structures.find(s=>s.plotId===beds[0].plotId)?.ownerAccountId} now={now} raining={village.weather.raining} catalog={catalog} citizen={citizen} disabled={disabled} onWork={(task,bed)=>onStart(task,null,bed.plotId,{plotId:bed.plotId,index:bed.index,generationId:bed.generationId!})}/>:beds.length>0&&<FieldsCard beds={beds} now={now} raining={village.weather.raining}/>}
+        {farmDenied&&<p className="small warning">{i18n.language==='ru'?'Для работы нужен допуск фермера. Обратитесь к царю или управляющему фермой.':'A farmer appointment is required. Ask the Tsar or farm manager.'}</p>}
+        {addressedFarm?<FarmPlotBoard beds={beds} shared={!village.structures.find(s=>s.plotId===beds[0].plotId)?.ownerAccountId} now={now} raining={village.weather.raining} catalog={catalog} citizen={citizen} disabled={disabled||!!farmDenied} onWork={(task,bed)=>onStart(task,null,bed.plotId,{plotId:bed.plotId,index:bed.index,generationId:bed.generationId!})}/>:beds.length>0&&<FieldsCard beds={beds} now={now} raining={village.weather.raining}/>}
         {storage?.ownerAccountId&&<p className="small muted">{i18n.language==='ru'?'Пополнить личный склад можно из личного имущества в кошельке.':'Deposit personal goods through your wallet’s private warehouse controls.'}</p>}
         {storage && (
           <StorageCard
