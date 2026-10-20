@@ -219,6 +219,7 @@ public sealed record VillageStateDto(
     public DateTimeOffset SnapshotAt { get; init; }
     public bool WorkContractsEnabled { get; init; }
     public bool FarmerAdmissionEnabled { get; init; }
+    public IReadOnlyList<WorldRoute> WorldRoutes { get; init; } = [];
     public TileArea KingdomArea { get; init; } = WorldMap.BuildArea;
     public FortificationQuote? FortificationUpgrade { get; init; }
     public int CastleLevel { get; init; }
@@ -534,6 +535,8 @@ public static class DtoMapper
         DateTimeOffset now)
     {
         var labels=BuildingLabels.Visible(village);
+        var seen=Exploration.Seen(village.Explored,
+            (village.TsarTrip is null?citizenTrips:citizenTrips.Append(village.TsarTrip)).Where(t=>BankAccess.CanReach(village,t.To)),now,village.Wilds?.Lookout);
         return new(
         village.Id,
         village.Slug,
@@ -593,14 +596,10 @@ public static class DtoMapper
             .ToList(),
         village.ToWeatherDto(now),
         tsar,
-        Convert.ToBase64String(Exploration.Seen(
-            village.Explored,
-            (village.TsarTrip is null ? citizenTrips : citizenTrips.Append(village.TsarTrip)).Where(t=>BankAccess.CanReach(village,t.To)),
-            now,
-            village.Wilds?.Lookout)),
+        Convert.ToBase64String(seen),
         village.Raids.OrderBy(r => r.StrikesAt).Select(r => r.ToDto()).ToList(),
         village.Wilds?.ToDto(),
-        dungeon?.ToDto()) { SnapshotAt = now, FarmerAdmissionEnabled=village.FarmerAdmissionEnabled };
+        dungeon?.ToDto()) { SnapshotAt = now, FarmerAdmissionEnabled=village.FarmerAdmissionEnabled,WorldRoutes=Desertod.Domain.World.WorldRoutes.Discover(village,seen) };
     }
 
     public static WildsDto ToDto(this Wilds wilds) => new(

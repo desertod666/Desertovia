@@ -1951,6 +1951,8 @@ export class VillageWorld {
     this.placeAt(tileX * TILE, tileY * TILE, width / 2, height / 2)
   }
 
+  focus(point:TilePoint){this.cameraMoved=true;this.centerOn(point.x,point.y)}
+
   /** Centres the view on a walker; false when there is no such walker. */
   locate(walkerId: string): boolean {
     const walker = this.walkers.get(walkerId)

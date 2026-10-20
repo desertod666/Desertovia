@@ -1,0 +1,22 @@
+import {test,expect,developmentLogin,expectVillageView,uniqueName} from './fixtures.ts'
+
+test.setTimeout(120_000)
+test.use({deviceScaleFactor:1,trace:{mode:'retain-on-failure',screenshots:false,snapshots:true}})
+test('real district atlas focuses a known place without moving the hero or changing fog',async({page},info)=>{
+ await page.addInitScript(()=>localStorage.setItem('desertod.language','en'))
+ await page.setViewportSize({width:info.project.name==='phone'?320:960,height:760})
+ await page.goto('/v/demo-built');await developmentLogin(page,uniqueName('atlas-map'));await expectVillageView(page)
+ await expect.poll(async()=>(await page.request.get('/api/villages/demo-built/me')).status()).toBe(200)
+ const before=await page.request.get('/api/villages/demo-built/me').then(r=>r.json())
+ const oldWorld=await page.request.get('/api/villages/demo-built').then(r=>r.json())
+ const writes:string[]=[];page.on('request',request=>{if(request.method()!=='GET'&&request.url().includes('/api/villages/'))writes.push(request.url())})
+ await page.getByRole('button',{name:'Open district atlas',exact:true}).click()
+ const atlas=page.getByRole('dialog',{name:'District atlas',exact:true});await expect(atlas).toBeVisible()
+ await atlas.getByRole('button',{name:/Settlement/}).click()
+ await atlas.getByRole('button',{name:'Show on map',exact:true}).click();await expect(atlas).toHaveCount(0)
+ const after=await page.request.get('/api/villages/demo-built/me').then(r=>r.json())
+ const newWorld=await page.request.get('/api/villages/demo-built').then(r=>r.json())
+ expect(after.id).toBe(before.id);expect(after.spot).toEqual(before.spot);expect(after.state).toBe(before.state);expect(after.cycleStartedAt).toBe(before.cycleStartedAt)
+ expect(newWorld.state.explored).toBe(oldWorld.state.explored);expect(writes).toEqual([])
+ await page.screenshot({path:test.info().outputPath('atlas-real-focus.png')})
+})
