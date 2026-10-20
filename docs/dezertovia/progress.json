@@ -2343,21 +2343,43 @@
     "physical_mobile_hardware_tested": false
   },
   "manual_garden_d102": {
-    "status": "planned_discussion",
+    "status": "planned_model_selected",
     "recorded_on": "2026-10-20",
-    "document": "docs/dezertovia/PERSONAL_GARDEN_PLAN.md",
+    "document": "docs/dezertovia/SHARED_FARM_PLAN.md",
     "owner_request": [
       "manual_planting_watering_fertilizing_harvest",
-      "click_beds_opens_overlay_with_actions"
+      "click_beds_opens_overlay_with_actions",
+      "no_personal_beds",
+      "delegate_economic_model_choice"
     ],
     "open_questions": [
-      "ownership_and_harvest_destination",
-      "profession_access",
-      "timing_costs_fertilizer_effect",
-      "offline_wilting_and_neighbor_help"
+      "calculate_timing_inputs_and_fertilizer_recipe",
+      "validate_food_and_workload_for_5_10_20_active_citizens"
     ],
     "implementation_authorized": false,
     "game_code_changed": false,
-    "deployed": false
+    "deployed": false,
+    "selected_model": {
+      "communal_beds": true,
+      "food_split": {
+        "communal_percent": 90,
+        "contributors_percent": 10
+      },
+      "assignment_authority": [
+        "owner",
+        "deputy"
+      ],
+      "contribution_weights": {
+        "sow": 40,
+        "necessary_watering": 30,
+        "fertilize": 10,
+        "harvest": 20
+      },
+      "cash_wage_pool": "preserve_existing_total_and_distribute_by_contribution",
+      "raw_grain_and_flax": "communal",
+      "public_food_reserve": "two_existing_standard_portions_per_citizen_active_in_last_24_real_hours",
+      "below_reserve": "defer_personal_claim_keep_earned_share",
+      "fractional_shares": "persist_no_rounding_up"
+    }
   }
 }
