@@ -82,6 +82,11 @@ export function TaskDonePanel({
         {report.fight && <FightSummary fight={report.fight} />}
         <ActionEnergy citizen={citizen} action={report.taskId} />
         <ul className="done-results">
+          {(report.toolsBroken ?? []).map((kind) => (
+            <li key={`broke-${kind}`} className="warning">
+              {t('done.toolBroke', { tool: i18n.resource(kind) })}
+            </li>
+          ))}
           {report.produced.map((item) => {
             const lost = report.lost?.find((good) => good.resource === item.resource)?.amount ?? 0
             const carried = report.carried.some((good) => good.resource === item.resource)

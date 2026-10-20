@@ -82,6 +82,10 @@ export interface ResourceAmount {
   amount: number
   /** Edge ground at the smithy. Absent or 0 is an ordinary weapon. */
   sharpen?: number
+  /** Remaining uses of a tool. Absent or 0 on every other good. */
+  durability?: number
+  /** Uses of a fresh tool. Absent or 0 when this is not a tool. */
+  maxDurability?: number
 }
 
 export interface Task {
@@ -1340,6 +1344,8 @@ export interface CycleReport {
   /** Damage mended by a repair task. */
   targetPlotId?: string | null
   repaired: number
+  /** Tools that broke this cycle and left the citizen's hands. */
+  toolsBroken?: string[]
 }
 
 /** Events of one village since the last `villageEvents` message, in order; only the latest summary per citizen. */
@@ -1593,8 +1599,8 @@ export const api = {
   callUndead: (slug: string, enemy: EnemyKind, size: RaidSize) =>
     request<VillageState>('POST', `/api/villages/${encodeURIComponent(slug)}/undead`, { enemy, size }),
   cancelUndead: (slug: string) => request<VillageState>('DELETE', `/api/villages/${encodeURIComponent(slug)}/undead`),
-  takeFromStorage: (slug: string, plotId: string, resource: string, amount: number, sharpen?: number) =>
-    request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/me/take`, { plotId, resource, amount, sharpen }),
+  takeFromStorage: (slug: string, plotId: string, resource: string, amount: number, sharpen?: number, durability?: number) =>
+    request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/me/take`, { plotId, resource, amount, sharpen, durability }),
   goTo: (slug: string, spot: TilePoint) => request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/me/goto`, { spot }),
   research: (slug: string) => request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/me/research`),
   forecast: (slug: string, rain: boolean) =>

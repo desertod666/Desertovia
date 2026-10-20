@@ -5,6 +5,7 @@ using Desertod.Domain.Skills;
 using Desertod.Domain.Stats;
 using Desertod.Domain.Weather;
 using Desertod.Domain.World;
+using Desertod.Domain;
 
 namespace Desertod.Domain.Entities;
 
@@ -194,17 +195,30 @@ public sealed class Citizen
 
     public int Carried(ResourceKind kind) => Load.Where(g => g.Kind == kind).Sum(g => g.Amount);
 
-    public void Carry(ResourceKind kind, int amount, int sharpen = 0)
+    /// <param name="durability">Remaining uses of a tool. Omitted means a fresh tool; other goods stay at 0.</param>
+    public void Carry(ResourceKind kind, int amount, int sharpen = 0, int? durability = null)
     {
+        if (amount <= 0)
+        {
+            return;
+        }
+
         if (sharpen < 0 || kind is not (ResourceKind.Sword or ResourceKind.Spear or ResourceKind.Arrows))
         {
             sharpen = 0;
         }
 
-        var good = Load.SingleOrDefault(g => g.Kind == kind && g.Sharpen == sharpen);
+        var tool = ToolCatalog.Get(kind);
+        var uses = tool is null
+            ? 0
+            : durability is int given && given >= 1 && given <= tool.MaxDurability
+                ? given
+                : tool.MaxDurability;
+
+        var good = Load.SingleOrDefault(g => g.Kind == kind && g.Sharpen == sharpen && g.Durability == uses);
         if (good is null)
         {
-            good = new CarriedGood { Kind = kind, Sharpen = sharpen };
+            good = new CarriedGood { Kind = kind, Sharpen = sharpen, Durability = uses };
             Load.Add(good);
         }
 
@@ -212,36 +226,33 @@ public sealed class Citizen
         IsCarrying = true;
     }
 
-    /// <summary>Takes from the dullest stack of this kind first.</summary>
-    public int TakeFromLoad(ResourceKind kind, int amount)
+    /// <summary>Takes from the dullest, then the most worn, stack of this kind first.</summary>
+    public int TakeFromLoad(ResourceKind kind, int amount) => TakeFromLoad(kind, amount, null, null);
+
+    public int TakeFromLoad(ResourceKind kind, int amount, int sharpen) => TakeFromLoad(kind, amount, sharpen, null);
+
+    /// <param name="durability">One tool wear. Null takes every wear of the sharpen, most worn first.</param>
+    public int TakeFromLoad(ResourceKind kind, int amount, int? sharpen, int? durability)
     {
         var taken = 0;
-        foreach (var good in Load.Where(g => g.Kind == kind).OrderBy(g => g.Sharpen).ToList())
+        foreach (var good in Load
+            .Where(g => g.Kind == kind && (sharpen is null || g.Sharpen == sharpen) && (durability is null || g.Durability == durability))
+            .OrderBy(g => g.Sharpen)
+            .ThenBy(g => g.Durability)
+            .ToList())
         {
             if (taken >= amount)
             {
                 break;
             }
 
-            taken += TakeFromLoad(kind, amount - taken, good.Sharpen);
-        }
-
-        return taken;
-    }
-
-    public int TakeFromLoad(ResourceKind kind, int amount, int sharpen)
-    {
-        var good = Load.SingleOrDefault(g => g.Kind == kind && g.Sharpen == sharpen);
-        if (good is null)
-        {
-            return 0;
-        }
-
-        var taken = Math.Min(amount, good.Amount);
-        good.Amount -= taken;
-        if (good.Amount <= 0)
-        {
-            Load.Remove(good);
+            var slice = Math.Min(amount - taken, good.Amount);
+            good.Amount -= slice;
+            taken += slice;
+            if (good.Amount <= 0)
+            {
+                Load.Remove(good);
+            }
         }
 
         IsCarrying = Load.Count > 0;
@@ -374,4 +385,7 @@ public sealed class CarriedGood
 
     /// <summary>Edge of a carried weapon. Other goods stay at 0.</summary>
     public int Sharpen { get; set; }
+
+    /// <summary>Remaining uses before the item breaks.</summary>
+    public int Durability { get; set; }
 }

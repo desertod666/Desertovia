@@ -7,7 +7,7 @@ import { ResourceIcon } from './TileIcon'
 export interface StorageTake {
   citizen: Citizen
   disabled: boolean
-  onTake: (resource: string, amount: number, sharpen?: number) => void
+  onTake: (resource: string, amount: number, sharpen?: number, durability?: number) => void
 }
 
 /** One storage building: what it takes, how many slots are used and what lies inside. */
@@ -32,14 +32,22 @@ export function StorageCard({ storage, catalog, take }: { storage: Storage; cata
       {take ? (
         <ul className="storage-take">
           {storage.goods.map((good) => (
-            <TakeRow key={`${good.resource}:${good.sharpen ?? 0}`} good={good} limit={limit} take={take} />
+            <TakeRow key={`${good.resource}:${good.sharpen ?? 0}:${good.durability ?? 0}`} good={good} limit={limit} take={take} />
           ))}
         </ul>
       ) : (
         <div className="storage-goods">
           {storage.goods.map((good) => (
-            <span key={`${good.resource}:${good.sharpen ?? 0}`} className="cost" title={i18n.resource(good.resource)}>
-              <ResourceIcon kind={good.resource} scale={1} sharpen={good.sharpen ?? 0} /> {i18n.amount(good.amount)}
+            <span key={`${good.resource}:${good.sharpen ?? 0}:${good.durability ?? 0}`} className="cost" title={i18n.resource(good.resource)}>
+              <ResourceIcon
+                kind={good.resource}
+                scale={1}
+                sharpen={good.sharpen ?? 0}
+                durability={good.durability ?? 0}
+                maxDurability={good.maxDurability ?? 0}
+              />{' '}
+              {i18n.amount(good.amount)}
+              {(good.maxDurability ?? 0) > 0 && ` ${good.durability ?? 0}/${good.maxDurability}`}
             </span>
           ))}
         </div>
@@ -64,8 +72,19 @@ function TakeRow({ good, limit, take }: { good: ResourceAmount; limit: number; t
 
   return (
     <li>
-      <ResourceIcon kind={good.resource} scale={1} sharpen={good.sharpen ?? 0} />
-      <span>{i18n.resource(good.resource)}</span>
+      <ResourceIcon
+        kind={good.resource}
+        scale={1}
+        sharpen={good.sharpen ?? 0}
+        durability={good.durability ?? 0}
+        maxDurability={good.maxDurability ?? 0}
+      />
+      <span>
+        {i18n.resource(good.resource)}
+        {(good.maxDurability ?? 0) > 0 && (
+          <span className="muted"> {t('hands.durability', { left: good.durability ?? 0, max: good.maxDurability ?? 0 })}</span>
+        )}
+      </span>
       <span className="muted">{i18n.amount(good.amount)}</span>
       <input
         type="number"
@@ -84,7 +103,7 @@ function TakeRow({ good, limit, take }: { good: ResourceAmount; limit: number; t
         disabled={take.disabled || most < 1 || !valid}
         title={t('storage.takeTitle', { amount: i18n.amount(limit) })}
         onClick={() => {
-          if (valid) take.onTake(good.resource, amount, good.sharpen ?? 0)
+          if (valid) take.onTake(good.resource, amount, good.sharpen ?? 0, (good.maxDurability ?? 0) > 0 ? good.durability ?? 0 : undefined)
         }}
       >
         {t('storage.take')}

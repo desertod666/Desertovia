@@ -35,7 +35,7 @@ export function InventoryPanel({
   onDrop: () => void
   onCitizen?: (c:Citizen)=>void
   onEat?: () => void
-  onTake: (plotId: string, resource: string, amount: number, sharpen?: number) => void
+  onTake: (plotId: string, resource: string, amount: number, sharpen?: number, durability?: number) => void
   onPrivatePlace?: (building:BuildingDefinition)=>void
   onClose: () => void
 }) {
@@ -161,7 +161,7 @@ export function InventoryPanel({
                         ? {
                             citizen,
                             disabled: pending || working,
-                            onTake: (resource, amount, sharpen) => onTake(storage.plotId, resource, amount, sharpen),
+                            onTake: (resource, amount, sharpen, durability) => onTake(storage.plotId, resource, amount, sharpen, durability),
                           }
                         : undefined
                     }

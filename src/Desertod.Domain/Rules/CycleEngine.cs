@@ -54,6 +54,9 @@ public sealed record CycleReport(
     /// <summary>Part of <see cref="Produced"/> that fit neither in storage nor in the citizen's hands.</summary>
     public IReadOnlyList<ResourceAmount> Lost { get; init; } = [];
     public string? TargetPlotId { get; init; }
+
+    /// <summary>Tools that broke during this cycle and left the citizen's hands.</summary>
+    public IReadOnlyList<ResourceKind> ToolsBroken { get; init; } = [];
 }
 
 public static class CycleEngine
@@ -435,6 +438,7 @@ public static class CycleEngine
         var contributed = 0;
         var repaired = 0;
         double experienceShare = 1;
+        var toolsBroken = new List<ResourceKind>();
 
         void Produce(ResourceKind kind, int amount)
         {
@@ -443,7 +447,9 @@ public static class CycleEngine
                 return;
             }
 
-            produced.Add(new ResourceAmount(kind, amount));
+            produced.Add(ToolCatalog.Get(kind) is { } tool
+                ? new ResourceAmount(kind, amount, 0, tool.MaxDurability, tool.MaxDurability)
+                : new ResourceAmount(kind, amount));
             Keep(citizen, village, kind, amount, carried, lost);
         }
 
@@ -531,13 +537,29 @@ public static class CycleEngine
                 }
 
                 var wood = 0;
+                var usedTools = new List<CarriedGood>();
                 foreach (var output in task.Outputs)
                 {
-                    var amount = YieldMath.Whole(output.Amount * share);
+                    var (toolDef, toolGood) = ToolCatalog.BestToolForResource(citizen, output.Resource);
+                    var multiplier = toolDef?.SpeedMultiplier ?? 1.0;
+                    var amount = YieldMath.Whole(output.Amount * share * multiplier);
                     Produce(output.Resource, amount);
                     if (output.Resource == ResourceKind.Wood)
                     {
                         wood += amount;
+                    }
+
+                    if (amount > 0 && toolGood is not null && !usedTools.Contains(toolGood))
+                    {
+                        usedTools.Add(toolGood);
+                    }
+                }
+
+                foreach (var tool in usedTools)
+                {
+                    if (ToolCatalog.Wear(citizen, tool) is { } broken)
+                    {
+                        toolsBroken.Add(broken);
                     }
                 }
 
@@ -710,7 +732,7 @@ public static class CycleEngine
         var report = Finish(citizen, village, task.Id, task.Primary, task.Secondary, task.Skill,
             SkillRules.Challenge(citizen, task.Skill, task.SkillLevel), experienceShare, hungry,
             produced, carried, moraleGained, contributed, rareFind, overflowed, experienceHungry);
-        return report with { Fight = fight, Repaired = repaired, Lost = lost, TargetPlotId = citizen.CurrentTargetPlotId };
+        return report with { Fight = fight, Repaired = repaired, Lost = lost, TargetPlotId = citizen.CurrentTargetPlotId, ToolsBroken = toolsBroken };
     }
 
     /// <summary>
