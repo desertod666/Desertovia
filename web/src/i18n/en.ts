@@ -1270,6 +1270,10 @@ export const en = {
   } as Record<string, { ruler: string; citizen: string }>,
 
   errors: {
+    'notifications.settings':'Choose valid events and two different quiet-hour times.',
+    'notifications.timeZone':'Choose a valid time zone, such as Europe/Oslo.',
+    'notifications.changed':'Settings changed on another device. Reload account settings before saving.',
+    'notifications.reusedRequest':'This request already saved different settings. Reload account settings.',
     'rest.activeRequired': 'Leave safe rest first.',
     'rest.retreatRequired': 'Retreat and wait until your hero has left combat first.',
     'rest.dungeonRequired': 'Return from the dungeon or leave its gathering first.',

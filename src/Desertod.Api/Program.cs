@@ -56,6 +56,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GameExceptionHandler>();
 builder.Services.AddHealthChecks().AddDbContextCheck<DesertodDbContext>();
+builder.Services.AddScoped<NotificationPreferenceService>();
 
 builder.Services.AddSingleton<TelegramLoginVerifier>();
 builder.Services.AddSingleton<TelegramMiniAppVerifier>();
@@ -134,6 +135,7 @@ app.MapStaticAssets();
 // Only for the in-container probe; requests through Caddy carry the public host name.
 app.MapHealthChecks(HealthProbe.Path).RequireHost("localhost");
 app.MapAuthEndpoints();
+app.MapNotificationPreferenceEndpoints();
 app.MapGameEndpoints();
 app.MapHub<VillageHub>("/hubs/village");
 app.MapHub<DungeonHub>("/hubs/dungeon");

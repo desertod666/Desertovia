@@ -2498,7 +2498,7 @@
       "id": "PKG-T064",
       "milestone": "M6",
       "title": "Настройки уведомлений и доступ по группе",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partial_browser_notifications_local_verified_closed_tab_and_group_pending",
       "dependencies": [
         "PKG-T014",
         "PKG-T015"
@@ -2534,8 +2534,8 @@
       "source": "source-package/05_TASKS.json",
       "current_support": {
         "status": "partial",
-        "evidence": "SignalR/foreground Notification/civic delivery/report digest есть; новая категория/quiet hours/group-gate policy предстоит.",
-        "runtime_verification": "not_run_this_assignment"
+        "evidence": "NOTIFICATIONS_1_0.md; account consent/categories/quiet hours, aggregation, stable event IDs and bounded device delivery. No closed-tab WebPush or group gate claimed.",
+        "runtime_verification": "10 focused API, 15 total client unit and 14 browser cases passed; schema47 to48 preserved25 citizens/economy/fields; real UI preferences survived process restart on another device context."
       },
       "farm_concept_integration": [
         "Созревший урожай только по согласию/настройкам, тихие часы, объединение грядок и отсутствие сообщения на каждый полив; нет обязательной серии заходов."

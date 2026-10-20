@@ -57,10 +57,10 @@ const WEATHER_RETRY_MS = 5_000
 
 export interface LiveVillageHandlers {
   onCitizenUpdated?: (citizen: CitizenSummary) => void
-  onCycleCompleted?: (report: CycleReport) => void
-  onProjectCompleted?: (completion: ProjectCompletion) => void
-  onQuestCompleted?: (completion: QuestCompletion) => void
-  onRaidFought?: (report: RaidReport) => void
+  onCycleCompleted?: (report: CycleReport,at?:string) => void
+  onProjectCompleted?: (completion: ProjectCompletion,at?:string) => void
+  onQuestCompleted?: (completion: QuestCompletion,at?:string) => void
+  onRaidFought?: (report: RaidReport,at?:string) => void
   onDungeonEnded?: (run: DungeonRun) => void
   /** A line written while the page is open, once each; not for the history. */
   onChatMessage?: (message: ChatMessage) => void
@@ -134,16 +134,16 @@ export function useLiveVillage(slug: string, resident: boolean, handlers: LiveVi
       }:previous)
       for (const report of events.cycles) {
         push({ kind: 'cycle', report })
-        callbacks.current.onCycleCompleted?.(report)
+        callbacks.current.onCycleCompleted?.(report,events.at)
       }
       for (const completion of events.projects) {
         push({ kind: 'project', completion })
-        callbacks.current.onProjectCompleted?.(completion)
+        callbacks.current.onProjectCompleted?.(completion,events.at)
       }
-      for (const completion of events.quests) callbacks.current.onQuestCompleted?.(completion)
+      for (const completion of events.quests) callbacks.current.onQuestCompleted?.(completion,events.at)
       for (const report of events.raids ?? []) {
         push({ kind: 'raid', report })
-        callbacks.current.onRaidFought?.(report)
+        callbacks.current.onRaidFought?.(report,events.at)
       }
       for (const run of events.dungeons ?? []) {
         if (run.outcome !== 'Cancelled') push({ kind: 'dungeon', run })

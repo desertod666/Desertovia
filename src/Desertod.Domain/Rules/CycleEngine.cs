@@ -51,6 +51,10 @@ public sealed record CycleReport(
     FightReport? Fight = null,
     int Repaired = 0)
 {
+    /// <summary>Stable work identity and freshness for reconnect-safe notifications; not the time a client reconnects.</summary>
+    public DateTimeOffset? CycleStartedAt { get; init; }
+    public DateTimeOffset? CycleEndedAt { get; init; }
+    public DateTimeOffset? SettledAt { get; init; }
     /// <summary>Part of <see cref="Produced"/> that fit neither in storage nor in the citizen's hands.</summary>
     public IReadOnlyList<ResourceAmount> Lost { get; init; } = [];
     public string? TargetPlotId { get; init; }
@@ -377,6 +381,7 @@ public static class CycleEngine
     public static CycleReport? Settle(Citizen citizen, WorkContext context, DateTimeOffset now)
     {
         var report = SettleCore(citizen, context, now);
+        if(report is not null)report=report with {CycleStartedAt=citizen.CycleStartedAt,CycleEndedAt=citizen.CycleEndsAt,SettledAt=now};
         SafeRest.AfterSettlement(citizen, now, context.RestBlockedByCombat);
         return report;
     }

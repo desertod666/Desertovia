@@ -1336,6 +1336,9 @@ export interface Citizen {
 }
 
 export interface CycleReport {
+  cycleStartedAt?:string|null
+  cycleEndedAt?:string|null
+  settledAt?:string|null
   citizenId: string
   citizenName: string
   taskId: string
@@ -1379,6 +1382,7 @@ export interface CycleReport {
 
 /** Events of one village since the last `villageEvents` message, in order; only the latest summary per citizen. */
 export interface VillageEvents {
+  at?:string
   battles?: RaidBattle[]
   fortificationUpgrade?:FortificationQuote|null
   fortifications?: Fortification[] | null
@@ -1569,6 +1573,8 @@ export interface EconomyView {
 }
 export interface SupplyOrder {id:string;resource:string;requestedAmount:number;remainingAmount:number;deliveredAmount:number;unitPrice:number;reservedCoins:number;expiresAt:string;status:'Open'|'Cancelled'|'Expired'|'Completed'}
 export const api = {
+  notificationPreferences:()=>request<import('./notificationPolicy').NotificationPreferences>('GET','/api/me/notification-preferences',undefined,AbortSignal.timeout(10000)),
+  saveNotificationPreferences:(body:import('./notificationPolicy').NotificationPreferenceRequest)=>request<{settings:import('./notificationPolicy').NotificationPreferences;replayed:boolean}>('PUT','/api/me/notification-preferences',body,AbortSignal.timeout(10000)),
   submitReport: (body: {id:string;kind:string;text:string;slug:string|null;capturedAt:string;screen:unknown;screenshot:string|null}) =>
     request<{id:string;state:string;screenshotIncluded?:boolean}>('POST', '/api/reports', body, AbortSignal.timeout(20000)),
   economy: (slug: string, before?: string, asset?: string) => request<EconomyView>('GET', `/api/villages/${encodeURIComponent(slug)}/economy?${new URLSearchParams({...before ? {before} : {}, ...asset ? {asset} : {}})}`),

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Desertod.Domain.Economy;
+using Desertod.Domain.Notifications;
 using Desertod.Domain.Farming;
 using Desertod.Domain.Director;
 using Desertod.Domain.Chat;
@@ -57,6 +58,8 @@ public sealed class DesertodDbContext(DbContextOptions<DesertodDbContext> option
     public DbSet<MarketLot> MarketLots => Set<MarketLot>();
     public DbSet<SupplyOrder> SupplyOrders => Set<SupplyOrder>();
     public DbSet<SupplyDelivery> SupplyDeliveries => Set<SupplyDelivery>();
+    public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();
+    public DbSet<NotificationPreferenceReceipt> NotificationPreferenceReceipts => Set<NotificationPreferenceReceipt>();
     public DbSet<WorkOrder> WorkOrders => Set<WorkOrder>();
     public DbSet<WorkOrderClaim> WorkOrderClaims => Set<WorkOrderClaim>();
     public DbSet<FarmCropRecord> FarmCrops => Set<FarmCropRecord>();
@@ -66,6 +69,14 @@ public sealed class DesertodDbContext(DbContextOptions<DesertodDbContext> option
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<NotificationPreference>(b=>{
+            b.HasKey(x=>x.AccountId);b.Property(x=>x.Revision).IsConcurrencyToken();b.Property(x=>x.TimeZoneId).HasMaxLength(64);
+            b.HasOne<Account>().WithOne().HasForeignKey<NotificationPreference>(x=>x.AccountId).OnDelete(DeleteBehavior.Cascade);
+        });
+        modelBuilder.Entity<NotificationPreferenceReceipt>(b=>{
+            b.HasKey(x=>new{x.AccountId,x.RequestId});b.HasIndex(x=>new{x.AccountId,x.At});b.Property(x=>x.Fingerprint).HasMaxLength(64);
+            b.HasOne<Account>().WithMany().HasForeignKey(x=>x.AccountId).OnDelete(DeleteBehavior.Cascade);
+        });
         modelBuilder.Entity<PlayerReport>(b =>
         {
             b.HasKey(r => r.Id);
