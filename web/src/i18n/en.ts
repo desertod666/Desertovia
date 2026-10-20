@@ -1270,6 +1270,9 @@ export const en = {
   } as Record<string, { ruler: string; citizen: string }>,
 
   errors: {
+    'rest.activeRequired': 'Leave safe rest first.',
+    'rest.retreatRequired': 'Retreat and wait until your hero has left combat first.',
+    'rest.dungeonRequired': 'Return from the dungeon or leave its gathering first.',
     "defense.raidPending": "Wait for all raid waves to end before upgrading fortifications.",
     "defense.upgradeWorking": "A fortification upgrade is already under construction.",
     "defense.upgradeTechnology": "Carpentry is required; stone also requires Mining.",

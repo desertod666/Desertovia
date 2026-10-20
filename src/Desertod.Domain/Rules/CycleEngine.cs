@@ -298,6 +298,7 @@ public static class CycleEngine
     /// <param name="village">Takes back the weapons the citizen took for the task; without it they keep them until the next task ends.</param>
     public static void Cancel(Citizen citizen, DateTimeOffset now, Village? village = null)
     {
+        SafeRest.RequireActive(citizen.RestState);
         HospitalRules.RequireReady(citizen, now);
         if (citizen.ExhaustedUntil > now)
             throw new GameRuleException("citizen.exhausted", "You fainted from exhaustion. Wait until you recover.",
@@ -340,6 +341,13 @@ public static class CycleEngine
 
     /// <summary>Banks the result of a completed cycle. Returns null if there is nothing to settle.</summary>
     public static CycleReport? Settle(Citizen citizen, WorkContext context, DateTimeOffset now)
+    {
+        var report = SettleCore(citizen, context, now);
+        SafeRest.AfterSettlement(citizen, now);
+        return report;
+    }
+
+    private static CycleReport? SettleCore(Citizen citizen, WorkContext context, DateTimeOffset now)
     {
         HospitalRules.Resume(citizen, now);
         if (citizen.RecoveryPausedAt is not null || HospitalRules.IsAdmitted(citizen, now)
@@ -953,6 +961,7 @@ public static class CycleEngine
 
     private static void CheckReady(Citizen citizen, DateTimeOffset now)
     {
+        SafeRest.RequireActive(citizen.RestState);
         if (citizen.Status != CitizenStatus.Active)
         {
             throw new GameRuleException("citizen.dormant", "Dormant citizens cannot work.");

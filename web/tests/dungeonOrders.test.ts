@@ -1,6 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { DungeonOrders, type DungeonOrder } from '../src/game/dungeonOrders.ts'
+import { latestDungeonSnapshot } from '../src/game/dungeonSnapshot.ts'
 
 function stand() {
   const sent: DungeonOrder[] = []
@@ -59,4 +60,33 @@ test('leaving a run disposes the queue even when an old acknowledgement arrives 
   await flush()
   s.orders.offer({ method: 'Heal', args: ['someone-in-the-next-run'] })
   assert.equal(s.sent.length, 1)
+})
+
+for (const rejected of [false, true]) test(`old session acknowledgement cannot flush or erase a new session queue (rejected=${rejected})`, async () => {
+  const s = stand()
+  s.orders.offer({ method: 'Attack', args: [1] })
+  s.orders.offer({ method: 'Attack', args: [2] })
+  s.orders.suspend()
+  s.orders.offer({ method: 'Attack', args: [3] })
+  s.orders.resume()
+  s.orders.offer({ method: 'MoveTo', args: [4, 4] })
+  s.orders.offer({ method: 'Heal', args: ['new-ally'] })
+  if (rejected) s.replies[0].reject(new Error('old socket closed'))
+  else s.replies[0].resolve(true)
+  await flush()
+  assert.equal(s.sent.length, 2)
+  s.replies[1].resolve(true)
+  await flush()
+  assert.deepEqual(s.sent[2], { method: 'Heal', args: ['new-ally'] })
+  s.replies[2].resolve(true)
+})
+
+test('a delayed old join cannot rewind elapsed combat time or replace a terminal frame', () => {
+  const running = { runId: 'a', elapsed: 10, outcome: 'Pending' }
+  const ended = { ...running, outcome: 'Victory' }
+  assert.equal(latestDungeonSnapshot(running, { ...running, elapsed: 9 }), running)
+  assert.equal(latestDungeonSnapshot(running, ended), ended)
+  assert.equal(latestDungeonSnapshot(ended, running), ended)
+  const other = { ...running, runId: 'b', elapsed: 0 }
+  assert.equal(latestDungeonSnapshot(ended, other), other)
 })

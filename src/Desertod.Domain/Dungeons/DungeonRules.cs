@@ -42,6 +42,7 @@ public static class DungeonRules
 
     public static DungeonRun Open(Village village, string dungeonId, string tsarName, int seed, DateTimeOffset now)
     {
+        SafeRest.RequireActive(village.TsarRestState);
         var dungeon = DungeonCatalog.Get(dungeonId);
         return new DungeonRun
         {
@@ -67,6 +68,7 @@ public static class DungeonRules
     /// <summary>Answers the gathering, or switches class: the gear of the old class goes back first.</summary>
     public static DungeonHero Join(DungeonRun run, Village village, Citizen citizen, HeroClass heroClass, DateTimeOffset now)
     {
+        SafeRest.RequireActive(citizen.RestState);
         RequireGathering(run, now);
         if (citizen.Status != CitizenStatus.Active)
         {

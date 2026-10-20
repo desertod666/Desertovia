@@ -119,7 +119,7 @@ export function GameMenu(props: MenuProps) {
   const { t } = i18n
   const [filter, setFilter] = useState<TaskFilter>('all')
   const working = citizen?.cycleEndsAt ? now < Date.parse(citizen.cycleEndsAt) : false
-  const disabled = pending || working
+  const disabled = pending || working || !!citizen?.restState && citizen.restState !== 'Active'
   const built = new Set<string>([...builtKinds(village, catalog), ...village.structures.filter(s=>s.ownerAccountId===props.me.id).map(s=>s.kind), ...village.completedProjects])
   const discovered = discoveredTechnologies(village)
   // Project tasks only show while a project runs, and only the ones it has use for.

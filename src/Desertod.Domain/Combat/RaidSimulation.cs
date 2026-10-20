@@ -87,6 +87,7 @@ public static class RaidSimulation
     }
 
     public static bool CanFight(Citizen c,DateTimeOffset at) => c.Status==CitizenStatus.Active
+        && c.RestState==RestState.Active
         && c.RecoveryPausedAt is null && !HospitalRules.IsAdmitted(c,at) && !CombatRules.IsInjured(c,at) && !(c.ExhaustedUntil>at)
         && c.Recovery?.Available!=false && c.DungeonRunId is null;
 

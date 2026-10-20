@@ -57,6 +57,8 @@ public sealed class Citizen
     public Appearance? Appearance { get; set; }
 
     public CitizenStatus Status { get; set; } = CitizenStatus.Active;
+    public RestState RestState { get; set; }
+    public DateTimeOffset? RestRequestedAt { get; set; }
     public StatBlock Stats { get; set; } = new();
 
     /// <summary>Crafts the citizen has trained; a skill never trained is not listed and counts as level 0.</summary>
@@ -280,6 +282,7 @@ public sealed class Citizen
     /// </summary>
     public void GoTo(TilePoint spot, Village village, DateTimeOffset now)
     {
+        SafeRest.RequireActive(RestState);
         HospitalRules.RequireReady(this, now);
         if (CombatRules.IsInjured(this, now))
         {

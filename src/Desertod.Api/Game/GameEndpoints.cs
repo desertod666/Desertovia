@@ -24,6 +24,8 @@ public static class GameEndpoints
             return Results.Ok(new { result });
         });
         var player = app.MapGroup("/api").RequireAuthorization();
+        player.MapPut("/villages/{slug}/me/rest", (string slug, RestRequest request, ClaimsPrincipal user, GameService game, CancellationToken ct) =>
+            game.SetRestAsync(slug, user.RequireAccountId(), request, ct));
 
         player.MapGet("/villages/{slug}/combat-diagnostics",(string slug,ClaimsPrincipal user,GameService game,CancellationToken ct)=>game.GetCombatDiagnosticsAsync(slug,user.RequireAccountId(),ct));
         player.MapGet("/villages/{slug}/monastery", (string slug, ClaimsPrincipal user, GameService game, CancellationToken ct) => game.GetMonasteryAsync(slug,user.RequireAccountId(),ct));

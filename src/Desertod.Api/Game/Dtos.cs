@@ -224,6 +224,8 @@ public sealed record HousingDto(string PlotId, int Beds, int Occupied, int Level
 /// <param name="Spot">Where the Tsar walked to; null while they stand at the campfire.</param>
 public sealed record TsarDto(string Name, Appearance? Appearance, TilePoint? Spot, DateTimeOffset? InjuredUntil = null)
 {
+    public RestState RestState { get; init; }
+    public DateTimeOffset? RestRequestedAt { get; init; }
     public Guid? AccountId { get; init; }
     public DateTimeOffset? HospitalizedAt { get; init; }
     public Guid? RescueByCitizenId { get; init; }
@@ -284,6 +286,7 @@ public sealed record CitizenSummaryDto(
     ResourceKind? Weapon,
     ExternalRecovery? Recovery = null)
 {
+    public RestState RestState { get; init; }
     public int WeaponSharpen { get; init; }
     public DateTimeOffset? HospitalizedAt { get; init; }
     public Guid? RescueByCitizenId { get; init; }
@@ -374,6 +377,8 @@ public sealed record CitizenDto(
     double Power,
     ExternalRecovery? Recovery = null)
 {
+    public RestState RestState { get; init; }
+    public DateTimeOffset? RestRequestedAt { get; init; }
     public int WeaponSharpen { get; init; }
     public int ArrowSharpen { get; init; }
     public Guid AccountId { get; init; }
@@ -698,7 +703,7 @@ public static class DtoMapper
             citizen.CycleEndsAt,
             citizen.Load.Select(g => g.Kind).ToList(),
             CombatRules.IsInjured(citizen, now) ? citizen.InjuredUntil : null,
-            citizen.Weapon, citizen.Recovery) {WeaponSharpen=citizen.WeaponSharpen,HospitalizedAt=citizen.HospitalizedAt,RescueByCitizenId=citizen.RescueByCitizenId,RescuePatientId=citizen.RescuePatientId,RescueJourney=citizen.RescueJourney,RescueRequestedAt=citizen.RescueRequestedAt,DefenseSector=citizen.DefenseSector,DefenseReadyAt=citizen.DefenseReadyAt};
+            citizen.Weapon, citizen.Recovery) {RestState=citizen.RestState,WeaponSharpen=citizen.WeaponSharpen,HospitalizedAt=citizen.HospitalizedAt,RescueByCitizenId=citizen.RescueByCitizenId,RescuePatientId=citizen.RescuePatientId,RescueJourney=citizen.RescueJourney,RescueRequestedAt=citizen.RescueRequestedAt,DefenseSector=citizen.DefenseSector,DefenseReadyAt=citizen.DefenseReadyAt};
     }
 
     public static CitizenDto ToDto(this Citizen citizen, Village village, DateTimeOffset now) => new(
@@ -757,7 +762,7 @@ public static class DtoMapper
         citizen.Armor,
         citizen.Arrows,
         Math.Round(CombatRules.Power(citizen), 1), citizen.Recovery)
-        { WeaponSharpen=citizen.WeaponSharpen, ArrowSharpen=citizen.ArrowSharpen, MealKind=citizen.MealKind,MealUntil=citizen.MealUntil,MealReadyAt=citizen.LastMealAt+PreparedMeals.Cooldown, VigorEnergy = village.VigorEnergy, VigorCooldownMinutes = village.VigorCooldownMinutes, AccountId = citizen.AccountId, CyclePrivateOutput = citizen.CyclePrivateOutput, PersonalGoods = citizen.PersonalGoods, ActionEnergyCosts = GameCatalog.Tasks.Select(task => new KeyValuePair<string, double>(task.Id, WorkEnergy.WithMedical(citizen, WorkEnergy.TaskCost(village, task, now), now)))
+        { RestState=citizen.RestState, RestRequestedAt=citizen.RestRequestedAt, WeaponSharpen=citizen.WeaponSharpen, ArrowSharpen=citizen.ArrowSharpen, MealKind=citizen.MealKind,MealUntil=citizen.MealUntil,MealReadyAt=citizen.LastMealAt+PreparedMeals.Cooldown, VigorEnergy = village.VigorEnergy, VigorCooldownMinutes = village.VigorCooldownMinutes, AccountId = citizen.AccountId, CyclePrivateOutput = citizen.CyclePrivateOutput, PersonalGoods = citizen.PersonalGoods, ActionEnergyCosts = GameCatalog.Tasks.Select(task => new KeyValuePair<string, double>(task.Id, WorkEnergy.WithMedical(citizen, WorkEnergy.TaskCost(village, task, now), now)))
             .Concat(BuildingCatalog.Jobs.Select(job => new KeyValuePair<string, double>(job.Id, WorkEnergy.WithMedical(citizen, WorkEnergy.JobCost(village, job, now), now))))
             .GroupBy(pair => pair.Key).ToDictionary(group => group.Key, group => group.Last().Value),
             DefenseSector=citizen.DefenseSector,DefenseReadyAt=citizen.DefenseReadyAt,

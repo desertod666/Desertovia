@@ -430,6 +430,8 @@ export function mergeBattles(previous:readonly RaidBattle[] = [], incoming:reado
  */
 export function adoptVillageState(previous: VillageState, next: VillageState): VillageState {
   if (previous.id !== next.id) return next
+  // Full HTTP responses and hub snapshots can arrive in the opposite order to their reads.
+  if (Date.parse(next.snapshotAt ?? '') < Date.parse(previous.snapshotAt ?? '')) return previous
   if (!next.battles) return { ...next, battles: previous.battles }
   const published = new Set(next.battles.map(battle => battle.id))
   const snapshotAt = Date.parse(next.snapshotAt ?? '')
@@ -1079,7 +1081,10 @@ export interface Wilds {
   lookoutY: number
 }
 
+export type RestState = 'Active' | 'RestRequested' | 'Resting'
 export interface Tsar {
+  restState?: RestState
+  restRequestedAt?: string | null
   accountId?:string|null
   hospitalizedAt?:string|null
   rescueByCitizenId?:string|null
@@ -1137,6 +1142,7 @@ export interface RescueJourney {
 }
 
 export interface CitizenSummary {
+  restState?: RestState
   rescueJourney?:RescueJourney|null
   rescueRequestedAt?:string|null
   defenseSector?: string | null
@@ -1234,6 +1240,8 @@ export interface SkillValue {
 }
 
 export interface Citizen {
+  restState?: RestState
+  restRequestedAt?: string | null
   mealKind?: string | null
   mealUntil?: string | null
   mealReadyAt?: string | null
@@ -1571,6 +1579,7 @@ export const api = {
     request<{ inviteCode: string }>('POST', `/api/villages/${encodeURIComponent(slug)}/invite`),
 
   myCitizen: (slug: string) => orNull(request<Citizen>('GET', `/api/villages/${encodeURIComponent(slug)}/me`)),
+  setRest: (slug: string, resting: boolean) => request<VillageState>('PUT', `/api/villages/${encodeURIComponent(slug)}/me/rest`, { resting }),
   joinVillage: (slug: string, inviteCode: string | null) =>
     request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/citizens`, { inviteCode }),
   /** The citizen leaves for good: carried goods go to storage, and joining again starts a new citizen. */

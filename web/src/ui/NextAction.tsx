@@ -20,6 +20,7 @@ export function NextAction({
 }) {
   const i18n = useI18n()
   const { t } = i18n
+  if (citizen.restState === 'Resting') return <div className={`next-action idle ${compact ? 'compact' : ''}`} role="status">☾ {i18n.language === 'ru' ? 'Безопасный отдых' : 'Safe rest'}</div>
   if (citizen.state === 'Paused') return <div className={`next-action paused ${compact ? 'compact' : ''}`} role="status">✚ {t('hospital.pause')}</div>
   // Construction jobs are not catalog tasks, so the activity is just its id.
   const activity = citizen.taskId
@@ -34,7 +35,7 @@ export function NextAction({
         <div>
           <strong>{i18n.task(activity)}</strong> {t('next.working', { seconds: seconds(endsAt - now) })}
           {citizen.cycleTired && <span className="warning"> {t('next.tired')}</span>}
-          {onCancel && (
+          {onCancel && citizen.restState !== 'RestRequested' && (
             <button className="next-cancel" disabled={pending} onClick={onCancel} title={t('next.cancelTitle')}>
               {t('next.cancel')}
             </button>
@@ -47,6 +48,7 @@ export function NextAction({
     )
   }
 
+  if (citizen.restState === 'RestRequested') return <div className="next-action" role="status">◷ {i18n.language === 'ru' ? 'Завершаем работу перед отдыхом' : 'Finishing accepted work before rest'}</div>
   if (activity && now <= graceEndsAt) {
     return (
       <div className={`next-action awaiting ${compact ? 'compact' : ''}`}>

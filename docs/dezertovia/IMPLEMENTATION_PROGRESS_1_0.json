@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T17:21:54.026631+00:00",
-  "status": "foundation_partner_tools_and_independent_compact_ui_verified_not_released",
+  "recorded_at_utc": "2026-10-20T17:55:51.771590+00:00",
+  "status": "main_plan_active_reconnect_authority_rest_economy_farm",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
@@ -42,8 +42,9 @@
     "bot_modified": false,
     "current_source_restarted": true,
     "tool_recipes_verified_http": 8,
-    "local_world_migrations": 39,
-    "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container"
+    "local_world_migrations": 40,
+    "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
+    "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL"
   },
   "checks": {
     "baseline_ci": {
@@ -70,7 +71,7 @@
       ]
     },
     "client_unit": {
-      "passed": 4,
+      "passed": 7,
       "failed": 0
     },
     "frontend_lint": {
@@ -247,16 +248,39 @@
       "pre_tools_backup_readable": true,
       "recorded_at_utc": "2026-10-20T17:12:11.083361+00:00",
       "scope": "dedicated synthetic development cluster only; counts include intentional local UI QA characters"
+    },
+    "authority_api": {
+      "passed": 28,
+      "failed": 0,
+      "scope": "AuthorityMatrix/CooperativeCivic/CivicNotification/Almighty; includes observed PG role lock waiter"
+    },
+    "safe_rest_domain": {
+      "passed": 550,
+      "failed": 0,
+      "scope": "whole domain suite including3 new safe rest invariants"
+    },
+    "safe_rest_api": {
+      "passed": 2,
+      "failed": 0,
+      "scope": "independent workers settle/pay once; persisted state; 2days without new XP/income; retreat before protection"
+    },
+    "reconnect_browser": {
+      "passed": 10,
+      "failed": 0,
+      "scope": "desktop/phone real SignalR client; actual socket break, old replies, join failure, hero confirmation, village subscription-before-refresh"
+    },
+    "performance_component": {
+      "result": "measured",
+      "receipt": "PERFORMANCE_BASELINE_1_0.json",
+      "profiles": [
+        5,
+        10,
+        20
+      ],
+      "capacity_acceptance": false
     }
   },
-  "open_questions": [
-    {
-      "id": "PKG-D101",
-      "question": "Accepted work finishes before safe rest, or cancel with unused-input return?",
-      "status": "asked_owner_waiting",
-      "blocks": "PKG-T012 and dependent rest behavior only"
-    }
-  ],
+  "open_questions": [],
   "known_followups": [
     {
       "id": "SEC-001",
@@ -306,5 +330,17 @@
       "6 WebKit component cases plus isolated real-map repeat",
       "local API exposes all8 new recipes"
     ]
-  }
+  },
+  "owner_decisions_2026_10_20": {
+    "PKG-D101": "Owner confirmed: finish already accepted work, settle its result once, then Resting without new work/XP; retreat from combat before rest. Disconnect is not rest.",
+    "PKG-D108": "Owner confirmed: transfer actual consumed personal input costs; allocate multi-output cost by recipe base prices with deterministic remainder. Legacy unknown basis stays explicitly unknown; no profit tax on its sale until a separate decision.",
+    "F001": "Protect 10% of actual harvest immediately for contributors; community receives90%. Owner answer supersedes reserve-first deferral."
+  },
+  "active_tasks": [
+    "PKG-T012 server implemented and domain/API verified, browser running",
+    "PKG-T013 transport fixes and focused browser verified, broader regression pending",
+    "PKG-T015 current authority/serialization verified; future economic actions keep their own gates",
+    "PKG-T004 synthetic simulation/wire baseline measured; D114 capacity target pending",
+    "PKG-T020 owner-confirmed cost accounting implementation next"
+  ]
 }

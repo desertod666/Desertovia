@@ -764,6 +764,16 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<int?>("ReservedSiteWork")
                         .HasColumnType("integer");
 
+                    b.Property<DateTimeOffset?>("RestRequestedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RestState")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasDefaultValue("Active");
+
                     b.Property<double>("ShelterQuality")
                         .HasColumnType("double precision");
 
@@ -1041,6 +1051,16 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                     b.Property<bool>("TsarRescueRewardEligible")
                         .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("TsarRestRequestedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TsarRestState")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasDefaultValue("Active");
 
                     b.Property<double?>("TsarSpotX")
                         .HasColumnType("double precision");

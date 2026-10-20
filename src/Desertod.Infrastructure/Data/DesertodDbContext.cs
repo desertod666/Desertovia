@@ -91,6 +91,7 @@ public sealed class DesertodDbContext(DbContextOptions<DesertodDbContext> option
             battle.OwnsMany(b=>b.Events, events=>events.ToJson());
         });
         modelBuilder.Entity<Village>().Property(v=>v.VigorEnergy).HasDefaultValue(8);
+        modelBuilder.Entity<Village>().Property(v=>v.TsarRestState).HasConversion<string>().HasMaxLength(16).HasDefaultValue(Desertod.Domain.Rules.RestState.Active);
         modelBuilder.Entity<Village>().Property(v=>v.VigorCooldownMinutes).HasDefaultValue(240);
         modelBuilder.Entity<KingdomEconomy>(b => { b.HasKey(x=>x.VillageId); b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade); });
         modelBuilder.Entity<GameWallet>(b => { b.HasKey(x=>new{x.VillageId,x.AccountId}); b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade); b.HasOne<Account>().WithMany().HasForeignKey(x=>x.AccountId); });
@@ -290,6 +291,7 @@ public sealed class DesertodDbContext(DbContextOptions<DesertodDbContext> option
             citizen.Property(c => c.Name).HasMaxLength(32);
             citizen.Property(c => c.Subtitle).HasMaxLength(Citizen.SubtitleMaximumLength);
             citizen.Property(c => c.Status).HasConversion<string>().HasMaxLength(16);
+            citizen.Property(c => c.RestState).HasConversion<string>().HasMaxLength(16).HasDefaultValue(Desertod.Domain.Rules.RestState.Active);
             citizen.Property(c => c.CurrentTaskId).HasMaxLength(32);
             citizen.Property(c => c.CurrentSiteId).HasMaxLength(16);
             citizen.Property(c => c.CurrentTechnologyId).HasMaxLength(32);

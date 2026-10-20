@@ -455,6 +455,7 @@ public sealed partial class GameService(
             var citizen = await db.Citizens.SingleAsync(c => c.Id == key.Id, cancellationToken);
             db.AuditActor = citizen.AccountId;
             HospitalRules.RequireReady(citizen, time.GetUtcNow());
+            SafeRest.RequireActive(citizen.RestState);
             var village = await db.Villages.SingleAsync(v => v.Id == citizen.VillageId, cancellationToken);
             var now = time.GetUtcNow();
             village.EnsureCamp(now);
@@ -563,14 +564,14 @@ public sealed partial class GameService(
             cancellationToken);
 
     /// <summary>A change the Tsar makes to one citizen of the village.</summary>
-    private Task<CitizenSummaryDto> ChangeCitizenAsync(
+    private async Task<CitizenSummaryDto> ChangeCitizenAsync(
         string slug,
         Guid accountId,
         Guid citizenId,
         string actionName,
         Action<Citizen> change,
         CancellationToken cancellationToken) =>
-        WithRetryAsync(async db =>
+        await WithVillageAsync(await FindVillageIdAsync(slug, cancellationToken), async db =>
         {
             var village = await LoadVillageAsync(db, slug, cancellationToken);
             if (village.OwnerAccountId != accountId)
@@ -581,6 +582,8 @@ public sealed partial class GameService(
             var citizen = await db.Citizens.SingleOrDefaultAsync(c => c.Id == citizenId && c.VillageId == village.Id, cancellationToken)
                           ?? throw new NotFoundException("citizen.notFound", "This citizen does not live in the village.");
             change(citizen);
+            db.AuditActor = accountId;
+            db.AuditOperation = actionName;
             await db.SaveChangesAsync(cancellationToken);
             logger.TsarActed(slug, actionName, citizenId.ToString());
 
@@ -1448,7 +1451,7 @@ public sealed partial class GameService(
             .Select(a => new { a.DisplayName, a.Character })
             .SingleAsync(cancellationToken);
         var tsar = new TsarDto(owner.Character?.Name ?? owner.DisplayName, owner.Character?.Appearance, village.TsarSpot, village.TsarInjuredUntil)
-            { AccountId=village.OwnerAccountId, HospitalizedAt=village.TsarHospitalizedAt, RescueByCitizenId=village.TsarRescueByCitizenId, RescueRequestedAt=village.TsarRescueRequestedAt };
+            { RestState=village.TsarRestState, RestRequestedAt=village.TsarRestRequestedAt, AccountId=village.OwnerAccountId, HospitalizedAt=village.TsarHospitalizedAt, RescueByCitizenId=village.TsarRescueByCitizenId, RescueRequestedAt=village.TsarRescueRequestedAt };
         var trips = await LoadTripsAsync(db, village.Id, cancellationToken);
         var shownSince = now - DungeonRules.ShownAfterEnd;
         var dungeon = await db.DungeonRuns.AsNoTracking()

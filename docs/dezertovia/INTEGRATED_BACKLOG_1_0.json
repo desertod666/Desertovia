@@ -469,12 +469,14 @@
     },
     {
       "id": "PKG-D101",
-      "status": "open",
+      "status": "confirmed_by_owner",
       "question": "Отдых: незаконченный цикл, бой и отключение",
       "recommendation": "Отдельные серверные состояния; не мгновенный immunity disconnect. Выбрать до реализации: finish-before-rest, pause или иной порядок; не терять уже заработанное.",
       "blocking_scope": "Rest admission, cycle settlement, combat join/retreat, reconnect tests.",
       "owner": "product/integrator",
-      "production_activation": "not authorized by this planning package"
+      "production_activation": "not authorized by this planning package",
+      "owner_resolution": "Owner confirmed: finish already accepted work, settle its result once, then Resting without new work/XP; retreat from combat before rest. Disconnect is not rest.",
+      "confirmed_at_utc": "2026-10-20T17:43:30.285045+00:00"
     },
     {
       "id": "PKG-D102",
@@ -532,12 +534,14 @@
     },
     {
       "id": "PKG-D108",
-      "status": "open",
+      "status": "confirmed_by_owner",
       "question": "CostBasis: производство, старые вещи и распределение",
       "recommendation": "Переиспользовать существующее пропорциональное списание где подходит; переносить стоимость потреблённых входов. Определить многопродуктовый выход и неизвестную историю.",
       "blocking_scope": "Real profit tax and cost-based accounting migration.",
       "owner": "product/integrator",
-      "production_activation": "not authorized by this planning package"
+      "production_activation": "not authorized by this planning package",
+      "owner_resolution": "Owner confirmed: transfer actual consumed personal input costs; allocate multi-output cost by recipe base prices with deterministic remainder. Legacy unknown basis stays explicitly unknown; no profit tax on its sale until a separate decision.",
+      "confirmed_at_utc": "2026-10-20T17:43:30.285045+00:00"
     },
     {
       "id": "PKG-D109",
@@ -940,7 +944,7 @@
       "id": "PKG-T004",
       "milestone": "M0",
       "title": "База производительности и целевой масштаб",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "component_baseline_measured_target_pending",
       "dependencies": [
         "PKG-T002"
       ],
@@ -973,7 +977,8 @@
         "status": "partial",
         "evidence": "CombatDiagnostics уже есть; целевой онлайн/устройства/SLO не выбраны, свежих замеров нет.",
         "runtime_verification": "not_run_this_assignment"
-      }
+      },
+      "implementation_evidence": "RECONNECT_REST_AUTHORITY_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json"
     },
     {
       "id": "PKG-T010",
@@ -1070,7 +1075,7 @@
       "id": "PKG-T012",
       "milestone": "M1",
       "title": "Серверная политика безопасного отдыха",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "implemented_domain_api_verified_browser_pending",
       "dependencies": [
         "PKG-T001",
         "PKG-T003"
@@ -1114,13 +1119,13 @@
         "evidence": "Safe Resting не найден; Idle/Paused/absence и offline settlement не новый безопасный отдых.",
         "runtime_verification": "not_run_this_assignment"
       },
-      "blocking_question": "PKG-D101: finish accepted work before safe rest versus cancel; owner reply pending, no dependent code begun."
+      "implementation_evidence": "RECONNECT_REST_AUTHORITY_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json"
     },
     {
       "id": "PKG-T013",
       "milestone": "M1",
       "title": "Команды и проекции после reconnect",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "transport_component_verified_broader_regression_pending",
       "dependencies": [
         "PKG-T003"
       ],
@@ -1157,7 +1162,8 @@
         "status": "source_partial_target",
         "evidence": "catchUp/adoptVillageState/mergeBattles, revision/serverNow и dungeon one-inflight+latest существуют.",
         "runtime_verification": "not_run_this_assignment"
-      }
+      },
+      "implementation_evidence": "RECONNECT_REST_AUTHORITY_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json"
     },
     {
       "id": "PKG-T014",
@@ -1205,7 +1211,7 @@
       "id": "PKG-T015",
       "milestone": "M1",
       "title": "Права царя, посадника и доверенных сервисов",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "existing_authority_matrix_verified_future_actions_pending",
       "dependencies": [
         "PKG-T001",
         "PKG-T003"
@@ -1242,7 +1248,8 @@
         "status": "partial",
         "evidence": "Политические роли/civic requests и уязвимый герой есть; новые права договора/сервиса требуют явной матрицы.",
         "runtime_verification": "not_run_this_assignment"
-      }
+      },
+      "implementation_evidence": "RECONNECT_REST_AUTHORITY_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json"
     },
     {
       "id": "PKG-T020",
@@ -2917,7 +2924,8 @@
       "current_support": {
         "status": "plan",
         "evidence": "Существующие FieldBed/FarmRules/FieldsCard — основа; адресный допуск/вклад/90:10 не реализованы. См. CODE_AUDIT_1_0.md."
-      }
+      },
+      "owner_resolution": "Protect 10% of actual harvest immediately for contributors; 90% community. This owner answer supersedes the former reserve-first deferral alternative."
     },
     {
       "id": "F002",

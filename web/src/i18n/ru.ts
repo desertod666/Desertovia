@@ -1267,6 +1267,9 @@ export const ru: Dictionary = {
   },
 
   errors: {
+    'rest.activeRequired': 'Сначала выйди из безопасного отдыха.',
+    'rest.retreatRequired': 'Сначала отступи из боя и дождись выхода героя.',
+    'rest.dungeonRequired': 'Сначала вернись из данжа или покинь сбор.',
     "defense.raidPending": "Дождись окончания всех волн набега перед улучшением укреплений.",
     "defense.upgradeWorking": "Укрепления уже улучшаются. Открой площадку в разделе «Стройка».",
     "defense.upgradeTechnology": "Нужно плотницкое дело, а для камня также горное дело.",
