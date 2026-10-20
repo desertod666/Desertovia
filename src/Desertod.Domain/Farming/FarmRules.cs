@@ -83,6 +83,17 @@ public static class FarmRules
 
     public static bool IsRipe(Village village, FieldBed bed, DateTimeOffset now) => bed.Crop is not null && GrowthOf(village, bed, now) >= 1 - Epsilon;
 
+    /// <summary>Bounds under the current growth rules, not a promise about future weather or care.
+    /// Earliest assumes continuous moisture; latest assumes only the already applied water, then dry soil.</summary>
+    public static (DateTimeOffset Earliest, DateTimeOffset Latest)? MaturityWindow(Village village,FieldBed bed,DateTimeOffset now)
+    {
+        if(bed.Crop is not {} crop)return null;
+        var growth=GrowthOf(village,bed,now);
+        var remaining=growth>=1-Epsilon ? 0 : (1-growth)*FarmCatalog.Get(crop).GrowHours;
+        var guaranteedWet=Math.Min(remaining,Math.Max(0,((bed.WateredUntil??now)-now).TotalHours));
+        return (now.AddHours(remaining),now.AddHours(guaranteedWet+(remaining-guaranteedWet)/FarmCatalog.DryGrowthRate));
+    }
+
     public static bool IsWet(FieldBed bed, DateTimeOffset now) => bed.WateredUntil > now;
 
     /// <summary>A growing bed that dries out soon. Empty and ripe beds need no water, and none do in the rain.</summary>

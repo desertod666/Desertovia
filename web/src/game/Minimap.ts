@@ -53,7 +53,8 @@ export class Minimap {
     host.appendChild(this.root)
 
     const pick = (event: PointerEvent) => {
-      const bounds = this.root.getBoundingClientRect()
+      // Match the drawn map, excluding the frame. On a112px phone minimap its2px border spans multiple tiles.
+      const bounds = this.base.getBoundingClientRect()
       const tileX = MAP_LEFT + ((event.clientX - bounds.left) / bounds.width) * MAP_WIDTH
       const tileY = MAP_TOP + ((event.clientY - bounds.top) / bounds.height) * MAP_HEIGHT
       onPick(tileX, tileY)

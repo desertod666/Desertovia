@@ -4,6 +4,7 @@ import {api,createOperationId,type Catalog,type Citizen,type CitizenSummary,type
 import {I18nProvider} from '../src/i18n'
 import {TargetPopup} from '../src/ui/TargetPopup'
 import {CitizenDialog} from '../src/ui/CitizenDialog'
+import {WatchPopup} from '../src/ui/WatchPopup'
 import '../src/index.css'
 
 declare global {interface Window {farmCalls:unknown[]}}
@@ -18,10 +19,11 @@ const citizen={id:'farmer',accountId:'worker',name:'Farmer',state:'Idle',serverN
 function FarmStand({catalog}:{catalog:Catalog}) {
  const[pending,setPending]=useState(false)
  const mode=new URLSearchParams(location.search),[summary,setSummary]=useState({id:'10000000-0000-4000-8000-000000000001',name:'Farmer',isGovernor:true,isFarmer:false,canManageFarm:false,subtitle:null} as CitizenSummary),[admission,setAdmission]=useState(mode.has('admission'))
- const social=mode.has('social'),fields=village.fields.map(b=>social&&b.index===1?{...b,contributionVersion:1,sownAt:iso,contributions:[{accountId:'sower',name:'Андрей',step:'Sow' as const,startedAt:iso,completedAt:iso},{accountId:'helper',name:'Мария',step:'Water' as const,startedAt:iso,completedAt:iso}]}:b)
+ const social=mode.has('social'),fields=village.fields.map(b=>social&&b.index===1?{...b,earliestRipeAt:new Date(now+3600000).toISOString(),latestRipeAt:new Date(now+4*3600000).toISOString(),contributionVersion:1,sownAt:iso,contributions:[{accountId:'sower',name:'Андрей',step:'Sow' as const,startedAt:iso,completedAt:iso},{accountId:'helper',name:'Мария',step:'Water' as const,startedAt:iso,completedAt:iso}]}:b)
  const workers=social?[{id:'other',name:'Иван',farmTargets:[{plotId:'21,12',index:1,generationId:fields[1].generationId}]} as CitizenSummary]:[]
  const start=(task:Catalog['tasks'][number],_spot:unknown,plot?:string,target?:FarmWorkTarget)=>{window.farmCalls.push({taskId:task.id,workplacePlotId:plot,farmTarget:target});setPending(true)}
  if(mode.has('manage'))return <CitizenDialog slug="farm-fixture" citizen={summary} canRule={mode.get('manage')==='owner'} admissionEnabled={admission} onEnableAdmission={async()=>{await api.enableFarmerAdmission('farm-fixture',createOperationId());setAdmission(true)}} onSaved={setSummary} onClose={()=>{}}/>
+ if(mode.has('watch'))return <WatchPopup target={{kind:'building',building:'Farm',plotId:'21,12',area:null,storage:false}} screen={{x:160,y:100}} phone={innerWidth<=720} village={{...village,fields}} catalog={catalog} citizens={workers} now={now} actorId="watcher" tsar={mode.get('watch')==='tsar'} ruler={false} onVillage={()=>{}} onClose={()=>{}}/>
  return <TargetPopup target={{kind:'building',building:'Farm',plotId:'21,12',area:null,storage:false}} screen={{x:160,y:100}} phone={innerWidth<=720} village={{...village,fields,weather:{...village.weather,raining:mode.has('rain')},farmerAdmissionEnabled:admission}} catalog={catalog} citizen={citizen} now={now} pending={pending} error={null} onStart={start} onStartJob={()=>{}} ruler={false} onCivic={async()=>{}} onTake={()=>{}} onClose={()=>{}} slug={social?'farm-fixture':undefined} workers={workers}/>
 }
 api.catalog().then(catalog=>createRoot(document.getElementById('app')!).render(<I18nProvider><FarmStand catalog={catalog}/></I18nProvider>))

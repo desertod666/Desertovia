@@ -112,6 +112,8 @@ public sealed record FieldBedDto(string PlotId, int Index, CropKind? Crop, doubl
     [System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.Never)] public Guid GenerationId { get; init; }
     public int ContributionVersion { get; init; }
     public DateTimeOffset? SownAt { get; init; }
+    public DateTimeOffset? EarliestRipeAt { get; init; }
+    public DateTimeOffset? LatestRipeAt { get; init; }
     public IReadOnlyList<FarmCareDto> Contributions { get; init; } = [];
 }
 public sealed record FarmCareDto(Guid AccountId,string Name,FarmStep Step,DateTimeOffset StartedAt,DateTimeOffset CompletedAt)
@@ -587,7 +589,7 @@ public static class DtoMapper
         village.Fields
             .OrderBy(b => b.PlotId)
             .ThenBy(b => b.Index)
-            .Select(b => new FieldBedDto(b.PlotId, b.Index, b.Crop, FarmRules.GrowthOf(village, b, now), b.WateredUntil, FarmRules.IsThirsty(village, b, now)){GenerationId=b.GenerationId,ContributionVersion=b.ContributionVersion,SownAt=b.SownAt,Contributions=b.Contributions.Select(FarmCareDto.From).ToArray()})
+            .Select(b => new FieldBedDto(b.PlotId, b.Index, b.Crop, FarmRules.GrowthOf(village, b, now), b.WateredUntil, FarmRules.IsThirsty(village, b, now)){GenerationId=b.GenerationId,ContributionVersion=b.ContributionVersion,SownAt=b.SownAt,EarliestRipeAt=FarmRules.MaturityWindow(village,b,now)?.Earliest,LatestRipeAt=FarmRules.MaturityWindow(village,b,now)?.Latest,Contributions=b.Contributions.Select(FarmCareDto.From).ToArray()})
             .ToList(),
         village.ToWeatherDto(now),
         tsar,

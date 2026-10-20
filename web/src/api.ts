@@ -534,6 +534,8 @@ export interface CropDefinition {
 
 /** One bed of a farm. */
 export interface FieldBed {
+  earliestRipeAt?:string|null
+  latestRipeAt?:string|null
   contributionVersion?:number
   sownAt?:string|null
   contributions?:FarmCare[]

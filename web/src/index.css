@@ -1366,8 +1366,8 @@ button.farm-plot:hover { background: transparent; }
 .farm-tool-note .task-meta { margin: 0; }
 .farm-access-field { min-height:44px; }
 .farm-worker,.farm-rain { margin:0; padding:.3rem .6rem; font-size:.85rem; }
-.farm-care,.farm-history { padding:.35rem .5rem; }
-.farm-care>summary,.farm-history>summary,.farm-history-crop>summary { min-height:44px; align-content:center; cursor:pointer; }
+.farm-care,.farm-history,.farm-forecast { padding:.35rem .5rem; }
+.farm-care>summary,.farm-history>summary,.farm-history-crop>summary,.farm-forecast>summary { min-height:44px; align-content:center; cursor:pointer; }
 .farm-care-list { margin:.3rem 0; padding-left:1.2rem; font-size:.85rem; }
 .farm-care-list li { margin:.25rem 0; }
 .farm-history { flex:0 0 auto; }
@@ -2861,5 +2861,17 @@ button, input, select, textarea, .modal-header, .target-popup-header { font-fami
 .safe-rest-control { display:flex; align-items:center; gap:4px; flex-wrap:wrap; max-width:100%; }
 .safe-rest-control > button { min-height:44px; min-width:44px; }
 .safe-rest-control > .error { flex-basis:100%; max-width:280px; font-size:12px; }
+@media(max-width:720px){
+ /* Rest must not squeeze a whole status row into tall text columns on a320px phone. */
+ .hud-state-row:has(>.safe-rest-control){display:grid;grid-template-columns:44px minmax(36px,1fr) 44px max-content;gap:2px;align-items:center}
+ .hud-state-row:has(>.safe-rest-control)>.resource-chip:not(.personal-vitals){grid-column:1;grid-row:1;min-height:44px;display:flex;align-items:center;justify-content:center;padding:1px}
+ .hud-state-row:has(>.safe-rest-control)>.personal-vitals{grid-column:2;grid-row:1;width:100%;min-height:44px;align-content:center}
+ .hud-state-row:has(>.safe-rest-control)>.weather{grid-column:3;grid-row:1;width:44px;height:44px}
+ .hud-state-row:has(>.safe-rest-control) .weather-chip{width:44px;height:44px;justify-content:center;padding:2px}
+ .hud-state-row:has(>.safe-rest-control) .weather-name{display:none}
+ .hud-state-row:has(>.safe-rest-control)>.wallet-hud{grid-column:4;grid-row:1;margin:0;min-height:44px;align-self:stretch;max-width:128px}
+ .hud-state-row>.safe-rest-control{grid-column:1/-1;grid-row:2;justify-self:end;flex-wrap:nowrap;align-items:center}
+ .hud-state-row>.safe-rest-control>.error{position:absolute;right:0;top:100%;padding:6px;background:var(--parchment)}
+}
 .economy-panel .inventory-grid .slot { position:relative; }
 .economy-panel .inventory-cost { position:absolute; top:0; right:0; }

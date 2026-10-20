@@ -730,7 +730,11 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
         })
       }
     }
-    if (!canWork || !ownId) return null
+    if (!canWork || !ownId) return (target: WorldTarget | null,screen:{x:number;y:number})=>{
+      setEnemyPick(null)
+      const watched=target!==null&&villageRef.current!==null&&watchable(target,villageRef.current)
+      setPicked(watched?{target,screen}:null)
+    }
     return (target: WorldTarget | null, screen: { x: number; y: number }, point: TilePoint) => {
       setEnemyPick(null)
       if(point.x>=34&&point.x<=44&&point.y>=7&&point.y<=14){setMonasteryOpen(true);setPicked(null);return}
@@ -769,11 +773,11 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   }, [pickWorld,pickEnemy])
 
   const worldPickable = useMemo(
-    () => (tsar ? (target: WorldTarget) => target.kind === 'building' && target.building === 'Hospital' || villageRef.current !== null && watchable(target, villageRef.current) : null),
-    [tsar],
+    () => (!canWork ? (target: WorldTarget) => target.kind === 'building' && target.building === 'Hospital' || villageRef.current !== null && watchable(target, villageRef.current) : null),
+    [canWork],
   )
   const showPicked = picked !== null && canWork && panel === 'none'
-  const showWatched = picked !== null && tsar && panel === 'none' && live.state !== null && watchable(picked.target, live.state)
+  const showWatched = picked !== null && !canWork && panel === 'none' && live.state !== null && watchable(picked.target, live.state)
   const subtitleCitizen = subtitleFor ? live.citizens.get(subtitleFor) : undefined
 
   /** On phones the minimap sits right under the top bar, whose height changes with the banner and the wrapped chips. */

@@ -8,6 +8,8 @@ import type { Catalog, CitizenSummary, Site, SiteStage, VillageState } from '../
 import type { WorldTarget } from '../game/worldMap'
 import { useI18n } from '../i18n'
 import { FieldsCard } from './FieldsCard'
+import { FarmPlotBoard } from './FarmPlotBoard'
+import { FarmHistory } from './FarmHistory'
 import { ProjectPanel } from './ProjectPanel'
 import { popupStyle } from './TargetPopup'
 import { ResourceIcon } from './TileIcon'
@@ -96,6 +98,7 @@ export function WatchPopup({
   const { t } = i18n
   const site = target.kind === 'site' ? village.sites.find((s) => s.plotId === target.plotId) : undefined
   const beds = target.kind === 'building' ? village.fields.filter((bed) => bed.plotId === target.plotId) : []
+  const addressedFarm=beds.length>0&&beds.every(b=>!!b.generationId)
   const herd = target.kind === 'animal' ? village.wildlife.find((h) => h.kind === target.prey) : undefined
   const title =
     target.kind === 'project'
@@ -107,7 +110,7 @@ export function WatchPopup({
           : ''
 
   return (
-    <div {...gesture} className={`target-popup ${phone ? 'sheet' : ''}`} style={popupStyle(screen, phone)} role="dialog" aria-label={title}>
+    <div {...gesture} className={`target-popup ${phone ? 'sheet' : ''} ${addressedFarm?'farm-popup':''}`} style={popupStyle(screen, phone,addressedFarm?520:340,addressedFarm?600:undefined)} role="dialog" aria-label={title}>
       <header className="target-popup-header">
         <strong>{title}</strong>
         <button className="close" onClick={onClose} title={`${t('close')} (Esc)`}>
@@ -124,7 +127,7 @@ export function WatchPopup({
             <p className="small highlight">{t('site.complete')}</p>
           ))}
         {target.kind === 'project' && <ProjectPanel project={village.project} completed={village.completedProjects} />}
-        {beds.length > 0 && <FieldsCard beds={beds} now={now} raining={village.weather.raining} />}
+        {addressedFarm?<><FarmPlotBoard beds={beds} shared={!village.structures.find(s=>s.plotId===beds[0].plotId)?.ownerAccountId} now={now} raining={village.weather.raining} catalog={catalog} workers={citizens}/><FarmHistory slug={village.slug} plotId={beds[0].plotId} version={beds.map(b=>`${b.generationId}:${b.contributions?.length??0}`).join('|')}/></>:beds.length>0&&<FieldsCard beds={beds} now={now} raining={village.weather.raining}/>}
         {herd && <p className="small">{t('watch.herd', { count: herd.count, capacity: herd.capacity })}</p>}
       </div>
     </div>

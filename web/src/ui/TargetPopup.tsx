@@ -123,11 +123,15 @@ function spotFor(target: WorldTarget, task: Task): TilePoint | null {
 }
 
 /** Opens below the click in the top half of the screen and above it in the bottom half; phones get a bottom sheet. */
-export function popupStyle(screen: { x: number; y: number }, phone: boolean, width = 340) {
+export function popupStyle(screen: { x: number; y: number }, phone: boolean, width = 340,preferredHeight?:number) {
   if (phone) return undefined
   const below = screen.y < window.innerHeight / 2
   const gap = 18
   const margin = 8
+  if(preferredHeight!==undefined){
+    const height=Math.min(preferredHeight,window.innerHeight-margin*2)
+    return {left:Math.max(margin,Math.min(screen.x-width/2,window.innerWidth-width-margin)),top:Math.max(margin,Math.min(screen.y-80,window.innerHeight-height-margin)),maxHeight:height}
+  }
   return {
     left: Math.max(margin, Math.min(screen.x - width / 2, window.innerWidth - width - margin)),
     ...(below
@@ -199,7 +203,7 @@ export function TargetPopup({
   const damage = target.kind === 'building' ? damageOf(village, target.plotId) : 0
 
   return (
-    <div {...gesture} className={`target-popup ${phone ? 'sheet' : ''} ${addressedFarm ? 'farm-popup' : ''}`} style={popupStyle(screen, phone, addressedFarm ? 520 : 340)} role="dialog" aria-label={titleOf(target, catalog, citizen, i18n, village)}>
+    <div {...gesture} className={`target-popup ${phone ? 'sheet' : ''} ${addressedFarm ? 'farm-popup' : ''}`} style={popupStyle(screen, phone, addressedFarm ? 520 : 340,addressedFarm?600:undefined)} role="dialog" aria-label={titleOf(target, catalog, citizen, i18n, village)}>
       <header className="target-popup-header">
         <strong>{titleOf(target, catalog, citizen, i18n, village)}</strong>
         <button className="close" onClick={onClose} title={`${t('close')} (Esc)`}>

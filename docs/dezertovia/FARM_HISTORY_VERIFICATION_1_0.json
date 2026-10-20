@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-20T21:05:38.332091+00:00",
+  "sha": "0e6443ee2886068e34855a282bdc6786922065d9",
+  "run_id": 39494670239,
+  "url": "https://github.com/desertod666/Desertovia/actions/runs/39494670239",
+  "result": "success",
+  "jobs": {
+    "Backend tests": 118876484710,
+    "Browser tests (2/2)": 118876484797,
+    "Frontend lint and build": 118876484953,
+    "Docker image": 118876485031,
+    "Browser tests (1/2)": 118876485215
+  },
+  "passed": {
+    "domain": 585,
+    "api": 321,
+    "desktop_browser": 161,
+    "phone_browser": 159
+  },
+  "browser_skipped": 2,
+  "scope": "Durable crop care/harvest history, late settlement and manual task routing; before maturity forecast, spectator inspection and rest HUD changes",
+  "public_release": false
+}

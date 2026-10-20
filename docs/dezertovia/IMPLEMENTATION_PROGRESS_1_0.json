@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T20:44:45.798514+00:00",
+  "recorded_at_utc": "2026-10-20T21:05:38.334034+00:00",
   "status": "main_plan_active_farm_implementation",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "F003 durable useful-work/crop history and late-settlement timing; F005 manual global farm commands and participant/history UI. Seeds/compost, protected Food reserve and funded harvest settlement pending.",
+  "implemented_task": "F005 read-only farm inspection during rest/for Tsar, bounded maturity forecast, precise minimap selection and compact phone rest HUD; F003 seed/compost proposal awaiting owner; F004 backed rewards pending.",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -46,7 +46,7 @@
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "FarmContributionHistory migration45, history/late timing/legacy null fixes; frontend Vite current. VS Code API launch also preserves dev worlds.",
+    "loaded_scope": "Migration45; current Debug API includes maturity estimate; Vite includes readonly farm/minimap/status HUD. No public release.",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
     "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
@@ -586,8 +586,29 @@
       "scope": "actual Pixi GamePage on desktop/phone with real demo world/login/join/read state; task-menu Harvest opens farm with zero mutations, selected bed then emits generation-bound POST; final mutation mocked, not a natural full harvest run"
     },
     "farm_history_full_ci": {
-      "status": "pending_new_checkpoint",
-      "scope": "new history/late timing/UI/migration45 source is newer than7ff51bb"
+      "schema_version": 1,
+      "recorded_at_utc": "2026-10-20T21:05:38.332091+00:00",
+      "sha": "0e6443ee2886068e34855a282bdc6786922065d9",
+      "run_id": 39494670239,
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39494670239",
+      "result": "success",
+      "jobs": {
+        "Backend tests": 118876484710,
+        "Browser tests (2/2)": 118876484797,
+        "Frontend lint and build": 118876484953,
+        "Docker image": 118876485031,
+        "Browser tests (1/2)": 118876485215
+      },
+      "passed": {
+        "domain": 585,
+        "api": 321,
+        "desktop_browser": 161,
+        "phone_browser": 159
+      },
+      "browser_skipped": 2,
+      "scope": "Durable crop care/harvest history, late settlement and manual task routing; before maturity forecast, spectator inspection and rest HUD changes",
+      "public_release": false,
+      "receipt": "FARM_HISTORY_VERIFICATION_1_0.json"
     },
     "farm_history_local_migration": {
       "from": 44,
@@ -598,6 +619,59 @@
       "fields_before": 3,
       "worlds": 2,
       "scope": "real Debug API restart before the2 real-menu test accounts joined; snapshots outside repo qa/farm-admission-world-history-before.json and history-after.json"
+    },
+    "farm_maturity_domain": {
+      "passed": 592,
+      "failed": 0,
+      "scope": "Whole Domain including7 maturity-bound cases across5 crops, wet/dry/elapsed growth and no state mutation"
+    },
+    "farm_inspection_api": {
+      "passed": 4,
+      "failed": 0,
+      "scope": "All FarmHistoryApiTests with current forecast DTO fields and legacy NULL accepted cycle",
+      "result_file": "TestResults/farm-inspection-api/Admin_DESKTOP-FQ85FTD_2026-10-20_22_51_42_net10.0.trx"
+    },
+    "farm_inspection_browser": {
+      "passed": 38,
+      "failed": 0,
+      "scope": "RU/EN farm access/targets/history plus6 read-only owner/rest/spectator cases; then final layout/copy source rechecked with10 relevant social/history/readonly cases, not a second full38 run"
+    },
+    "farm_real_inspection_initial": {
+      "passed": 3,
+      "failed": 1,
+      "scope": "Menu and desktop inspection passed; phone minimap click hit adjacent building. Corrected map-canvas bounds and test pointer coordinates."
+    },
+    "farm_real_inspection_corrected": {
+      "passed": 2,
+      "failed": 0,
+      "scope": "Actual map/minimap/WatchPopup on desktop and320px phone with real dev login/join/rest/API state; no mocked work mutation. Resting and accepted-cycle timestamp unchanged, no game writes during inspection."
+    },
+    "farm_rest_hud_browser": {
+      "passed": 4,
+      "failed": 0,
+      "scope": "RU/EN desktop/phone projects, each at320/390/720px with large balances, <=96px status row, in-viewport controls,44px rest button, rest toggle/help/weather card; additionally1 actual320px phone map/rest inspection after final CSS"
+    },
+    "farm_inspection_visual_review": {
+      "result": "pass",
+      "scope": "Real desktop/phone screenshot review; enlarged contained farm popup keeps selected-bed state visible. Phone HUD no longer stretches status chips into tall columns."
+    },
+    "farm_inspection_build": {
+      "result": "pass",
+      "scope": "TypeScript/Vite/oxlint final gameplay source; no database schema changes"
+    },
+    "farm_inspection_restart": {
+      "result": "pass",
+      "migrations": 45,
+      "citizens_at_restart": 19,
+      "fields": 3,
+      "worlds": 2,
+      "identity_and_crop_generation_hashes_match": true,
+      "scope": "Synthetic local API restart before additional test accounts joined",
+      "backup": "/tmp/foundation-before-restart-20261020T205549Z.dump"
+    },
+    "farm_inspection_full_ci": {
+      "status": "pending_new_checkpoint",
+      "scope": "Maturity/readonly/minimap/phone rest HUD source is newer than0e6443e"
     }
   },
   "open_questions": [],
@@ -616,9 +690,9 @@
     "bot_deployed": false
   },
   "next_tasks": [
-    "F003 real seeds and bounded compost",
-    "F004 physical Food reserve and one funded harvest payment using existing orders",
-    "F005 forecasts/quotes, owner/spectator view and remaining complete farm UI",
+    "F004 protected physical Food reserve and one funded harvest settlement",
+    "F003 seeds/compost only after pending owner reply",
+    "F005 authoritative action quotes and final art/claim interface",
     "F006/T026 food/labor/market/recovery simulation",
     "remaining complete1.0 DAG"
   ],
@@ -663,9 +737,9 @@
     "FARM-DESTROYED-PAY": "Owner chose no money before actual harvest. Destroyed crop creates neither Food nor cash wage. Reserved funds for an unharvested crop must be returned; completed work remains historical, not a money debt."
   },
   "active_tasks": [
-    "F003 real seeds and bounded compost",
-    "F004 physical Food reserve and one funded harvest payment using existing orders",
-    "F005 forecasts/quotes, owner/spectator view and remaining complete farm UI",
+    "F004 protected physical Food reserve and one funded harvest settlement",
+    "F003 seeds/compost only after pending owner reply",
+    "F005 authoritative action quotes and final art/claim interface",
     "F006/T026 food/labor/market/recovery simulation",
     "remaining complete1.0 DAG"
   ],
@@ -692,5 +766,13 @@
     "draft": true,
     "base": "feat/desertovia-1-0-economy",
     "first_source": "42e63c5f3d5670b06c963d58858c0a4d39b68dec"
+  },
+  "farm_input_proposal": {
+    "status": "awaiting_owner_reply",
+    "terms": "Shared seed stock,1 seed per bed, recovery gathering without coin purchase; compost3 Reeds+1 Wood, once per unripe crop,+20%; no implementation until response",
+    "dependent_tasks": [
+      "F003 seed inputs and compost"
+    ],
+    "independent_work_continues": true
   }
 }

@@ -41,6 +41,8 @@ public sealed class FarmHistoryApiTests(DesertodApiFactory factory)
         await OkJsonAsync(await Start(v,b,"water-fields",target));await Finish(v,b);
         var state=(await OkJsonAsync(await b.Client.GetAsync(v.Path))).GetProperty("state");
         Assert.Equal(2,state.GetProperty("fields").EnumerateArray().Single(x=>x.GetProperty("index").GetInt32()==2).GetProperty("contributions").GetArrayLength());
+        var growing=state.GetProperty("fields").EnumerateArray().Single(x=>x.GetProperty("index").GetInt32()==2);
+        Assert.True(growing.GetProperty("earliestRipeAt").GetDateTimeOffset()<=growing.GetProperty("latestRipeAt").GetDateTimeOffset());
         Assert.Equal(HttpStatusCode.NoContent,(await a.Client.DeleteAsync(v.Path+"/me")).StatusCode);
         await players.ArrangeVillageAsync(v.Slug,(world,now)=>{var bed=world.Fields.Single(x=>x.Index==2);bed.Growth=1;bed.UpdatedAt=now;});
         var request=Guid.NewGuid();await OkJsonAsync(await Start(v,c,"harvest",target,request));
