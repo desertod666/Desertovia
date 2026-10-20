@@ -64,6 +64,9 @@ public sealed partial class GameService
             var citizen=await db.Citizens.SingleOrDefaultAsync(c=>c.VillageId==villageId&&c.AccountId==actor,ct);
             var tsar=village.OwnerAccountId==actor;
             if(!tsar&&citizen is null)throw new UnauthorizedAccessException();
+            var restState = tsar ? village.TsarRestState : citizen!.RestState;
+            if (restState == RestState.Resting || restState == RestState.RestRequested && order.Mode is not ("retreat" or "heal"))
+                SafeRest.RequireActive(restState);
             var now=time.GetUtcNow();
             await SyncHospitalAsync(db,villageId,ct,true,actor,actorOnly:true);
             if(HasHospitalRestriction(actor))throw new GameRuleException("hospital.unavailable","Wait until recovery.");
@@ -157,6 +160,7 @@ public sealed partial class GameService
             Fortifications.Ensure(village,completed);
             if(village.Fortifications.Count==0)throw new GameRuleException("defense.noWall","Build the palisade first.");
             foreach(var gate in village.Fortifications.Where(f=>f.Gate))gate.Open=order.Open;
+            db.AuditActor=actor;db.AuditOperation="gate";
             await db.SaveChangesAsync(ct);changes.Mark(village.Id);return true;
         },ct);
 }

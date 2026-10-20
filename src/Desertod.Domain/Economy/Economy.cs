@@ -150,7 +150,9 @@ public static class PrivateWarehouse
     public static int Withdraw(Citizen citizen, Desertod.Domain.Storage.StorageBuilding storage, ResourceKind kind, int requested)
     {
         if (storage.OwnerAccountId != citizen.AccountId) throw new GameRuleException("building.private", "This is not your private storage.");
-        var plain = storage.Goods.Where(g => g.Kind == kind && g.Sharpen == 0).Sum(g => g.Amount);
+        var durability = ToolCatalog.Get(kind)?.MaxDurability;
+        var plain = storage.Goods.Where(g => g.Kind == kind && g.Sharpen == 0 &&
+            (durability is null || g.Durability == durability)).Sum(g => g.Amount);
         var amount = Math.Min(requested, Math.Min(plain, PersonalInventory.Room(citizen, kind)));
         if (amount < 1) throw new GameRuleException("inventory.full", "Nothing can be taken into the personal inventory.");
         var cost = storage.PersonalCosts.SingleOrDefault(x => x.Kind == kind);
@@ -158,7 +160,7 @@ public static class PrivateWarehouse
         var basis = amount == cost.Amount ? cost.CostBasis : cost.CostBasis * amount / cost.Amount;
         cost.Amount -= amount; cost.CostBasis -= basis;
         if (cost.Amount == 0) storage.PersonalCosts.Remove(cost);
-        storage.Take(kind, amount, 0); PersonalInventory.Add(citizen, kind, amount, basis);
+        storage.Take(kind, amount, 0, durability); PersonalInventory.Add(citizen, kind, amount, basis);
         return amount;
     }
 }

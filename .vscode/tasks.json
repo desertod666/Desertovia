@@ -1,0 +1,39 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Desertovia: build backend",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-NoProfile", "-File", "${workspaceFolder}/tools/dev.ps1", "-Mode", "Build"],
+      "problemMatcher": "$msCompile",
+      "group": "build"
+    },
+    {
+      "label": "Desertovia: frontend",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-NoProfile", "-File", "${workspaceFolder}/tools/dev.ps1", "-Mode", "Frontend"],
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {"regexp": "^(.*):(\\d+):(\\d+): (.*)$", "file": 1, "line": 2, "column": 3, "message": 4},
+        "background": {"activeOnStart": true, "beginsPattern": "VITE v", "endsPattern": "Local:.*5190"}
+      }
+    },
+    {
+      "label": "Desertovia: domain tests",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-NoProfile", "-File", "${workspaceFolder}/tools/dev.ps1", "-Mode", "DomainTests"],
+      "problemMatcher": "$msCompile",
+      "group": "test"
+    },
+    {
+      "label": "Desertovia: database tunnel",
+      "type": "process",
+      "command": "ssh",
+      "args": ["-N", "-o", "BatchMode=yes", "-o", "ExitOnForwardFailure=yes", "-L", "127.0.0.1:55432:127.0.0.1:55432", "oracle-vps"],
+      "problemMatcher": []
+    }
+  ]
+}

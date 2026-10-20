@@ -50,6 +50,8 @@ public static class StorageCatalog
                 ResourceKind.IronIngot, ResourceKind.Leather, ResourceKind.Feathers, ResourceKind.Flax, ResourceKind.Chain, ResourceKind.Mechanism,
                 ResourceKind.Remedy, ResourceKind.VigorDrink, ResourceKind.Spear, ResourceKind.Bow, ResourceKind.Arrows, ResourceKind.Sword,
                 ResourceKind.Shield, ResourceKind.LeatherArmor,
+                ResourceKind.WoodenAxe, ResourceKind.StoneAxe, ResourceKind.IronAxe, ResourceKind.SteelAxe,
+                ResourceKind.WoodenPickaxe, ResourceKind.StonePickaxe, ResourceKind.IronPickaxe, ResourceKind.SteelPickaxe,
             ], 8, 15),
         new(StorageKind.Treasury, "Treasury", [ResourceKind.Gold], 2, 50),
         new(StorageKind.GreatGranary, "Great Granary", [ResourceKind.Food, ResourceKind.Porridge, ResourceKind.Stew, ResourceKind.Grain, ResourceKind.Wood, ResourceKind.Stone], 6, 100),

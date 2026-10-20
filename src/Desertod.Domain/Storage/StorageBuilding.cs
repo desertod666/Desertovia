@@ -1,4 +1,5 @@
 using Desertod.Domain.Catalog;
+using Desertod.Domain;
 
 namespace Desertod.Domain.Storage;
 
@@ -49,12 +50,20 @@ public sealed class StorageBuilding
     }
 
     /// <summary>Stores as much as fits and returns the stored amount. A plain good is sharpen 0.</summary>
-    public int Put(ResourceKind kind, int amount, int sharpen = 0)
+    /// <param name="durability">Remaining uses of a tool. Omitted means a fresh tool; other goods stay at 0.</param>
+    public int Put(ResourceKind kind, int amount, int sharpen = 0, int? durability = null)
     {
         if (sharpen < 0 || kind is not (ResourceKind.Sword or ResourceKind.Spear or ResourceKind.Arrows))
         {
             sharpen = 0;
         }
+
+        var tool = ToolCatalog.Get(kind);
+        var uses = tool is null
+            ? 0
+            : durability is int given && given >= 1 && given <= tool.MaxDurability
+                ? given
+                : tool.MaxDurability;
 
         var stored = Math.Min(amount, FreeSpace(kind));
         if (stored <= 0)
@@ -62,10 +71,10 @@ public sealed class StorageBuilding
             return 0;
         }
 
-        var good = Goods.SingleOrDefault(g => g.Kind == kind && g.Sharpen == sharpen);
+        var good = Goods.SingleOrDefault(g => g.Kind == kind && g.Sharpen == sharpen && g.Durability == uses);
         if (good is null)
         {
-            good = new StoredGood { Kind = kind, Sharpen = sharpen };
+            good = new StoredGood { Kind = kind, Sharpen = sharpen, Durability = uses };
             Goods.Add(good);
         }
 
@@ -73,37 +82,33 @@ public sealed class StorageBuilding
         return stored;
     }
 
-    /// <summary>Takes up to <paramref name="amount"/>, dullest edge first, and returns the amount taken.</summary>
-    public int Take(ResourceKind kind, int amount)
+    /// <summary>Takes up to <paramref name="amount"/>, dullest edge and most worn tool first, and returns the amount taken.</summary>
+    public int Take(ResourceKind kind, int amount) => Take(kind, amount, null, null);
+
+    public int Take(ResourceKind kind, int amount, int sharpen) => Take(kind, amount, sharpen, null);
+
+    /// <param name="durability">One tool wear. Null takes every wear of the sharpen, most worn first.</param>
+    public int Take(ResourceKind kind, int amount, int? sharpen, int? durability)
     {
         var taken = 0;
-        foreach (var good in Goods.Where(g => g.Kind == kind).OrderBy(g => g.Sharpen).ToList())
+        foreach (var good in Goods
+            .Where(g => g.Kind == kind && (sharpen is null || g.Sharpen == sharpen) && (durability is null || g.Durability == durability))
+            .OrderBy(g => g.Sharpen)
+            .ThenBy(g => g.Durability)
+            .ToList())
         {
             if (taken >= amount)
             {
                 break;
             }
 
-            taken += Take(kind, amount - taken, good.Sharpen);
-        }
-
-        return taken;
-    }
-
-    /// <summary>Takes up to <paramref name="amount"/> of one sharpen level and returns the amount taken.</summary>
-    public int Take(ResourceKind kind, int amount, int sharpen)
-    {
-        var good = Goods.SingleOrDefault(g => g.Kind == kind && g.Sharpen == sharpen);
-        if (good is null)
-        {
-            return 0;
-        }
-
-        var taken = Math.Min(amount, good.Amount);
-        good.Amount -= taken;
-        if (good.Amount <= 0)
-        {
-            Goods.Remove(good);
+            var slice = Math.Min(amount - taken, good.Amount);
+            good.Amount -= slice;
+            taken += slice;
+            if (good.Amount <= 0)
+            {
+                Goods.Remove(good);
+            }
         }
 
         return taken;
@@ -133,4 +138,7 @@ public sealed class StoredGood
 
     /// <summary>Edge ground at the smithy. 0 is an ordinary weapon; other goods stay at 0.</summary>
     public int Sharpen { get; set; }
+
+    /// <summary>Remaining uses of a stored tool. Other goods stay at 0. A fresh tool is its maximum.</summary>
+    public int Durability { get; set; }
 }

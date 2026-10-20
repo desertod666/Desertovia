@@ -38,16 +38,25 @@ export function Hint({ text, children, className, label }: { text: ReactNode; ch
     }
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return
-      event.stopPropagation()
+      event.preventDefault()
+      // Other window capture listeners can be registered after this hint as the host rerenders.
+      // stopPropagation alone still lets those listeners close the host modal on this same Escape.
+      event.stopImmediatePropagation()
       close()
+    }
+    // A fixed portal must not stay floating over an unrelated row after its anchor scrolls away.
+    const onScroll = (event: Event) => {
+      if (!popupRef.current?.contains(event.target as Node)) close()
     }
     document.addEventListener('pointerdown', onPointerDown, true)
     window.addEventListener('keydown', onKeyDown, true)
     window.addEventListener('resize', close)
+    document.addEventListener('scroll', onScroll, true)
     return () => {
       document.removeEventListener('pointerdown', onPointerDown, true)
       window.removeEventListener('keydown', onKeyDown, true)
       window.removeEventListener('resize', close)
+      document.removeEventListener('scroll', onScroll, true)
     }
   }, [open])
 
@@ -76,6 +85,7 @@ export function Hint({ text, children, className, label }: { text: ReactNode; ch
         className={`hint-term${open ? ' open' : ''}${className ? ` ${className}` : ''}`}
         aria-label={label}
         aria-expanded={open}
+        aria-controls={open ? id : undefined}
         aria-describedby={open ? id : undefined}
         onClick={(event) => {
           event.stopPropagation()
@@ -89,7 +99,8 @@ export function Hint({ text, children, className, label }: { text: ReactNode; ch
           <span ref={popupRef} id={id} role="tooltip" className="hint-popup" style={position}>
             {text}
           </span>,
-          document.body,
+          // Keep hints inside the accessible modal subtree when aria-modal hides the rest of the page.
+          termRef.current?.closest('[role="dialog"]') ?? document.body,
         )}
     </>
   )

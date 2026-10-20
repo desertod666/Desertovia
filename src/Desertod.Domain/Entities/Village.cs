@@ -105,6 +105,8 @@ public sealed class Village
 
     /// <summary>The Tsar's last walk; the land along it is seen as they get there.</summary>
     public Trip? TsarTrip { get; set; }
+    public RestState TsarRestState { get; set; }
+    public DateTimeOffset? TsarRestRequestedAt { get; set; }
     public DateTimeOffset? TsarInjuredUntil { get; set; }
     public DateTimeOffset? TsarWoundedAt { get; set; }
     public DateTimeOffset? TsarHospitalizedAt { get; set; }
@@ -242,6 +244,7 @@ public sealed class Village
     /// <summary>The Tsar walks to a spot on the land and stays there. The land on the way is seen as they get there.</summary>
     public void TsarGoTo(TilePoint spot, DateTimeOffset now)
     {
+        SafeRest.RequireActive(TsarRestState);
         if (TsarInjuredUntil > now || TsarHospitalizedAt is not null)
         {
             throw new GameRuleException("tsar.injured", "You are wounded and cannot walk.",
@@ -308,7 +311,7 @@ public sealed class Village
         StorageCatalog.IsGood(kind) ? Storages.Where(s => s.OwnerAccountId == null && s.RuinedAt is null && s.Damage<100).Sum(s => s.FreeSpace(kind)) : int.MaxValue;
 
     /// <summary>Stores as much as fits, specialised buildings first, and returns the stored amount.</summary>
-    public int Store(ResourceKind kind, int amount, int sharpen = 0)
+    public int Store(ResourceKind kind, int amount, int sharpen = 0, int? durability = null)
     {
         if (!StorageCatalog.IsGood(kind))
         {
@@ -327,7 +330,7 @@ public sealed class Village
                 break;
             }
 
-            stored += building.Put(kind, amount - stored, sharpen);
+            stored += building.Put(kind, amount - stored, sharpen, durability);
         }
 
         return stored;
@@ -335,7 +338,7 @@ public sealed class Village
 
     /// <summary>Takes up to <paramref name="amount"/>, general storage first to keep its slots free.</summary>
     /// <param name="sharpen">One weapon edge. Null takes the dullest stacks first.</param>
-    public int Take(ResourceKind kind, int amount, int? sharpen = null)
+    public int Take(ResourceKind kind, int amount, int? sharpen = null, int? durability = null)
     {
         if (!StorageCatalog.IsGood(kind))
         {
@@ -352,9 +355,7 @@ public sealed class Village
                 break;
             }
 
-            taken += sharpen is int level
-                ? building.Take(kind, amount - taken, level)
-                : building.Take(kind, amount - taken);
+            taken += building.Take(kind, amount - taken, sharpen, durability);
         }
 
         return taken;

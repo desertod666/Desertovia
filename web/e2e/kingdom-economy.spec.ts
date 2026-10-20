@@ -1,5 +1,24 @@
 import { test, expect } from '@playwright/test'
 
+for (const language of ['ru', 'en']) test(`economic gold keeps test candles and legacy purchase requests separate (${language})`, async ({page}) => {
+  await page.addInitScript(value => localStorage.setItem('desertod.language', value), language)
+  await page.goto('/e2e/economy-harness.html')
+  await page.locator('.economy-panel summary').first().click()
+  const balances = page.locator('.economy-balances')
+  await expect(balances).toContainText(language === 'ru' ? '1000 золота' : '1000 gold')
+  await expect(balances).toContainText(language === 'ru' ? '0 тестовых свечей' : '0 test candles')
+  await expect(page.locator('.economy-panel')).not.toContainText('Dcoin')
+  await expect(page.locator('.economy-panel img[src$="dcoin.png"]')).toHaveCount(0)
+  await page.getByLabel(language === 'ru' ? 'Количество' : 'Amount', {exact:true}).fill('2')
+  await page.getByRole('button', {name:language === 'ru' ? /Купить у царства/ : /Buy from kingdom/}).click()
+  await expect(balances).toContainText(language === 'ru' ? '996 золота' : '996 gold')
+  await expect(balances).toContainText(language === 'ru' ? '0 тестовых свечей' : '0 test candles')
+  await expect(page.locator('.inventory-grid')).toContainText('2/100')
+  const request = await page.evaluate(() => (window as unknown as {economyCalls: {action:string;resource:string;amount:number;price:number}[]}).economyCalls.at(-1))
+  expect(request).toMatchObject({action:'buy-stock', resource:'Wood', amount:2, price:2})
+  await page.locator('.modal.menu').screenshot({path:test.info().outputPath(`economic-gold-${language}.png`)})
+})
+
 test('economy controls fit phone and desktop in both themes; failed purchase retains draft and request identity',async({page})=>{
   await page.addInitScript(()=>localStorage.setItem('desertod.language','ru'))
   await page.setViewportSize({width:320,height:760})
@@ -65,7 +84,7 @@ test('third tired work warns about fainting before starting on a narrow screen',
 test('personal material donation sends a free donation operation from the existing inventory controls',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('desertod.language','ru'))
  await page.goto('/e2e/economy-harness.html');await page.getByText('Кошелёк, имущество и рынок',{exact:true}).click()
- const donate=page.getByRole('button',{name:'Отдать в общий запас бесплатно',exact:true})
+ const donate=page.getByRole('button',{name:'В общий запас · бесплатно',exact:true})
  await expect(donate).toBeDisabled()
  await page.getByLabel('Количество',{exact:true}).fill('2');await page.getByRole('button',{name:/Купить у царства/}).click()
  await expect(donate).toBeEnabled();await donate.click()

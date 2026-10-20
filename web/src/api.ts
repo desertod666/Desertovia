@@ -82,6 +82,10 @@ export interface ResourceAmount {
   amount: number
   /** Edge ground at the smithy. Absent or 0 is an ordinary weapon. */
   sharpen?: number
+  /** Remaining uses of a tool. Absent or 0 on every other good. */
+  durability?: number
+  /** Uses of a fresh tool. Absent or 0 when this is not a tool. */
+  maxDurability?: number
 }
 
 export interface Task {
@@ -426,6 +430,8 @@ export function mergeBattles(previous:readonly RaidBattle[] = [], incoming:reado
  */
 export function adoptVillageState(previous: VillageState, next: VillageState): VillageState {
   if (previous.id !== next.id) return next
+  // Full HTTP responses and hub snapshots can arrive in the opposite order to their reads.
+  if (Date.parse(next.snapshotAt ?? '') < Date.parse(previous.snapshotAt ?? '')) return previous
   if (!next.battles) return { ...next, battles: previous.battles }
   const published = new Set(next.battles.map(battle => battle.id))
   const snapshotAt = Date.parse(next.snapshotAt ?? '')
@@ -1075,7 +1081,10 @@ export interface Wilds {
   lookoutY: number
 }
 
+export type RestState = 'Active' | 'RestRequested' | 'Resting'
 export interface Tsar {
+  restState?: RestState
+  restRequestedAt?: string | null
   accountId?:string|null
   hospitalizedAt?:string|null
   rescueByCitizenId?:string|null
@@ -1133,6 +1142,7 @@ export interface RescueJourney {
 }
 
 export interface CitizenSummary {
+  restState?: RestState
   rescueJourney?:RescueJourney|null
   rescueRequestedAt?:string|null
   defenseSector?: string | null
@@ -1230,6 +1240,8 @@ export interface SkillValue {
 }
 
 export interface Citizen {
+  restState?: RestState
+  restRequestedAt?: string | null
   mealKind?: string | null
   mealUntil?: string | null
   mealReadyAt?: string | null
@@ -1340,6 +1352,8 @@ export interface CycleReport {
   /** Damage mended by a repair task. */
   targetPlotId?: string | null
   repaired: number
+  /** Tools that broke this cycle and left the citizen's hands. */
+  toolsBroken?: string[]
 }
 
 /** Events of one village since the last `villageEvents` message, in order; only the latest summary per citizen. */
@@ -1504,7 +1518,11 @@ export function createOperationId() {
 export interface EconomyRequest {
   requestId: string; action: string; resource?: string; amount?: number; price?: number; target?: string; x?: number; y?: number; building?: string
 }
+export interface EconomyCurrencyIdentity { id: string; ledgerAsset: string }
+
 export interface EconomyView {
+  /** Optional while old servers still expose only coins/testCandles. Balances and asset keys do not change. */
+  currencies?: { coins: EconomyCurrencyIdentity; testCandles: EconomyCurrencyIdentity }
   siteRecoveries?:{id:string;plotId:string;personal:boolean;goods:{resource:string;amount:number}[]}[]
   energyDrinkReadyAt: string | null
   stockPrices: Record<string,number>
@@ -1516,7 +1534,7 @@ export interface EconomyView {
   journal: {id: string; at: string; operation: string; asset: string; location: string; delta: number; actor: string|null}[]
   nextJournalBefore: string|null; startedAt: string; workPay: number; constructionPay: number
   residents: {accountId: string; name: string}[]
-  privateStorages: {plotId: string; kind: string; goods: {resource:string; amount:number; sharpen?:number}[]}[]
+  privateStorages: {plotId: string; kind: string; goods: ResourceAmount[]}[]
 }
 export const api = {
   submitReport: (body: {id:string;kind:string;text:string;slug:string|null;capturedAt:string;screen:unknown;screenshot:string|null}) =>
@@ -1561,6 +1579,7 @@ export const api = {
     request<{ inviteCode: string }>('POST', `/api/villages/${encodeURIComponent(slug)}/invite`),
 
   myCitizen: (slug: string) => orNull(request<Citizen>('GET', `/api/villages/${encodeURIComponent(slug)}/me`)),
+  setRest: (slug: string, resting: boolean) => request<VillageState>('PUT', `/api/villages/${encodeURIComponent(slug)}/me/rest`, { resting }),
   joinVillage: (slug: string, inviteCode: string | null) =>
     request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/citizens`, { inviteCode }),
   /** The citizen leaves for good: carried goods go to storage, and joining again starts a new citizen. */
@@ -1589,8 +1608,8 @@ export const api = {
   callUndead: (slug: string, enemy: EnemyKind, size: RaidSize) =>
     request<VillageState>('POST', `/api/villages/${encodeURIComponent(slug)}/undead`, { enemy, size }),
   cancelUndead: (slug: string) => request<VillageState>('DELETE', `/api/villages/${encodeURIComponent(slug)}/undead`),
-  takeFromStorage: (slug: string, plotId: string, resource: string, amount: number, sharpen?: number) =>
-    request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/me/take`, { plotId, resource, amount, sharpen }),
+  takeFromStorage: (slug: string, plotId: string, resource: string, amount: number, sharpen?: number, durability?: number) =>
+    request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/me/take`, { plotId, resource, amount, sharpen, durability }),
   goTo: (slug: string, spot: TilePoint) => request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/me/goto`, { spot }),
   research: (slug: string) => request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/me/research`),
   forecast: (slug: string, rain: boolean) =>

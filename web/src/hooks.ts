@@ -1,5 +1,6 @@
 import { combatDiagnostics } from './game/combatDiagnostics'
 import { DungeonOrders, type DungeonOrder } from './game/dungeonOrders'
+import { latestDungeonSnapshot } from './game/dungeonSnapshot'
 import { adoptVillageState, mergeBattles, type Village } from './api'
 import { appPath } from './paths'
 import { onAppResume } from './telegram'
@@ -123,8 +124,9 @@ export function useLiveVillage(slug: string, resident: boolean, handlers: LiveVi
       .configureLogging(LogLevel.Warning)
       .build()
 
-    connection.on('villageUpdated', (next: VillageState) => setState(next))
+    connection.on('villageUpdated', (next: VillageState) => { if (!cancelled) setState(next) })
     connection.on('villageEvents', (events: VillageEvents) => {
+      if (cancelled) return
       if(events.battles?.length)combatDiagnostics.packet()
       if(events.battles?.length || events.fortifications)setState(previous=>previous?{
         ...previous,battles:mergeBattles(previous.battles,events.battles),
@@ -191,13 +193,11 @@ export function useLiveVillage(slug: string, resident: boolean, handlers: LiveVi
         setChat((previous) => mergeChat(previous, history))
       }
     }
-    // A reported restore means events from the frozen page are gone. The snapshot is the authority, then the feed is joined again.
+    // Subscribe before reading the authority: otherwise changes between the read and JoinVillage are lost.
     const catchUp = async () => {
       if (!ready || cancelled || catching) { if (!cancelled) again = true; return }
       catching = true
       try {
-        applySnapshot(await loadVillage(slug))
-        if (cancelled) return
         if (connection.state === HubConnectionState.Disconnected) await connection.start()
         if (cancelled || connection.state !== HubConnectionState.Connected) return
         try {
@@ -210,6 +210,8 @@ export function useLiveVillage(slug: string, resident: boolean, handlers: LiveVi
           if (cancelled) return
           await connection.invoke('JoinVillage', slug)
         }
+        if (cancelled) return
+        applySnapshot(await loadVillage(slug))
         if (cancelled) return
         setHub(connection)
         setError(null)
@@ -233,6 +235,8 @@ export function useLiveVillage(slug: string, resident: boolean, handlers: LiveVi
         await connection.start()
         if (cancelled) return
         await connection.invoke('JoinVillage', slug)
+        // Cover the interval between the first HTTP read and joining the feed.
+        applySnapshot(await loadVillage(slug))
         if (!cancelled) setHub(connection)
       } catch (exception) {
         if (!cancelled) setError(exception)
@@ -318,7 +322,9 @@ export function useDungeonRun(runId: string) {
 
   useEffect(() => {
     let cancelled = false
-    let refetching = false
+    let joining: Promise<void> | null = null
+    let joinAgain = false
+    let generation = 0
     let phase: string | null = null
     const connection = new HubConnectionBuilder()
       .withUrl(appPath('/hubs/dungeon'))
@@ -330,42 +336,60 @@ export function useDungeonRun(runId: string) {
       if (cancelled || connection.state !== HubConnectionState.Connected || !heroId.current) return false
       return connection.invoke<boolean>(order.method, runId, heroId.current, ...order.args)
     })
+    outgoing.suspend()
     orders.current = outgoing
     heroId.current = null
     setView(undefined)
     setSnapshot(null)
     setError(null)
 
-    const join = async () => {
-      const next = await connection.invoke<DungeonRunView | null>('JoinRun', runId)
-      if (cancelled) return
-      phase = next?.run.phase ?? null
-      if (heroId.current !== next?.myHeroId) outgoing.clear()
-      setView(next)
-      setError(null)
-      heroId.current = next?.myHeroId ?? null
-      if (next?.snapshot) setSnapshot(next.snapshot)
+    const invalidate = () => {
+      generation++
+      heroId.current = null
+      outgoing.suspend()
     }
-    // The first snapshot of a run that was still on its way brings the fighters' live state: fetch it once.
-    const refetch = async () => {
-      if (refetching) return
-      refetching = true
-      try {
-        await join()
-      } finally {
-        refetching = false
-      }
+    const receiveSnapshot = (next: DungeonSnapshot) => {
+      if (!cancelled && next.runId === runId) setSnapshot(previous => latestDungeonSnapshot(previous, next))
+    }
+    // Coalesce repeated wakeups and snapshots; failed refreshes are handled, never unhandled promises.
+    const join = (): Promise<void> => {
+      if (cancelled) return Promise.resolve()
+      if (joining) { joinAgain = true; return joining }
+      const version = generation
+      joining = (async () => {
+        try {
+          const next = await connection.invoke<DungeonRunView | null>('JoinRun', runId)
+          if (cancelled || version !== generation) return
+          phase = next?.run.phase ?? null
+          if (heroId.current !== next?.myHeroId) outgoing.clear()
+          setView(next)
+          setError(null)
+          hub.current = connection
+          heroId.current = next?.myHeroId ?? null
+          if (next?.snapshot) receiveSnapshot(next.snapshot)
+          else setSnapshot(null)
+          if (phase === 'Running' && heroId.current) outgoing.resume()
+        } catch (exception) {
+          if (!cancelled && version === generation) { invalidate(); setError(exception) }
+        } finally {
+          joining = null
+          if (joinAgain && !cancelled) { joinAgain = false; void join() }
+        }
+      })()
+      return joining
     }
 
     connection.on('dungeonSnapshot', (next: DungeonSnapshot) => {
-      setSnapshot(next)
-      if (phase !== 'Running') void refetch()
+      if (cancelled || next.runId !== runId) return
+      receiveSnapshot(next)
+      if (phase !== 'Running') void join()
     })
-    connection.on('dungeonEnded', () => void refetch())
-    connection.onreconnecting(() => outgoing.clear())
-    connection.onclose(() => outgoing.clear())
+    connection.on('dungeonEnded', () => { invalidate(); void join() })
+    connection.onreconnecting(invalidate)
+    connection.onclose(invalidate)
     connection.onreconnected(() => void join())
     const stopResume = onAppResume(() => {
+      invalidate()
       void (async () => {
         try {
           if (connection.state === HubConnectionState.Disconnected) await connection.start()

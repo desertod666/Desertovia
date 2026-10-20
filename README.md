@@ -1,3 +1,9 @@
+> **Дезертовия 1.0, D-104:** начата реализация в отдельной тестовой среде.
+> [Локальный запуск и VS Code](docs/dezertovia/DEVELOPMENT_1_0.md),
+> [единый план](docs/dezertovia/UNIFIED_PLAN_1_0.md),
+> [прогресс](docs/dezertovia/IMPLEMENTATION_PROGRESS_1_0.json).
+> Версионные записи прежних выпусков ниже — история.
+
 **Дезертовия0.7.16 установлена и отдельно проверена19октября.** [Изменения и квитанции](docs/dezertovia/RELEASE_0_7_16.md). Прогресс сохранён; актуальная новостная редакция батюшки не заменялась.
 
 > **LIVE0.7.13:** [установлена и независимо проверена](docs/dezertovia/RELEASE_0_7_13.md), install39133438404/check39133722743 SUCCESS;139профилей сохранены. Исправлены Dungeonresponse и Androidresourceicons.

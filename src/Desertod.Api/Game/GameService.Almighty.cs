@@ -239,6 +239,8 @@ public sealed partial class GameService
             var village = await db.Villages.SingleAsync(v => v.Id == villageId, ct);
             var ownerTelegram = await db.ExternalLogins.Where(l => l.AccountId == village.OwnerAccountId && l.Provider == "telegram").Select(l => l.ProviderUserId).SingleOrDefaultAsync(ct);
             if (!(actor == village.OwnerAccountId || telegram is not null && telegram == ownerTelegram)) throw new UnauthorizedAccessException();
+            db.AuditActor = village.OwnerAccountId;
+            db.AuditOperation = "director-vote";
             var p = await db.AlmightyProposals.SingleAsync(p => p.Id == id, ct);
             if (p.Status != "Pending") return p.Result.Length > 0 ? p.Result : p.Status;
             var now = time.GetUtcNow();

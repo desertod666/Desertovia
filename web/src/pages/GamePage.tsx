@@ -1,6 +1,7 @@
 import { MonasteryPanel } from '../ui/MonasteryPanel'
 import { WalletDialog, WalletHud } from '../ui/WalletHud'
 import { PersonalBattlePanel } from '../ui/PersonalBattlePanel'
+import { SafeRestControl } from '../ui/SafeRestControl'
 import { createOperationId } from '../api'
 import { HospitalPanel } from '../ui/HospitalPanel'
 import { RescuePatientPanel } from '../ui/RescuePatientPanel'
@@ -362,7 +363,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   const dungeon = live.state?.dungeon ?? null
   const [inviteFor, setInviteFor] = useState<string | null>(null)
   const invitedRuns = useRef(new Set<string>())
-  const citizenReady = !!citizen
+  const citizenReady = !!citizen && (!citizen.restState || citizen.restState === 'Active')
   useEffect(() => {
     if (!dungeon || dungeon.phase !== 'Gathering' || !citizenReady) return
     if (invitedRuns.current.has(dungeon.id)) return
@@ -569,11 +570,11 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   }
 
   /** Keeps the storage view open, so the player sees the goods move into their hands. */
-  const takeFromStorage = async (plotId: string, resource: string, amount: number, sharpen?: number) => {
+  const takeFromStorage = async (plotId: string, resource: string, amount: number, sharpen?: number, durability?: number) => {
     setPending(true)
     setError(null)
     try {
-      applyCitizen(await api.takeFromStorage(slug, plotId, resource, amount, sharpen))
+      applyCitizen(await api.takeFromStorage(slug, plotId, resource, amount, sharpen, durability))
     } catch (exception) {
       setError(i18n.error(exception))
     } finally {
@@ -677,7 +678,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   const citizens = useMemo(() => [...live.citizens.values()], [live.citizens])
   const pickCitizen = useMemo(() => (id: string) => { setEnemyPick(null); if (id === PRIEST_ID) setChaplainOpen(true); else if(id===TSAR_ID&&live.state?.tsar.injuredUntil||live.citizens.get(id)?.injuredUntil||live.citizens.get(id)?.recovery?.until)setPatientFor(id); else if (tsar) setSubtitleFor(id) }, [tsar,live.citizens,live.state?.tsar.injuredUntil])
   // Only a citizen can be sent to work; the Tsar watches and walks around, players without a character just look.
-  const canWork = !tsar && !!citizen
+  const canWork = !tsar && !!citizen && (!citizen.restState || citizen.restState === 'Active')
   const working = citizen?.state === 'Paused' || citizen?.state === 'Working' && !!citizen.cycleEndsAt && Date.parse(citizen.cycleEndsAt)>raidClock
   const ownId = citizen?.id
   const fighting = useMemo(() => fightingCitizenIds(live.state?.battles), [live.state?.battles])
@@ -730,9 +731,11 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   }, [tsar, canWork, working, ownId, slug, applyCitizen, setVillageState, i18n, me.id])
   const pickEnemy=useCallback((battleId:string,unitId:string)=>{
     if(monasteryOpen)return
+    const rest = tsar ? villageRef.current?.tsar.restState : citizen?.restState
+    if (rest && rest !== 'Active') { setNotice(i18n.language === 'ru' ? 'Сначала выйди из безопасного отдыха.' : 'Leave safe rest first.'); return }
     setEnemyPick({battleId,unitId,selectionToken:++enemySelection.current});setPicked(null)
     void api.battleOrder(slug,battleId,unitId,'intercept').catch(e=>{setNotice(i18n.error(e));window.setTimeout(()=>setNotice(null),5000)})
-  },[monasteryOpen,slug,i18n])
+  },[monasteryOpen,slug,i18n,tsar,citizen?.restState])
   // Only the isolated E2E build exposes deterministic selection setup. Vite removes
   // this listener from production; tests still exercise the real popup/chat composition.
   useEffect(() => {
@@ -885,6 +888,10 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
           citizens={live.citizens}
           onForecast={async (rain) => setVillageState(await api.forecast(slug, rain))}
           wallet={(tsar||citizen)?<WalletHud slug={slug} onOpen={()=>{setWalletOpen(true);setEnemyPick(null)}}/>:null}
+          rest={(tsar ? village.tsar.restState : citizen?.restState) !== undefined && (tsar || citizen) ? <SafeRestControl
+            state={(tsar ? village.tsar.restState : citizen?.restState)!}
+            onChange={async resting => { setVillageState(await api.setRest(slug, resting)); if (!tsar) await loadCitizen() }}
+          /> : null}
         />
         <ServerClock offsetMs={serverOffset}>
           {(now) => (
@@ -904,7 +911,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
                 slug={slug}
                 run={dungeon}
                 now={now}
-                canAnswer={!!citizen}
+                canAnswer={citizenReady}
                 onAnswer={() => setInviteFor(dungeon.id)}
               />
             )}
@@ -915,6 +922,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
           {(citizen !== undefined || tsar) && (
             <Guide
               key={tsar ? 'tsar' : 'citizen'}
+              phone={phone}
               slug={slug}
               tsar={tsar}
               inviteCode={live.inviteCode}

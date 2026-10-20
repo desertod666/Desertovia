@@ -1,0 +1,3788 @@
+{
+  "schema_version": 1,
+  "status": "implementation_in_progress",
+  "recorded_on": "2026-10-20",
+  "implementation_authorized": true,
+  "source_package": {
+    "thread_id": "01a1272e-16a0-73ab-898b-ab855823c04b",
+    "path": "/workspace/shared/Dezertovia_1_0_AI_Agent_Package.zip",
+    "original_archive_received": true,
+    "archive_sha256": "9a4eee50b5c29280d4acda736abff5874bd47b922e6fffe853d5e6dc81862554",
+    "original_tasks": 47,
+    "original_acceptance_cases": 40,
+    "original_decisions": 19
+  },
+  "baseline": {
+    "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
+    "bot": "76de289b00a99c8e40fb2c061beab6e7af216b5c"
+  },
+  "modules": [
+    {
+      "id": "presence_rest",
+      "repository": "game",
+      "purpose": "Присутствие, здоровье, начало/окончание действий и будущий отдых",
+      "entrypoints": [
+        "src/Desertod.Domain/Entities/Citizen.cs",
+        "src/Desertod.Domain/Rules/Energy.cs",
+        "src/Desertod.Domain/Rules/CycleEngine.cs",
+        "src/Desertod.Api/Game/CitizenPresence.cs",
+        "src/Desertod.Api/Game/PresenceWorker.cs",
+        "src/Desertod.Api/Game/CycleSettlementWorker.cs"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Api.Tests/CitizenPresenceTests.cs",
+        "tests/Desertod.Domain.Tests/EnergyAndYieldTests.cs",
+        "tests/Desertod.Domain.Tests/CancelTaskTests.cs"
+      ],
+      "observed_facts": [
+        "CitizenStatus Active/Dormant и WorkState Idle/Working/AwaitingRenewal/Paused не отдельный safe rest.",
+        "Начатая работа завершается без presence; Paused используется для медицинских условий.",
+        "CitizenPresence.Connect/Touch/Disconnect/IsPresent; безопасное отключение не готово."
+      ]
+    },
+    {
+      "id": "work_building",
+      "repository": "game",
+      "purpose": "Общие работы, профессии, проекты, строительные решения",
+      "entrypoints": [
+        "src/Desertod.Domain/Rules/CycleEngine.cs",
+        "src/Desertod.Domain/Catalog/GameCatalog.cs",
+        "src/Desertod.Domain/Skills/SkillRules.cs",
+        "src/Desertod.Domain/Buildings/ConstructionRules.cs",
+        "src/Desertod.Domain/Projects/ProjectRules.cs",
+        "src/Desertod.Api/Game/GameService.cs",
+        "src/Desertod.Api/Game/GameService.Civic.cs",
+        "src/Desertod.Api/Game/GameEndpoints.cs"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/ConstructionTests.cs",
+        "tests/Desertod.Domain.Tests/ProjectTests.cs",
+        "tests/Desertod.Api.Tests/CooperativeCivicTests.cs",
+        "tests/Desertod.Api.Tests/CooperativeMigrationTests.cs"
+      ],
+      "observed_facts": [
+        "Start/Settle/Cancel; GameService.StartTaskAsync/CancelTaskAsync/SettleOneAsync.",
+        "TitleFor и SkillRules задают ремесло; не найдена профессия с обязательным двухчасовым переключением.",
+        "CivicRequest/CivicDecision — разрешение управления, не WorkContract и не escrow зарплаты.",
+        "Не найден контракт очереди действий1+1 в изученном src/web/tests."
+      ]
+    },
+    {
+      "id": "economy",
+      "repository": "game",
+      "purpose": "Кошельки, казна, рынок, receipts и проводки",
+      "entrypoints": [
+        "src/Desertod.Domain/Economy/Economy.cs",
+        "src/Desertod.Api/Game/GameService.Economy.cs",
+        "src/Desertod.Api/Game/GameService.Accounting.cs",
+        "src/Desertod.Api/Game/GameService.cs",
+        "src/Desertod.Api/Game/GameEndpoints.cs"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/KingdomEconomyTests.cs",
+        "tests/Desertod.Api.Tests/KingdomEconomyApiTests.cs"
+      ],
+      "observed_facts": [
+        "GetEconomyAsync/ChangeEconomyAsync/PayUsefulWorkAsync; GET/POST /api/villages/{slug}/economy.",
+        "GameWallet.Coins/TestCandles/ProfitToday; KingdomEconomy.TreasuryCoins; EconomyReceipt и LedgerEntry.",
+        "PayUsefulWorkAsync сейчас эмиссия, не дебет казны. TaxEnabled=false, TaxPreview не настоящий налог.",
+        "WithVillageAsync/WithRetryAsync используют PG transaction и pg_advisory_xact_lock; receipts сверяют fingerprint."
+      ]
+    },
+    {
+      "id": "ownership_cost",
+      "repository": "game",
+      "purpose": "Текущее public/private, личные запасы и себестоимость",
+      "entrypoints": [
+        "src/Desertod.Domain/Rules/CycleEngine.cs",
+        "src/Desertod.Domain/Entities/Citizen.cs",
+        "src/Desertod.Domain/Economy/Economy.cs",
+        "src/Desertod.Domain/Catalog/ResourceKind.cs",
+        "src/Desertod.Api/Game/GameService.Accounting.cs"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/KingdomEconomyTests.cs",
+        "tests/Desertod.Api.Tests/KingdomEconomyApiTests.cs"
+      ],
+      "observed_facts": [
+        "CyclePrivateOutput определяется рабочей площадкой/владельцем и KingdomRules.Area, не явным договором.",
+        "CycleEngine.Keep для private output сохраняет CostBasis=0; нельзя считать нынешний ProfitToday надёжным налогом.",
+        "ResourceKind.Gold — физический ресурс, не новый денежный счёт."
+      ]
+    },
+    {
+      "id": "data",
+      "repository": "game",
+      "purpose": "Схема PostgreSQL, EF и согласованные миграции",
+      "entrypoints": [
+        "src/Desertod.Infrastructure/Data/DesertodDbContext.cs"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Api.Tests/CooperativeMigrationTests.cs",
+        "tests/Desertod.Api.Tests/KingdomEconomyApiTests.cs"
+      ],
+      "observed_facts": [
+        "Есть ключи кошельков/receipts/рынка, JSON PersonalGoods, concurrency token AlmightyState.Version.",
+        "Путь контекста проверен; новые миграции добавляются, существующие не переписываются."
+      ]
+    },
+    {
+      "id": "combat",
+      "repository": "game",
+      "purpose": "Ручной бой, команды, управление противниками и диагностика",
+      "entrypoints": [
+        "src/Desertod.Domain/Combat/RaidSimulation.cs",
+        "src/Desertod.Domain/Combat/RaidNavigation.cs",
+        "src/Desertod.Domain/Combat/MonsterBrain.cs",
+        "src/Desertod.Domain/Combat/MonsterCrowd.cs",
+        "src/Desertod.Domain/Combat/BattleActions.cs",
+        "src/Desertod.Domain/Combat/CombatRules.cs",
+        "src/Desertod.Api/Game/GameService.Battles.cs",
+        "src/Desertod.Api/Game/RaidWorker.cs",
+        "src/Desertod.Api/Game/CombatDiagnostics.cs",
+        "src/Desertod.Api/Game/BattleDtos.cs",
+        "src/Desertod.Domain/ThirdParty/README.md",
+        "src/Desertod.Domain/ThirdParty/Nez/HighestScoreReasoner.cs",
+        "src/Desertod.Domain/ThirdParty/Nez/LICENSE",
+        "src/Desertod.Domain/ThirdParty/Rvo/Simulator.cs",
+        "src/Desertod.Domain/ThirdParty/Rvo/LICENSE"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/FreeCombatTests.cs",
+        "tests/Desertod.Domain.Tests/OwnerCorrectionTests.cs",
+        "tests/Desertod.Domain.Tests/LiveRaidTests.cs",
+        "tests/Desertod.Domain.Tests/MonsterBehaviorTests.cs",
+        "tests/Desertod.Api.Tests/LiveRaidApiTests.cs",
+        "tests/Desertod.Api.Tests/OwnerCorrectionApiTests.cs",
+        "tests/Desertod.Api.Tests/MonsterBehaviorMigrationTests.cs"
+      ],
+      "observed_facts": [
+        "RaidSimulation.CanFight/Join сейчас включает здорового present жителя рядом с врагом.",
+        "Отключившийся уже вступивший боец остаётся active; withdrawn не возвращается в бой сам.",
+        "SetBattleOrderAsync; PUT /api/villages/{slug}/battles/{id}/order; hold/intercept/retreat/heal.",
+        "CombatDiagnostics уже измеряет simulation/backlog/lock/save/send; не означает выбранный SLO.",
+        "MonsterBrain уже использует Nez UtilityAI reasoner; MonsterCrowd использует RVO Simulator. Сохранять лицензии и не импортировать второй дублирующий движок."
+      ]
+    },
+    {
+      "id": "world",
+      "repository": "game",
+      "purpose": "Местность, маршруты, территории и походы",
+      "entrypoints": [
+        "src/Desertod.Domain/World/WorldMap.cs",
+        "src/Desertod.Domain/World/AuthoredTerrain.cs",
+        "src/Desertod.Domain/World/BankAccess.cs",
+        "web/src/game/worldMap.ts",
+        "web/src/game/VillageWorld.ts"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/LiveRaidTests.cs",
+        "tests/Desertod.Api.Tests/LiveRaidApiTests.cs"
+      ],
+      "observed_facts": [
+        "Фиксированная территория существует; большая карта и Expedition — проект расширения, не готовая отдельная подсистема.",
+        "Сохранить проходимость у воды, навигацию/толпу и раздельность статики/динамики."
+      ]
+    },
+    {
+      "id": "dungeons",
+      "repository": "game",
+      "purpose": "Сбор, динамика, команды и завершение данжа",
+      "entrypoints": [
+        "src/Desertod.Domain/Dungeons/DungeonRun.cs",
+        "src/Desertod.Domain/Dungeons/DungeonRules.cs",
+        "src/Desertod.Domain/Dungeons/DungeonSimulation.cs",
+        "src/Desertod.Api/Game/GameService.Dungeon.cs",
+        "src/Desertod.Api/Game/DungeonHub.cs",
+        "src/Desertod.Api/Game/DungeonWorker.cs",
+        "src/Desertod.Api/Game/DungeonDtos.cs",
+        "web/src/game/dungeonOrders.ts",
+        "web/src/pages/DungeonPage.tsx",
+        "web/src/game/DungeonWorld.ts"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/DungeonTests.cs",
+        "tests/Desertod.Api.Tests/DungeonTests.cs",
+        "tests/Desertod.Api.Tests/DungeonLatencyTests.cs",
+        "web/tests/dungeonOrders.test.ts"
+      ],
+      "observed_facts": [
+        "OpenDungeonAsync/JoinDungeonAsync/LeaveDungeonAsync/AdvanceDungeonsAsync/SettleDungeonAsync.",
+        "DungeonHub.JoinRun/MoveTo/Attack/Heal. Отдельного общего Party-контракта не обнаружено.",
+        "March допускает царя одного; minparty и выход из активного данжа надо определить.",
+        "Клиентская очередь: один запрос плюс последнее намерение, без replay после reconnect."
+      ]
+    },
+    {
+      "id": "siege_recovery",
+      "repository": "game",
+      "purpose": "Разрушение, поражение, восстановление и помощь раненым",
+      "entrypoints": [
+        "src/Desertod.Domain/Combat/RuinRules.cs",
+        "src/Desertod.Domain/Combat/RaidBattle.cs",
+        "src/Desertod.Domain/Combat/CombatRules.cs",
+        "src/Desertod.Api/Game/GameService.Rescue.cs",
+        "src/Desertod.Api/Game/GameService.Hospital.cs",
+        "src/Desertod.Api/Game/HospitalWorker.cs"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/OwnerCorrectionTests.cs",
+        "tests/Desertod.Domain.Tests/RescueDeliveryTests.cs",
+        "tests/Desertod.Domain.Tests/HospitalTests.cs",
+        "tests/Desertod.Api.Tests/OwnerCorrectionApiTests.cs",
+        "tests/Desertod.Api.Tests/HospitalApiTests.cs"
+      ],
+      "observed_facts": [
+        "Collapse устанавливает DefeatedAt при разрушении общего замка; полный ремонт снимает поражение.",
+        "Отдельных SiegePhase и rare miracle не обнаружено. У царя есть HP-урон и конечная травма, не permadeath."
+      ]
+    },
+    {
+      "id": "director",
+      "repository": "game",
+      "purpose": "Снимки, предложения, review, исполнение и полномочия",
+      "entrypoints": [
+        "src/Desertod.Domain/Director/Almighty.cs",
+        "src/Desertod.Api/Game/GameService.Almighty.cs",
+        "src/Desertod.Api/Game/AlmightyService.cs",
+        "src/Desertod.Api/Game/GameEndpoints.cs"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/AlmightyTests.cs",
+        "tests/Desertod.Api.Tests/AlmightyApiTests.cs",
+        "web/e2e/almighty.spec.ts"
+      ],
+      "observed_facts": [
+        "Текущие режимы Off/Observe/Propose; economy_report денег не меняет.",
+        "BeginAlmightyReviewAsync/CompleteAlmightyReviewAsync/DecideAlmightyAsync/SetAlmightyModeAsync.",
+        "Есть lease/подписанный bridge и повторная проверка условий; налогового executor ещё нет."
+      ]
+    },
+    {
+      "id": "client_sync",
+      "repository": "game",
+      "purpose": "React/Pixi, ревизии, reconnect и защита движения",
+      "entrypoints": [
+        "web/src/hooks.ts",
+        "web/src/api.ts",
+        "web/src/pages/GamePage.tsx",
+        "web/src/game/GameCanvas.tsx",
+        "web/src/game/VillageWorld.ts",
+        "web/src/game/combatSnapshot.ts",
+        "src/Desertod.Api/Game/VillageHub.cs"
+      ],
+      "existing_test_files": [
+        "web/e2e/app-resume.spec.ts",
+        "web/e2e/free-combat.spec.ts",
+        "web/e2e/combat-motion.spec.ts",
+        "web/e2e/live-combat.spec.ts"
+      ],
+      "observed_facts": [
+        "useLiveVillage/catchUp → adoptVillageState/mergeBattles → applyCitizen → Pixi.",
+        "sameStaticVillage предотвращает пересборку статики на боевом пакете; requestSync не найден.",
+        "Сохранять away-бойцов и revision/serverNow-защиту."
+      ]
+    },
+    {
+      "id": "economy_ui",
+      "repository": "game",
+      "purpose": "Хозяйственный кошелёк, рынок и отображение названий",
+      "entrypoints": [
+        "web/src/ui/EconomyPanel.tsx",
+        "web/src/ui/WalletHud.tsx",
+        "web/src/ui/DcoinIcon.tsx",
+        "web/src/ui/EnergyDrinkShop.tsx",
+        "web/src/api.ts"
+      ],
+      "existing_test_files": [
+        "web/e2e/kingdom-economy.spec.ts"
+      ],
+      "observed_facts": [
+        "Legacy Dcoin и TEST_CANDLE видны через экономические DTO; новый labels/asset mapping требует согласованного UI."
+      ]
+    },
+    {
+      "id": "feedback_notifications",
+      "repository": "game",
+      "purpose": "Уведомления, отчёт и контекст",
+      "entrypoints": [
+        "web/src/notifications.ts",
+        "web/src/reports/ReportButton.tsx",
+        "web/src/reports/capture.ts"
+      ],
+      "existing_test_files": [
+        "web/e2e/app-resume.spec.ts"
+      ],
+      "observed_facts": [
+        "Существующий отчёт и снимок сохраняют контракт отмены/контекста; расширение уведомлений не отправляет обращения автоматически."
+      ]
+    },
+    {
+      "id": "bot_wallet",
+      "repository": "bot",
+      "purpose": "Основной свечной счёт, ставки, игры и будущий Dcoin",
+      "entrypoints": [
+        "sramoslav/church.py",
+        "sramoslav/game_economy.py",
+        "sramoslav/games.py",
+        "sramoslav/feats.py",
+        "sramoslav/prihod.py",
+        "sramoslav/desertovia_hospital.py"
+      ],
+      "existing_test_files": [
+        "tests/test_game_economy.py",
+        "tests/test_desertovia_hospital.py"
+      ],
+      "observed_facts": [
+        "Church.balance/add/spend/earn_message, KV candles:{uid}/candles_total:{uid}.",
+        "Основной кошелёк не имеет полного журнала проводок; GameEconomy/Hospital используют более сильные атомарные образцы.",
+        "Свечи уже могут сокращать лечение через Hospital.heal: судьбу этой связки нужно решить."
+      ]
+    },
+    {
+      "id": "bot_payments",
+      "repository": "bot",
+      "purpose": "Донаты, связка личности и будущие Stars receipts",
+      "entrypoints": [
+        "sramoslav/donations.py",
+        "sramoslav/donation_reaction.py",
+        "sramoslav/youtube.py",
+        "sramoslav/town_proxy.py"
+      ],
+      "existing_test_files": [
+        "tests/test_donation_reaction.py",
+        "tests/test_youtube_web.py"
+      ],
+      "observed_facts": [
+        "Есть don/scev/yt_paid_event/yt_membership_event markers, но не всегда атомарно с начислением.",
+        "Реализации Stars successful_payment/pre_checkout/send_invoice/XTR в изученном коде не обнаружено.",
+        "Не переносить ненадёжный порядок marker-before-credit в новый платёжный путь."
+      ]
+    },
+    {
+      "id": "bot_memberships",
+      "repository": "bot",
+      "purpose": "Каталог YouTube и подтверждения будущего premium",
+      "entrypoints": [
+        "sramoslav/memberships.py",
+        "sramoslav/membership_studio.py",
+        "sramoslav/youtube.py"
+      ],
+      "existing_test_files": [
+        "tests/test_membership_panel.py",
+        "tests/test_membership_studio.py",
+        "tests/test_youtube_web.py"
+      ],
+      "observed_facts": [
+        "Пять подтверждённых уровней каталога. Наблюдение member-сообщений хранит окно35дней, не оплаченный expiry.",
+        "Memberships.confirm/refresh/import_studio/reward; новые/подаренные/milestone события различаются."
+      ]
+    },
+    {
+      "id": "bot_ai",
+      "repository": "bot",
+      "purpose": "Модельная цепочка, бюджет и связь директора",
+      "entrypoints": [
+        "sramoslav/almighty.py",
+        "sramoslav/llm.py",
+        "sramoslav/ai_budget.py",
+        "sramoslav/feedback.py",
+        "sramoslav/feedback_context.py"
+      ],
+      "existing_test_files": [
+        "tests/test_almighty.py"
+      ],
+      "observed_facts": [
+        "Существующая цепочка и бюджеты переиспользуются; не создавать обходной безлимитный Gemini-клиент.",
+        "Feedback не должен становиться прямой командой смены экономики/угроз."
+      ]
+    },
+    {
+      "id": "validation",
+      "repository": "game",
+      "purpose": "Проверенные команды и ограничения CI/нагрузки",
+      "entrypoints": [
+        ".github/workflows/ci.yml",
+        "global.json",
+        "web/package.json",
+        "web/playwright.config.ts",
+        "tests/Desertod.LoadTests/Program.cs"
+      ],
+      "existing_test_files": [
+        "web/tests/dungeonOrders.test.ts"
+      ],
+      "observed_facts": [
+        ".NET10 SDK10.0.300, Node24; browserCI desktopChrome/Pixel7, две части.",
+        "LoadTests создаёт Development-профили/деревни; не применять к production."
+      ]
+    },
+    {
+      "id": "bot_validation",
+      "repository": "bot",
+      "purpose": "Проверки и опасность default deploy",
+      "entrypoints": [
+        ".github/workflows/server.yml",
+        "deploy/ops.sh"
+      ],
+      "existing_test_files": [
+        "tests/test_game_economy.py"
+      ],
+      "observed_facts": [
+        "Push main после test может запустить default deploy. Документационный merge не обязательно безопасен для runtime."
+      ]
+    },
+    {
+      "id": "farming",
+      "repository": "game",
+      "purpose": "Адресная общая ферма, полезные вклады и натуральная доля; расширение существующей Farming",
+      "entrypoints": [
+        "src/Desertod.Domain/Farming/FieldBed.cs",
+        "src/Desertod.Domain/Farming/FarmCatalog.cs",
+        "src/Desertod.Domain/Farming/FarmRules.cs",
+        "src/Desertod.Domain/Rules/CycleEngine.cs",
+        "src/Desertod.Domain/Rules/FoodRules.cs",
+        "src/Desertod.Api/Game/GameService.Economy.cs",
+        "web/src/ui/FieldsCard.tsx",
+        "web/src/ui/TargetPopup.tsx",
+        "web/src/ui/TaskList.tsx",
+        "web/src/game/VillageWorld.ts"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/FarmingTests.cs",
+        "tests/Desertod.Domain.Tests/WeatherTests.cs"
+      ],
+      "observed_facts": [
+        "Три грядки на ферму, текущие Sow/Harvest выбирают первую подходящую цель; Water до трёх сухих.",
+        "Нет назначений/удобрения/вклада/90:10; tend-fields нельзя оставить обходом нового договора."
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "PKG-D100",
+      "status": "confirmed",
+      "question": "Валюты и прямое боевое усиление",
+      "recommendation": "Dcoin заменяет свечи; хозяйственные деньги отдельно. Premium удобство/умеренное ускорение без прямого усиления боя.",
+      "blocking_scope": "Any contradictory design is forbidden.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "PKG-D101",
+      "status": "confirmed_by_owner",
+      "question": "Отдых: незаконченный цикл, бой и отключение",
+      "recommendation": "Отдельные серверные состояния; не мгновенный immunity disconnect. Выбрать до реализации: finish-before-rest, pause или иной порядок; не терять уже заработанное.",
+      "blocking_scope": "Rest admission, cycle settlement, combat join/retreat, reconnect tests.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package",
+      "owner_resolution": "Owner confirmed: finish already accepted work, settle its result once, then Resting without new work/XP; retreat from combat before rest. Disconnect is not rest.",
+      "confirmed_at_utc": "2026-10-20T17:43:30.285045+00:00"
+    },
+    {
+      "id": "PKG-D102",
+      "status": "open",
+      "question": "Смерть, потери и возвращение",
+      "recommendation": "Не применять permadeath по умолчанию. Предложить конечные травмы/потерю согласованного груза и бесплатное восстановление.",
+      "blocking_scope": "New death/loot/siege outcomes, not existing combat refactoring.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "PKG-D103",
+      "status": "open",
+      "question": "Редкое чудо и цена спасения",
+      "recommendation": "Лимит по миру/главе либо восстановимое условие; единственный receipt; не полный возврат потерь. Молния — один вариант, не всегда обязательный.",
+      "blocking_scope": "Miracle executor and catastrophe release.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "PKG-D104",
+      "status": "open",
+      "question": "Группа, выход из данжа, массовый состав и трофеи",
+      "recommendation": "Задать min/max/ready/leave/timeout/loot ownership; царский поход не единственный доступ к вершине. NPC-соседи для первого прототипа.",
+      "blocking_scope": "Party, active dungeon withdrawal, mass expedition.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "PKG-D105",
+      "status": "open",
+      "question": "Перенос валют и TEST_CANDLE",
+      "recommendation": "Сначала инвентаризация и display compatibility; сохранить отдельные остатки. Выбрать курс, округление, расходные обещания и rollout authority.",
+      "blocking_scope": "Any real balance conversion or removal of legacy accounts.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "PKG-D106",
+      "status": "recommended",
+      "question": "Модель трёх типов работы",
+      "recommendation": "Госзаказ с резервом оплаты/общим выходом; личная добыча без зарплаты; частный крафт из собственных материалов. Пространственное private не подменять молча.",
+      "blocking_scope": "Prototype allowed after explicit contracts; live ownership changes require documented final rule.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "PKG-D107",
+      "status": "recommended",
+      "question": "Дань и денежное давление",
+      "recommendation": "Одна дань с реализованной частной прибыли, чистая госзарплата без повторного налога; казна+внешние расходы. Нет офлайн-накопления долгов.",
+      "blocking_scope": "Model and synthetic simulation; live calculation requires D108/D109.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "PKG-D108",
+      "status": "confirmed_by_owner",
+      "question": "CostBasis: производство, старые вещи и распределение",
+      "recommendation": "Переиспользовать существующее пропорциональное списание где подходит; переносить стоимость потреблённых входов. Определить многопродуктовый выход и неизвестную историю.",
+      "blocking_scope": "Real profit tax and cost-based accounting migration.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package",
+      "owner_resolution": "Owner confirmed: transfer actual consumed personal input costs; allocate multi-output cost by recipe base prices with deterministic remainder. Legacy unknown basis stays explicitly unknown; no profit tax on its sale until a separate decision.",
+      "confirmed_at_utc": "2026-10-20T17:43:30.285045+00:00"
+    },
+    {
+      "id": "PKG-D109",
+      "status": "open",
+      "question": "Налоговые ставки, эмиссия, сроки и quote",
+      "recommendation": "Версионированные будущие правила, явный лимит и расписание, бюджет госзаказов. Тестовые числа помечать synthetic, не defaults live.",
+      "blocking_scope": "Tax activation, director economic executor, real emission budgets.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "PKG-D110",
+      "status": "open",
+      "question": "Точная таблица premium",
+      "recommendation": "Подтверждённые YouTube-уровни; не складывать льготы. Оценить общий эффект на выпуск/время/энергию. Нет HP/урона/боевого лута.",
+      "blocking_scope": "Paid entitlement effects and premium pricing/tiers.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "PKG-D111",
+      "status": "needs_provider_verification",
+      "question": "Источник YouTube entitlement и срок",
+      "recommendation": "Проверить доступные официальные доказательства; не считать 35-дневный observed badge оплатой до даты. Выбрать grace и expiry.",
+      "blocking_scope": "Real premium grants/revocations, not mock UI.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "PKG-D112",
+      "status": "open",
+      "question": "Stars товары, цены, возвраты и надёжная доставка",
+      "recommendation": "Dcoin-развлечения; XTR amount/payload/account/charge проверяются; atomic credit/receipt. Подтвердить актуальные условия провайдера.",
+      "blocking_scope": "Real invoice/payment enablement.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "PKG-D113",
+      "status": "open",
+      "question": "Членство в группе и допусловие канала",
+      "recommendation": "Обязательная группа подтверждена; дополнительная подписка не выбрана. Определить join/leave/ban/unverifiable и доступ к уже купленному.",
+      "blocking_scope": "Membership-gated entry/revocation; identity foundation can proceed.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "PKG-D114",
+      "status": "open",
+      "question": "Масштаб и измеримые SLO",
+      "recommendation": "Выбрать целевой concurrent online, активные бои, устройства/сети; измерить baseline перед численными p95/FPS/API budgets.",
+      "blocking_scope": "Performance acceptance and sizing conclusion.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "PKG-D115",
+      "status": "open",
+      "question": "Контент первой 1.0",
+      "recommendation": "Определить достаточно разных районов/целей/врагов; сначала один сквозной качественный путь, не объявлять его полным бесконечным миром.",
+      "blocking_scope": "Final 1.0 content gate, not first vertical slice.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "PKG-D116",
+      "status": "open",
+      "question": "Существующая свечная оплата ускоренного лечения",
+      "recommendation": "Выбрать: перенос как ограниченное опубликованное бытовое ускорение, перевод в хозяйственную услугу или retirement с сохранением обязательств.",
+      "blocking_scope": "Dcoin shop/healing migration and no-hidden-bridge acceptance.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "PKG-D117",
+      "status": "recommended",
+      "question": "Уведомления и сроки хранения",
+      "recommendation": "Добровольные категории, тихие часы, агрегация, bounded retries. Обращения остаются в памяти/ежедневной сводке; без нового потока ownerDM.",
+      "blocking_scope": "Notification delivery defaults and new retention changes.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "PKG-D118",
+      "status": "recommended",
+      "question": "Музыкальный и художественный production brief",
+      "recommendation": "Pixel art + dark acoustic palette, 21 scenes. Выбрать главную оригинальную тему, формат/rights/loop points; промпт не готовый asset.",
+      "blocking_scope": "Asset acceptance; state-machine design can proceed.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "C01",
+      "task_ids": [
+        "PKG-T015",
+        "PKG-T040",
+        "PKG-T055"
+      ],
+      "acceptance_ids": [
+        "PKG-A14",
+        "PKG-A16",
+        "PKG-A36"
+      ]
+    },
+    {
+      "requirement_id": "C02",
+      "task_ids": [
+        "PKG-T004",
+        "PKG-T014",
+        "PKG-T035",
+        "PKG-T081"
+      ],
+      "acceptance_ids": [
+        "PKG-A32",
+        "PKG-A35"
+      ]
+    },
+    {
+      "requirement_id": "C03",
+      "task_ids": [
+        "PKG-T012",
+        "PKG-T013"
+      ],
+      "acceptance_ids": [
+        "PKG-A12",
+        "PKG-A13"
+      ]
+    },
+    {
+      "requirement_id": "C04",
+      "task_ids": [
+        "PKG-T021",
+        "PKG-T022",
+        "PKG-T030",
+        "PKG-T034",
+        "PKG-T040"
+      ],
+      "acceptance_ids": [
+        "PKG-A07",
+        "PKG-A15",
+        "PKG-A16",
+        "PKG-A36",
+        "PKG-A37",
+        "PKG-A38"
+      ]
+    },
+    {
+      "requirement_id": "C05",
+      "task_ids": [
+        "PKG-T041",
+        "PKG-T042",
+        "PKG-T043"
+      ],
+      "acceptance_ids": [
+        "PKG-A18",
+        "PKG-A19",
+        "PKG-A40"
+      ]
+    },
+    {
+      "requirement_id": "C06",
+      "task_ids": [
+        "PKG-T050",
+        "PKG-T051",
+        "PKG-T052",
+        "PKG-T053",
+        "PKG-T054",
+        "PKG-T055"
+      ],
+      "acceptance_ids": [
+        "PKG-A20",
+        "PKG-A21",
+        "PKG-A22",
+        "PKG-A23",
+        "PKG-A39"
+      ]
+    },
+    {
+      "requirement_id": "C07",
+      "task_ids": [
+        "PKG-T010",
+        "PKG-T060"
+      ],
+      "acceptance_ids": [
+        "PKG-A01",
+        "PKG-A29",
+        "PKG-A34"
+      ]
+    },
+    {
+      "requirement_id": "C08",
+      "task_ids": [
+        "PKG-T061",
+        "PKG-T062"
+      ],
+      "acceptance_ids": [
+        "PKG-A24",
+        "PKG-A25",
+        "PKG-A26"
+      ]
+    },
+    {
+      "requirement_id": "C09",
+      "task_ids": [
+        "PKG-T061",
+        "PKG-T063"
+      ],
+      "acceptance_ids": [
+        "PKG-A26",
+        "PKG-A27",
+        "PKG-A28"
+      ]
+    },
+    {
+      "requirement_id": "C10",
+      "task_ids": [
+        "PKG-T015",
+        "PKG-T064"
+      ],
+      "acceptance_ids": [
+        "PKG-A30"
+      ]
+    },
+    {
+      "requirement_id": "C11",
+      "task_ids": [
+        "PKG-T013",
+        "PKG-T014",
+        "PKG-T035"
+      ],
+      "acceptance_ids": [
+        "PKG-A13",
+        "PKG-A17",
+        "PKG-A32"
+      ]
+    },
+    {
+      "requirement_id": "C12",
+      "task_ids": [
+        "PKG-T070",
+        "PKG-T071",
+        "PKG-T072"
+      ],
+      "acceptance_ids": [
+        "PKG-A33"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "PKG-T000",
+      "milestone": "M0",
+      "title": "Сверить свежую базу и инструкции",
+      "status": "verified",
+      "dependencies": [],
+      "module_ids": [
+        "validation",
+        "bot_validation"
+      ],
+      "decision_ids": [],
+      "implementation_steps": [
+        "Сверить AGENTS/ветки/SHA/грязные файлы и работу коллег без мутаций runtime.",
+        "Обновить карту только изменившихся фактов и границы будущего поручения."
+      ],
+      "acceptance_ids": [],
+      "shared_contracts": [
+        "integration"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {},
+      "original_task_id": "T000",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "analysis_documented",
+        "evidence": "Репозитории, инструкции, SHA, архив и source diff сверены; это не выполнение будущего runtime M0.",
+        "runtime_verification": "not_run_this_assignment"
+      },
+      "verification_scope": "M0 baseline/current-command fixtures and local disposable environment; not future product rules or a release. See IMPLEMENTATION_PROGRESS_1_0.json."
+    },
+    {
+      "id": "PKG-T001",
+      "milestone": "M0",
+      "title": "Разобрать существенные открытые решения",
+      "status": "verified",
+      "dependencies": [
+        "PKG-T000"
+      ],
+      "module_ids": [],
+      "decision_ids": [
+        "PKG-D101",
+        "PKG-D102",
+        "PKG-D104",
+        "PKG-D105",
+        "PKG-D108",
+        "PKG-D110",
+        "PKG-D114",
+        "PKG-D115"
+      ],
+      "implementation_steps": [
+        "Приоритизировать решения для первого среза, не требовать все ответы до независимой работы.",
+        "Оформить ADR/пример поведения; отделить recommendation/prototype от выбранного live правила."
+      ],
+      "acceptance_ids": [],
+      "shared_contracts": [
+        "product_contract"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {},
+      "original_task_id": "T001",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "registry_documented_open_choices_retained",
+        "evidence": "19 исходных решений сохранены отдельно от D-102/D-103; существенные OPEN не закрыты молча.",
+        "runtime_verification": "not_run_this_assignment"
+      },
+      "verification_scope": "M0 baseline/current-command fixtures and local disposable environment; not future product rules or a release. See IMPLEMENTATION_PROGRESS_1_0.json."
+    },
+    {
+      "id": "PKG-T002",
+      "milestone": "M0",
+      "title": "Изолированная тестовая среда",
+      "status": "verified",
+      "dependencies": [
+        "PKG-T000"
+      ],
+      "module_ids": [
+        "validation",
+        "bot_validation"
+      ],
+      "decision_ids": [],
+      "implementation_steps": [
+        "Отдельные БД/пользователи/домены и тестовые адаптеры Telegram/Gemini/платежей.",
+        "Подготовить синтетическое царство и доказать отсутствие реальных отправок."
+      ],
+      "acceptance_ids": [
+        "PKG-A34"
+      ],
+      "shared_contracts": [
+        "deployment",
+        "schema"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A34": "Только disposable fixtures, backup/restore базовой схемы и запрет live adapters. Не будущие миграции 1.0."
+      },
+      "original_task_id": "T002",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "plan",
+        "evidence": "В этом поручении отдельная runtime-среда не создавалась.",
+        "runtime_verification": "not_run_this_assignment"
+      },
+      "verification_scope": "M0 baseline/current-command fixtures and local disposable environment; not future product rules or a release. See IMPLEMENTATION_PROGRESS_1_0.json."
+    },
+    {
+      "id": "PKG-T003",
+      "milestone": "M0",
+      "title": "Воспроизводимая регрессия и часы",
+      "status": "verified",
+      "dependencies": [
+        "PKG-T002"
+      ],
+      "module_ids": [
+        "validation",
+        "bot_validation"
+      ],
+      "decision_ids": [],
+      "implementation_steps": [
+        "Запустить существующие подходящие проверки и сохранить фактические результаты.",
+        "Изолировать clock/random и данные сценариев, не менять игровые правила под неустойчивый тест."
+      ],
+      "acceptance_ids": [
+        "PKG-A03",
+        "PKG-A34"
+      ],
+      "shared_contracts": [
+        "test_harness"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A03": "Регрессия уже существующих идемпотентных команд и harness повторов; новые команды проверяются задачами-владельцами.",
+        "PKG-A34": "Воспроизводимость synthetic fixtures и restore до изменений; не полная миграция 1.0."
+      },
+      "original_task_id": "T003",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "source",
+        "evidence": "Существуют CI/test suites; результаты 0.7.16 исторические, нового прогона нет.",
+        "runtime_verification": "not_run_this_assignment"
+      },
+      "verification_scope": "M0 baseline/current-command fixtures and local disposable environment; not future product rules or a release. See IMPLEMENTATION_PROGRESS_1_0.json."
+    },
+    {
+      "id": "PKG-T004",
+      "milestone": "M0",
+      "title": "База производительности и целевой масштаб",
+      "status": "component_baseline_measured_target_pending",
+      "dependencies": [
+        "PKG-T002"
+      ],
+      "module_ids": [
+        "validation",
+        "combat",
+        "client_sync"
+      ],
+      "decision_ids": [
+        "PKG-D114"
+      ],
+      "implementation_steps": [
+        "Отделить server work/lock/save/send, RTT, клиент и другие службы хоста.",
+        "Согласовать профиль нагрузки/устройства и сравниваемые пределы, не выдумывать live SLO."
+      ],
+      "acceptance_ids": [
+        "PKG-A35"
+      ],
+      "shared_contracts": [
+        "telemetry"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A35": "Базовый профиль текущего кода, изоляция генератора и раздельные метрики. Финальный масштаб проверяет T081."
+      },
+      "original_task_id": "T004",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "CombatDiagnostics уже есть; целевой онлайн/устройства/SLO не выбраны, свежих замеров нет.",
+        "runtime_verification": "not_run_this_assignment"
+      },
+      "implementation_evidence": "RECONNECT_REST_AUTHORITY_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json"
+    },
+    {
+      "id": "PKG-T010",
+      "milestone": "M1",
+      "title": "Идентичность валют и совместимые labels",
+      "status": "implemented",
+      "dependencies": [
+        "PKG-T001",
+        "PKG-T003"
+      ],
+      "module_ids": [
+        "economy",
+        "ownership_cost",
+        "bot_wallet",
+        "economy_ui",
+        "data"
+      ],
+      "decision_ids": [
+        "PKG-D100",
+        "PKG-D105"
+      ],
+      "implementation_steps": [
+        "Составить mapping старых account/asset/labels без слияния балансов.",
+        "Сначала совместимое чтение/отображение; отдельная репетиция любой конвертации."
+      ],
+      "acceptance_ids": [
+        "PKG-A01",
+        "PKG-A34"
+      ],
+      "shared_contracts": [
+        "schema",
+        "wallet_authority",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A01": "Mapping/labels и roundtrip текущих отдельных счетов; конвертация отложена до D105/T060.",
+        "PKG-A34": "Roundtrip только совместимых labels/account mapping; активные данные не переинтерпретируются."
+      },
+      "original_task_id": "T010",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "Coins/TestCandles и свечной счёт различны; нынешний UI Dcoin не целевая entertainment-идентичность.",
+        "runtime_verification": "not_run_this_assignment"
+      },
+      "verification_scope": "Local API/English+Russian browser checks pass; full source CI pending. Labels/identities only; no D105 conversion."
+    },
+    {
+      "id": "PKG-T011",
+      "milestone": "M1",
+      "title": "Проверить учёт и границы денежных команд",
+      "status": "implemented",
+      "dependencies": [
+        "PKG-T003",
+        "PKG-T010"
+      ],
+      "module_ids": [
+        "economy",
+        "data"
+      ],
+      "decision_ids": [],
+      "implementation_steps": [
+        "Расширить существующие receipts/проводки/резервы, не новый параллельный кошелёк.",
+        "Проверить два клиента, конфликт payload и crash вокруг commit."
+      ],
+      "acceptance_ids": [
+        "PKG-A02",
+        "PKG-A03",
+        "PKG-A08"
+      ],
+      "shared_contracts": [
+        "schema",
+        "transactions"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A02": "full_case",
+        "PKG-A03": "full_case",
+        "PKG-A08": "full_case"
+      },
+      "original_task_id": "T011",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "source_partial_target",
+        "evidence": "GameWallet/Ledger/Receipt, PG transaction/advisory lock/fingerprint существуют; новые контракты требуют интеграционных проверок.",
+        "runtime_verification": "not_run_this_assignment"
+      },
+      "verification_scope": "Existing commands passed 14 economy API cases; independent service-instance replay/conservation case also passed. Exact final CI pending; future work-contract/tax commands require their own acceptance."
+    },
+    {
+      "id": "PKG-T012",
+      "milestone": "M1",
+      "title": "Серверная политика безопасного отдыха",
+      "status": "implemented_domain_api_verified_browser_pending",
+      "dependencies": [
+        "PKG-T001",
+        "PKG-T003"
+      ],
+      "module_ids": [
+        "presence_rest",
+        "combat",
+        "dungeons",
+        "data"
+      ],
+      "decision_ids": [
+        "PKG-D101",
+        "PKG-D102"
+      ],
+      "implementation_steps": [
+        "Ввести отдельные переходы и согласовать Start/Settle/Join/Retreat и отсутствие связи.",
+        "Обеспечить сохранение и совместимые DTO, не UI-only скрытие."
+      ],
+      "acceptance_ids": [
+        "PKG-A12",
+        "PKG-A13",
+        "PKG-A34"
+      ],
+      "shared_contracts": [
+        "schema",
+        "cycle",
+        "combat_admission",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A12": "full_case",
+        "PKG-A13": "full_case",
+        "PKG-A34": "Сохранение и restore новых rest-переходов на текущей схеме; не будущие валюты/осады."
+      },
+      "original_task_id": "T012",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "plan",
+        "evidence": "Safe Resting не найден; Idle/Paused/absence и offline settlement не новый безопасный отдых.",
+        "runtime_verification": "not_run_this_assignment"
+      },
+      "implementation_evidence": "RECONNECT_REST_AUTHORITY_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json"
+    },
+    {
+      "id": "PKG-T013",
+      "milestone": "M1",
+      "title": "Команды и проекции после reconnect",
+      "status": "transport_component_verified_broader_regression_pending",
+      "dependencies": [
+        "PKG-T003"
+      ],
+      "module_ids": [
+        "client_sync",
+        "dungeons",
+        "economy"
+      ],
+      "decision_ids": [],
+      "implementation_steps": [
+        "Зафиксировать requestId/revision/quote различия по видам команд.",
+        "Сохранить существующую очередь dungeon и catchUp; не replay устаревшего намерения."
+      ],
+      "acceptance_ids": [
+        "PKG-A03",
+        "PKG-A13",
+        "PKG-A17"
+      ],
+      "shared_contracts": [
+        "api_dto",
+        "signalr",
+        "client_state"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A03": "full_case",
+        "PKG-A13": "Транспорт reconnect/двух вкладок и отсутствие replay существующего боевого намерения. Политика допуска отдыха принадлежит T012.",
+        "PKG-A17": "full_case"
+      },
+      "original_task_id": "T013",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "source_partial_target",
+        "evidence": "catchUp/adoptVillageState/mergeBattles, revision/serverNow и dungeon one-inflight+latest существуют.",
+        "runtime_verification": "not_run_this_assignment"
+      },
+      "implementation_evidence": "RECONNECT_REST_AUTHORITY_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json"
+    },
+    {
+      "id": "PKG-T014",
+      "milestone": "M1",
+      "title": "Мобильная оболочка и контекстные действия",
+      "status": "partial_verified_independent_compact_ui_slice",
+      "dependencies": [
+        "PKG-T010",
+        "PKG-T012",
+        "PKG-T013"
+      ],
+      "module_ids": [
+        "client_sync",
+        "economy_ui",
+        "feedback_notifications"
+      ],
+      "decision_ids": [],
+      "implementation_steps": [
+        "Макет/демонстрация состояния, навигации, компактных денег/HP/energy.",
+        "Прямое боевое намерение, доступные действия/причины, сохранение отчёта и отмены."
+      ],
+      "acceptance_ids": [
+        "PKG-A32",
+        "PKG-A31"
+      ],
+      "shared_contracts": [
+        "api_dto",
+        "client_state"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A32": "Телефонная оболочка и существующие вход/кошелёк/бой/отдых с тестовыми DTO. Полная цепочка госзаказ/рынок проходит T035.",
+        "PKG-A31": "Существующие отчёт/отмена: не сохранять неотправленный снимок. Новые consent/quiet hours реализуются T064."
+      },
+      "original_task_id": "T014",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "independent_slice_locally_verified",
+        "evidence": "INTERFACE_COMPACTNESS_1_0.md; current runtime/harness tests in IMPLEMENTATION_PROGRESS_1_0.json; T012/T013/T035 still required.",
+        "runtime_verification": "combined full Chromium CI success at c2962e2dfafccb24e18267aee34b144b35749a47; local real map and scoped WebKit checks; physical phones not tested"
+      }
+    },
+    {
+      "id": "PKG-T015",
+      "milestone": "M1",
+      "title": "Права царя, посадника и доверенных сервисов",
+      "status": "existing_authority_matrix_verified_future_actions_pending",
+      "dependencies": [
+        "PKG-T001",
+        "PKG-T003"
+      ],
+      "module_ids": [
+        "work_building",
+        "director",
+        "economy"
+      ],
+      "decision_ids": [
+        "PKG-D113"
+      ],
+      "implementation_steps": [
+        "Определить матрицу прав без привилегии HP и доступа по нику.",
+        "Проверять actor на сервере и след операций казны; совместимость старых гражданских заявок."
+      ],
+      "acceptance_ids": [
+        "PKG-A14",
+        "PKG-A30"
+      ],
+      "shared_contracts": [
+        "authorization",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A14": "full_case",
+        "PKG-A30": "Матрица actor/role/service и связь аккаунта; ник не выдаёт права. Реальный group membership adapter и unknown/grace проверяются T064."
+      },
+      "original_task_id": "T015",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "Политические роли/civic requests и уязвимый герой есть; новые права договора/сервиса требуют явной матрицы.",
+        "runtime_verification": "not_run_this_assignment"
+      },
+      "implementation_evidence": "RECONNECT_REST_AUTHORITY_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json"
+    },
+    {
+      "id": "PKG-T020",
+      "milestone": "M2",
+      "title": "Себестоимость материалов и производства",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T011"
+      ],
+      "module_ids": [
+        "ownership_cost",
+        "economy",
+        "data"
+      ],
+      "decision_ids": [
+        "PKG-D108"
+      ],
+      "implementation_steps": [
+        "Перенести стоимость фактически потреблённых входов через крафт и дробление.",
+        "Определить multi-output/legacy unknown; сделать инвариантные регрессии."
+      ],
+      "acceptance_ids": [
+        "PKG-A04",
+        "PKG-A05"
+      ],
+      "shared_contracts": [
+        "cycle",
+        "schema",
+        "inventory"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A04": "full_case",
+        "PKG-A05": "Классификация legacy unknown и выбранное правило basis на синтетической продаже. Настоящий tax event реализуется T024."
+      },
+      "original_task_id": "T020",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "defect_confirmed_source",
+        "evidence": "CycleEngine.Keep: PersonalInventory.Add(citizen, kind, kept, 0), потеря себестоимости private production.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T021",
+      "milestone": "M2",
+      "title": "Явная собственность вида работы",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T020",
+        "PKG-T015"
+      ],
+      "module_ids": [
+        "ownership_cost",
+        "work_building",
+        "economy_ui"
+      ],
+      "decision_ids": [
+        "PKG-D106"
+      ],
+      "implementation_steps": [
+        "Определить до старта public contract/private extraction/private craft.",
+        "Совместить с существующей пространственной логикой и личными складами без изменения старых предметов."
+      ],
+      "acceptance_ids": [
+        "PKG-A07",
+        "PKG-A04"
+      ],
+      "shared_contracts": [
+        "cycle",
+        "inventory",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A07": "full_case",
+        "PKG-A04": "full_case"
+      },
+      "original_task_id": "T021",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "CyclePrivateOutput зависит от места/владельца, явного нового WorkContract нет.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T022",
+      "milestone": "M2",
+      "title": "Ограниченные госзаказы и резерв зарплаты",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T011",
+        "PKG-T021"
+      ],
+      "module_ids": [
+        "economy",
+        "work_building",
+        "data",
+        "economy_ui"
+      ],
+      "decision_ids": [
+        "PKG-D106",
+        "PKG-D109"
+      ],
+      "implementation_steps": [
+        "Добавить договор/фонд/количество/условия и сохранённые переходы.",
+        "Исполнение, конкуренция, отмена и истечение с возвратом остатка и без потери обещанной оплаты."
+      ],
+      "acceptance_ids": [
+        "PKG-A06",
+        "PKG-A07"
+      ],
+      "shared_contracts": [
+        "schema",
+        "transactions",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A06": "full_case",
+        "PKG-A07": "full_case"
+      },
+      "original_task_id": "T022",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "plan",
+        "evidence": "CivicOrder не ограниченный зарплатный договор; PayUsefulWorkAsync сейчас эмиссионная WorkPay.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T023",
+      "milestone": "M2",
+      "title": "Рынок, заказы поставки и безопасный резерв",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T020",
+        "PKG-T021"
+      ],
+      "module_ids": [
+        "economy",
+        "economy_ui"
+      ],
+      "decision_ids": [
+        "PKG-D106"
+      ],
+      "implementation_steps": [
+        "Развить существующий рынок, не дублировать MarketLot.",
+        "Сохранить товар/стоимость при buy/cancel/retry, защитить общие базовые резервы."
+      ],
+      "acceptance_ids": [
+        "PKG-A08",
+        "PKG-A04",
+        "PKG-A07"
+      ],
+      "shared_contracts": [
+        "transactions",
+        "inventory",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A08": "full_case",
+        "PKG-A04": "full_case",
+        "PKG-A07": "full_case"
+      },
+      "original_task_id": "T023",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "source_partial_target",
+        "evidence": "MarketLot/PersonalInventory/cost splitting есть; новый reserve/supply/contract integration предстоит.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T024",
+      "milestone": "M2",
+      "title": "Версионированная дань на согласованную базу",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T020",
+        "PKG-T023"
+      ],
+      "module_ids": [
+        "economy",
+        "data",
+        "economy_ui"
+      ],
+      "decision_ids": [
+        "PKG-D107",
+        "PKG-D108",
+        "PKG-D109"
+      ],
+      "implementation_steps": [
+        "Сначала расчёт/объяснение на синтетических данных, затем атомарный tax event.",
+        "Quote/effectiveAt/повтор/чистая госзарплата и неизменность старой сделки."
+      ],
+      "acceptance_ids": [
+        "PKG-A09",
+        "PKG-A05",
+        "PKG-A10"
+      ],
+      "shared_contracts": [
+        "transactions",
+        "schema",
+        "fiscal_policy"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A09": "full_case",
+        "PKG-A05": "full_case",
+        "PKG-A10": "Проводки нового tax event и сохранение суммы на synthetic fixtures внешнего расхода/эмиссии. Политика реальных источников и расходов — T025."
+      },
+      "original_task_id": "T024",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "plan",
+        "evidence": "TaxPreview не исполняемый сбор; настоящий налог ждёт корректный basis/версию/quote.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T025",
+      "milestone": "M2",
+      "title": "Оборот казны, эмиссия и настоящие изъятия",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T022",
+        "PKG-T024"
+      ],
+      "module_ids": [
+        "economy",
+        "data"
+      ],
+      "decision_ids": [
+        "PKG-D109"
+      ],
+      "implementation_steps": [
+        "Разделить transfer/issuance/withdrawal и бюджет обязательств.",
+        "Проверить отсутствие казны без заработка и бесконтрольной NPC-скупки."
+      ],
+      "acceptance_ids": [
+        "PKG-A10",
+        "PKG-A11"
+      ],
+      "shared_contracts": [
+        "transactions",
+        "schema",
+        "fiscal_policy"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A10": "full_case",
+        "PKG-A11": "full_case"
+      },
+      "original_task_id": "T025",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "Treasury и проводки существуют; единая новая политика эмиссии/изъятий/резервов ещё не внедрена.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T026",
+      "milestone": "M2",
+      "title": "Экономическая симуляция и первый хозяйственный срез",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T022",
+        "PKG-T023",
+        "PKG-T024",
+        "PKG-T025",
+        "F005",
+        "F006"
+      ],
+      "module_ids": [
+        "economy",
+        "ownership_cost",
+        "economy_ui"
+      ],
+      "decision_ids": [
+        "PKG-D109",
+        "PKG-D110"
+      ],
+      "implementation_steps": [
+        "Сравнить доходы/корзину/концентрацию и долю госработ на фиксированных сценариях.",
+        "Показать реальную цепочку заказ→предмет→продажа→дань и объявленные ограничения."
+      ],
+      "acceptance_ids": [
+        "PKG-A11",
+        "PKG-A37"
+      ],
+      "shared_contracts": [
+        "economy_balance"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A11": "full_case",
+        "PKG-A37": "full_case"
+      },
+      "original_task_id": "T026",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "plan",
+        "evidence": "Нет результата новой хозяйственной симуляции; исходный фермерский расчёт проверен арифметически.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T030",
+      "milestone": "M3",
+      "title": "Контракт группы и распределения похода",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T012",
+        "PKG-T015"
+      ],
+      "module_ids": [
+        "dungeons",
+        "data",
+        "client_sync"
+      ],
+      "decision_ids": [
+        "PKG-D104"
+      ],
+      "implementation_steps": [
+        "Определить состав/готовность/выход/timeout/расход и владение трофеем.",
+        "Переиспользовать DungeonRun где подходит, не объявлять новые Party-имена готовыми."
+      ],
+      "acceptance_ids": [
+        "PKG-A15"
+      ],
+      "shared_contracts": [
+        "schema",
+        "api_dto",
+        "party"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A15": "Доменный contract/state-machine fixture группы: ready/leave/timeout/ownership и повторы переходов. Интеграция с настоящим DungeonRun/settlement — T032."
+      },
+      "original_task_id": "T030",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "DungeonRun существует; общий Party/min-max/ready/loot contract не найден.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T031",
+      "milestone": "M3",
+      "title": "Ручной одиночный микробой",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T012",
+        "PKG-T013"
+      ],
+      "module_ids": [
+        "combat",
+        "world",
+        "client_sync"
+      ],
+      "decision_ids": [
+        "PKG-D102"
+      ],
+      "implementation_steps": [
+        "Развить сцену из существующей Ambush, отличив её от мгновенного расчёта.",
+        "Короткое испытание с понятными потерями, исходом и возвратом в общий мир."
+      ],
+      "acceptance_ids": [
+        "PKG-A13",
+        "PKG-A14",
+        "PKG-A17"
+      ],
+      "shared_contracts": [
+        "combat_admission",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A13": "full_case",
+        "PKG-A14": "full_case",
+        "PKG-A17": "full_case"
+      },
+      "original_task_id": "T031",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "Ambush и ручной RaidBattle есть; целевая отдельная микросцена и последствия требуют интеграции.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T032",
+      "milestone": "M3",
+      "title": "Связанный групповой данж",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T030",
+        "PKG-T013"
+      ],
+      "module_ids": [
+        "dungeons",
+        "client_sync",
+        "economy"
+      ],
+      "decision_ids": [
+        "PKG-D102",
+        "PKG-D104"
+      ],
+      "implementation_steps": [
+        "Группа, снабжение, осмысленные цели и активный выход по выбранной политике.",
+        "Результат связан с вещами/производством, settlement выдерживает повтор и отказ commit."
+      ],
+      "acceptance_ids": [
+        "PKG-A15",
+        "PKG-A03"
+      ],
+      "shared_contracts": [
+        "party",
+        "inventory",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A15": "full_case",
+        "PKG-A03": "full_case"
+      },
+      "original_task_id": "T032",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "source_partial_target",
+        "evidence": "DungeonRun/Hub/Worker/settlement есть; runtime в памяти, abandon после остановки; целевой withdrawal/resume не подтверждён.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T033",
+      "milestone": "M3",
+      "title": "Осмысленное расширение округи",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T004",
+        "PKG-T015"
+      ],
+      "module_ids": [
+        "world",
+        "combat",
+        "client_sync"
+      ],
+      "decision_ids": [
+        "PKG-D114",
+        "PKG-D115"
+      ],
+      "implementation_steps": [
+        "Несколько проверяемых маршрутов/ограничений, сохранение старых координат и номеров.",
+        "Не рассчитывать каждую пустую клетку постоянно; проверить воду/забор/пути и мобильную загрузку."
+      ],
+      "acceptance_ids": [
+        "PKG-A17",
+        "PKG-A35",
+        "PKG-A34"
+      ],
+      "shared_contracts": [
+        "world_coordinates",
+        "signalr"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A17": "full_case",
+        "PKG-A35": "Измерение новой округи/маршрутов относительно T004; не окончательная длительная жизнь всех подсистем.",
+        "PKG-A34": "Roundtrip world-изменений, сохранность старых координат и building IDs; не полный денежный перенос."
+      },
+      "original_task_id": "T033",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "WorldMap.Land 120x90, wilderness/fog/path есть; региональные контракты новые, старый fog индексировать совместимо.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T034",
+      "milestone": "M3",
+      "title": "Подготовка приключения через хозяйство",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T026",
+        "PKG-T032",
+        "F006"
+      ],
+      "module_ids": [
+        "economy",
+        "dungeons",
+        "work_building"
+      ],
+      "decision_ids": [
+        "PKG-D104",
+        "PKG-D106"
+      ],
+      "implementation_steps": [
+        "Связать реальные припасы/редкий компонент/производство и заказы.",
+        "Показать роль снабженца без автоматической выдачи всех боевых трофеев."
+      ],
+      "acceptance_ids": [
+        "PKG-A03",
+        "PKG-A15",
+        "PKG-A38"
+      ],
+      "shared_contracts": [
+        "inventory",
+        "party",
+        "transactions"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A03": "full_case",
+        "PKG-A15": "full_case",
+        "PKG-A38": "full_case"
+      },
+      "original_task_id": "T034",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "Есть ordinary expedition loot и Dungeon; связанное длительное снабжение/провиант не готово.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T035",
+      "milestone": "M3",
+      "title": "Плавность боя и сквозной мобильный опыт",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T014",
+        "PKG-T031",
+        "PKG-T032",
+        "PKG-T033",
+        "PKG-T034",
+        "PKG-T004"
+      ],
+      "module_ids": [
+        "client_sync",
+        "combat",
+        "dungeons"
+      ],
+      "decision_ids": [
+        "PKG-D114"
+      ],
+      "implementation_steps": [
+        "Измерить server/client/network отдельно в нескольких боевых состояниях.",
+        "Сохранить revision/serverNow/static snapshot и проверить реальные мобильные сценарии."
+      ],
+      "acceptance_ids": [
+        "PKG-A17",
+        "PKG-A32",
+        "PKG-A35"
+      ],
+      "shared_contracts": [
+        "signalr",
+        "client_state"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A17": "full_case",
+        "PKG-A32": "full_case",
+        "PKG-A35": "full_case"
+      },
+      "original_task_id": "T035",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "Диагностика и browser fixtures есть; свежих естественных замеров физических телефонов нет.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T040",
+      "milestone": "M4",
+      "title": "Массовая NPC-цель и царский поход",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T030",
+        "PKG-T033",
+        "PKG-T034",
+        "PKG-T035"
+      ],
+      "module_ids": [
+        "combat",
+        "world",
+        "dungeons",
+        "economy"
+      ],
+      "decision_ids": [
+        "PKG-D104",
+        "PKG-D114",
+        "PKG-D115"
+      ],
+      "implementation_steps": [
+        "Сбор армии/обоз/фазы/отступление и цель NPC-поселения.",
+        "Царь уязвим; полноценный массовый путь не требует его постоянного присутствия."
+      ],
+      "acceptance_ids": [
+        "PKG-A14",
+        "PKG-A16",
+        "PKG-A35"
+      ],
+      "shared_contracts": [
+        "party",
+        "schema",
+        "combat_admission"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A14": "full_case",
+        "PKG-A16": "full_case",
+        "PKG-A35": "Нагрузочный профиль массовой NPC-сцены и синхронизации; итоговое совместное испытание хоста — T081."
+      },
+      "original_task_id": "T040",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "plan",
+        "evidence": "Набеги не равны новой массовой NPC-кампании с обозом и единой settlement цепочкой.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T041",
+      "milestone": "M4",
+      "title": "Последняя осада как сохранённая фаза",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T040",
+        "PKG-T012"
+      ],
+      "module_ids": [
+        "siege_recovery",
+        "combat",
+        "data"
+      ],
+      "decision_ids": [
+        "PKG-D102"
+      ],
+      "implementation_steps": [
+        "Связать DefeatedAt/Collapse с эвакуацией, последним рубежом и терминальным исходом.",
+        "Повтор/рестарт/выключение флага не теряют активных участников и имущество."
+      ],
+      "acceptance_ids": [
+        "PKG-A40",
+        "PKG-A14"
+      ],
+      "shared_contracts": [
+        "schema",
+        "siege_state"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A40": "full_case",
+        "PKG-A14": "full_case"
+      },
+      "original_task_id": "T041",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "Collapse/DefeatedAt существуют; сохранённые SiegePhase последнего рубежа не найдены.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T042",
+      "milestone": "M4",
+      "title": "Редкая помощь с ценой и квитанцией",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T041"
+      ],
+      "module_ids": [
+        "siege_recovery",
+        "combat",
+        "data"
+      ],
+      "decision_ids": [
+        "PKG-D103"
+      ],
+      "implementation_steps": [
+        "Один выбранный вариант чуда, условия/стоимость/лимит и исполнение.",
+        "Рестарт и параллельные triggers не сбрасывают лимит; не возвращать весь ущерб."
+      ],
+      "acceptance_ids": [
+        "PKG-A19",
+        "PKG-A40"
+      ],
+      "shared_contracts": [
+        "schema",
+        "siege_state",
+        "event_receipts"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A19": "full_case",
+        "PKG-A40": "full_case"
+      },
+      "original_task_id": "T042",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "plan",
+        "evidence": "Однократное редкое чудо с лимитом/ценой не найдено, исход PKG-D103 открыт.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T043",
+      "milestone": "M4",
+      "title": "Восстановление и социальное лечение",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T041",
+        "PKG-T022",
+        "PKG-T025"
+      ],
+      "module_ids": [
+        "siege_recovery",
+        "work_building",
+        "economy"
+      ],
+      "decision_ids": [
+        "PKG-D102",
+        "PKG-D109"
+      ],
+      "implementation_steps": [
+        "Доступный бесплатный старт после катастрофы и конечные задания.",
+        "Переиспользовать больницу/доставку, убрать возможность печати награды повторным переносом."
+      ],
+      "acceptance_ids": [
+        "PKG-A18",
+        "PKG-A06",
+        "PKG-A11"
+      ],
+      "shared_contracts": [
+        "recovery_policy",
+        "transactions"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A18": "full_case",
+        "PKG-A06": "full_case",
+        "PKG-A11": "full_case"
+      },
+      "original_task_id": "T043",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "Repair/Restored/Hospital/Rescue/Monastery есть; полный бесплатный путь после всех потерь не проверен.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T050",
+      "milestone": "M5",
+      "title": "Снимок мира и каталог полномочий",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T015",
+        "PKG-T025",
+        "PKG-T030"
+      ],
+      "module_ids": [
+        "director",
+        "economy",
+        "combat",
+        "dungeons"
+      ],
+      "decision_ids": [
+        "PKG-D109"
+      ],
+      "implementation_steps": [
+        "Агрегированная версия мира с evidence/неизвестными показателями.",
+        "Закрытый каталог kinds/parameters/budgets и права на реальные игровые действия."
+      ],
+      "acceptance_ids": [
+        "PKG-A20",
+        "PKG-A22"
+      ],
+      "shared_contracts": [
+        "director_contract",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A20": "Валидация snapshot revision/action schema/permission catalog без выполнения. Исполнитель и receipt появятся T051.",
+        "PKG-A22": "Отказ неразрешённым kinds/полям и отсутствие секретов в DTO. Реальное исполнение и модельная граница — T051/T053."
+      },
+      "original_task_id": "T050",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "Almighty snapshots/observations/lease есть; целевой каталог автономных/economic actions новый.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T051",
+      "milestone": "M5",
+      "title": "Идемпотентный исполнитель решений",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T050",
+        "PKG-T011"
+      ],
+      "module_ids": [
+        "director",
+        "economy",
+        "data"
+      ],
+      "decision_ids": [
+        "PKG-D109"
+      ],
+      "implementation_steps": [
+        "Свежесть/права/лимит/остатки и receipt в одной подтверждаемой операции.",
+        "Audit, stop отдельной категории и совместимость уже принятых обязательств."
+      ],
+      "acceptance_ids": [
+        "PKG-A20",
+        "PKG-A22"
+      ],
+      "shared_contracts": [
+        "director_contract",
+        "schema",
+        "transactions"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A20": "full_case",
+        "PKG-A22": "full_case"
+      },
+      "original_task_id": "T051",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "Существующие проверяемые handlers после решения владельца есть; новый автономный executor не готов.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T052",
+      "milestone": "M5",
+      "title": "Сценарный ритм и отказоустойчивое расписание",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T050",
+        "PKG-T041",
+        "PKG-T042",
+        "PKG-T043"
+      ],
+      "module_ids": [
+        "director",
+        "combat",
+        "siege_recovery"
+      ],
+      "decision_ids": [
+        "PKG-D103"
+      ],
+      "implementation_steps": [
+        "Один источник назначения событий, end/cooldown/fallback и отсутствие дублей.",
+        "Ранения/недострои не вечный immunity; после катастрофы есть реальный выход."
+      ],
+      "acceptance_ids": [
+        "PKG-A21",
+        "PKG-A18",
+        "PKG-A19"
+      ],
+      "shared_contracts": [
+        "event_receipts",
+        "director_contract"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A21": "Расписание/fallback по синтетическому сигналу недоступности и идемпотентность событий. Настоящий модельный adapter — T053.",
+        "PKG-A18": "full_case",
+        "PKG-A19": "full_case"
+      },
+      "original_task_id": "T052",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "Текущие события/PlanNight есть; общий fallback нового катастрофического сценария ещё не внедрён.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T053",
+      "milestone": "M5",
+      "title": "Gemini через существующую модельную цепочку",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T050"
+      ],
+      "module_ids": [
+        "bot_ai",
+        "director"
+      ],
+      "decision_ids": [],
+      "implementation_steps": [
+        "Переиспользовать общий бюджет/chain/cache; structured response и deadline.",
+        "Нет LLM на тик; invalid/429/timeout не останавливают мир и не выдают лишних прав."
+      ],
+      "acceptance_ids": [
+        "PKG-A21",
+        "PKG-A22"
+      ],
+      "shared_contracts": [
+        "ai_budget",
+        "director_contract"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A21": "Модельный adapter: timeout/429/budget/invalid response и проверяемый fallback без остановки существующих циклов.",
+        "PKG-A22": "full_case"
+      },
+      "original_task_id": "T053",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "source_partial_target",
+        "evidence": "Bot chain/ai_budget существуют; не нужен обходной Gemini клиент, новый structured action adapter предстоит.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T054",
+      "milestone": "M5",
+      "title": "Экономические действия всевышнего",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T051",
+        "PKG-T024",
+        "PKG-T025",
+        "PKG-T026"
+      ],
+      "module_ids": [
+        "director",
+        "economy"
+      ],
+      "decision_ids": [
+        "PKG-D109"
+      ],
+      "implementation_steps": [
+        "Налоги/заказы/разрешённые цены как настоящие доменные действия, не только текст.",
+        "Версии/срок/объяснение и сравнение эффекта без персональной охоты за неплательщиками."
+      ],
+      "acceptance_ids": [
+        "PKG-A23",
+        "PKG-A09",
+        "PKG-A10"
+      ],
+      "shared_contracts": [
+        "director_contract",
+        "fiscal_policy"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A23": "full_case",
+        "PKG-A09": "full_case",
+        "PKG-A10": "full_case"
+      },
+      "original_task_id": "T054",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "plan",
+        "evidence": "Экономический исполнитель не найден, economy_report не меняет налог/деньги.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T055",
+      "milestone": "M5",
+      "title": "Самостоятельность после теневого сравнения",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T051",
+        "PKG-T052",
+        "PKG-T053",
+        "PKG-T054"
+      ],
+      "module_ids": [
+        "director",
+        "bot_ai"
+      ],
+      "decision_ids": [
+        "PKG-D114"
+      ],
+      "implementation_steps": [
+        "Реплей/теневое сравнение разных состояний и осмысленный автомат в staging.",
+        "Вкл/выкл права, бюджет, активные обязательства и проверка готовности к отдельному будущему rollout."
+      ],
+      "acceptance_ids": [
+        "PKG-A20",
+        "PKG-A21",
+        "PKG-A23",
+        "PKG-A39"
+      ],
+      "shared_contracts": [
+        "director_contract",
+        "deployment"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A20": "full_case",
+        "PKG-A21": "full_case",
+        "PKG-A23": "full_case",
+        "PKG-A39": "full_case"
+      },
+      "original_task_id": "T055",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "plan",
+        "evidence": "Текущие режимы Off/Observe/Propose; самостоятельное исполнение не включено и здесь не переключалось.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T060",
+      "milestone": "M6",
+      "title": "Основной Dcoin батюшки и историческое лечение",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T010",
+        "PKG-T011"
+      ],
+      "module_ids": [
+        "bot_wallet",
+        "bot_payments",
+        "economy_ui"
+      ],
+      "decision_ids": [
+        "PKG-D105",
+        "PKG-D116"
+      ],
+      "implementation_steps": [
+        "Установить одного владельца записи, receipts и совместимые labels без смешивания Gold.",
+        "Разобрать уже существующие расходы и отложенные награды, затем репетиция переноса."
+      ],
+      "acceptance_ids": [
+        "PKG-A01",
+        "PKG-A03",
+        "PKG-A29",
+        "PKG-A34"
+      ],
+      "shared_contracts": [
+        "wallet_authority",
+        "bot_kv",
+        "schema"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A01": "full_case",
+        "PKG-A03": "full_case",
+        "PKG-A29": "full_case",
+        "PKG-A34": "Миграция владельца свечного/Dcoin счёта и обязательств по D105/D116; полная межсистемная репетиция — T082."
+      },
+      "original_task_id": "T060",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "Church wallet/KV candles есть, полного ledger нет; свечи уже ускоряют Hospital.heal, перенос требует PKG-D105/116.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T061",
+      "milestone": "M6",
+      "title": "YouTube entitlement и подтверждённый срок",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T015",
+        "PKG-T060"
+      ],
+      "module_ids": [
+        "bot_memberships",
+        "bot_payments"
+      ],
+      "decision_ids": [
+        "PKG-D111"
+      ],
+      "implementation_steps": [
+        "Проверить доступный источник tier/expiry, различить observed/confirmed/unknown.",
+        "Поддержать подарки/grace/истечение/повтор/связь личности, не выдать бессрочную льготу по сообщению."
+      ],
+      "acceptance_ids": [
+        "PKG-A26",
+        "PKG-A30"
+      ],
+      "shared_contracts": [
+        "premium_contract",
+        "identity"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A26": "full_case",
+        "PKG-A30": "Подтверждение связанной личности для YouTube entitlement и отсутствие прав по нику; group gate — T064."
+      },
+      "original_task_id": "T061",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "5 tiers и observed badge window35d есть; проверенного оплаченного expiry/entitlement нет.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T062",
+      "milestone": "M6",
+      "title": "Каталог умеренных premium льгот",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T061",
+        "PKG-T026"
+      ],
+      "module_ids": [
+        "bot_memberships",
+        "presence_rest",
+        "economy",
+        "work_building"
+      ],
+      "decision_ids": [
+        "PKG-D110",
+        "PKG-D116"
+      ],
+      "implementation_steps": [
+        "Явные tiers/caps/сроки, не складывать источники.",
+        "Измерить хозяйственный эффект и отсутствие прямого combat boost/офлайн XP."
+      ],
+      "acceptance_ids": [
+        "PKG-A24",
+        "PKG-A25",
+        "PKG-A29"
+      ],
+      "shared_contracts": [
+        "premium_contract",
+        "cycle"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A24": "full_case",
+        "PKG-A25": "full_case",
+        "PKG-A29": "full_case"
+      },
+      "original_task_id": "T062",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "plan",
+        "evidence": "Целевой каталог умеренных льгот и совокупный предел ускорения не выбран и не внедрён.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T063",
+      "milestone": "M6",
+      "title": "Stars: надёжный заказ и развлечительный Dcoin",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T060",
+        "PKG-T011"
+      ],
+      "module_ids": [
+        "bot_payments",
+        "bot_wallet"
+      ],
+      "decision_ids": [
+        "PKG-D112"
+      ],
+      "implementation_steps": [
+        "Подтвердить правила провайдера, товары/валюту/сумму/payload/account.",
+        "Atomic charge receipt/credit, повторы, отказ commit и возврат; только mock до отдельного запуска."
+      ],
+      "acceptance_ids": [
+        "PKG-A27",
+        "PKG-A28",
+        "PKG-A29"
+      ],
+      "shared_contracts": [
+        "payment_ledger",
+        "wallet_authority"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A27": "full_case",
+        "PKG-A28": "full_case",
+        "PKG-A29": "full_case"
+      },
+      "original_task_id": "T063",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "plan",
+        "evidence": "Stars precheckout/successful_payment/invoice/XTR в изученных модулях не обнаружены.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T064",
+      "milestone": "M6",
+      "title": "Настройки уведомлений и доступ по группе",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T014",
+        "PKG-T015"
+      ],
+      "module_ids": [
+        "feedback_notifications",
+        "bot_memberships",
+        "bot_wallet"
+      ],
+      "decision_ids": [
+        "PKG-D113",
+        "PKG-D117"
+      ],
+      "implementation_steps": [
+        "Категории/consent/quiet hours/агрегация и проверяемый group gate.",
+        "Отказ отправки не повторяет игровой эффект; сохранять действующий daily digest репортов."
+      ],
+      "acceptance_ids": [
+        "PKG-A30",
+        "PKG-A31"
+      ],
+      "shared_contracts": [
+        "notification_contract",
+        "identity"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A30": "full_case",
+        "PKG-A31": "full_case"
+      },
+      "original_task_id": "T064",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "SignalR/foreground Notification/civic delivery/report digest есть; новая категория/quiet hours/group-gate policy предстоит.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T065",
+      "milestone": "M6",
+      "title": "Связанные мини-игры и общий бюджет наград",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T060",
+        "PKG-T062"
+      ],
+      "module_ids": [
+        "bot_wallet",
+        "bot_payments",
+        "economy"
+      ],
+      "decision_ids": [
+        "PKG-D105",
+        "PKG-D110"
+      ],
+      "implementation_steps": [
+        "Общая личность и журнал событий без копии кошелька в каждой игре.",
+        "Проверить двойной донат/награду, продажу косметики за Gold и обязательность чужих режимов."
+      ],
+      "acceptance_ids": [
+        "PKG-A03",
+        "PKG-A24",
+        "PKG-A29"
+      ],
+      "shared_contracts": [
+        "wallet_authority",
+        "reward_budget"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A03": "full_case",
+        "PKG-A24": "full_case",
+        "PKG-A29": "full_case"
+      },
+      "original_task_id": "T065",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "Мини-игры/свечные награды есть; единая новая Dcoin receipt/budget и no-gold-bridge требуют сверки.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T070",
+      "milestone": "M7",
+      "title": "Музыкальные состояния и события",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T013",
+        "PKG-T030",
+        "PKG-T041"
+      ],
+      "module_ids": [
+        "client_sync",
+        "combat",
+        "dungeons"
+      ],
+      "decision_ids": [
+        "PKG-D118"
+      ],
+      "implementation_steps": [
+        "Описать устойчивые states/priority/transition и редкие stingers.",
+        "Нет смены темы на каждый click/tax; actual siege/miracle отправляют подтверждённый сигнал."
+      ],
+      "acceptance_ids": [
+        "PKG-A33"
+      ],
+      "shared_contracts": [
+        "audio_state",
+        "api_dto"
+      ],
+      "risk": "medium",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A33": "Чистая state machine с fake audio backend: приоритеты, гистерезис, сигналы осады/чуда и bounded transitions. Browser unlock/mix — T072."
+      },
+      "original_task_id": "T070",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "Один backgroundMusic и calm/battle переключение есть; полный фазовый каталог отсутствует.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T071",
+      "milestone": "M7",
+      "title": "Оригинальный аудио/визуальный набор",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T001"
+      ],
+      "module_ids": [],
+      "decision_ids": [
+        "PKG-D118",
+        "PKG-D115"
+      ],
+      "implementation_steps": [
+        "Выбрать главный мотив и первые village/dungeon/battle по reference/MUSIC_PROMPTS.",
+        "Отобрать активы/rights/masters/loops/variations и подтвердить единый pixel palette/night readability."
+      ],
+      "acceptance_ids": [
+        "PKG-A33",
+        "PKG-A32"
+      ],
+      "shared_contracts": [
+        "asset_manifest"
+      ],
+      "risk": "medium",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A33": "Проверяемые masters/rights/loop markers/вариации отобранных assets; не браузерный runtime.",
+        "PKG-A32": "Читаемость palette/night/силуэтов и звук на целевых экранах как asset review. Полный игровой путь — T035/T081."
+      },
+      "original_task_id": "T071",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "7 спокойных треков+battle существуют; пакет содержит 21 промпт, новые оригинальные master/loops/rights ещё не созданы.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T072",
+      "milestone": "M7",
+      "title": "Телефонный звук и баланс стрима",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T070",
+        "PKG-T071",
+        "PKG-T014"
+      ],
+      "module_ids": [
+        "client_sync"
+      ],
+      "decision_ids": [
+        "PKG-D118"
+      ],
+      "implementation_steps": [
+        "Gesture unlock, mute, отдельные громкости, crossfade и bounded assets loading.",
+        "Проверить динамик/наушники/стрим и разборчивость атак/речи; не угадывать микрофон OBS без интеграции."
+      ],
+      "acceptance_ids": [
+        "PKG-A33",
+        "PKG-A32"
+      ],
+      "shared_contracts": [
+        "audio_state",
+        "asset_manifest"
+      ],
+      "risk": "medium",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A33": "full_case",
+        "PKG-A32": "full_case"
+      },
+      "original_task_id": "T072",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "partial",
+        "evidence": "Mute/volume/gesture/visibility уже есть; общий phase mix/crossfade/stream acceptance предстоит.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T080",
+      "milestone": "M8",
+      "title": "Длительная жизнь и общий игровой результат",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T034",
+        "PKG-T040",
+        "PKG-T043",
+        "PKG-T055",
+        "PKG-T064",
+        "PKG-T065",
+        "PKG-T072",
+        "F005",
+        "F006"
+      ],
+      "module_ids": [
+        "economy",
+        "director",
+        "combat",
+        "dungeons",
+        "bot_wallet"
+      ],
+      "decision_ids": [
+        "PKG-D115"
+      ],
+      "implementation_steps": [
+        "Симуляция рабочих/частных/премиальных/вернувшихся жителей, дефицита и поражений.",
+        "Сквозная демонстрация владельцу с реальными интеграциями staging, без имитации настоящих платежей."
+      ],
+      "acceptance_ids": [
+        "PKG-A11",
+        "PKG-A18",
+        "PKG-A25",
+        "PKG-A36"
+      ],
+      "shared_contracts": [
+        "integration"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A11": "full_case",
+        "PKG-A18": "full_case",
+        "PKG-A25": "full_case",
+        "PKG-A36": "full_case"
+      },
+      "original_task_id": "T080",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "plan",
+        "evidence": "Новый длительный общий сценарий 1.0 не выполнялся.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T081",
+      "milestone": "M8",
+      "title": "Нагрузка и физические телефоны",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T080",
+        "PKG-T004",
+        "PKG-T035"
+      ],
+      "module_ids": [
+        "validation",
+        "client_sync",
+        "combat"
+      ],
+      "decision_ids": [
+        "PKG-D114"
+      ],
+      "implementation_steps": [
+        "Профиль нагрузки/другие проекты/сети/устройства по утверждённым целям.",
+        "Разделить реальные наблюдения и headless CI; отработать regressions/аварию зависимости."
+      ],
+      "acceptance_ids": [
+        "PKG-A35",
+        "PKG-A32",
+        "PKG-A21"
+      ],
+      "shared_contracts": [
+        "telemetry",
+        "integration"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A35": "full_case",
+        "PKG-A32": "full_case",
+        "PKG-A21": "full_case"
+      },
+      "original_task_id": "T081",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "plan",
+        "evidence": "Нагрузка и физические телефоны в этом поручении не проверялись.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T082",
+      "milestone": "M8",
+      "title": "Репетиция миграции и обратимого включения",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T080",
+        "PKG-T060",
+        "PKG-T063"
+      ],
+      "module_ids": [
+        "data",
+        "economy",
+        "bot_wallet",
+        "director"
+      ],
+      "decision_ids": [
+        "PKG-D105",
+        "PKG-D112"
+      ],
+      "implementation_steps": [
+        "Сверить все активы/резервы/профили/стройки/раны/номера/действующие операции.",
+        "Повторный прогон, совместимость схемы и реальное восстановление вне production."
+      ],
+      "acceptance_ids": [
+        "PKG-A34",
+        "PKG-A01",
+        "PKG-A28"
+      ],
+      "shared_contracts": [
+        "schema",
+        "deployment",
+        "wallet_authority"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A34": "full_case",
+        "PKG-A01": "full_case",
+        "PKG-A28": "full_case"
+      },
+      "original_task_id": "T082",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "plan",
+        "evidence": "Миграции/restore новой 1.0 не выполнялись; старые release receipts не новый результат.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "PKG-T083",
+      "milestone": "M8",
+      "title": "Финальная готовность к будущему выпуску",
+      "status": "planned_not_implemented_by_this_assignment",
+      "dependencies": [
+        "PKG-T081",
+        "PKG-T082"
+      ],
+      "module_ids": [
+        "validation",
+        "bot_validation"
+      ],
+      "decision_ids": [
+        "PKG-D115"
+      ],
+      "implementation_steps": [
+        "Согласовать критерии/состав, точные SHA+CI, reviewed operator и наличие актуального разрешения установки.",
+        "Свежий preflight/backups/deploy/independent check только в явно разрешённый будущий этап; не назвать scheduled установленным."
+      ],
+      "acceptance_ids": [
+        "PKG-A36",
+        "PKG-A34"
+      ],
+      "shared_contracts": [
+        "deployment",
+        "integration"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "PKG-A36": "full_case",
+        "PKG-A34": "full_case"
+      },
+      "original_task_id": "T083",
+      "source": "source-package/05_TASKS.json",
+      "current_support": {
+        "status": "plan",
+        "evidence": "Реализация 1.0 не начата; документационная готовность не готовность игрового выпуска.",
+        "runtime_verification": "not_run_this_assignment"
+      }
+    },
+    {
+      "id": "F001",
+      "title": "Контракт общей фермы и версии правил",
+      "milestone": "M2-FARM",
+      "dependencies": [
+        "PKG-T001",
+        "PKG-T012",
+        "PKG-T020",
+        "PKG-T021"
+      ],
+      "module_ids": [
+        "farming",
+        "work_building",
+        "ownership_cost",
+        "economy",
+        "data",
+        "economy_ui",
+        "presence_rest"
+      ],
+      "decision_ids": [
+        "PKG-D101",
+        "PKG-D108"
+      ],
+      "acceptance_ids": [
+        "FA01",
+        "FA05",
+        "FA06"
+      ],
+      "implementation_steps": [
+        "Выбрать защищённый физический резерв 10% либо ограниченную отсрочку; не скрывать отличие от D-102.",
+        "Зафиксировать общность земли/семян, узкий допуск owner/deputy, рецепты, полезные веса, фонд зарплаты и policyVersion."
+      ],
+      "done_when": "Записаны право на долю, физическое хранение, округление, политика потерь/выдачи и отсутствие новых работ/XP при отдыхе.",
+      "status": "planned_not_implemented_by_this_assignment",
+      "source": "shared_farm_addendum_and_current_code",
+      "acceptance_scope": {
+        "FA01": "full_case",
+        "FA05": "full_case",
+        "FA06": "full_case"
+      },
+      "current_support": {
+        "status": "plan",
+        "evidence": "Существующие FieldBed/FarmRules/FieldsCard — основа; адресный допуск/вклад/90:10 не реализованы. См. CODE_AUDIT_1_0.md."
+      },
+      "owner_resolution": "Protect 10% of actual harvest immediately for contributors; 90% community. This owner answer supersedes the former reserve-first deferral alternative."
+    },
+    {
+      "id": "F002",
+      "title": "Адресная грядка, назначение и совместимость",
+      "milestone": "M2-FARM",
+      "dependencies": [
+        "F001",
+        "PKG-T011",
+        "PKG-T015"
+      ],
+      "module_ids": [
+        "farming",
+        "work_building",
+        "ownership_cost",
+        "economy",
+        "data",
+        "economy_ui",
+        "presence_rest"
+      ],
+      "decision_ids": [
+        "PKG-D101",
+        "PKG-D108"
+      ],
+      "acceptance_ids": [
+        "FA02",
+        "FA03"
+      ],
+      "implementation_steps": [
+        "Добавить plotId/bedIndex/cropCycleId/revision/reservation в существующие FieldBed/API/EF.",
+        "Назначение не меняет профессию или политические права; старые посадки и принятые работы завершаются ровно один раз."
+      ],
+      "done_when": "Подмена цели/царства и работа без допуска отвергаются; две команды и рестарт не меняют выбранную грядку.",
+      "status": "planned_not_implemented_by_this_assignment",
+      "source": "shared_farm_addendum_and_current_code",
+      "acceptance_scope": {
+        "FA02": "full_case",
+        "FA03": "full_case"
+      },
+      "current_support": {
+        "status": "plan",
+        "evidence": "Существующие FieldBed/FarmRules/FieldsCard — основа; адресный допуск/вклад/90:10 не реализованы. См. CODE_AUDIT_1_0.md."
+      }
+    },
+    {
+      "id": "F003",
+      "title": "Ручной уход и полезный вклад",
+      "milestone": "M2-FARM",
+      "dependencies": [
+        "F002"
+      ],
+      "module_ids": [
+        "farming",
+        "work_building",
+        "ownership_cost",
+        "economy",
+        "data",
+        "economy_ui",
+        "presence_rest"
+      ],
+      "decision_ids": [
+        "PKG-D101",
+        "PKG-D108"
+      ],
+      "acceptance_ids": [
+        "FA02",
+        "FA03",
+        "FA05"
+      ],
+      "implementation_steps": [
+        "Подготовка/посев/нужный полив/конечное удобрение/сбор расширяют FarmRules и CycleEngine.",
+        "Выбрать полив до трёх явных целей либо одиночный; дождь/повтор мокрой грядки не дают лишнего вклада.",
+        "Отключить новый обход через tend-fields при cutover; старые задания завершить по snapshot."
+      ],
+      "done_when": "Любой назначенный фермер продолжает растение; дождь, снятие допуска, отдых и отсутствие 24ч сохраняют полезный вклад.",
+      "status": "planned_not_implemented_by_this_assignment",
+      "source": "shared_farm_addendum_and_current_code",
+      "acceptance_scope": {
+        "FA02": "full_case",
+        "FA03": "full_case",
+        "FA05": "full_case"
+      },
+      "current_support": {
+        "status": "plan",
+        "evidence": "Существующие FieldBed/FarmRules/FieldsCard — основа; адресный допуск/вклад/90:10 не реализованы. См. CODE_AUDIT_1_0.md."
+      }
+    },
+    {
+      "id": "F004",
+      "title": "Урожай, натуральная доля и один фонд труда",
+      "milestone": "M2-FARM",
+      "dependencies": [
+        "F003",
+        "PKG-T022",
+        "PKG-T025"
+      ],
+      "module_ids": [
+        "farming",
+        "work_building",
+        "ownership_cost",
+        "economy",
+        "data",
+        "economy_ui",
+        "presence_rest"
+      ],
+      "decision_ids": [
+        "PKG-D101",
+        "PKG-D108"
+      ],
+      "acceptance_ids": [
+        "FA01",
+        "FA02",
+        "FA04",
+        "FA05"
+      ],
+      "implementation_steps": [
+        "В одной транзакции определить фактически сохранённый урожай, вклад, денежный фонд и продуктовые требования.",
+        "90/10 только из настоящей Food; Grain/Flax общие; дроби сохраняются, последний сборщик не получает всё.",
+        "Зарплата из единственного зарезервированного фонда; не дублировать старую эмиссионную WorkPay."
+      ],
+      "done_when": "Сумма выдач не превышает урожай/фонд, Food не дублируется в claims и inventory, replay и crash возвращают прежний receipt.",
+      "status": "planned_not_implemented_by_this_assignment",
+      "source": "shared_farm_addendum_and_current_code",
+      "acceptance_scope": {
+        "FA01": "full_case",
+        "FA02": "full_case",
+        "FA04": "full_case",
+        "FA05": "full_case"
+      },
+      "current_support": {
+        "status": "plan",
+        "evidence": "Существующие FieldBed/FarmRules/FieldsCard — основа; адресный допуск/вклад/90:10 не реализованы. См. CODE_AUDIT_1_0.md."
+      }
+    },
+    {
+      "id": "F005",
+      "title": "Фермерское окно в текущем интерфейсе",
+      "milestone": "M2-FARM",
+      "dependencies": [
+        "F004",
+        "PKG-T014"
+      ],
+      "module_ids": [
+        "farming",
+        "work_building",
+        "ownership_cost",
+        "economy",
+        "data",
+        "economy_ui",
+        "presence_rest"
+      ],
+      "decision_ids": [
+        "PKG-D101",
+        "PKG-D108"
+      ],
+      "acceptance_ids": [
+        "FA03",
+        "FA04"
+      ],
+      "implementation_steps": [
+        "Клик по грядке открывает TargetPopup/FieldsCard с ростом, влажностью, сроком, адресной командой, вкладом и долей.",
+        "Показывать причины запрета, резерв и состояние выдачи; сервер определяет права/цифры."
+      ],
+      "done_when": "Полный цикл и получение доли доступны на телефоне/ПК; stale projection и двойной тап не выполняют лишнюю работу.",
+      "status": "planned_not_implemented_by_this_assignment",
+      "source": "shared_farm_addendum_and_current_code",
+      "acceptance_scope": {
+        "FA03": "full_case",
+        "FA04": "full_case"
+      },
+      "current_support": {
+        "status": "plan",
+        "evidence": "Существующие FieldBed/FarmRules/FieldsCard — основа; адресный допуск/вклад/90:10 не реализованы. См. CODE_AUDIT_1_0.md."
+      }
+    },
+    {
+      "id": "F006",
+      "title": "Баланс еды/труда/рынка и восстановление фермы",
+      "milestone": "M2-FARM",
+      "dependencies": [
+        "F004",
+        "PKG-T023",
+        "PKG-T024",
+        "PKG-T025"
+      ],
+      "module_ids": [
+        "farming",
+        "work_building",
+        "ownership_cost",
+        "economy",
+        "data",
+        "economy_ui",
+        "presence_rest"
+      ],
+      "decision_ids": [
+        "PKG-D101",
+        "PKG-D108"
+      ],
+      "acceptance_ids": [
+        "FA01",
+        "FA05",
+        "FA06"
+      ],
+      "implementation_steps": [
+        "Повторить исходный расчёт N=5/10/20,C=30,K=2,запас мощности 25%; отдельно чувствительность и реальные расписания ухода.",
+        "Учесть питание фермеров/строителей, семена/компост, стоимость, потерю склада, отложенные доли и возвращение после разорения.",
+        "Проверить выдача→рынок/пайки без второй Food; сценарий не зависит от ещё не созданного массового похода."
+      ],
+      "done_when": "24–72ч изолированная симуляция имеет воспроизводимые дефициты/выходы; экономика первого среза принимает реальную ферму, не мок.",
+      "status": "planned_not_implemented_by_this_assignment",
+      "source": "shared_farm_addendum_and_current_code",
+      "acceptance_scope": {
+        "FA01": "full_case",
+        "FA05": "full_case",
+        "FA06": "full_case"
+      },
+      "current_support": {
+        "status": "plan",
+        "evidence": "Существующие FieldBed/FarmRules/FieldsCard — основа; адресный допуск/вклад/90:10 не реализованы. См. CODE_AUDIT_1_0.md."
+      }
+    }
+  ],
+  "dependency_layers": [
+    [
+      "PKG-T000"
+    ],
+    [
+      "PKG-T001",
+      "PKG-T002"
+    ],
+    [
+      "PKG-T003",
+      "PKG-T004",
+      "PKG-T071"
+    ],
+    [
+      "PKG-T010",
+      "PKG-T012",
+      "PKG-T013",
+      "PKG-T015"
+    ],
+    [
+      "PKG-T011",
+      "PKG-T014",
+      "PKG-T030",
+      "PKG-T031",
+      "PKG-T033"
+    ],
+    [
+      "PKG-T020",
+      "PKG-T032",
+      "PKG-T060",
+      "PKG-T064"
+    ],
+    [
+      "PKG-T021",
+      "PKG-T061",
+      "PKG-T063"
+    ],
+    [
+      "PKG-T022",
+      "PKG-T023",
+      "F001"
+    ],
+    [
+      "PKG-T024",
+      "F002"
+    ],
+    [
+      "PKG-T025",
+      "F003"
+    ],
+    [
+      "PKG-T050",
+      "F004"
+    ],
+    [
+      "PKG-T051",
+      "PKG-T053",
+      "F005",
+      "F006"
+    ],
+    [
+      "PKG-T026"
+    ],
+    [
+      "PKG-T034",
+      "PKG-T054",
+      "PKG-T062"
+    ],
+    [
+      "PKG-T035",
+      "PKG-T065"
+    ],
+    [
+      "PKG-T040"
+    ],
+    [
+      "PKG-T041"
+    ],
+    [
+      "PKG-T042",
+      "PKG-T043",
+      "PKG-T070"
+    ],
+    [
+      "PKG-T052",
+      "PKG-T072"
+    ],
+    [
+      "PKG-T055"
+    ],
+    [
+      "PKG-T080"
+    ],
+    [
+      "PKG-T081",
+      "PKG-T082"
+    ],
+    [
+      "PKG-T083"
+    ]
+  ],
+  "acceptance": [
+    {
+      "id": "PKG-A01",
+      "status": "planned_not_executed",
+      "title": "Раздельная идентичность валют",
+      "setup": "Legacy coins, candles, TEST_CANDLE и ресурс Gold имеют разные ненулевые остатки.",
+      "action": "Показать/переименовать и повторить миграцию в disposable БД.",
+      "expected": "Счета не слились, ресурс не превратился в деньги; повтор ничего не выдаёт.",
+      "invariants": [
+        "INV01",
+        "INV18"
+      ]
+    },
+    {
+      "id": "PKG-A02",
+      "status": "planned_not_executed",
+      "title": "Деньги сделки сохраняются",
+      "setup": "Два кошелька, казна и escrow известны.",
+      "action": "Перевод/продажа/отмена, включая конкурентный повтор.",
+      "expected": "Сумма с резервами сохранена; эмиссия/изъятие только явными событиями.",
+      "invariants": [
+        "INV02"
+      ]
+    },
+    {
+      "id": "PKG-A03",
+      "status": "planned_not_executed",
+      "title": "Идемпотентная команда",
+      "setup": "Один requestId, затем altered payload.",
+      "action": "Повторить успешный запрос и отправить другой payload с тем же ID.",
+      "expected": "Прежний результат без повторного эффекта; изменённый запрос конфликтует.",
+      "invariants": [
+        "INV02",
+        "INV03"
+      ]
+    },
+    {
+      "id": "PKG-A04",
+      "status": "planned_not_executed",
+      "title": "Частный крафт сохраняет стоимость",
+      "setup": "Покупные входы с известной CostBasis, часть партии.",
+      "action": "Разделить, произвести, продать часть результата.",
+      "expected": "Количество и стоимость распределены по выбранному D108; нулевой basis не возникает из-за Keep.",
+      "invariants": [
+        "INV03",
+        "INV04"
+      ]
+    },
+    {
+      "id": "PKG-A05",
+      "status": "planned_not_executed",
+      "title": "Неизвестные старые затраты",
+      "setup": "Исторический предмет с неподтверждённым basis.",
+      "action": "Применить будущую политику продажи/налога.",
+      "expected": "Не считать без основания всю выручку прибылью; видимый согласованный вариант.",
+      "invariants": [
+        "INV04",
+        "INV18"
+      ]
+    },
+    {
+      "id": "PKG-A06",
+      "status": "planned_not_executed",
+      "title": "Госзаказ и резерв",
+      "setup": "Казна имеет ограниченный фонд и нужный товар.",
+      "action": "Два игрока принимают последний слот; расход/отмена/завершение.",
+      "expected": "Нельзя обещать больше фонда; полезный результат оплачивается один раз; остаток возвращён.",
+      "invariants": [
+        "INV02",
+        "INV06"
+      ]
+    },
+    {
+      "id": "PKG-A07",
+      "status": "planned_not_executed",
+      "title": "Собственность работы",
+      "setup": "Явные правила общего и частного результата на похожей территории; финансирование госзаказа проверяется отдельно A06.",
+      "action": "Закончить оба режима и отменить один после начала.",
+      "expected": "Владельцы результата известны; нет зарплаты и личного товара за одну партию.",
+      "invariants": [
+        "INV03",
+        "INV06"
+      ]
+    },
+    {
+      "id": "PKG-A08",
+      "status": "planned_not_executed",
+      "title": "Два покупателя и сбой лота",
+      "setup": "Один лот, два запроса, инъекция отказа финального commit.",
+      "action": "Купить параллельно, повторить после восстановления.",
+      "expected": "Один владелец товара и корректные средства; без потери/двойной выдачи.",
+      "invariants": [
+        "INV02",
+        "INV03"
+      ]
+    },
+    {
+      "id": "PKG-A09",
+      "status": "planned_not_executed",
+      "title": "Версия налога и quote",
+      "setup": "Объявлены две ставки с effectiveAt; существует принятый quote.",
+      "action": "Исполнить на границе и повторить старую операцию.",
+      "expected": "Ставка/срок следуют выбранному правилу; закрытая сделка не пересчитана.",
+      "invariants": [
+        "INV05"
+      ]
+    },
+    {
+      "id": "PKG-A10",
+      "status": "planned_not_executed",
+      "title": "Казна и настоящие изъятия",
+      "setup": "Есть налог, зарплата, внешний расход и эмиссия.",
+      "action": "Выполнить последовательность и сверить все места денег.",
+      "expected": "Перевод не назван burn; общий итог сходится с issuance-minus-withdrawal.",
+      "invariants": [
+        "INV02"
+      ]
+    },
+    {
+      "id": "PKG-A11",
+      "status": "planned_not_executed",
+      "title": "Стимулы общественного труда",
+      "setup": "Синтетические новички/ветераны/спрос и разные режимы работы.",
+      "action": "Прогнать фиксированный сценарий производства и торговли.",
+      "expected": "Есть доступный заработок/корзина/хозяйственный выход из бедности; государство не платит бесконечно за ненужное. Катастрофа проверяется отдельно A18.",
+      "invariants": [
+        "INV02",
+        "INV06"
+      ]
+    },
+    {
+      "id": "PKG-A12",
+      "status": "planned_not_executed",
+      "title": "Отдых без развития",
+      "setup": "Герой с конечным заданием и известным clock.",
+      "action": "Войти в отдых по D101, продвинуть время, перезапустить сервис.",
+      "expected": "Нет нового XP/добычи/автоработы; прежний заработанный результат не потерян и не задвоен.",
+      "invariants": [
+        "INV07",
+        "INV18"
+      ]
+    },
+    {
+      "id": "PKG-A13",
+      "status": "planned_not_executed",
+      "title": "Отключение во время боя",
+      "setup": "Герой уже active fighter.",
+      "action": "Закрыть связь, reconnect/две вкладки, запросить отдых/отступление.",
+      "expected": "Нет мгновенного иммунитета и скрытого удаления; серверный исход воспроизводим.",
+      "invariants": [
+        "INV08"
+      ]
+    },
+    {
+      "id": "PKG-A14",
+      "status": "planned_not_executed",
+      "title": "Смертный царь",
+      "setup": "Царь и житель в одинаковом боевом состоянии.",
+      "action": "Валидные атаки/лечение/выбывание и отдельно действие казны.",
+      "expected": "Общие правила HP; права управления отдельно от боевой силы.",
+      "invariants": [
+        "INV09"
+      ]
+    },
+    {
+      "id": "PKG-A15",
+      "status": "planned_not_executed",
+      "title": "Группа и активный выход",
+      "setup": "Задан D104, одна группа и расходники.",
+      "action": "Готовность/старт/leave/reconnect/повтор settlement.",
+      "expected": "Состав/ресурсы/трофеи согласованы, старый запрос не создаёт новый run.",
+      "invariants": [
+        "INV03",
+        "INV08"
+      ]
+    },
+    {
+      "id": "PKG-A16",
+      "status": "planned_not_executed",
+      "title": "Массовый PvE поход",
+      "setup": "Подготовленный обоз, группа и NPC цель.",
+      "action": "Снабдить, начать, потерять часть груза, закончить/отступить.",
+      "expected": "Расход и награда соответствуют факту; участие царя не заменяет всю группу.",
+      "invariants": [
+        "INV03",
+        "INV09"
+      ]
+    },
+    {
+      "id": "PKG-A17",
+      "status": "planned_not_executed",
+      "title": "Навигация и клиентское движение",
+      "setup": "Вода/забор/узкий проход и несколько противников; controlled delay.",
+      "action": "Боевые команды при snapshots/reconnect.",
+      "expected": "Нет обхода непроходимой воды, вечной толпы и replay старого намерения; статика не пересобирается на каждый тик.",
+      "invariants": [
+        "INV16"
+      ]
+    },
+    {
+      "id": "PKG-A18",
+      "status": "planned_not_executed",
+      "title": "Катастрофа и восстановление",
+      "setup": "Город с сохранёнными профилями и выбранными правилами потерь.",
+      "action": "Фазы осады, поражение, рестарт и задания восстановления.",
+      "expected": "История сохранена; бесплатный путь конечен; активные фазы не теряются.",
+      "invariants": [
+        "INV10",
+        "INV18"
+      ]
+    },
+    {
+      "id": "PKG-A19",
+      "status": "planned_not_executed",
+      "title": "Редкое чудо однократно",
+      "setup": "Выполнены условия D103 и расход/лимит.",
+      "action": "Параллельные triggers и повтор после рестарта.",
+      "expected": "Один эффект, один расход; руины не восстановились бесплатно; лимит не сброшен.",
+      "invariants": [
+        "INV10"
+      ]
+    },
+    {
+      "id": "PKG-A20",
+      "status": "planned_not_executed",
+      "title": "Решение директора свежо и разрешено",
+      "setup": "Снимок с revision, валидный и устаревший DirectorAction.",
+      "action": "Применить/повторить/изменить мир до применения.",
+      "expected": "Либо одно законное действие, либо объяснимый reject без полуприменения.",
+      "invariants": [
+        "INV11"
+      ]
+    },
+    {
+      "id": "PKG-A21",
+      "status": "planned_not_executed",
+      "title": "LLM недоступен",
+      "setup": "429/timeout/invalid response и исчерпанный общий бюджет.",
+      "action": "Запустить обычную жизнь/бой/сделку и review.",
+      "expected": "Игровые циклы продолжаются, fallback не создаёт дублирующих событий.",
+      "invariants": [
+        "INV12"
+      ]
+    },
+    {
+      "id": "PKG-A22",
+      "status": "planned_not_executed",
+      "title": "Инъекция и лишние полномочия",
+      "setup": "Чат/ответ модели содержит SQL, секрет или неразрешённый kind.",
+      "action": "Передать в director review/executor.",
+      "expected": "Нет выполнения произвольной команды, утечки или обхода прав.",
+      "invariants": [
+        "INV11",
+        "INV12"
+      ]
+    },
+    {
+      "id": "PKG-A23",
+      "status": "planned_not_executed",
+      "title": "Автономная экономика",
+      "setup": "Версионированные правила D109, остатки казны и заказы.",
+      "action": "Директор меняет разрешённую ставку/фонд по сценарию.",
+      "expected": "Есть реальное действие/основание, лимиты/сроки соблюдены; нет только слов без эффекта.",
+      "invariants": [
+        "INV02",
+        "INV05",
+        "INV11"
+      ]
+    },
+    {
+      "id": "PKG-A24",
+      "status": "planned_not_executed",
+      "title": "Premium не усиливает прямой бой",
+      "setup": "Равные герои с разными entitlement, одинаковые снаряжение/seed.",
+      "action": "Сравнить HP/урон/точность/лут и отдых.",
+      "expected": "Нет платного боевого параметра; отдых не развивает никого.",
+      "invariants": [
+        "INV07",
+        "INV13"
+      ]
+    },
+    {
+      "id": "PKG-A25",
+      "status": "planned_not_executed",
+      "title": "Совокупное хозяйственное преимущество",
+      "setup": "Утверждён каталог D110 и сравнимые действия.",
+      "action": "Симуляция tiers/expiry/двух источников/энергии/времени.",
+      "expected": "Нет скрытого перемножения и потери вещей при expiry; эффект измерен, не объявлен нейтральным.",
+      "invariants": [
+        "INV13"
+      ]
+    },
+    {
+      "id": "PKG-A26",
+      "status": "planned_not_executed",
+      "title": "YouTube доказательство",
+      "setup": "Confirmed/observed/unknown/expired, повтор gifted/milestone.",
+      "action": "Сверка и временный сбой проверки.",
+      "expected": "Нет выдачи точного срока по одному badge; grace и tier следуют D111.",
+      "invariants": [
+        "INV13"
+      ]
+    },
+    {
+      "id": "PKG-A27",
+      "status": "planned_not_executed",
+      "title": "Stars replay и неверный платёж",
+      "setup": "Ожидаемый invoice, XTR, payload и account; wrong amount/recipient.",
+      "action": "Повторы precheckout/success, crash до/после commit.",
+      "expected": "Верный платёж зачислен один раз; неверный отклонён; marker не опережает credit.",
+      "invariants": [
+        "INV14"
+      ]
+    },
+    {
+      "id": "PKG-A28",
+      "status": "planned_not_executed",
+      "title": "Возврат и старые обязательства",
+      "setup": "Существующий receipt, потраченная часть Dcoin, отложенная привязка.",
+      "action": "Refund/повтор/refetch/привязка по D112.",
+      "expected": "Объявленный воспроизводимый результат без двойной выдачи и списания чужого золота.",
+      "invariants": [
+        "INV14",
+        "INV18"
+      ]
+    },
+    {
+      "id": "PKG-A29",
+      "status": "planned_not_executed",
+      "title": "Нет скрытого моста валют",
+      "setup": "Купленный Dcoin/косметика и старое свечное лечение.",
+      "action": "Попытка перепродажи за золото и legacy-расход по D116.",
+      "expected": "Разделение сохраняется; допустимый бытовой эффект описан, не выдаётся случайно.",
+      "invariants": [
+        "INV01",
+        "INV15"
+      ]
+    },
+    {
+      "id": "PKG-A30",
+      "status": "planned_not_executed",
+      "title": "Группа и доступ",
+      "setup": "Confirmed member/nonmember/unknown/ban и связь двух аккаунтов.",
+      "action": "Вход/выход/повтор проверки по D113.",
+      "expected": "Ник не выдаёт права, временный unknown не стирает прогресс и купленное.",
+      "invariants": [
+        "INV18"
+      ]
+    },
+    {
+      "id": "PKG-A31",
+      "status": "planned_not_executed",
+      "title": "Уведомления и отчёт",
+      "setup": "Opt-out/тихие часы/выбранная категория, повтор события и сетевой сбой.",
+      "action": "Отправка и отмена черновика отчёта.",
+      "expected": "Нет несанкционированного потока, дублей эффектов и сохранения неотправленного снимка.",
+      "invariants": [
+        "INV18"
+      ]
+    },
+    {
+      "id": "PKG-A32",
+      "status": "planned_not_executed",
+      "title": "Телефонный сквозной путь",
+      "setup": "Целевое устройство/viewport, сеть и сценарий доступа.",
+      "action": "Вход → заказ → торговля → бой → отдых, касания и окна.",
+      "expected": "Мир читается, причины понятны, клик по врагу не требует лишней карточки; нет tap-through.",
+      "invariants": [
+        "INV16"
+      ]
+    },
+    {
+      "id": "PKG-A33",
+      "status": "planned_not_executed",
+      "title": "Музыка по фазе",
+      "setup": "Разблокированный/запрещённый звук, states и активные реплики.",
+      "action": "Переходы/быстрые колебания/чудо/mute/фон.",
+      "expected": "Нет автогромкого старта, бесконечных перезапусков, маскировки атак и негарантированных loop без проверки.",
+      "invariants": [
+        "INV17"
+      ]
+    },
+    {
+      "id": "PKG-A34",
+      "status": "planned_not_executed",
+      "title": "Сохранность и возврат версии",
+      "setup": "Синтетическая сложная БД, активные бои, несколько валют и обязательств.",
+      "action": "Migration/retry/restore rehearsal и отключение feature flags.",
+      "expected": "Все инварианты сходятся; старый код не запускается поверх несовместимого нового JSON.",
+      "invariants": [
+        "INV18"
+      ]
+    },
+    {
+      "id": "PKG-A35",
+      "status": "planned_not_executed",
+      "title": "Нагрузка всего хоста",
+      "setup": "Disposable-среда, профиль D114, другие сервисы обозначены.",
+      "action": "Нагрузка без реальных игроков/платежей, reconnect bursts.",
+      "expected": "Отдельные server/client/network метрики и влияние на другие проекты; никакого необоснованного вывода по одному CPU.",
+      "invariants": [
+        "INV16",
+        "INV18"
+      ]
+    },
+    {
+      "id": "PKG-A36",
+      "status": "planned_not_executed",
+      "title": "Последний сквозной результат",
+      "setup": "Все выбранные контракты и принятый набор первой поставки.",
+      "action": "Полная цепочка из 01 + сбой/поражение/восстановление.",
+      "expected": "Показана рабочая жизнь, не набор отдельных моков; остаются проверяемые данные и вывод.",
+      "invariants": [
+        "INV01",
+        "INV02",
+        "INV03",
+        "INV07",
+        "INV10",
+        "INV11",
+        "INV13",
+        "INV18"
+      ]
+    },
+    {
+      "id": "PKG-A37",
+      "status": "planned_not_executed",
+      "title": "Первый хозяйственный срез",
+      "setup": "Синтетическая казна, явные виды работы, расходуемые входы и рынок.",
+      "action": "Принять заказ → завершить → получить чистую оплату; отдельно произвести личный товар → продать → уплатить дань; повторить запрос.",
+      "expected": "Результат и деньги принадлежат правильным участникам; стоимость, резерв и налог сходятся. Данжи, катастрофа и premium не являются условием этого раннего среза.",
+      "invariants": [
+        "INV01",
+        "INV02",
+        "INV03",
+        "INV04",
+        "INV05",
+        "INV06"
+      ]
+    },
+    {
+      "id": "PKG-A38",
+      "status": "planned_not_executed",
+      "title": "Хозяйство снабжает групповое приключение",
+      "setup": "Рабочий хозяйственный срез, группа и согласованные D101/D104.",
+      "action": "Заказ/сделка → подготовка припасов → групповой данж → settlement трофея → выбранный отдых.",
+      "expected": "Нет двойного расхода или выдачи; вещь возвращается в производство, отдых не развивает. Проверяется API/domain цепочка без требования будущей осады или premium.",
+      "invariants": [
+        "INV02",
+        "INV03",
+        "INV06",
+        "INV07",
+        "INV08"
+      ]
+    },
+    {
+      "id": "PKG-A39",
+      "status": "planned_not_executed",
+      "title": "Самостоятельный цикл директора",
+      "setup": "Каталог действий, исполнители, модельный адаптер и разрешённый staging-режим.",
+      "action": "Свежий снимок → предложение → проверенное действие → audit; повторить при timeout/старой версии/отключённом праве.",
+      "expected": "Один разрешённый эффект либо понятный отказ; fallback сохраняет жизнь мира. Не требует будущих платежей, музыки или релиза.",
+      "invariants": [
+        "INV03",
+        "INV11",
+        "INV12"
+      ]
+    },
+    {
+      "id": "PKG-A40",
+      "status": "planned_not_executed",
+      "title": "Сохранённые фазы последней осады",
+      "setup": "Город и фазы с выбранным исходом D102.",
+      "action": "Пройти эвакуацию/рубеж/терминальный исход, рестарт на каждой границе и повтор команды.",
+      "expected": "Фаза и участники сохранены; исход единственный, старые профили и имущество не сброшены. Задания восстановления проверяются позднее A18.",
+      "invariants": [
+        "INV03",
+        "INV09",
+        "INV10",
+        "INV18"
+      ]
+    }
+  ],
+  "farm_acceptance": [
+    {
+      "id": "FA01",
+      "scenario": "Натуральная сохранность",
+      "checks": [
+        "H=1/6/15/100, дробные 10%, без округления каждому вверх",
+        "Food в public/personal/hands/lots/reserves + consumption/loss сходится; claim не вторая Food"
+      ]
+    },
+    {
+      "id": "FA02",
+      "scenario": "Конкуренция, рестарт и версии",
+      "checks": [
+        "Два посева/сбора/полива, другой payload с тем же requestId, сбой БД/рестарт",
+        "Принятый старый цикл и cropCycleId не переходят на новую грядку, вклад/фонд/урожай выдаются один раз"
+      ]
+    },
+    {
+      "id": "FA03",
+      "scenario": "Допуск и телефон",
+      "checks": [
+        "Без допуска/другое царство/подмена plotId запрещены сервером",
+        "320px, WebKit/desktop, SignalR/reconnect, две вкладки/двойной тап; причины запрета видны"
+      ]
+    },
+    {
+      "id": "FA04",
+      "scenario": "Оплата, рынок и выдача",
+      "checks": [
+        "Один фонд госзаказа вместо WorkPay+фонда, казна не уходит в минус",
+        "Последний сборщик не получает всё; снятие допуска/полный склад/продажа/провиант не создают награду повторно"
+      ]
+    },
+    {
+      "id": "FA05",
+      "scenario": "Отдых и полезность",
+      "checks": [
+        "Растение растёт во время отдыха; герой не получает новые XP/автоуход",
+        "Предыдущий вклад рассчитывается по сохранённым условиям; дождь/лишний полив не фармят долю"
+      ]
+    },
+    {
+      "id": "FA06",
+      "scenario": "Питание и восстановление",
+      "checks": [
+        "N=5/10/20,C=30,K=2,25% мощности; отдельный резерв 2 порции, засуха/отсутствие фермера",
+        "Разрушена ферма/склад, нет семян/казны: конечный путь базового питания/ремонта, без бесконечной NPC-скупки"
+      ]
+    }
+  ],
+  "module_counts": {
+    "original": 19,
+    "added_farming": 1,
+    "total": 20
+  }
+}

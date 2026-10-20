@@ -455,13 +455,14 @@ public sealed partial class GameService(
             var citizen = await db.Citizens.SingleAsync(c => c.Id == key.Id, cancellationToken);
             db.AuditActor = citizen.AccountId;
             HospitalRules.RequireReady(citizen, time.GetUtcNow());
+            SafeRest.RequireActive(citizen.RestState);
             var village = await db.Villages.SingleAsync(v => v.Id == citizen.VillageId, cancellationToken);
             var now = time.GetUtcNow();
             village.EnsureCamp(now);
             var context = (await LoadContextAsync(db, village, citizen.Id, now, cancellationToken)).Work;
             var raids = await FightDueRaidsAsync(db, village, context.CompletedProjects, now, cancellationToken);
 
-            var report = CycleEngine.Settle(citizen, context, now);
+            var report = await SettleWorkAsync(db, citizen, context, now, cancellationToken);
             await AfterSettleAsync(db, village, report, now, cancellationToken);
             var completion = await CompleteProjectIfDoneAsync(db, context, now, cancellationToken);
             if (completion is not null)
@@ -563,14 +564,14 @@ public sealed partial class GameService(
             cancellationToken);
 
     /// <summary>A change the Tsar makes to one citizen of the village.</summary>
-    private Task<CitizenSummaryDto> ChangeCitizenAsync(
+    private async Task<CitizenSummaryDto> ChangeCitizenAsync(
         string slug,
         Guid accountId,
         Guid citizenId,
         string actionName,
         Action<Citizen> change,
         CancellationToken cancellationToken) =>
-        WithRetryAsync(async db =>
+        await WithVillageAsync(await FindVillageIdAsync(slug, cancellationToken), async db =>
         {
             var village = await LoadVillageAsync(db, slug, cancellationToken);
             if (village.OwnerAccountId != accountId)
@@ -581,6 +582,8 @@ public sealed partial class GameService(
             var citizen = await db.Citizens.SingleOrDefaultAsync(c => c.Id == citizenId && c.VillageId == village.Id, cancellationToken)
                           ?? throw new NotFoundException("citizen.notFound", "This citizen does not live in the village.");
             change(citizen);
+            db.AuditActor = accountId;
+            db.AuditOperation = actionName;
             await db.SaveChangesAsync(cancellationToken);
             logger.TsarActed(slug, actionName, citizenId.ToString());
 
@@ -979,9 +982,21 @@ public sealed partial class GameService(
             }
             RaidRules.UpdateNextRaidAt(village);
         }
+        var restChanged = new HashSet<Guid>();
+        var waitingForRest = citizens.Where(c => c.RestState == RestState.RestRequested && c.CycleSettled).ToArray();
+        if (waitingForRest.Length > 0)
+        {
+            var activeBattles = await db.RaidBattles.Where(b => b.VillageId == village.Id && b.FinishedAt == null).ToListAsync(cancellationToken);
+            foreach (var citizen in waitingForRest)
+            {
+                var blocked = activeBattles.Any(b => b.Fighters.Any(f => !f.IsTsar && f.CitizenId == citizen.Id && f.Active && f.Health > 0));
+                SafeRest.AfterSettlement(citizen, now, blocked);
+                if (citizen.RestState == RestState.Resting) { restChanged.Add(citizen.Id); changed = true; }
+            }
+        }
         var worldAfter=(village.BridgeOpened,village.BridgeRuinedAt,village.DefeatedAt,
             Ruins:CombatRules.Buildings(village).Count(b=>b.Damage>=100));
-        return new RaidsFought(reports,citizens.Where(c=>updated.Any(b=>b.FinishedAt is not null&&b.Fighters.Any(f=>!f.IsTsar&&f.CitizenId==c.Id)) || reports.Any(r=>r.Defenders.Any(d=>d.CitizenId==c.Id)||r.Victims.Any(v=>v.CitizenId==c.Id))
+        return new RaidsFought(reports,citizens.Where(c=>restChanged.Contains(c.Id)||updated.Any(b=>b.FinishedAt is not null&&b.Fighters.Any(f=>!f.IsTsar&&f.CitizenId==c.Id)) || reports.Any(r=>r.Defenders.Any(d=>d.CitizenId==c.Id)||r.Victims.Any(v=>v.CitizenId==c.Id))
             || changed && (!injuredBefore.Contains(c.Id) && CombatRules.IsInjured(c,now)
                 || peopleBefore[c.Id]!=(c.HomePlotId,c.CurrentSiteId,c.CycleSettled,c.HospitalizedAt is not null?c.IdleSpot:null)))
             .ToArray(),changed,updated,village.Fortifications,worldBefore!=worldAfter);
@@ -1014,7 +1029,7 @@ public sealed partial class GameService(
             HospitalRules.RequireReady(citizen, time.GetUtcNow());
             var village = await db.Villages.SingleAsync(v => v.Id == citizen.VillageId, cancellationToken);
             var now = time.GetUtcNow();
-            StorageRules.Take(citizen, village, request.PlotId, request.Resource, request.Amount, now, request.Sharpen);
+            StorageRules.Take(citizen, village, request.PlotId, request.Resource, request.Amount, now, request.Sharpen, request.Durability);
             await db.SaveChangesAsync(cancellationToken);
             logger.CitizenActed(citizen.Id, slug, "take", $"{request.Amount} {request.Resource} from {request.PlotId}");
 
@@ -1155,7 +1170,7 @@ public sealed partial class GameService(
         village.EnsureCamp(now);
         var context = (await LoadContextAsync(db, village, citizen.Id, now, cancellationToken)).Work;
         var raids = await FightDueRaidsAsync(db, village, context.CompletedProjects, now, cancellationToken);
-        var report = CycleEngine.Settle(citizen, context, now);
+        var report = await SettleWorkAsync(db, citizen, context, now, cancellationToken);
         if (report is null)
         {
             if (raids.Reports.Count > 0 || raids.Changed || resumed)
@@ -1448,7 +1463,7 @@ public sealed partial class GameService(
             .Select(a => new { a.DisplayName, a.Character })
             .SingleAsync(cancellationToken);
         var tsar = new TsarDto(owner.Character?.Name ?? owner.DisplayName, owner.Character?.Appearance, village.TsarSpot, village.TsarInjuredUntil)
-            { AccountId=village.OwnerAccountId, HospitalizedAt=village.TsarHospitalizedAt, RescueByCitizenId=village.TsarRescueByCitizenId, RescueRequestedAt=village.TsarRescueRequestedAt };
+            { RestState=village.TsarRestState, RestRequestedAt=village.TsarRestRequestedAt, AccountId=village.OwnerAccountId, HospitalizedAt=village.TsarHospitalizedAt, RescueByCitizenId=village.TsarRescueByCitizenId, RescueRequestedAt=village.TsarRescueRequestedAt };
         var trips = await LoadTripsAsync(db, village.Id, cancellationToken);
         var shownSince = now - DungeonRules.ShownAfterEnd;
         var dungeon = await db.DungeonRuns.AsNoTracking()

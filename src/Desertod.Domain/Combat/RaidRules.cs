@@ -192,6 +192,7 @@ public static class RaidRules
     /// <summary>The guard task a citizen was on when the raid struck, or null if they were not on watch.</summary>
     public static TaskDefinition? GuardTask(Citizen citizen, DateTimeOffset strikesAt) =>
         citizen.Status == CitizenStatus.Active
+        && citizen.RestState != RestState.Resting
         && citizen.RecoveryPausedAt is null && !HospitalRules.IsAdmitted(citizen, strikesAt)
         && !citizen.CycleSettled
         && citizen.CurrentSiteId is null
@@ -208,6 +209,7 @@ public static class RaidRules
     /// <summary>Resting at the camp when the raid struck: not working and not hurt already.</summary>
     public static bool AtRest(Citizen citizen, DateTimeOffset strikesAt) =>
         citizen.Status == CitizenStatus.Active
+        && citizen.RestState != RestState.Resting
         && citizen.RecoveryPausedAt is null && !HospitalRules.IsAdmitted(citizen, strikesAt)
         && !CombatRules.IsInjured(citizen, strikesAt)
         && (citizen.CycleStartedAt is not { } started || started > strikesAt || citizen.CycleEndsAt is not { } ends || ends <= strikesAt);

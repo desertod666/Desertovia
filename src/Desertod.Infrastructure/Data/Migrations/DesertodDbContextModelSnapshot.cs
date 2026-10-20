@@ -764,6 +764,16 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<int?>("ReservedSiteWork")
                         .HasColumnType("integer");
 
+                    b.Property<DateTimeOffset?>("RestRequestedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RestState")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasDefaultValue("Active");
+
                     b.Property<double>("ShelterQuality")
                         .HasColumnType("double precision");
 
@@ -1041,6 +1051,16 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                     b.Property<bool>("TsarRescueRewardEligible")
                         .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("TsarRestRequestedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TsarRestState")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasDefaultValue("Active");
 
                     b.Property<double?>("TsarSpotX")
                         .HasColumnType("double precision");
@@ -1968,6 +1988,8 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                             b1.Property<int>("Amount");
 
+                            b1.Property<int>("Durability");
+
                             b1.Property<string>("Kind")
                                 .IsRequired();
 
@@ -2424,6 +2446,8 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                                     b2.Property<int>("Amount");
 
+                                    b2.Property<int>("Durability");
+
                                     b2.Property<string>("Kind")
                                         .IsRequired();
 
@@ -2527,6 +2551,8 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                                     b2.Property<int>("Amount");
 
+                                    b2.Property<int>("Durability");
+
                                     b2.Property<string>("Kind")
                                         .IsRequired();
 
@@ -2593,6 +2619,8 @@ namespace Desertod.Infrastructure.Data.Migrations
                                         .ValueGeneratedOnAdd();
 
                                     b2.Property<int>("Amount");
+
+                                    b2.Property<int>("Durability");
 
                                     b2.Property<string>("Kind")
                                         .IsRequired();
@@ -3114,6 +3142,8 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                                     b2.Property<int>("Amount");
 
+                                    b2.Property<int>("Durability");
+
                                     b2.Property<string>("Kind")
                                         .IsRequired();
 
@@ -3137,6 +3167,8 @@ namespace Desertod.Infrastructure.Data.Migrations
                                         .ValueGeneratedOnAdd();
 
                                     b2.Property<int>("Amount");
+
+                                    b2.Property<int>("Durability");
 
                                     b2.Property<string>("Kind")
                                         .IsRequired();

@@ -165,6 +165,7 @@ export function createTranslator(language: Language) {
       parts.push(t(report.fight.won ? 'report.fightWon' : 'report.fightLost', { enemy: name }))
     }
     for (const item of report.produced) parts.push(produced(item.resource, item.amount))
+    for (const kind of report.toolsBroken ?? []) parts.push(t('done.toolBroke', { tool: resource(kind) }))
     if (report.repaired > 0) parts.push(t('report.repaired', { amount: amount(report.repaired) }))
     if (report.moraleGained > 0) parts.push(t('report.morale', { value: amount(report.moraleGained * 100) }))
     if (report.projectContribution > 0 && report.produced.length === 0) {

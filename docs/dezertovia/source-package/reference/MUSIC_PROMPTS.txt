@@ -1,0 +1,230 @@
+Дезертовия 1.0 — музыкальная концепция и промпты
+19 октября 2026 года
+
+35. Музыка и звуковая режиссура
+
+35.1 Музыкальное лицо Дезертовии
+
+Владелец хочет пиксельный аркадный мир и любит музыку Diablo I и Diablo II. Предлагаю взять от этого ориентира тёмную акустическую фактуру, тревожное путешествие и особую ценность безопасного места: щипковые струны, низкие смычковые, редкая сухая перкуссия, холодные резонансы, пространство и тишина. Для Дезертовии создаются собственные мелодии, мотивы и записи.
+
+Пиксельность не требует звучания старой восьмибитной приставки. Читаемая короткая фраза, небольшой ансамбль, ясный ритм и точный акцент могут соответствовать аркадному миру лучше непрерывного чиптюна. Допустимы отдельные тихие синтетические тембры, но основной характер я вижу акустическим и немного сказочным.
+
+Главный контраст — человеческое тепло внутри опасного мира. Деревня не должна часами звучать как адский коридор. Её тема сдержанно тёплая, простая и живая; за пределами стен знакомый мотив обрывается и меняется. Чудо у замка на короткое время даёт свет, а после поражения та же деревенская тема возвращается разреженной и уставшей.
+
+Основной набор: нейлоновая акустическая гитара, лютня и мягкие гусли; виолончель, альт и низкие смычковые; редкие деревянные духовые; рамочный барабан, негромкая ручная перкуссия и приглушённые большие барабаны в бою; редкий колокол и стеклянный резонанс для сверхъестественного. Полный хор и большая оркестровая стена используются очень ограниченно, а не как постоянный фон.
+
+35.2 Три собственных музыкальных мотива
+
+Мотив царства — короткая оригинальная фраза на четыре-шесть нот: узнаваемая, сдержанная, одновременно домашняя и немного печальная. Рабочая гармоническая основа для первых опытов — ре минор с отдельными дорийскими просветлениями. Это предложение палитры, а не обязательные ноты готового произведения.
+
+Мотив угрозы — короткий неровный ритм и напряжённый интервал. Его слышно сначала в намёке ночью, затем в данже и наконец в осаде. Он узнаётся по форме, а не только громкости.
+
+Мотив чуда — редкое восходящее разрешение, открытая квинта и светлая окраска привычной темы. После его появления не обязана начинаться беззаботная победа: мир пережил катастрофу, а не отменил её.
+
+Текст «используй тот же мотив» не гарантирует, что генератор действительно повторит мелодию в разных композициях. Сначала нужно выбрать оригинальную главную тему, затем использовать разрешённые выбранным сервисом аудиореференсы, продолжения или ручную аранжировку. Общая тональность и инструменты помогают связности, но не заменяют настоящую работу с мотивом.
+
+35.3 Как применять промпты
+
+Ниже — готовые описания на английском для Suno или похожего генератора. Каждый блок можно использовать отдельно. В режиме, где есть переключатель инструментальной музыки, его нужно включить. Текст предназначен для описания музыки, а не для поля песни, которую модель должна спеть.
+
+Указанные темп, длительность и бесшовность — желаемые свойства. Генератор может их не соблюсти: результат надо слушать, отбирать и подготавливать. Для фона желательно получить несколько минут спокойного материала без обязательного вступления и финального удара; потом выделить удобный игровой цикл. Для короткого акцента может понадобиться вырезка из подходящей генерации.
+
+В промптах описана атмосфера, а не запрошено копирование существующих мелодий Diablo. Звуки ударов, шагов, монет, кликов, грозы и речи делаются отдельно от музыки: они должны соответствовать реальному действию. Для выпуска сохраняются исходники, происхождение генераций и подтверждённые условия использования выбранного сервиса.
+
+35.4 M01 Главная тема царства
+
+Когда: вход, обзор мира и редкие сюжетные возвращения к общей теме. Образ: маленькое человеческое царство среди большой опасности. Нужна узнаваемая оригинальная фраза, не гимн непобедимой империи. Ориентир: 72–80 BPM, умеренная плотность, композиция на две-три минуты и отдельная спокойная версия.
+
+PROMPT M01
+
+Instrumental dark acoustic fantasy theme for a persistent pixel-art kingdom. Intimate nylon-string guitar and lute, warm low cello, sparse hammered dulcimer accents, dry frame drum far in the background. Around 76 BPM, D minor with occasional Dorian warmth. An original short, memorable village motif: fragile human hope inside a dangerous ancient world. Small ensemble, restrained dynamics, clear melodic silhouettes, room between phrases. Suitable for repeated listening, with a stable middle section for editing into a loop. No vocals, no lyrics, no spoken words, no copied melodies, no giant cinematic climax.
+
+35.5 M02 Деревня днём
+
+Когда: обычная жизнь, спокойная работа, прогулка между домами. Должна выдерживать длинную сессию и оставлять место чату и ремесленным звукам. Ориентир: 68–78 BPM, низкая интенсивность, 90–150 секунд пригодного к повтору материала.
+
+PROMPT M02
+
+Instrumental acoustic dark-folk village ambience for a warm pixel-art survival kingdom. Soft fingerpicked nylon guitar, muted lute, gentle low strings and occasional wooden flute. Around 72 BPM, natural uneven human phrasing, quiet earthy warmth with a trace of melancholy. Sparse original melody, simple repeating accompaniment and generous silence between phrases. A place of work, neighbours and temporary safety, never sugary or cartoonish. Low listening fatigue, no dramatic build, no vocals, no speech, no heavy drums, no sudden ending. Keep a steady arrangement suitable for a long gameplay loop.
+
+35.6 M03 Рынок и мастерские
+
+Когда: хозяйственная активность и торговая площадь. Чуть больше движения, чем в обычной деревне, без постоянного праздника. Налоговое списание не запускает особую тревожную музыку. Удары молотков и звон монет не вшиваются в фон.
+
+PROMPT M03
+
+Instrumental rustic market and workshop music for a medieval pixel-art kingdom. Plucked lute and soft psaltery, short wooden-flute replies, restrained hand percussion and an understated walking pulse around 88 BPM. Busy human craftsmanship, bargaining and practical daily effort, with slightly austere minor-modal harmony. Clear small-scale phrases, original melody, modest dynamics and a stable repeating structure. Keep the sound open for game dialogue and separate crafting effects. No vocals, no speech, no embedded coins or hammer sound effects, no tavern-party climax, no bright modern pop production.
+
+35.7 M04 Таверна и общение
+
+Когда: безопасный отдых, встреча после похода, небольшое общение. Теплее общего мира, но не бесконечная шумная пьянка. Ориентир: 78–90 BPM, камерность и небольшая акустическая шероховатость.
+
+PROMPT M04
+
+Instrumental intimate medieval tavern music in a dark pixel-art fantasy world. Small acoustic ensemble: lute, softly bowed fiddle, low wooden flute and very light frame drum. Around 84 BPM, warm minor-modal melody with occasional playful turns, understated and human rather than comedic. Friends sharing a quiet refuge after difficult work. Slight natural performance imperfections, close sound, restrained repetition and ample room for conversation. No singing, no crowd recording, no speech, no drinking-chant energy, no huge festival percussion, no modern electronic beat.
+
+35.8 M05 Возвращение царя
+
+Когда: подтверждённое общее событие приезда царя и встреча на площади. Не при каждом входе в игру или смене вкладки. Сначала короткий знак появления, затем фон, допускающий речь стримера. Царь смертен — музыка выражает признание людей, а не неуязвимость.
+
+PROMPT M05
+
+Instrumental modest royal arrival for a living pixel-art kingdom. A brief clear opening flourish followed by a restrained acoustic gathering theme. Lute, warm bowed strings, sparse low brass used only for a few dignified notes, soft frame drums. Around 88 BPM, proud but human, affectionate respect for a mortal ruler returning to his people. Original compact motif, small medieval scale, space for live speech. Provide a settled middle section after the opening. No vocals, no lyrics, no bombastic coronation, no superhero orchestra, no constant triumphant fanfare.
+
+35.9 M06 Деревня ночью
+
+Когда: игровая ночь без активного нападения. Те же стены и дома звучат иначе: редкие ноты, больше воздуха, мягкое беспокойство. Не предупреждает о нападении каждую ночь по умолчанию.
+
+PROMPT M06
+
+Instrumental nocturnal acoustic ambience for a pixel-art village under a dangerous sky. Sparse fingerpicked guitar harmonics, low cello drones, distant soft bell tones and occasional airy wooden-flute notes. Very slow perceived pulse around 58 BPM, D minor, intimate and watchful. Preserve a faint sense of shelter and sleeping human life without implying that battle is already happening. Long quiet spaces, subtle evolving texture, restrained upper frequencies. No vocals, no horror screams, no jump scares, no heavy rhythm, no dramatic final chord. Suitable for a quiet repeating night scene.
+
+35.10 M07 Лес и дорога
+
+Когда: разведка и движение в округе. Образ: вышел из обжитого места и видишь лишь часть пути. Есть движение, но музыка не обещает бой на каждом шаге.
+
+PROMPT M07
+
+Instrumental dark acoustic exploration music for a small party travelling through an ancient forest in a pixel-art survival world. Repeating plucked guitar pattern, breathy wooden flute, low viola, restrained skin-drum pulse around 82 BPM. Minor-modal harmony, uncertain paths, curiosity and practical courage. Original sparse motif, irregular answering phrases and open space between instruments. Steady travel energy without action overload. No vocals, no recorded footsteps or wildlife effects, no epic orchestral lift, no modern rock drums. Stable arrangement that can support an extended exploration loop.
+
+35.11 M08 Туман и неполная разведка
+
+Когда: зловещая погода, исчезновение разведчиков, начало неизвестного события. Это намёк, который можно понять по-разному. Если сценарий не раскрывает точное время атаки, музыка тоже не должна выдавать скрытый обратный отсчёт.
+
+PROMPT M08
+
+Instrumental restrained fog-and-uncertainty cue for a dark pixel-art kingdom. Sparse low bowed strings, incomplete plucked-string phrases, hollow wood resonance and a barely perceptible pulse. Around 64 BPM but with long pauses, unresolved modal harmony and subtle tension rather than active battle. Scouts have not returned; something may be moving beyond sight. Avoid a countdown rhythm or a predictable alarm build. No vocals, no whispers, no screams, no thunder sound effects, no sudden stingers inside the background. Keep the texture quiet, ambiguous and suitable for a sustained scene.
+
+35.12 M09 Подземелье
+
+Когда: исследование склепа, руин или нижнего уровня. Должно быть слышно пространство и риск, но игроки обязаны различать предупреждения атаки. Холодные резонансы дозируются, чтобы прослушивание в наушниках не утомляло.
+
+PROMPT M09
+
+Instrumental dark dungeon exploration for a pixel-art action-survival game. Low bowed cello and bass textures, sparse nylon-guitar notes, distant dulcimer resonances and occasional muted percussion. Around 66 BPM, minor and suspended harmony, ancient stone depth and the feeling of a small human party entering somewhere too old. Quiet tension, clear gaps and slow development, original melodic fragments. Leave space for footsteps, traps and combat warnings added separately by the game. No vocals, no chanting, no horror screams, no constant drums, no triumphant melody. Loop-oriented ambience without an abrupt finale.
+
+35.13 M10 Поселение нежити
+
+Когда: разведка деревни нежити и подход к вражескому поселению. Обычный человеческий быт узнаётся в искажённом виде. Это место со своей организацией, а не ещё один безымянный набор монстров.
+
+PROMPT M10
+
+Instrumental corrupted-village ambience for an undead settlement in a pixel-art dark fantasy world. A brittle plucked-string pattern suggesting an old human folk tune, now original and fragmented, with low strings, sparse cracked-bell tones and uneven muted drum responses. Around 70 BPM, uneasy minor-modal harmony, organized hostile presence and forgotten daily life. Deliberate restraint, empty space and unsettling acoustic texture. No vocals, no speech, no zombie sound effects, no direct quotation of existing music, no industrial noise wall. Keep a repeatable scouting section before any battle begins.
+
+35.14 M11 Одиночный микробой
+
+Когда: короткая личная схватка. Нужен небольшой ритмический слой или компактная боевая тема, которая быстро отпускает игрока после исхода. Не каждый волк заслуживает музыки конца света.
+
+PROMPT M11
+
+Instrumental compact skirmish music for a responsive pixel-art action game in a dark acoustic fantasy setting. Tight frame-drum rhythm, short low-string figures and sharp plucked-string accents around 106 BPM. A small dangerous encounter, agile decisions and immediate readable momentum, not an army battle. Minor-modal harmony, original brief motifs, controlled bass and open midrange for attack cues. Maintain one stable intensity for easy editing into a short loop. No vocals, no electric-guitar wall, no EDM drop, no huge cinematic climax, no embedded weapon sounds.
+
+35.15 M12 Поход и обоз
+
+Когда: сбор группы, выход армии, движение каравана перед большим испытанием. Маршируют живые люди с припасами, а не бесконечный легион. В царском походе можно использовать узнаваемую тему царства в более собранном ритме.
+
+PROMPT M12
+
+Instrumental dark-folk expedition march for a mortal ruler and a player army leaving a pixel-art kingdom. Firm but restrained skin drums around 94 BPM, low bowed strings, lute ostinato and occasional short low-brass calls. Determination, heavy supplies and shared risk; a human campaign rather than invincible military triumph. Original compact kingdom-like melody with space between phrases. Sustained forward motion, moderate dynamics and a stable marching section. No vocals, no chants, no modern military snare showpiece, no heroic blockbuster climax, no crowd or footsteps baked into the music.
+
+35.16 M13 Орда и многоточечное нападение
+
+Когда: массовое давление на деревню. Ритм заметный, но не превращает десятки ударов и тревог в звуковую кашу. При необходимости интенсивность растёт добавлением слоя, а не постоянным увеличением громкости.
+
+PROMPT M13
+
+Instrumental horde-defense battle music for a dark pixel-art kingdom. Driving acoustic frame drums and restrained deep war drums, urgent low-string ostinatos, short dissonant plucked motifs, around 118 BPM. Multiple threats pressing on a living settlement; tense coordination and endurance rather than victorious spectacle. Clear rhythmic grid, limited instrumental density and open space for game combat warnings. Original music, stable high-pressure middle section, controlled low end. No vocals, no chanting, no modern trailer impacts, no electronic dance beat, no final victory cadence inside the loop.
+
+35.17 M14 Босс и смена фаз
+
+Когда: встреча с одним или несколькими сильными противниками. Базовая тема подчёркивает размер и подготовку удара. Для новой фазы желательна связанная аранжировка той же темы, а не случайная другая песня. Кандидат: 108–124 BPM в зависимости от поведения босса.
+
+PROMPT M14
+
+Instrumental dark acoustic boss-battle theme for a pixel-art action raid. Heavy deliberate low-string ostinato, taut frame drums, deep restrained percussion, brittle dulcimer and short ominous low-brass notes. Around 116 BPM, minor-modal harmony, a powerful intelligent threat with readable attack phases. Original memorable threat motif, strong pauses before renewed pressure, disciplined texture rather than constant maximum volume. Build a stable core arrangement that could later support a more intense variation in the same tempo and key. No vocals, no lyrical choir, no EDM drop, no copied soundtrack theme, no triumphant ending.
+
+35.18 M15 Последняя осада замка
+
+Когда: деревня серьёзно разрушена и люди отступили к замку. Здесь можно дать самое сильное напряжение, потому что игроки слышали более спокойные состояния. В теме остаётся человеческая уязвимость. Музыка не обещает заранее, что молния обязательно всех спасёт.
+
+PROMPT M15
+
+Instrumental desperate last-castle siege for a living pixel-art kingdom. Forceful acoustic war drums, urgent low bowed strings, a fragile original plucked-string kingdom motif struggling to remain audible, sparse dark brass. Around 122 BPM, D minor, human defenders exhausted at the final gate, a mortal ruler among them. Sustained danger with clear spaces for urgent gameplay cues, controlled dynamics and no guaranteed resolution. The music must feel earned and grave rather than like a trailer montage. No vocals, no chanting, no electronic drops, no automatic heroic rescue, no victory ending.
+
+35.19 M16 Редкое божественное вмешательство
+
+Когда: подтверждённая редкая помощь в критической фазе. Перед событием возможна короткая пауза, затем отдельный звук молнии или другого эффекта и музыкальное просветление. Громкость не должна оглушать. После короткого акцента остаётся спокойный фон спасения, пока игра решает исход.
+
+PROMPT M16
+
+Instrumental brief divine-intervention cue for a dark pixel-art kingdom at the edge of destruction. Begin from suspended near-silence, then a clear luminous harmonic opening with warm high strings, a single resonant bell and a rising original acoustic motif. D minor opening toward a restrained Dorian brightness. Awe, impossible help and fragile survival, not a cheerful victory song. Aim for a concise event accent followed by a quiet sustained recovery texture. No vocals, no lyrics, no spoken words, no thunder or explosion baked into the score, no loud trailer hit, no long heroic finale.
+
+Альтернатива для отдельной генерации: очень тихий хор без слов вместо части струнных. Это редкий цвет чуда, а не обязательный фон всех боёв. Такой вариант нужно отдельно проверить на разборчивость речи стримера.
+
+35.20 M17 Руины и поражение
+
+Когда: опасность завершилась, но ущерб остался. Сначала полезна тишина и отдельные звуки мира, потом музыка признаёт цену поражения. Она не издевается над игроком и не звучит как окончательное закрытие игры.
+
+PROMPT M17
+
+Instrumental aftermath of a lost siege in a pixel-art survival kingdom. Sparse single nylon-guitar notes, low cello, faint dulcimer resonance and long pauses, around 56 BPM. An original once-familiar village-like motif now incomplete and quiet. Grief, exhaustion and the knowledge that rebuilding is still possible. Intimate acoustic sound, no manipulative melodrama, no sudden rise and no final ending. Leave room for environmental sounds added separately. No vocals, no crying samples, no funeral march spectacle, no victorious resolution. A restrained repeating aftermath bed.
+
+35.21 M18 Восстановление царства
+
+Когда: расчистка, первые новые запасы, ремонт инфраструктуры и возвращение привычной жизни. Те же инструменты, что в деревне, появляются постепенно. Напряжение не исчезает мгновенно, но слышно совместное действие.
+
+PROMPT M18
+
+Instrumental rebuilding music for a damaged pixel-art kingdom. Gentle but purposeful plucked guitar and lute, warm low strings, occasional wooden flute and a very light work-like frame-drum pulse around 78 BPM. Minor-modal harmony gradually allowing warmer intervals, quiet resolve and human cooperation after loss. Original simple village motif slowly becoming more complete, small ensemble, natural acoustic texture. Stable middle section for sustained gameplay, no giant crescendo. No vocals, no speech, no embedded construction sounds, no instant happy ending, no grand orchestral victory.
+
+35.22 M19 Победа и возвращение из похода
+
+Когда: цель действительно выполнена и группа возвращается. Небольшой знак победы и спокойное продолжение лучше бесконечной фанфары. После тяжёлого боя победа может быть усталой, с памятью о расходах и раненых.
+
+PROMPT M19
+
+Instrumental hard-earned return from an expedition in a dark pixel-art kingdom. Warm lute and guitar, restrained fiddle, low cello and a few soft drum strokes, around 86 BPM. Relief and companionship after real danger, with some melancholy for the cost. An original short resolving phrase followed by a modest calm continuation. Human scale, no invincible-hero feeling, no loud celebration wall. No vocals, no lyrics, no cheering samples, no epic brass fanfare, no pop beat. Suitable for a brief success cue and transition back to village ambience.
+
+35.23 M20 Больница и безопасный отдых
+
+Когда: лечение, тихое убежище и осознанный безопасный отдых. Музыка помогает почувствовать паузу в хардкорном мире, но не делает вид, что восстановление уже закончено. В фоне игры и на заблокированном телефоне она может останавливаться по настройке.
+
+PROMPT M20
+
+Instrumental quiet refuge and healing ambience for a pixel-art dark fantasy kingdom. Soft low strings, slow fingerpicked nylon guitar, a few warm wooden-flute breaths and almost no percussion. Around 60 BPM, gentle minor-modal harmony with restrained reassurance. Safety, patient recovery and human care inside a dangerous world, not a magical instant cure. Minimal arrangement, smooth midrange, long spaces and low fatigue. No vocals, no speech, no hospital sound effects, no sentimental piano climax, no triumphant ending. Stable calm texture for an extended rest scene.
+
+35.24 M21 Аркадные развлечения и турнир
+
+Когда: отдельная мини-игра, добровольное соревнование или турнир. Можно сделать легче и ритмичнее, сохранив акустический почерк и короткий мотив. Не нужно заставлять хоккей или раннер звучать как похороны. При обычном открытии магазина Dcoin отдельный победный трек не требуется.
+
+PROMPT M21
+
+Instrumental playful but earthy arcade-tournament music connected to a medieval pixel-art kingdom. Crisp plucked strings, short wooden-flute hooks, light hand percussion and one subtle soft retro synth accent, around 112 BPM. Friendly competitive energy, clear short original phrases, nimble repetition and controlled brightness. A lighter side of a dark-fantasy community, not modern stadium EDM. Leave space for game feedback and commentary. No vocals, no chanting, no loud chiptune wall, no pop-song structure, no orchestral battle climax. Stable loop-oriented arrangement.
+
+35.25 Переходы, тишина и интерактивность
+
+Музыка меняется по устойчивому состоянию и фазе, а не по каждому нажатию. Открытие инвентаря, торгового окна, карточки или списание дани обычно не перезапускают композицию. Нужны минимальное время звучания, плавный переход и защита от переключения туда-обратно при коротком изменении ситуации.
+
+Для обычного боя можно добавить ритмический слой к исследованию. Для босса или осады лучше иметь несколько совместимых вариантов одной основы: подготовка, давление и кризис. Совпадение темпа, тональности и длины фраз помогает переключению, но одинаковый текст в независимых генерациях этого не гарантирует. Слои и переходы нужно подготавливать из связанных исходников.
+
+Короткие музыкальные знаки нужны для настоящих исходов: обнаружение важной цели, начало редкого события, победа, поражение, чудо. Они не должны звучать одновременно поверх друг друга. В осаде приоритет получают предупреждения и действия, а не каждый новый музыкальный акцент.
+
+Пауза — полноценное средство. Перед редким вмешательством короткое затихание сильнее постоянного роста громкости. После боя несколько секунд мира без музыки позволяют почувствовать итог. В обычной деревне допустимы спокойные промежутки, чтобы долгий игровой вечер не превращался в непрерывное повторение одной фразы.
+
+35.26 Звук для телефона и стрима
+
+Отдельно управляются музыка, эффекты, уведомления и речь. Нужны быстрый mute музыки и сохранение настроек. По умолчанию громкость умеренная. Игра не должна неожиданно начинать громко играть до осознанного действия пользователя; браузерные ограничения запуска звука учитываются.
+
+На стриме музыка мягко приглушается под доступную игре речь батюшки или другой голосовой материал. Для внешнего микрофона стримера нужен отдельный настроенный канал смешивания; браузер не обязан сам угадывать, когда человек говорит в OBS. Тревога и предупреждение атаки остаются слышимыми даже на негромком музыкальном фоне.
+
+На маленьком динамике важно различать мелодию и ритм без сабвуфера. Низкие смычковые дополняются читаемой серединой, резкие высокие тембры не утомляют, фон не сражается со звуком оружия. Проверять нужно и телефон, и наушники, и запись реального стрима. Премиум не меняет полноту звуковой информации о боевых угрозах.
+
+35.27 Как превратить генерации в игровой набор
+
+Сначала выбираем главную оригинальную тему и два-три образца: деревню, подземелье и бой. Слушаем их вместе с актуальной картой, ночным светом и обычными эффектами. После согласования почерка расширяем набор, используя общий референс и связанные аранжировки.
+
+Для каждой принятой сцены сохраняются название, версия промпта, исходная генерация, темп и тональность по фактическому результату, разрешённое использование, громкость, границы цикла и переходов. Для долгого фона полезны основной вариант и более разреженная альтернатива. Для ключевого события — отдельные вступление, повторяемая середина и завершение, если исходник позволяет их подготовить.
+
+Один удачный Suno-файл ещё не готовая динамическая музыка игры. Нужны отбор, выравнивание громкости, проверка повторов и стыков, отсутствие неожиданных голосов, понятный приоритет эффектов и разумный размер загрузки. Если исходник доступен в качественном формате, его сохраняют как мастер; веб-версии экспортируются отдельно.
+
+Проверка готовности: фон выдерживает длинное прослушивание; деревня, данж и осада эмоционально различаются; реплики и атаки слышны; музыка не выдаёт скрытый таймер; редкое чудо звучит редко; при смене сцены нет резкого скачка; на телефоне мир остаётся читаемым. Звуковой стиль поддерживает и милый пиксельный облик, и суровые последствия.

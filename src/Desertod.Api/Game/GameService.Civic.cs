@@ -37,7 +37,7 @@ public sealed partial class GameService
                         &&c.RecoveryPausedAt is null&&c.CycleEndsAt<=now).ToArray())
                     {
                         var context=(await LoadContextAsync(db,village,worker.Id,now,ct)).Work;
-                        var report=CycleEngine.Settle(worker,context,now);
+                        var report=await SettleWorkAsync(db,worker,context,now,ct);
                         await AfterSettleAsync(db,village,report,now,ct);
                     }
                     if(!village.Sites.Contains(site))throw new GameRuleException("site.stageDone","This building is finished. Refresh its card.");
@@ -76,6 +76,8 @@ public sealed partial class GameService
                 var order = BuildingOperations.Request(village, actor, request.PlotId, request.Operation, now);
                 if (village.OwnerAccountId == actor) BuildingOperations.Approve(village, order, people, now);
             }
+            db.AuditActor = actor;
+            db.AuditOperation ??= "civic-request:" + request.Operation;
             await db.SaveChangesAsync(ct); changes.Mark(village.Id);
             foreach(var person in people)await notifier.CitizenUpdated(slug,person.ToSummaryDto(now));
             if(request.Operation=="site-cancel")return await BuildSavedStateAsync(db,slug,now,ct);
@@ -132,6 +134,8 @@ public sealed partial class GameService
                     else BuildingOperations.Approve(village,order,people,now);
                 }
             }
+            db.AuditActor = actor;
+            db.AuditOperation = decision.Approve ? "civic-approve" : "civic-reject";
             await db.SaveChangesAsync(ct);changes.Mark(village.Id);
             return await BuildStateAsync(db,village,now,ct);
         }, ct);

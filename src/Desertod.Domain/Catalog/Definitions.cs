@@ -86,7 +86,9 @@ public sealed record RoleDefinition(
     public bool IsQualified(Citizen citizen) => Skill is not { } skill || citizen.SkillLevel(skill) >= SkillLevel;
 }
 
-public sealed record ResourceAmount(ResourceKind Resource, int Amount, int Sharpen = 0);
+/// <param name="Durability">Remaining uses of a tool. 0 for every other good.</param>
+/// <param name="MaxDurability">Uses of a fresh tool. 0 when <paramref name="Resource"/> is not a tool.</param>
+public sealed record ResourceAmount(ResourceKind Resource, int Amount, int Sharpen = 0, int Durability = 0, int MaxDurability = 0);
 
 /// <param name="Animals">Animals caught per cycle at a stat factor of 1 while the herd is abundant; the task's outputs are for that catch.</param>
 public sealed record HuntDefinition(AnimalKind Prey, int Animals);

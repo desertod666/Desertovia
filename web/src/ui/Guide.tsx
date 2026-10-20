@@ -75,6 +75,7 @@ export function Guide({
   catalog,
   menuTab,
   onMenu,
+  phone = false,
 }: {
   slug: string
   tsar: boolean
@@ -85,12 +86,13 @@ export function Guide({
   /** Open menu tab, or null when the menu is closed. */
   menuTab: MenuTab | null
   onMenu: (tab: MenuTab) => void
+  phone?: boolean
 }) {
   const { t } = useI18n()
   const role: Role = tsar ? 'tsar' : 'citizen'
   const [saved, setSaved] = useState<Progress>(() => load(role))
   const [copied, setCopied] = useState(false)
-  const [collapsed, toggle] = useCollapsed('guide', false)
+  const [collapsed, toggle] = useCollapsed('guide', phone)
   const steps = STEPS[role]
 
   const conditions = reached(role, village, citizen, menuTab)

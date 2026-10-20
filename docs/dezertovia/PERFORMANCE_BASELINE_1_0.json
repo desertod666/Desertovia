@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-10-20T17:48:12.1010843+00:00",
+  "runtime": ".NET 10.0.8",
+  "os": "Microsoft Windows 10.0.26300",
+  "architecture": "X64",
+  "logicalProcessors": 32,
+  "scope": "single process synthetic current raid simulation and actual wire DTO serialization; no DB/network/rendering",
+  "simulatedSeconds": 120,
+  "seed": "fixed world and raid ids; mixed west approach; active level2/3 residents",
+  "profiles": [
+    {
+      "onlineResidents": 5,
+      "initialEnemies": 2,
+      "ticks": 37,
+      "simulatedSteps": 37,
+      "fightersJoined": 5,
+      "phase": "Finished",
+      "outcome": "Repelled",
+      "tickMs": {
+        "samples": 37,
+        "p50": 0.1377,
+        "p95": 0.3123,
+        "p99": 1.9959,
+        "maximum": 1.9959
+      },
+      "simulationMs": {
+        "samples": 37,
+        "p50": 0.137,
+        "p95": 0.3114,
+        "p99": 1.9951,
+        "maximum": 1.9951
+      },
+      "serializationMs": {
+        "samples": 37,
+        "p50": 0.0504,
+        "p95": 0.1501,
+        "p99": 0.1613,
+        "maximum": 0.1613
+      },
+      "payloadBytes": {
+        "average": 2885.7837837837837,
+        "maximum": 5014
+      },
+      "pathSearches": 63,
+      "pathNodes": 2336,
+      "processCpuMs": 0,
+      "allocatedBytes": 2382648,
+      "workingSetBytes": 70381568
+    },
+    {
+      "onlineResidents": 10,
+      "initialEnemies": 4,
+      "ticks": 70,
+      "simulatedSteps": 70,
+      "fightersJoined": 10,
+      "phase": "Finished",
+      "outcome": "Repelled",
+      "tickMs": {
+        "samples": 70,
+        "p50": 0.2023,
+        "p95": 0.32,
+        "p99": 0.3628,
+        "maximum": 0.3628
+      },
+      "simulationMs": {
+        "samples": 70,
+        "p50": 0.2018,
+        "p95": 0.3196,
+        "p99": 0.3614,
+        "maximum": 0.3614
+      },
+      "serializationMs": {
+        "samples": 70,
+        "p50": 0.0711,
+        "p95": 0.1032,
+        "p99": 0.138,
+        "maximum": 0.138
+      },
+      "payloadBytes": {
+        "average": 5821.271428571428,
+        "maximum": 7784
+      },
+      "pathSearches": 158,
+      "pathNodes": 4001,
+      "processCpuMs": 15.625,
+      "allocatedBytes": 5884760,
+      "workingSetBytes": 70381568
+    },
+    {
+      "onlineResidents": 20,
+      "initialEnemies": 12,
+      "ticks": 72,
+      "simulatedSteps": 72,
+      "fightersJoined": 20,
+      "phase": "Finished",
+      "outcome": "Repelled",
+      "tickMs": {
+        "samples": 72,
+        "p50": 0.4233,
+        "p95": 0.778,
+        "p99": 1.6366,
+        "maximum": 1.6366
+      },
+      "simulationMs": {
+        "samples": 72,
+        "p50": 0.4227,
+        "p95": 0.777,
+        "p99": 1.6352,
+        "maximum": 1.6352
+      },
+      "serializationMs": {
+        "samples": 72,
+        "p50": 0.1154,
+        "p95": 0.1321,
+        "p99": 0.1672,
+        "maximum": 0.1672
+      },
+      "payloadBytes": {
+        "average": 11734.152777777777,
+        "maximum": 14860
+      },
+      "pathSearches": 459,
+      "pathNodes": 7267,
+      "processCpuMs": 46.875,
+      "allocatedBytes": 11708600,
+      "workingSetBytes": 71307264
+    }
+  ],
+  "unmeasured": [
+    "database lock/save",
+    "broadcast send",
+    "network RTT",
+    "browser frames",
+    "other host services"
+  ],
+  "acceptance": "baseline observation only; PKG-D114 target and T081 capacity acceptance remain open"
+}

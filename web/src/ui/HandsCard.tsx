@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { storageBuildingsFor, type Catalog, type Citizen, type VillageState } from '../api'
 import { useI18n } from '../i18n'
 import { ResourceIcon } from './TileIcon'
+import { Hint } from './Hint'
 /**
  * Goods the citizen carries until they take them to storage.
  * "Tell the Tsar" copies a ready-made line for the player to paste into the stream chat.
@@ -45,15 +46,24 @@ export function HandsCard({
 
   return (
     <section className="card hands">
-      <h3>{t('hands.title')}</h3>
+      <h3>{t('hands.title')} <Hint className="help-button" label={t('hands.help')} text={t('hands.hint')}>ⓘ</Hint></h3>
       <ul className="done-results">
         {citizen.load.map((good) => (
-          <li key={`${good.resource}:${good.sharpen ?? 0}`}>
-            <ResourceIcon kind={good.resource} scale={1} sharpen={good.sharpen ?? 0} /> {i18n.held(good.resource, good.amount)}
+          <li key={`${good.resource}:${good.sharpen ?? 0}:${good.durability ?? 0}`}>
+            <ResourceIcon
+              kind={good.resource}
+              scale={1}
+              sharpen={good.sharpen ?? 0}
+              durability={good.durability ?? 0}
+              maxDurability={good.maxDurability ?? 0}
+            />{' '}
+            {i18n.held(good.resource, good.amount)}
+            {(good.maxDurability ?? 0) > 0 && (
+              <span className="muted"> {t('hands.durability', { left: good.durability ?? 0, max: good.maxDurability ?? 0 })}</span>
+            )}
           </li>
         ))}
       </ul>
-      <p className="small muted">{t('hands.hint')}</p>
       <div className="row">
         <button className="primary" disabled={pending} onClick={onCarry}>
           {t('hands.carry')}
