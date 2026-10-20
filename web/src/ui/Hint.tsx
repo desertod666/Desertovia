@@ -38,7 +38,10 @@ export function Hint({ text, children, className, label }: { text: ReactNode; ch
     }
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return
-      event.stopPropagation()
+      event.preventDefault()
+      // Other window capture listeners can be registered after this hint as the host rerenders.
+      // stopPropagation alone still lets those listeners close the host modal on this same Escape.
+      event.stopImmediatePropagation()
       close()
     }
     // A fixed portal must not stay floating over an unrelated row after its anchor scrolls away.

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T16:46:41.238359+00:00",
+  "recorded_at_utc": "2026-10-20T17:03:59.831901+00:00",
   "status": "partner_tools_and_compact_ui_implemented_final_ci_pending",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
@@ -129,10 +129,9 @@
       "telegramBrowserLogin": false
     },
     "full_candidate_ci": {
-      "status": "next commit pending CI",
-      "previous_candidate_run": 39458408317,
-      "previous_candidate_sha": "d39f141339481a54d2e8d1ab2f5a3324500758cf",
-      "previous_result": "backend/frontend/Docker success; browser shard2 failed a test that assumed fixed scrollTop changed position; test now asserts actual scroll movement on a shorter viewport"
+      "status": "pending for Escape capture-order correction",
+      "previous_failed_run": 39460462281,
+      "correction": "Hint.stopImmediatePropagation plus later-capture listener regression"
     },
     "diff_check": "pass",
     "api_cleanup_finally": {
@@ -171,6 +170,32 @@
       "viewport": "320x844",
       "scope": "real map/canvas, synthetic local character, wallet, accessible hint inside aria-modal, first Escape closes hint and second closes wallet",
       "physical_phone": false
+    },
+    "candidate_ci_history": [
+      {
+        "run": 39458408317,
+        "sha": "d39f141",
+        "result": "failure",
+        "reason": "RU wallet test assumed scrollTop=100 always moved the scroller; test now verifies actual movement on320x568"
+      },
+      {
+        "run": 39460462281,
+        "sha": "2acc1e7",
+        "result": "failure",
+        "reason": "phone real-map case: same Escape reached a later window capture listener and closed both hint and wallet",
+        "other_jobs": "desktop browser/backend/frontend/Docker success",
+        "fix": "Hint prevents default and stops immediate propagation; regression installs a later capture listener and checks it does not receive the first Escape"
+      }
+    ],
+    "short_phone_scroll": {
+      "passed": 4,
+      "failed": 0,
+      "scope": "RU/EN desktop+phone at320x568 against current Vite source; verifies actual scroll movement and hint closure"
+    },
+    "escape_capture_order": {
+      "passed": 2,
+      "failed": 0,
+      "scope": "real map in Chromium desktop/phone; deliberately later window capture listener does not receive first Escape; guide choice survives reload"
     }
   },
   "open_questions": [

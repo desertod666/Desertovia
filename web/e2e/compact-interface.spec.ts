@@ -150,8 +150,13 @@ test('real map closes the hint before the wallet without opening a background me
   await page.getByRole('button',{name:'О деньгах и оплате труда'}).click()
   await expect(page.getByRole('tooltip')).toBeVisible()
   expect(await page.getByRole('tooltip').evaluate(el=>el.closest('[aria-modal="true"]')!==null)).toBe(true)
+  // A host can register its capture listener later when it rerenders. One Escape must not reach it.
+  await page.evaluate(()=>window.addEventListener('keydown',event=>{
+    if(event.key==='Escape')document.documentElement.dataset.escapedPastHint='1'
+  },{capture:true,once:true}))
   await page.keyboard.press('Escape')
   await expect(page.getByRole('tooltip')).toHaveCount(0)
+  await expect(page.locator('html')).not.toHaveAttribute('data-escaped-past-hint','1')
   await expect(wallet).toBeVisible()
   await page.keyboard.press('Escape')
   await expect(wallet).toHaveCount(0)
