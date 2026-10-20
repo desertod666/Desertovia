@@ -1,5 +1,13 @@
 namespace Desertod.Domain.World;
 
+public sealed class TripWaypoint
+{
+    public double X { get; set; }
+    public double Y { get; set; }
+    public double Cost { get; set; }=1;
+    [System.Text.Json.Serialization.JsonIgnore] public TilePoint Point=>new(X,Y);
+}
+
 /// <summary>A walk across the map. The land along it is seen only as the walker gets there.</summary>
 public sealed class Trip
 {
@@ -9,11 +17,24 @@ public sealed class Trip
     public double ToY { get; set; }
     public double SpeedMultiplier { get; set; } = 1;
     public DateTimeOffset SetOutAt { get; set; }
+    private List<TripWaypoint>? waypoints;
+    // Missing on historical JSON trips. Old journeys retain their original straight-line timing.
+    public List<TripWaypoint> Waypoints {get=>waypoints??=[];set=>waypoints=value;}
 
     public TilePoint From => new(FromX, FromY);
     public TilePoint To => new(ToX, ToY);
 
-    public DateTimeOffset ArrivesAt => SetOutAt + TimeSpan.FromSeconds(From.DistanceTo(To) * Exploration.SecondsPerTile / Math.Max(.1,SpeedMultiplier));
+    public DateTimeOffset ArrivesAt => SetOutAt + TimeSpan.FromSeconds(Duration);
+    public double Duration
+    {
+        get
+        {
+            var from=From;var distance=0d;
+            foreach(var step in Steps()){distance+=from.DistanceTo(step.Point)*step.Cost;from=step.Point;}
+            return distance*Exploration.SecondsPerTile/Math.Max(.1,SpeedMultiplier);
+        }
+    }
+    private IEnumerable<TripWaypoint> Steps()=>Waypoints.Count==0?[new(){X=ToX,Y=ToY}]:Waypoints;
 
     public static Trip Start(TilePoint from, TilePoint to, DateTimeOffset now) =>
         new() { FromX = from.X, FromY = from.Y, ToX = to.X, ToY = to.Y, SetOutAt = now };
@@ -21,9 +42,23 @@ public sealed class Trip
     /// <summary>Where the walker is: on the way, or at the end once arrived.</summary>
     public TilePoint PositionAt(DateTimeOffset now)
     {
-        var total = (ArrivesAt - SetOutAt).TotalSeconds;
-        var share = total <= 0 ? 1 : Math.Clamp((now - SetOutAt).TotalSeconds / total, 0, 1);
-        return new TilePoint(FromX + (ToX - FromX) * share, FromY + (ToY - FromY) * share);
+        return WalkedSegments(now).LastOrDefault((From,From)).Item2;
+    }
+
+    public IEnumerable<(TilePoint From,TilePoint To)> WalkedSegments(DateTimeOffset now)
+    {
+        if(now<SetOutAt)yield break;
+        var remaining=(now-SetOutAt).TotalSeconds*Math.Max(.1,SpeedMultiplier)/Exploration.SecondsPerTile;
+        var from=From;
+        foreach(var step in Steps())
+        {
+            var length=from.DistanceTo(step.Point)*step.Cost;
+            var share=length<=0?1:Math.Clamp(remaining/length,0,1);
+            var to=new TilePoint(from.X+(step.X-from.X)*share,from.Y+(step.Y-from.Y)*share);
+            yield return(from,to);
+            if(remaining<length)yield break;
+            remaining-=length;from=step.Point;
+        }
     }
 }
 
@@ -55,6 +90,14 @@ public static class Exploration
     public const double LookoutReach = 1.5;
 
     public static int Size => (WorldMap.Land.Width * WorldMap.Land.Height + 7) / 8;
+
+    public static int LegacySize => (WorldMap.LegacyLand.Width * WorldMap.LegacyLand.Height+7)/8;
+    public static byte[] Upgrade(byte[] map)
+    {
+        if(map.Length==Size)return map;
+        if(map.Length!=LegacySize)return Camp();
+        var upgraded=new byte[Size];map.CopyTo(upgraded,0);return upgraded;
+    }
 
     /// <summary>What a new tribe has seen: the camp land.</summary>
     public static byte[] Camp()
@@ -111,8 +154,11 @@ public static class Exploration
             RevealOval(map, peak, LookoutSightRadius, LookoutSightRadius);
         }
 
-        var from = trip.From;
-        var to = trip.PositionAt(now);
+        foreach(var (from,to) in trip.WalkedSegments(now))RevealSegment(map,from,to);
+    }
+
+    private static void RevealSegment(byte[] map,TilePoint from,TilePoint to)
+    {
         var radius = SightRadius;
         var left = (int)Math.Floor(Math.Min(from.X, to.X) - radius);
         var right = (int)Math.Ceiling(Math.Max(from.X, to.X) + radius);
@@ -136,7 +182,7 @@ public static class Exploration
     /// </summary>
     public static byte[] Seen(byte[] explored, IEnumerable<Trip> trips, DateTimeOffset now, TilePoint? lookout = null)
     {
-        var map = explored.Length == Size ? (byte[])explored.Clone() : Camp();
+        var map = (byte[])Upgrade(explored).Clone();
         foreach (var trip in trips)
         {
             Reveal(map, trip, now, lookout);

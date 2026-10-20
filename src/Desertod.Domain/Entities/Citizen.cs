@@ -326,7 +326,7 @@ public sealed class Citizen
     public void SetOut(TilePoint to, Village village, DateTimeOffset now)
     {
         BankAccess.Require(village, to);
-        Trip = Exploration.SetOut(village.Explored, Trip, IdleSpot ?? WorldMap.Places[WorldMap.Camp], to, now, village.Wilds?.Lookout);
+        Trip = RegionalTravel.SetOut(village,Trip,IdleSpot??WorldMap.Places[WorldMap.Camp],to,now);
         Trip.SpeedMultiplier = MedicalWalk(now);
     }
 

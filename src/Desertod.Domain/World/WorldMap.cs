@@ -65,7 +65,10 @@ public static class WorldMap
     public static TileArea BuildArea { get; } = new(0, 0, 28, 26);
 
     /// <summary>The whole map the web client draws: the camp and the wild land around it.</summary>
-    public static TileArea Land { get; } = new(-44, -32, 120, 90);
+    public static TileArea LegacyLand { get; } = new(-44, -32, 120, 90);
+
+    // Extend south only: the original row stride and every existing fog bit keep their index.
+    public static TileArea Land { get; } = new(-44, -32, 120, 150);
 
     /// <summary>Ground nobody builds on: the campfire and the sites of the village projects.</summary>
     public static IReadOnlyList<TileArea> ReservedAreas { get; } =

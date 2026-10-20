@@ -1,4 +1,5 @@
 import {FortificationView} from './FortificationView'
+import {journeyPosition} from './journeyPosition'
 import {wallVisualStage} from './fortificationState'
 import {buildingOrdinal,buildingSuffix} from '../buildingLabels'
 import { combatDiagnostics } from './combatDiagnostics'
@@ -165,6 +166,7 @@ interface Walker {
   carrierId:string|null
   pickupAt:number
   rescueJourney:CitizenSummary['rescueJourney']
+  journey?:{value:NonNullable<CitizenSummary['journey']>;receivedAt:number}|null
 }
 
 interface Bubble {
@@ -574,6 +576,7 @@ export class VillageWorld {
     }
     walker.sprite.texture = texture
     walker.label.text = tsar.name
+    walker.journey=tsar.journey?{value:tsar.journey,receivedAt:performance.now()}:null
     walker.injuredUntil = tsar.injuredUntil ? Date.parse(tsar.injuredUntil) : 0
     walker.normalSubtitle=this.tsarTitle
     walker.inHospital=walker.injuredUntil>Date.now()&&!!tsar.hospitalizedAt
@@ -605,6 +608,7 @@ export class VillageWorld {
 
   /** Sends a walker to a spot, in tiles, around water. An unreachable destination leaves the walker on their current dry ground. */
   private walkTo(walker: Walker, spot: TilePoint) {
+    if(walker.journey)return
     const x = spot.x * TILE
     const y = spot.y * TILE
     if (walker.targetX === x && walker.targetY === y) return
@@ -884,6 +888,7 @@ export class VillageWorld {
       walker.treatmentCause=duel?'после дуэли':'после боя'
       walker.carrierId=citizen.rescueByCitizenId??null
       walker.rescueJourney=citizen.rescueJourney??null
+      walker.journey=citizen.journey?{value:citizen.journey,receivedAt:performance.now()}:null
       walker.pickupAt=walker.rescueJourney&&!walker.rescueJourney.completedAt?Date.parse(walker.rescueJourney.pickupAt):0
       if(injured&&!walker.inHospital&&!walker.carrierId&&citizen.rescueRequestedAt)walker.treatmentCause='Просит помощи'
       if (injured && !walker.carrierId && !walker.inHospital && stayAt) {
@@ -1403,7 +1408,8 @@ export class VillageWorld {
     if(sameWorld){
       this.wildlife.setHerds(state.wildlife)
       this.enemies.setRaids(state.raids)
-      if(previousFighters.size!==presentFighters.size||[...presentFighters].some(id=>!previousFighters.has(id))){this.setCitizens(this.citizens,this.highlightId);this.setTsar(state.tsar)}
+      this.setTsar(state.tsar)
+      if(previousFighters.size!==presentFighters.size||[...presentFighters].some(id=>!previousFighters.has(id))){this.setCitizens(this.citizens,this.highlightId)}
       return
     }
     this.staticUpdate=true
@@ -2260,6 +2266,12 @@ export class VillageWorld {
         }
       }
       const combatant=combatants.get(walker.id)
+      const journey=walker.journey&&!hurt&&!combatant&&!walker.rescueJourney?journeyPosition(walker.journey.value,performance.now()-walker.journey.receivedAt):null
+      if(journey){
+        const dx=journey.x*TILE-walker.x
+        if(Math.abs(dx)>.01)walker.sprite.scale.x=dx<0?-1:1
+        walker.x=journey.x*TILE;walker.y=journey.y*TILE;walker.targetX=walker.x;walker.targetY=walker.y;walker.way=[]
+      }
       if(combatant&&!hurt){
         const sample=this.fighterSamples.get(walker.id)
         const {x,y}=sample?fighterPositionAt(sample,performance.now()):combatant
@@ -2278,8 +2290,8 @@ export class VillageWorld {
       const dy = goal.y - walker.y
       const distance = Math.hypot(dx, dy)
       const sample=this.fighterSamples.get(walker.id)
-      const moving = combatant&&sample?fighterIsMoving(sample,performance.now()):distance>0.5
-      if (moving&&!combatant) {
+      const moving = journey?journey.moving:combatant&&sample?fighterIsMoving(sample,performance.now()):distance>0.5
+      if (moving&&!combatant&&!journey) {
         const step = Math.min(distance, speed * seconds)
         walker.x += (dx / distance) * step
         walker.y += (dy / distance) * step

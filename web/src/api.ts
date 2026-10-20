@@ -555,7 +555,7 @@ export interface FieldBed {
   thirsty: boolean
 }
 
-export interface WorldRoute {id:string;district:string;resources:string[];danger:'low'|'moderate'|'high';destination:TilePoint|null;blockedBy:'unknown'|'unexplored'|'bridge'|null}
+export interface WorldRoute {id:string;district:string;resources:string[];danger:'low'|'moderate'|'high';destination:TilePoint|null;blockedBy:'unknown'|'unexplored'|'bridge'|null;travelTarget?:TilePoint|null}
 export interface FarmCare {accountId:string;name:string;step:'Sow'|'Water'|'Fertilize'|'Harvest';startedAt:string;completedAt:string}
 export interface FarmCropHistory {id:string;plotId:string;bedIndex:number;crop:CropKind;sownAt:string;harvestedAt:string|null;status:'Growing'|'Harvested'|'Lost';contributions:FarmCare[];received:ResourceAmount[];lost:ResourceAmount[]}
 export interface FarmWorkTarget {plotId:string;index:number;generationId:string}
@@ -1020,6 +1020,8 @@ export interface Housing { plotId:string; beds:number; occupied:number; level:nu
 export interface MonasteryView {open:boolean;inRange:boolean;knowsRemedy:boolean;readyAt:string|null;wood:number;food:number;remedyRoom:number;yard:TilePoint}
 export interface VillageState {
   worldRoutes?:WorldRoute[]
+  mapVersion?:number
+  mapArea?:TileArea
   farmerAdmissionEnabled?:boolean
   workContractsEnabled?:boolean
   snapshotAt?: string
@@ -1096,7 +1098,9 @@ export interface Wilds {
 }
 
 export type RestState = 'Active' | 'RestRequested' | 'Resting'
+export interface WalkJourney {from:TilePoint;waypoints:{x:number;y:number;cost:number}[];setOutAt:string;arrivesAt:string;speedMultiplier:number;snapshotAt:string}
 export interface Tsar {
+  journey?:WalkJourney|null
   restState?: RestState
   restRequestedAt?: string | null
   accountId?:string|null
@@ -1156,6 +1160,7 @@ export interface RescueJourney {
 }
 
 export interface CitizenSummary {
+  journey?:WalkJourney|null
   farmTargets?:FarmWorkTarget[]
   isFarmer?:boolean
   canManageFarm?:boolean

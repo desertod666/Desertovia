@@ -1929,8 +1929,8 @@ input[aria-invalid='true'] {
   position: absolute;
   right: 12px;
   top: max(10px, env(safe-area-inset-top));
-  width: 240px;
-  aspect-ratio: 120 / 90;
+  width: 144px;
+  aspect-ratio: 120 / 150;
   border: 2px solid var(--gold);
   border-radius: 6px;
   overflow: hidden;
@@ -1989,7 +1989,7 @@ input[aria-invalid='true'] {
   .minimap {
     right: 8px;
     top: var(--minimap-top);
-    width: 112px;
+    width: 67.2px;
   }
 
   /* The minimap sits on the right under the top bar; the quest tracker and guide keep clear of it. */
@@ -2040,7 +2040,8 @@ input[aria-invalid='true'] {
 .world-route-detail{padding-top:8px}.world-route-detail h3{margin:.3rem 0}
 .world-route-resources{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.world-route-resources>span{display:inline-flex;align-items:center;gap:4px}
 .world-route-detail>button{min-height:44px}
-@media(max-width:720px){.world-atlas-launch{top:calc(var(--minimap-top) + 88px);right:58px}.world-route-list{grid-template-columns:1fr}.world-route-list button{min-height:56px}}
+.world-route-picker{display:none}
+@media(max-width:720px){.world-atlas-launch{top:calc(var(--minimap-top) + 88px);right:58px}.world-route-list{display:none}.world-route-picker{display:flex;flex-direction:column;gap:6px}.world-route-picker select{width:100%;min-height:44px;font-size:1rem}}
 
 @media (max-width: 720px) {
   .minimap-locate {

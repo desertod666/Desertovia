@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T23:13:04.290053+00:00",
-  "status": "main_plan_active_notification_checks_and_world_next",
+  "recorded_at_utc": "2026-10-20T23:50:44.200548+00:00",
+  "status": "main_plan_active_extended_territories_local_verified_ci_pending",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-notifications",
+  "branch": "feat/desertovia-1-0-territories",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "T064 browser notification preferences and bounded delivery; local verification passed, full CI pending",
+  "implemented_task": "T033 world version2, southern regions, durable authoritative paths and compact mobile atlas",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -42,11 +42,11 @@
     "bot_modified": false,
     "current_source_restarted": true,
     "tool_recipes_verified_http": 8,
-    "local_world_migrations": 48,
+    "local_world_migrations": 49,
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "API migration48 notification settings and previous supply/dungeon/farm source; 25 existing synthetic citizens and saved economic/field state preserved",
+    "loaded_scope": "Final regional source loaded on schema49; MapVersion2/MapArea120x150 and seven routes verified over actual authenticated HTTP. Existing QA journey preserved.",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
     "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
@@ -54,7 +54,8 @@
     "pre_dungeon_backup": "/tmp/foundation-before-restart-20261020T214637Z.dump",
     "active_dungeon_restart_backup": "/tmp/foundation-before-restart-20261020T214839Z.dump",
     "pre_supply_backup": "/tmp/foundation-before-restart-20261020T220853Z.dump",
-    "pre_notifications_backup": "/tmp/foundation-before-restart-20261020T230542Z.dump"
+    "pre_notifications_backup": "/tmp/foundation-before-restart-20261020T230542Z.dump",
+    "pre_territories_backup": "/tmp/foundation-before-restart-20261020T233102Z.dump"
   },
   "checks": {
     "baseline_ci": {
@@ -827,12 +828,12 @@
     "bot_deployed": false
   },
   "next_tasks": [
-    "PKG-T030/T031/T032 party contract, manual combat and connected dungeon",
-    "PKG-T033 actual route constraints/events and new territory data beyond the atlas",
-    "PKG-T023–026/F003–006 economy integration and supplied T034 when dependent rules selected",
-    "PKG-T040–055 siege/recovery/autonomous director",
-    "available PKG-T060–065 and PKG-T070–072 Dcoin/subscriptions/notifications/music",
-    "PKG-T080–083 full-world final verification"
+    "T033 dynamic road gates/events and T031 manual combat integration",
+    "T030/T032 party and loot only after answers to pending questions",
+    "T034 supply after group contract; reuse funded orders",
+    "T040–055 siege/recovery/autonomous director",
+    "Remaining T060–065 and T070–072 Dcoin/subscriptions/closed-tab notifications/music",
+    "T080–083 full-world load/migration/final acceptance"
   ],
   "screenshots": [
     "screenshots/foundation/economic-gold-ru-phone.png",
@@ -959,7 +960,7 @@
   },
   "world_verification": "WORLD_VERIFICATION_1_0.json",
   "supply_orders": {
-    "status": "implemented_local_verified_full_ci_pending",
+    "status": "funded_supply_slice_full_ci_verified_broader_economy_pending",
     "design": "SUPPLY_ORDERS_1_0.md",
     "migration": "47 FundedSupplyOrders",
     "domain_passed": 605,
@@ -989,17 +990,18 @@
     "actual_mobile_browser_after_api_restart": true,
     "public_release": false,
     "full_ci": {
-      "status": "in_progress",
+      "status": "success",
       "sha": "57f06d4a268ec036f50a5075bd73f083ef4cb377",
+      "receipt": "SUPPLY_VERIFICATION_1_0.json",
       "run_id": 39513042169,
       "previous_failures": [
-        "39508370375 raid fixture raced background writer; fixture now locked",
-        "39511733456 manual watering fixture randomly received rain; explicit dry forecast now arranged"
+        "39508370375 raid fixture raced background writer; fixture locking fixed",
+        "39511733456 manual watering fixture randomly received rain; explicit dry forecast fixed"
       ]
     }
   },
   "notifications": {
-    "status": "browser_channel_local_verified_full_ci_pending",
+    "status": "browser_channel_full_ci_verified_broader_T064_pending",
     "implemented": [
       "account-scoped opt-in and categories",
       "IANA quiet hours",
@@ -1015,8 +1017,9 @@
     "browser_validation": "pending",
     "local_runtime": "API schema48 and Vite current source; synthetic account settings persisted through exact API process restart and read on another browser context",
     "remaining": [
-      "draft PR CI",
-      "closed-tab delivery, Telegram consent/channel integration and group policy remain unfinished"
+      "closed-tab delivery",
+      "separate Telegram consent/channel integration",
+      "unresolved group policy"
     ],
     "design": "NOTIFICATIONS_1_0.md",
     "migration": "48 AccountNotificationPreferences",
@@ -1063,6 +1066,155 @@
       "passed": 608,
       "failed": 0,
       "directory": "TestResults/notification-domain"
+    },
+    "full_ci": {
+      "status": "success",
+      "sha": "36a109272d3e61eda6e34b1ff88ce85289c52e53",
+      "receipt": "NOTIFICATION_VERIFICATION_1_0.json",
+      "run_id": 39513600818
+    }
+  },
+  "territories": {
+    "status": "implemented_local_verified_full_ci_pending",
+    "design": "TERRITORIES_1_0.md",
+    "migration": "49 SouthernRegions",
+    "world": {
+      "version": 2,
+      "old_tiles": 10800,
+      "new_tiles": 18000,
+      "added_tiles": 7200,
+      "old_bounds": [
+        -44,
+        -32,
+        120,
+        90
+      ],
+      "bounds": [
+        -44,
+        -32,
+        120,
+        150
+      ],
+      "old_fog_prefix_preserved_bytes": 1350,
+      "new_fog_bytes": 2250
+    },
+    "checks": {
+      "domain": {
+        "passed": 620,
+        "failed": 0,
+        "directory": "TestResults/regions-domain-final"
+      },
+      "api_unique_passed": 8,
+      "api_directories": [
+        "TestResults/regions-api-verified",
+        "TestResults/regions-travel-guards"
+      ],
+      "client_unit_passed": 18,
+      "browser_passed": 16,
+      "browser_scope": "4 terrain seeds + RU/EN explicit-trail/compact-mobile/legacy atlas cases on desktop and phone",
+      "frontend": "TypeScript/Vite/oxlint passed"
+    },
+    "migration_preservation": {
+      "from": 48,
+      "to": 49,
+      "citizens": 25,
+      "same": [
+        "identities",
+        "wallets",
+        "treasury",
+        "lots",
+        "work_orders",
+        "full_fields_json",
+        "1350_byte_fog_prefix"
+      ],
+      "backup": "/tmp/foundation-before-restart-20261020T233102Z.dump"
+    },
+    "actual_ui_restart": {
+      "mobile_departure_width": 320,
+      "desktop_arrival_width": 1280,
+      "resumed_in_transit": true,
+      "same_trip_identity_times_and_turns": true,
+      "arrived_and_explored_only_southern_marsh": true,
+      "return_journey_saved": true,
+      "compressed_waypoints": 3,
+      "backup": "/tmp/foundation-before-restart-20261020T234103Z.dump",
+      "browser_errors": []
+    },
+    "measurement": {
+      "render": [
+        {
+          "width": 320,
+          "frames": {
+            "frames": 90,
+            "medianMs": 16.699999999999818,
+            "p95Ms": 16.700000000000728,
+            "maxMs": 16.700000000000728
+          },
+          "minimap": {
+            "x": 244.8125,
+            "y": 127,
+            "width": 67.1875,
+            "height": 83.984375
+          },
+          "viewport": "Chromium emulation, not a physical device"
+        },
+        {
+          "width": 1280,
+          "frames": {
+            "frames": 90,
+            "medianMs": 33.30000000000109,
+            "p95Ms": 50,
+            "maxMs": 50
+          },
+          "minimap": {
+            "x": 1124,
+            "y": 10,
+            "width": 144,
+            "height": 180
+          },
+          "viewport": "Chromium emulation, not a physical device"
+        }
+      ],
+      "generation_ms": [
+        {
+          "seed": 0,
+          "milliseconds": 27.600000023841858
+        },
+        {
+          "seed": 42,
+          "milliseconds": 11.699999988079071
+        },
+        {
+          "seed": 123456789,
+          "milliseconds": 8.5
+        },
+        {
+          "seed": 4294967295,
+          "milliseconds": 8
+        }
+      ],
+      "scope": "90-frame Chromium headless samples on this host, concurrent test load; not physical devices or a target-load/SLO pass",
+      "followup": "1280px sample p95=50ms. Profile T035/T081 before claiming full-world rendering performance."
+    },
+    "full_ci": "pending draft PR",
+    "remaining": [
+      "road events and NPC",
+      "reaction to changing obstacles or bridge collapse during an accepted route",
+      "group contract T030 and supplied journey T034",
+      "dense settlement and target-load/physical-phone verification T004/T081"
+    ],
+    "public_release": false,
+    "final_runtime": {
+      "mapVersion": 2,
+      "mapArea": {
+        "x": -44,
+        "y": -32,
+        "width": 120,
+        "height": 150
+      },
+      "routes": 7,
+      "snapshotAt": "2026-10-20T23:51:42.043752+00:00",
+      "backup": "/tmp/foundation-before-restart-20261020T235045Z.dump"
     }
   }
 }

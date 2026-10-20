@@ -857,7 +857,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
 
   return (
     <div className={`game-root${uiHidden ? ' ui-hidden' : ''}${chatFull ? ' chat-full-active' : ''}`}>
-      {atlasOpen&&<WorldAtlas routes={village.worldRoutes??[]} onFocus={point=>canvas.current?.focus(point)} onClose={()=>setAtlasOpen(false)}/>}
+      {atlasOpen&&<WorldAtlas routes={village.worldRoutes??[]} onFocus={point=>canvas.current?.focus(point)} onClose={()=>setAtlasOpen(false)} canTravel={(tsar||canWork&&!working)&&!village.battles?.some(b=>!b.finishedAt&&b.fighters.some(f=>f.active&&f.health>0&&(tsar?f.isTsar:f.citizenId===ownId)))} onTravel={async point=>{if(tsar)setVillageState(await api.tsarGoTo(slug,point));else applyCitizen(await api.goTo(slug,point))}}/>}
       <GameCanvas
         ref={canvas}
         village={live.state}

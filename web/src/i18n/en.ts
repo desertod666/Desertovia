@@ -1417,6 +1417,8 @@ export const en = {
     'task.notRunning': 'There is no task running.',
     'spot.notForTask': '"{task}" is done at its own place.',
     'spot.outsideLand': 'This spot is beyond the land.',
+    'spot.noPath': 'There is no open path. Check bridges, water and blocked passes.',
+    'goto.retreatRequired': 'Retreat from combat before travelling.',
     'spot.noTree': 'No tree stands here any more.',
     'spot.nothingToClear': 'Nothing is left to clear here.',
     'wilds.unknown': 'Nobody knows the wild land yet.',

@@ -1,5 +1,6 @@
 import { plotPosition, type AnimalKind, type Catalog, type TileArea, type TilePoint, type VillageState, type Wilds } from '../api'
 import { EXTRAS, battle, dungeon, factory, farm, rogue, town, type TileRef } from './sheets'
+import {regionalKind} from './regionalTerrain'
 
 /**
  * The camp area (tiles 0…43 × 0…25) matches the server's coordinates; the wild land extends around it
@@ -8,7 +9,8 @@ import { EXTRAS, battle, dungeon, factory, farm, rogue, town, type TileRef } fro
 export const MAP_LEFT = -44
 export const MAP_TOP = -32
 export const MAP_WIDTH = 120
-export const MAP_HEIGHT = 90
+export const MAP_HEIGHT = 150
+export const LEGACY_MAP_HEIGHT = 90
 export const MAP_RIGHT = MAP_LEFT + MAP_WIDTH
 export const MAP_BOTTOM = MAP_TOP + MAP_HEIGHT
 
@@ -56,7 +58,8 @@ export function canBuildAt(catalog: Catalog, village: VillageState, x: number, y
       Array.from({length:area.width*area.height},(_,i)=>({x:x+i%area.width,y:y+Math.floor(i/area.width)})).every(p=>
         Math.abs(p.x+.5-riverCenter(p.y,seedFrom(village.id)))>=2 &&
         !(village.wilds?.ravine.some(r=>r.x===p.x&&p.y>=r.top&&p.y<r.top+r.height)) &&
-        !(village.wilds?.obstacles.some(o=>o.x===p.x&&o.y===p.y&&!o.cleared)))) &&
+        !(village.wilds?.obstacles.some(o=>o.x===p.x&&o.y===p.y&&!o.cleared)) &&
+        (p.y<MAP_TOP+LEGACY_MAP_HEIGHT||!([Terrain.Water,Terrain.Mountain,Terrain.Ravine] as number[]).includes(regionalKind(seedFrom(village.id),p.x,p.y,Math.round(riverCenter(p.y,seedFrom(village.id))-1.5)))))) &&
     !catalog.reservedAreas.some((reserved) => overlaps(reserved, area)) &&
     !buildingFootprints(village).some((taken) => overlaps(taken, area))
   )
@@ -738,7 +741,8 @@ function riverCenter(y: number, seed: number) {
  * and the thickets come from the server's `wilds`; the rest is generated from `seed`, so every village has its own land
  * and every viewer of a village sees the same one.
  */
-export function buildLayout(seed: number, wilds: Wilds | null): MapLayout {
+export function buildLegacyLayout(seed: number, wilds: Wilds | null): MapLayout {
+  const MAP_HEIGHT=LEGACY_MAP_HEIGHT,MAP_BOTTOM=MAP_TOP+MAP_HEIGHT
   const next = random(seed)
   const forestNoise = valueNoise(seed + 1, 9)
   const detailNoise = valueNoise(seed + 2, 3)
@@ -1051,6 +1055,30 @@ export function buildLayout(seed: number, wilds: Wilds | null): MapLayout {
   }
 
   return { ground, decor, bushes, reeds, ponds, mountains, marsh, trail, terrain }
+}
+
+/** Keep the complete original geometry, ground and decoration, then append the new southern rows. */
+export function buildLayout(seed:number,wilds:Wilds|null):MapLayout{
+ const layout=buildLegacyLayout(seed,wilds),terrain=new Uint8Array(MAP_WIDTH*MAP_HEIGHT)
+ terrain.set(layout.terrain);layout.terrain=terrain
+ for(let y=MAP_TOP+LEGACY_MAP_HEIGHT;y<MAP_BOTTOM;y++){
+  const row:TileRef[]=[]
+  const river=Math.round(riverCenter(y,seed)-1.5)
+  for(let x=MAP_LEFT;x<MAP_RIGHT;x++){
+   const kind=regionalKind(seed,x,y,river)
+   terrain[(y-MAP_TOP)*MAP_WIDTH+x-MAP_LEFT]=kind
+   row.push(kind===Terrain.Water?battle(x===river?36:x===river+3?38:37):kind===Terrain.Stone?town(43):town(0))
+   if(kind===Terrain.Tree)layout.decor.push(treeAt(x,y))
+   if(kind===Terrain.Bush)layout.bushes.push({x:x+.5,y:y+.6})
+   if(kind===Terrain.Reeds)layout.reeds.push({x:x+.5,y:y+.5})
+   if(kind===Terrain.Marsh)layout.marsh.push({x,y})
+   if(kind===Terrain.Mountain)layout.mountains.push({x,y,peak:MOUNTAIN_PEAKS[Math.abs(x+y)%MOUNTAIN_PEAKS.length]})
+   if(kind===Terrain.Trail)layout.trail.push({x,y})
+  }
+  layout.ground.push(row)
+ }
+ for(const [x,y] of [[-18,82],[-7,106],[63,83]])layout.ponds.push({x:x+.5,y:y+.5,radiusX:4,radiusY:3})
+ return layout
 }
 
 /** Villager sprites from Tiny Dungeon (the hooded monk, 111, is reserved for the elder). */

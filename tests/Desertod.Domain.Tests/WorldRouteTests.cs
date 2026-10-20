@@ -14,12 +14,12 @@ public sealed class WorldRouteTests
         var seen=Enumerable.Repeat(byte.MaxValue,Exploration.Size).ToArray();
         var before=JsonSerializer.Serialize(v);var hash=SHA256.HashData(seen);
         var routes=WorldRoutes.Discover(v,seen);
-        Assert.Equal(new[]{"settlement","deer-woods","ridge-cave","lookout","gold-vein"},routes.Select(r=>r.Id));
-        Assert.Equal(4,routes.Select(r=>r.District).Distinct().Count());
+        Assert.Equal(new[]{"settlement","deer-woods","ridge-cave","lookout","gold-vein","southern-marsh","southern-quarry"},routes.Select(r=>r.Id));
+        Assert.Equal(6,routes.Select(r=>r.District).Distinct().Count());
         Assert.Equal(v.Wilds.CaveMouth,routes.Single(r=>r.Id=="ridge-cave").Destination);
         Assert.Equal(v.Wilds.Lookout,routes.Single(r=>r.Id=="lookout").Destination);
         Assert.Equal(before,JsonSerializer.Serialize(v));Assert.Equal(hash,SHA256.HashData(seen));
-        Assert.Equal(1350,Exploration.Size);
+        Assert.Equal(1350,Exploration.LegacySize);Assert.Equal(2250,Exploration.Size);
     }
 
     [Fact]

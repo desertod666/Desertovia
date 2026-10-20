@@ -24,5 +24,6 @@
 
   <ItemGroup>
     <None Include="../../web/e2e/fixtures/authored-terrain.json" Link="authored-terrain.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../web/e2e/fixtures/regional-terrain.json" Link="regional-terrain.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

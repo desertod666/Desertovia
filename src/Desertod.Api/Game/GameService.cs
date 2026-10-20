@@ -640,6 +640,7 @@ public sealed partial class GameService(
                 throw new UnauthorizedAccessException();
             }
 
+            if(actionName=="goTo")await RequireMovementReadyAsync(db,village.Id,accountId,null,cancellationToken);
             db.AuditActor = accountId; db.AuditOperation = (actionName + ":" + detail)[..Math.Min(80, actionName.Length + detail.Length + 1)];
             var state = await ActAsync(db, village, action, cancellationToken);
             logger.TsarActed(slug, actionName, detail);
@@ -1117,6 +1118,7 @@ public sealed partial class GameService(
             var village = await db.Villages.SingleAsync(v => v.Id == citizen.VillageId, cancellationToken);
             var now = time.GetUtcNow();
             village.EnsureCamp(now);
+            await RequireMovementReadyAsync(db,village.Id,accountId,citizen.Id,cancellationToken);
             citizen.GoTo(request.Spot, village, now);
             await db.SaveChangesAsync(cancellationToken);
             logger.CitizenActed(citizen.Id, slug, "goTo", request.Spot.ToString());
@@ -1500,7 +1502,7 @@ public sealed partial class GameService(
             .Select(a => new { a.DisplayName, a.Character })
             .SingleAsync(cancellationToken);
         var tsar = new TsarDto(owner.Character?.Name ?? owner.DisplayName, owner.Character?.Appearance, village.TsarSpot, village.TsarInjuredUntil)
-            { RestState=village.TsarRestState, RestRequestedAt=village.TsarRestRequestedAt, AccountId=village.OwnerAccountId, HospitalizedAt=village.TsarHospitalizedAt, RescueByCitizenId=village.TsarRescueByCitizenId, RescueRequestedAt=village.TsarRescueRequestedAt };
+            { Journey=WalkJourneyDto.FromTrip(village.TsarTrip,now), RestState=village.TsarRestState, RestRequestedAt=village.TsarRestRequestedAt, AccountId=village.OwnerAccountId, HospitalizedAt=village.TsarHospitalizedAt, RescueByCitizenId=village.TsarRescueByCitizenId, RescueRequestedAt=village.TsarRescueRequestedAt };
         var trips = await LoadTripsAsync(db, village.Id, cancellationToken);
         var shownSince = now - DungeonRules.ShownAfterEnd;
         var dungeon = await db.DungeonRuns.AsNoTracking()

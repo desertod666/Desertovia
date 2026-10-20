@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "test:unit": "node --test tests/dungeonOrders.test.ts tests/notificationPolicy.test.ts",
+    "test:unit": "node --test tests/dungeonOrders.test.ts tests/notificationPolicy.test.ts tests/journeyPosition.test.ts",
     "preview": "vite preview",
     "sprites": "node scripts/pack-sprites.mjs",
     "test:e2e": "playwright test",

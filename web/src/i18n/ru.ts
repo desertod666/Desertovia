@@ -1428,6 +1428,8 @@ export const ru: Dictionary = {
     'task.notRunning': 'Сейчас нет начатого дела.',
     'spot.notForTask': '«{task}» делают только на своём месте.',
     'spot.outsideLand': 'Это место за краем земли.',
+    'spot.noPath': 'Открытого пути нет. Проверьте мосты, воду и заваленные проходы.',
+    'goto.retreatRequired': 'Перед дорогой нужно отступить из боя.',
     'spot.noTree': 'Здесь больше не растёт дерево.',
     'spot.nothingToClear': 'Здесь больше нечего расчищать.',
     'wilds.unknown': 'Дикие земли ещё никому не известны.',

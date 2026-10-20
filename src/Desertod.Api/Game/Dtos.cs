@@ -220,6 +220,8 @@ public sealed record VillageStateDto(
     public bool WorkContractsEnabled { get; init; }
     public bool FarmerAdmissionEnabled { get; init; }
     public IReadOnlyList<WorldRoute> WorldRoutes { get; init; } = [];
+    public int MapVersion { get; init; }=RegionalTerrain.Version;
+    public TileArea MapArea { get; init; }=WorldMap.Land;
     public TileArea KingdomArea { get; init; } = WorldMap.BuildArea;
     public FortificationQuote? FortificationUpgrade { get; init; }
     public int CastleLevel { get; init; }
@@ -239,8 +241,16 @@ public sealed record HousingDto(string PlotId, int Beds, int Occupied, int Level
 
 /// <param name="Appearance">Null until the owner creates their character.</param>
 /// <param name="Spot">Where the Tsar walked to; null while they stand at the campfire.</param>
+public sealed record WalkJourneyDto(TilePoint From,IReadOnlyList<TripWaypoint> Waypoints,DateTimeOffset SetOutAt,
+    DateTimeOffset ArrivesAt,double SpeedMultiplier,DateTimeOffset SnapshotAt)
+{
+    public static WalkJourneyDto? FromTrip(Trip? trip,DateTimeOffset now)=>trip?.Waypoints.Count>0
+        ?new(trip.From,trip.Waypoints,trip.SetOutAt,trip.ArrivesAt,trip.SpeedMultiplier,now):null;
+}
+
 public sealed record TsarDto(string Name, Appearance? Appearance, TilePoint? Spot, DateTimeOffset? InjuredUntil = null)
 {
+    public WalkJourneyDto? Journey { get; init; }
     public RestState RestState { get; init; }
     public DateTimeOffset? RestRequestedAt { get; init; }
     public Guid? AccountId { get; init; }
@@ -303,6 +313,7 @@ public sealed record CitizenSummaryDto(
     ResourceKind? Weapon,
     ExternalRecovery? Recovery = null)
 {
+    public WalkJourneyDto? Journey { get; init; }
     public IReadOnlyList<FarmWorkTarget> FarmTargets { get; init; } = [];
     public bool IsFarmer { get; init; }
     public bool CanManageFarm { get; init; }
@@ -729,7 +740,7 @@ public static class DtoMapper
             citizen.CycleEndsAt,
             citizen.Load.Select(g => g.Kind).ToList(),
             CombatRules.IsInjured(citizen, now) ? citizen.InjuredUntil : null,
-            citizen.Weapon, citizen.Recovery) {FarmTargets=citizen.CycleSettled ? [] : citizen.CycleFarmTargets,IsFarmer=citizen.IsFarmer,CanManageFarm=citizen.CanManageFarm&&citizen.IsGovernor,RestState=citizen.RestState,WeaponSharpen=citizen.WeaponSharpen,HospitalizedAt=citizen.HospitalizedAt,RescueByCitizenId=citizen.RescueByCitizenId,RescuePatientId=citizen.RescuePatientId,RescueJourney=citizen.RescueJourney,RescueRequestedAt=citizen.RescueRequestedAt,DefenseSector=citizen.DefenseSector,DefenseReadyAt=citizen.DefenseReadyAt};
+            citizen.Weapon, citizen.Recovery) {Journey=WalkJourneyDto.FromTrip(citizen.Trip,now),FarmTargets=citizen.CycleSettled ? [] : citizen.CycleFarmTargets,IsFarmer=citizen.IsFarmer,CanManageFarm=citizen.CanManageFarm&&citizen.IsGovernor,RestState=citizen.RestState,WeaponSharpen=citizen.WeaponSharpen,HospitalizedAt=citizen.HospitalizedAt,RescueByCitizenId=citizen.RescueByCitizenId,RescuePatientId=citizen.RescuePatientId,RescueJourney=citizen.RescueJourney,RescueRequestedAt=citizen.RescueRequestedAt,DefenseSector=citizen.DefenseSector,DefenseReadyAt=citizen.DefenseReadyAt};
     }
 
     public static CitizenDto ToDto(this Citizen citizen, Village village, DateTimeOffset now) => new(

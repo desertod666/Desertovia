@@ -38,6 +38,12 @@ public static class WorkSpots
         }
 
         BankAccess.Require(village, spot);
+        if(RegionalTerrain.NewLand(spot))
+        {
+            var kind=RegionalTerrain.For(village.Id,village.Wilds)[RegionalTerrain.Index((int)Math.Floor(spot.X),(int)Math.Floor(spot.Y))];
+            var expected=task.Workplace switch {Forest.Workplace=>1,"stones"=>3,"berries"=>4,"reeds"=>5,_=>-1};
+            if(kind!=expected)throw new GameRuleException("spot.notForTask","This resource is not found on the selected tile.",new Dictionary<string,object>{["taskId"]=task.Id});
+        }
         var tile = spot.ToTile();
         if (!WorldMap.Land.Contains(tile))
         {

@@ -1,0 +1,18 @@
+[
+  {
+    "seed": 0,
+    "extraHash": "bc4d2645eb4bea9b8da418d368cb85f735659df3ad744365860c6bf6f0e2351f"
+  },
+  {
+    "seed": 42,
+    "extraHash": "ff7d93ebceab0dafa1ae8e26dfd7fc5e1d2021720be243bf9c30c4ec081b46a6"
+  },
+  {
+    "seed": 123456789,
+    "extraHash": "eb63686f44361cf6ea06bc60d9e570aa88a08ffa2e044de487f844ad820e6035"
+  },
+  {
+    "seed": 4294967295,
+    "extraHash": "a7fc9326e2c0f05cb5f062a9743a6202e503dfd47d51b3d5845754387ac2b25b"
+  }
+]
