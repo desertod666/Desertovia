@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T15:53:30.365042+00:00",
-  "status": "first_foundation_slice_implemented_local_checks_pass_ci_pending",
+  "recorded_at_utc": "2026-10-20T16:18:39.256582+00:00",
+  "status": "foundation_ci_pass_compact_ui_and_partner_integration_in_progress",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
@@ -140,6 +140,15 @@
       "passed": 1,
       "failed": 0,
       "scope": "two independent GameService instances, one PG database, concurrent request replay, altered payload rejection, conserved coins/treasury/stock/cost basis"
+    },
+    "foundation_ci": {
+      "run_id": 39454292839,
+      "sha": "6fb6413fa057a72fd523764f837aab1f40f02095",
+      "result": "all five jobs success; before compact UI and PR76 integration"
+    },
+    "compact_interface": {
+      "status": "in_progress",
+      "first_run": "Needs/layout cases pass; wallet selector corrected before rerun. New final code not yet fully verified."
     }
   },
   "open_questions": [
@@ -175,6 +184,12 @@
   ],
   "implemented_task_scopes": [
     "PKG-T010: compatible currency identities and labels",
-    "PKG-T011: existing transaction contracts verified locally, including independent GameService locks"
-  ]
+    "PKG-T011: existing transaction contracts verified locally, including independent GameService locks",
+    "PKG-T014 independent slice: compact needs/wallet and tap hints; full task blocked on T012/T013"
+  ],
+  "partner_integration": {
+    "pull_request": "https://github.com/desertod666/Desertovia/pull/76",
+    "requested_head": "b617f8d9f38fcc700400dbf2e7239f931d8d2127",
+    "status": "owner_requested_review_and_integration_in_progress"
+  }
 }

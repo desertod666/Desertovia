@@ -6,6 +6,7 @@ import { useI18n } from '../i18n'
 import { EnergyDrinkCard } from './EnergyDrinkShop'
 import { EconomicGoldIcon } from './EconomicGoldIcon'
 import { ResourceIcon } from './TileIcon'
+import { Hint } from './Hint'
 
 /** Extends the existing City/Inventory menu. The server owns money, stock and request receipts. */
 export function EconomyPanel({ village, catalog, citizen, accountId, onPrivatePlace, initialOpen=false }: {village: VillageState; catalog: Catalog; citizen?: Citizen|null; accountId?: string; initialOpen?:boolean; onPrivatePlace?: (building:BuildingDefinition)=>void}) {
@@ -70,10 +71,8 @@ export function EconomyPanel({ village, catalog, citizen, accountId, onPrivatePl
     {open && <>
       {error && <p role="alert" className="error">{error}</p>}{notice && <p role="status">{notice}</p>}
       {!view ? <p>{i18n.t('loading')}</p> : <>
-        <div className="economy-balances"><strong><EconomicGoldIcon/> {view.coins} {i18n.t('currency.goldUnit')}</strong><span>🕯 {view.testCandles} {text('тестовых свечей','test candles')}</span></div>
-        <p className="small muted">{i18n.t('economy.goldDescription')}</p>
-        <p className="small muted">{text('Полезная работа','Useful work')}: {view.workPay} · {text('Стройка и ремонт','Construction and repair')}: {view.constructionPay} {i18n.t('economy.privateConstructionPay')}</p>
-        {citizen && <EnergyDrinkCard view={view} citizen={citizen} busy={busy} onBuy={currency=>void act({action:'energy-drink-'+currency})}/>}
+        <div className="economy-balances"><strong><EconomicGoldIcon/> {view.coins} {i18n.t('currency.goldUnit')}</strong><span>🕯 {view.testCandles} {text('тестовых свечей','test candles')}</span><Hint className="help-button" label={text('О деньгах и оплате труда','About money and work pay')} text={[i18n.t('economy.goldDescription'), `${text('Полезная работа','Useful work')}: ${view.workPay} · ${text('Стройка и ремонт','Construction and repair')}: ${view.constructionPay} ${i18n.t('economy.privateConstructionPay')}`].join('\n')}>ⓘ</Hint></div>
+        {citizen && <details className="energy-shop-disclosure"><summary>{text('Энергетик батюшки','Chaplain energy drink')}</summary><EnergyDrinkCard view={view} citizen={citizen} busy={busy} showBalance={false} onBuy={currency=>void act({action:'energy-drink-'+currency})}/></details>}
         <details><summary>{text('Моё имущество и передача','My possessions and transfers')}</summary>
           <p className="small">{text('Личное имущество хранится отдельно от общей ноши и склада. До 100 каждого материала.','Personal goods are separate from communal loads and storage. Up to 100 of each material.')}</p>
           {citizen && <p>{text('Общая экипировка на время работы','Communal gear borrowed for work')}: {citizen.weapon ? <><ResourceIcon kind={citizen.weapon} scale={1} sharpen={citizen.weaponSharpen ?? 0} /> {i18n.resource(citizen.weapon)}</> : '—'} · {citizen.armor ? i18n.resource(citizen.armor) : '—'}. {text('Вернётся на склад после работы.','Returned after work.')}</p>}
@@ -84,13 +83,16 @@ export function EconomyPanel({ village, catalog, citizen, accountId, onPrivatePl
           <label>{text('Материал','Material')}<select value={resource} onChange={e=>setResource(e.target.value)}>{choices.map(r=><option key={r.kind} value={r.kind}>{i18n.resource(r.kind)}</option>)}</select></label>
           <label>{text('Количество','Amount')}<input inputMode="numeric" type="text" value={amount} onChange={e=>setAmount(e.target.value)} aria-invalid={!validAmount}/></label>
           <button disabled={busy||!validAmount} onClick={()=>void act({action:'buy-stock',resource,amount:units,price:unitPrice(resource)})}>{text('Купить у царства','Buy from kingdom')} · {validAmount ? unitPrice(resource)*units : '—'} {i18n.t('currency.goldUnit')}</button>
-          <button disabled={busy||!validAmount||(view.inventory.find(g=>g.kind===resource)?.amount??0)<units} onClick={()=>void act({action:'donate-stock',resource,amount:units})}>{text('Отдать в общий запас бесплатно','Donate to communal stock')}</button>
-          <p className="small muted">{text('Передаётся сколько поместится. Остаток сохранится в личном запасе.','Only what fits is transferred. The remainder stays in your personal inventory.')}</p>
-          <label>{text('Получатель','Recipient')}<select value={recipient} onChange={e=>setRecipient(e.target.value)}><option value="">{text('Выбрать жителя','Choose a resident')}</option>{view.residents.filter(r=>r.accountId!==own).map(r=><option key={r.accountId} value={r.accountId}>{r.name}</option>)}</select></label>
+          <button disabled={busy||!validAmount||(view.inventory.find(g=>g.kind===resource)?.amount??0)<units} onClick={()=>void act({action:'donate-stock',resource,amount:units})}>{text('В общий запас · бесплатно','Donate · free')}</button>
+          <p className="small muted">{text('Что не поместится, останется у тебя.','Anything that does not fit stays with you.')}</p>
+        </section>}
+        {citizen && <details className="economy-transfer"><summary>{text('Передать или выставить на рынок','Transfer or list on market')}</summary>
+          <p className="small">{i18n.resource(resource)} × {validAmount ? units : '—'} · {text('Материал и количество выбери выше.','Choose the material and amount above.')}</p>
+          <div className="economy-controls"><label>{text('Получатель','Recipient')}<select value={recipient} onChange={e=>setRecipient(e.target.value)}><option value="">{text('Выбрать жителя','Choose a resident')}</option>{view.residents.filter(r=>r.accountId!==own).map(r=><option key={r.accountId} value={r.accountId}>{r.name}</option>)}</select></label>
           <button disabled={busy||!validAmount||!recipient} onClick={()=>void act({action:'transfer',resource,amount:units,target:recipient})}>{text('Передать личное','Give personal goods')}</button>
           <label>{i18n.t('economy.lotPrice')}<input inputMode="numeric" value={price} onChange={e=>setPrice(e.target.value)} aria-invalid={!validPrice}/></label>
           <button disabled={busy||!validAmount||!validPrice} onClick={()=>void act({action:'list',resource,amount:units,price:Number(price)})}>{text('Выставить личное на рынок','List personal goods')}</button>
-        </section>}
+        </div></details>}
         <details><summary>{text('Рынок','Market')}</summary>
           {view.lots.length===0 && <p className="muted">{text('Лотов пока нет','No lots yet')}</p>}
           {view.lots.map(l=><article className="economy-lot" key={l.id}><ResourceIcon kind={l.resource} scale={2}/><div><strong>{i18n.resource(l.resource)} × {l.amount}</strong><span>{l.price} {i18n.t('currency.goldUnit')} · {l.seller}</span></div>

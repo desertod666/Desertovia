@@ -84,7 +84,7 @@ test('third tired work warns about fainting before starting on a narrow screen',
 test('personal material donation sends a free donation operation from the existing inventory controls',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('desertod.language','ru'))
  await page.goto('/e2e/economy-harness.html');await page.getByText('Кошелёк, имущество и рынок',{exact:true}).click()
- const donate=page.getByRole('button',{name:'Отдать в общий запас бесплатно',exact:true})
+ const donate=page.getByRole('button',{name:'В общий запас · бесплатно',exact:true})
  await expect(donate).toBeDisabled()
  await page.getByLabel('Количество',{exact:true}).fill('2');await page.getByRole('button',{name:/Купить у царства/}).click()
  await expect(donate).toBeEnabled();await donate.click()

@@ -226,51 +226,26 @@ function CitizenNeeds({
 
   return (
     <div className="hud-needs">
-      <span className={`resource-chip${citizen.isHungry ? ' needs-warning' : ''}`}>
+      <span className={`resource-chip need-summary${citizen.isHungry ? ' needs-warning' : ''}`}>
         <ResourceIcon kind="Food" scale={1.5} />
-        <span>
-          {citizen.isHungry ? (
-            <>
-              <Hint
-                text={t('hint.hungry', {
+        <Hint label={t('needs.foodHelp')} text={citizen.isHungry
+          ? [t('hint.hungry', {
                   experience: percentOf(rules.hungryExperienceMultiplier),
                   rest: percentOf(rules.hungryRegenerationMultiplier),
-                })}
-              >
-                {t('needs.hungry')}
-              </Hint>
-              {' · '}
-              <Hint text={t('hint.hungryExperience', { percent: percentOf(rules.hungryExperienceMultiplier) })}>
-                {t('needs.hungryExperience', { multiplier: i18n.amount(rules.hungryExperienceMultiplier) })}
-              </Hint>
-              {' · '}
-              <Hint text={t('hint.hungryRest', { percent: percentOf(rules.hungryRegenerationMultiplier) })}>
-                {t('needs.hungryRest', { multiplier: i18n.amount(rules.hungryRegenerationMultiplier) })}
-              </Hint>
-            </>
-          ) : (
-            <>
-              <Hint text={t('hint.fed', { cycles: meals })}>{t('needs.fed')}</Hint>
-              {' · '}
-              <Hint text={t('hint.meal', { done: mealsDone, cycles: meals })}>
-                {t('needs.meal', { done: mealsDone, total: meals })}
-              </Hint>
-            </>
-          )}
-        </span>
+                }), t('hint.hungryExperience', { percent: percentOf(rules.hungryExperienceMultiplier) }), t('hint.hungryRest', { percent: percentOf(rules.hungryRegenerationMultiplier) })].join('\n')
+          : [t('hint.fed', { cycles: meals }), t('hint.meal', { done: mealsDone, cycles: meals })].join('\n')}>
+          {citizen.isHungry ? t('needs.hungry') : `${t('needs.fed')} · ${mealsDone}/${meals}`}
+          <span className="hint-mark" aria-hidden>ⓘ</span>
+        </Hint>
       </span>
-      <span className={`resource-chip${citizen.cycleTired ? ' needs-warning' : ''}`}>
+      <span className={`resource-chip need-summary${citizen.cycleTired ? ' needs-warning' : ''}`}>
         <span className="sleep-icon" aria-hidden>
           z<small>z</small>
         </span>
-        <span>
-          <Hint text={rest.place}>{rest.underTrees ? t('needs.underTrees') : t('needs.inShelter')}</Hint>
-          {' · '}
-          <Hint text={rest.energy}>{t('needs.energy', { energy: Math.floor(energy), maximum: citizen.maximumEnergy })}</Hint>
-          {' · '}
-          <Hint text={rest.perHour}>{t('needs.perHour', { perHour: i18n.amount(citizen.energyPerHour) })}</Hint>{' '}
-          <Hint text={rest.restSpeed}>{t('needs.restSpeed', { percent: rest.percent })}</Hint>
-        </span>
+        <Hint label={t('needs.restHelp')} text={[rest.energy, rest.place, rest.perHour, rest.restSpeed].join('\n')}>
+          {t(citizen.cycleTired ? 'needs.tiredShort' : 'needs.restShort')} · {t('needs.perHour', { perHour: i18n.amount(citizen.energyPerHour) })}
+          <span className="hint-mark" aria-hidden>ⓘ</span>
+        </Hint>
       </span>
       {drinks > 0 && (
         <button className="drink-button" disabled={pending || cooling || full} onClick={onDrink} title={drinkTitle}>

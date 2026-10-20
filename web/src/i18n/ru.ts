@@ -2,6 +2,10 @@ import type { Dictionary } from './en'
 
 export const ru: Dictionary = {
   ui: {
+    'needs.foodHelp': 'Подробности питания',
+    'needs.restHelp': 'Подробности восстановления сил',
+    'needs.restShort': 'Отдых',
+    'needs.tiredShort': 'Устал',
     "currency.gold": "Золото",
     "currency.economicGold": "Хозяйственное золото",
     "currency.goldUnit": "золота",

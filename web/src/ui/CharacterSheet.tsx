@@ -85,9 +85,8 @@ export function CharacterSheet({ citizen, catalog, structures, now = Date.now() 
       {citizen.isHungry ? (
         <p className="warning small">{t('character.hungry')}</p>
       ) : (
-        <p className="small muted">{t('character.fed')}</p>
+        <p className="small muted"><Hint text={t('character.eating', { cycles: catalog.rules.cyclesPerMeal })}>{t('character.fed')} ⓘ</Hint></p>
       )}
-      <p className="small muted">{t('character.eating', { cycles: catalog.rules.cyclesPerMeal })}</p>
       {citizen.injuredUntil && Date.parse(citizen.injuredUntil) > Date.parse(citizen.serverNow) && (
         <p className="warning small">
           {t('injury.title', {
@@ -97,8 +96,8 @@ export function CharacterSheet({ citizen, catalog, structures, now = Date.now() 
         </p>
       )}
       <h4>{t('fight.title')}</h4>
-      <p className="small" title={t('fight.powerHint')}>
-        {t('fight.power', { power: i18n.amount(citizen.power) })} ·{' '}
+      <p className="small">
+        <Hint text={t('fight.powerHint')}>{t('fight.power', { power: i18n.amount(citizen.power) })} ⓘ</Hint> ·{' '}
         {citizen.weapon && <ResourceIcon kind={citizen.weapon} scale={2} sharpen={citizen.weaponSharpen ?? 0} />}
         {citizen.arrows > 0 && <ResourceIcon kind="Arrows" scale={2} sharpen={citizen.arrowSharpen ?? 0} />}
         {citizen.armor && <ResourceIcon kind={citizen.armor} scale={2} />}{' '}
@@ -112,7 +111,6 @@ export function CharacterSheet({ citizen, catalog, structures, now = Date.now() 
             })
           : t('fight.unarmed')}
       </p>
-      <p className="small muted">{t('fight.powerHint')}</p>
       <table className="stats">
         <tbody>
           {citizen.stats.map((stat) => (

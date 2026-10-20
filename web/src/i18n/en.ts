@@ -1,6 +1,10 @@
 /** English is the primary language; every other dictionary must provide the same keys. */
 export const en = {
   ui: {
+    'needs.foodHelp': 'Food details',
+    'needs.restHelp': 'Energy recovery details',
+    'needs.restShort': 'Rest',
+    'needs.tiredShort': 'Tired',
     "currency.gold": "Gold",
     "currency.economicGold": "Economic gold",
     "currency.goldUnit": "gold",

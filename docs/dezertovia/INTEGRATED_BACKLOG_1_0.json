@@ -1163,7 +1163,7 @@
       "id": "PKG-T014",
       "milestone": "M1",
       "title": "Мобильная оболочка и контекстные действия",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partial_independent_compact_ui_implementation_checks_pending",
       "dependencies": [
         "PKG-T010",
         "PKG-T012",
@@ -1196,9 +1196,9 @@
       "original_task_id": "T014",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "source_partial_target",
-        "evidence": "React/Pixi/HUD/TargetPopup/отчёт уже есть; новый полный телефонный путь ещё не внедрён.",
-        "runtime_verification": "not_run_this_assignment"
+        "status": "independent_compact_slice_implemented",
+        "evidence": "INTERFACE_COMPACTNESS_1_0.md; tests in progress. T012/T013 and complete T035 path still required.",
+        "runtime_verification": "pending_final_ui_and_partner_candidate"
       }
     },
     {
