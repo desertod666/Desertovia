@@ -1,0 +1,436 @@
+{
+  "snapshot_date": "2026-10-19",
+  "evidence": "local source inspection only; no new live audit",
+  "repositories": {
+    "game": {
+      "repository": "desertod666/Desertovia",
+      "inspected_sha": "4bb125f2dc05711ebaf4dac2723f3ee19eae3ea9"
+    },
+    "bot": {
+      "repository": "desertod666/bolig-agent",
+      "canonical_branch": "claude/telegram-bot-chat-variety-wci5ph",
+      "inspected_sha": "8dbbc3a000367a84c12869f6aed0a2b12318c148"
+    },
+    "ops": {
+      "repository": "desertod666/bolig-agent",
+      "branch": "ops/almighty-release",
+      "instruction": "Read current private AGENTS and reviewed release process; never replay old requests."
+    }
+  },
+  "modules": [
+    {
+      "id": "presence_rest",
+      "repository": "game",
+      "purpose": "Присутствие, здоровье, начало/окончание действий и будущий отдых",
+      "entrypoints": [
+        "src/Desertod.Domain/Entities/Citizen.cs",
+        "src/Desertod.Domain/Rules/Energy.cs",
+        "src/Desertod.Domain/Rules/CycleEngine.cs",
+        "src/Desertod.Api/Game/CitizenPresence.cs",
+        "src/Desertod.Api/Game/PresenceWorker.cs",
+        "src/Desertod.Api/Game/CycleSettlementWorker.cs"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Api.Tests/CitizenPresenceTests.cs",
+        "tests/Desertod.Domain.Tests/EnergyAndYieldTests.cs",
+        "tests/Desertod.Domain.Tests/CancelTaskTests.cs"
+      ],
+      "observed_facts": [
+        "CitizenStatus Active/Dormant и WorkState Idle/Working/AwaitingRenewal/Paused не отдельный safe rest.",
+        "Начатая работа завершается без presence; Paused используется для медицинских условий.",
+        "CitizenPresence.Connect/Touch/Disconnect/IsPresent; безопасное отключение не готово."
+      ]
+    },
+    {
+      "id": "work_building",
+      "repository": "game",
+      "purpose": "Общие работы, профессии, проекты, строительные решения",
+      "entrypoints": [
+        "src/Desertod.Domain/Rules/CycleEngine.cs",
+        "src/Desertod.Domain/Catalog/GameCatalog.cs",
+        "src/Desertod.Domain/Skills/SkillRules.cs",
+        "src/Desertod.Domain/Buildings/ConstructionRules.cs",
+        "src/Desertod.Domain/Projects/ProjectRules.cs",
+        "src/Desertod.Api/Game/GameService.cs",
+        "src/Desertod.Api/Game/GameService.Civic.cs",
+        "src/Desertod.Api/Game/GameEndpoints.cs"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/ConstructionTests.cs",
+        "tests/Desertod.Domain.Tests/ProjectTests.cs",
+        "tests/Desertod.Api.Tests/CooperativeCivicTests.cs",
+        "tests/Desertod.Api.Tests/CooperativeMigrationTests.cs"
+      ],
+      "observed_facts": [
+        "Start/Settle/Cancel; GameService.StartTaskAsync/CancelTaskAsync/SettleOneAsync.",
+        "TitleFor и SkillRules задают ремесло; не найдена профессия с обязательным двухчасовым переключением.",
+        "CivicRequest/CivicDecision — разрешение управления, не WorkContract и не escrow зарплаты.",
+        "Не найден контракт очереди действий1+1 в изученном src/web/tests."
+      ]
+    },
+    {
+      "id": "economy",
+      "repository": "game",
+      "purpose": "Кошельки, казна, рынок, receipts и проводки",
+      "entrypoints": [
+        "src/Desertod.Domain/Economy/Economy.cs",
+        "src/Desertod.Api/Game/GameService.Economy.cs",
+        "src/Desertod.Api/Game/GameService.Accounting.cs",
+        "src/Desertod.Api/Game/GameService.cs",
+        "src/Desertod.Api/Game/GameEndpoints.cs"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/KingdomEconomyTests.cs",
+        "tests/Desertod.Api.Tests/KingdomEconomyApiTests.cs"
+      ],
+      "observed_facts": [
+        "GetEconomyAsync/ChangeEconomyAsync/PayUsefulWorkAsync; GET/POST /api/villages/{slug}/economy.",
+        "GameWallet.Coins/TestCandles/ProfitToday; KingdomEconomy.TreasuryCoins; EconomyReceipt и LedgerEntry.",
+        "PayUsefulWorkAsync сейчас эмиссия, не дебет казны. TaxEnabled=false, TaxPreview не настоящий налог.",
+        "WithVillageAsync/WithRetryAsync используют PG transaction и pg_advisory_xact_lock; receipts сверяют fingerprint."
+      ]
+    },
+    {
+      "id": "ownership_cost",
+      "repository": "game",
+      "purpose": "Текущее public/private, личные запасы и себестоимость",
+      "entrypoints": [
+        "src/Desertod.Domain/Rules/CycleEngine.cs",
+        "src/Desertod.Domain/Entities/Citizen.cs",
+        "src/Desertod.Domain/Economy/Economy.cs",
+        "src/Desertod.Domain/Catalog/ResourceKind.cs",
+        "src/Desertod.Api/Game/GameService.Accounting.cs"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/KingdomEconomyTests.cs",
+        "tests/Desertod.Api.Tests/KingdomEconomyApiTests.cs"
+      ],
+      "observed_facts": [
+        "CyclePrivateOutput определяется рабочей площадкой/владельцем и KingdomRules.Area, не явным договором.",
+        "CycleEngine.Keep для private output сохраняет CostBasis=0; нельзя считать нынешний ProfitToday надёжным налогом.",
+        "ResourceKind.Gold — физический ресурс, не новый денежный счёт."
+      ]
+    },
+    {
+      "id": "data",
+      "repository": "game",
+      "purpose": "Схема PostgreSQL, EF и согласованные миграции",
+      "entrypoints": [
+        "src/Desertod.Infrastructure/Data/DesertodDbContext.cs"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Api.Tests/CooperativeMigrationTests.cs",
+        "tests/Desertod.Api.Tests/KingdomEconomyApiTests.cs"
+      ],
+      "observed_facts": [
+        "Есть ключи кошельков/receipts/рынка, JSON PersonalGoods, concurrency token AlmightyState.Version.",
+        "Путь контекста проверен; новые миграции добавляются, существующие не переписываются."
+      ]
+    },
+    {
+      "id": "combat",
+      "repository": "game",
+      "purpose": "Ручной бой, команды, управление противниками и диагностика",
+      "entrypoints": [
+        "src/Desertod.Domain/Combat/RaidSimulation.cs",
+        "src/Desertod.Domain/Combat/RaidNavigation.cs",
+        "src/Desertod.Domain/Combat/MonsterBrain.cs",
+        "src/Desertod.Domain/Combat/MonsterCrowd.cs",
+        "src/Desertod.Domain/Combat/BattleActions.cs",
+        "src/Desertod.Domain/Combat/CombatRules.cs",
+        "src/Desertod.Api/Game/GameService.Battles.cs",
+        "src/Desertod.Api/Game/RaidWorker.cs",
+        "src/Desertod.Api/Game/CombatDiagnostics.cs",
+        "src/Desertod.Api/Game/BattleDtos.cs",
+        "src/Desertod.Domain/ThirdParty/README.md",
+        "src/Desertod.Domain/ThirdParty/Nez/HighestScoreReasoner.cs",
+        "src/Desertod.Domain/ThirdParty/Nez/LICENSE",
+        "src/Desertod.Domain/ThirdParty/Rvo/Simulator.cs",
+        "src/Desertod.Domain/ThirdParty/Rvo/LICENSE"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/FreeCombatTests.cs",
+        "tests/Desertod.Domain.Tests/OwnerCorrectionTests.cs",
+        "tests/Desertod.Domain.Tests/LiveRaidTests.cs",
+        "tests/Desertod.Domain.Tests/MonsterBehaviorTests.cs",
+        "tests/Desertod.Api.Tests/LiveRaidApiTests.cs",
+        "tests/Desertod.Api.Tests/OwnerCorrectionApiTests.cs",
+        "tests/Desertod.Api.Tests/MonsterBehaviorMigrationTests.cs"
+      ],
+      "observed_facts": [
+        "RaidSimulation.CanFight/Join сейчас включает здорового present жителя рядом с врагом.",
+        "Отключившийся уже вступивший боец остаётся active; withdrawn не возвращается в бой сам.",
+        "SetBattleOrderAsync; PUT /api/villages/{slug}/battles/{id}/order; hold/intercept/retreat/heal.",
+        "CombatDiagnostics уже измеряет simulation/backlog/lock/save/send; не означает выбранный SLO.",
+        "MonsterBrain уже использует Nez UtilityAI reasoner; MonsterCrowd использует RVO Simulator. Сохранять лицензии и не импортировать второй дублирующий движок."
+      ]
+    },
+    {
+      "id": "world",
+      "repository": "game",
+      "purpose": "Местность, маршруты, территории и походы",
+      "entrypoints": [
+        "src/Desertod.Domain/World/WorldMap.cs",
+        "src/Desertod.Domain/World/AuthoredTerrain.cs",
+        "src/Desertod.Domain/World/BankAccess.cs",
+        "web/src/game/worldMap.ts",
+        "web/src/game/VillageWorld.ts"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/LiveRaidTests.cs",
+        "tests/Desertod.Api.Tests/LiveRaidApiTests.cs"
+      ],
+      "observed_facts": [
+        "Фиксированная территория существует; большая карта и Expedition — проект расширения, не готовая отдельная подсистема.",
+        "Сохранить проходимость у воды, навигацию/толпу и раздельность статики/динамики."
+      ]
+    },
+    {
+      "id": "dungeons",
+      "repository": "game",
+      "purpose": "Сбор, динамика, команды и завершение данжа",
+      "entrypoints": [
+        "src/Desertod.Domain/Dungeons/DungeonRun.cs",
+        "src/Desertod.Domain/Dungeons/DungeonRules.cs",
+        "src/Desertod.Domain/Dungeons/DungeonSimulation.cs",
+        "src/Desertod.Api/Game/GameService.Dungeon.cs",
+        "src/Desertod.Api/Game/DungeonHub.cs",
+        "src/Desertod.Api/Game/DungeonWorker.cs",
+        "src/Desertod.Api/Game/DungeonDtos.cs",
+        "web/src/game/dungeonOrders.ts",
+        "web/src/pages/DungeonPage.tsx",
+        "web/src/game/DungeonWorld.ts"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/DungeonTests.cs",
+        "tests/Desertod.Api.Tests/DungeonTests.cs",
+        "tests/Desertod.Api.Tests/DungeonLatencyTests.cs",
+        "web/tests/dungeonOrders.test.ts"
+      ],
+      "observed_facts": [
+        "OpenDungeonAsync/JoinDungeonAsync/LeaveDungeonAsync/AdvanceDungeonsAsync/SettleDungeonAsync.",
+        "DungeonHub.JoinRun/MoveTo/Attack/Heal. Отдельного общего Party-контракта не обнаружено.",
+        "March допускает царя одного; minparty и выход из активного данжа надо определить.",
+        "Клиентская очередь: один запрос плюс последнее намерение, без replay после reconnect."
+      ]
+    },
+    {
+      "id": "siege_recovery",
+      "repository": "game",
+      "purpose": "Разрушение, поражение, восстановление и помощь раненым",
+      "entrypoints": [
+        "src/Desertod.Domain/Combat/RuinRules.cs",
+        "src/Desertod.Domain/Combat/RaidBattle.cs",
+        "src/Desertod.Domain/Combat/CombatRules.cs",
+        "src/Desertod.Api/Game/GameService.Rescue.cs",
+        "src/Desertod.Api/Game/GameService.Hospital.cs",
+        "src/Desertod.Api/Game/HospitalWorker.cs"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/OwnerCorrectionTests.cs",
+        "tests/Desertod.Domain.Tests/RescueDeliveryTests.cs",
+        "tests/Desertod.Domain.Tests/HospitalTests.cs",
+        "tests/Desertod.Api.Tests/OwnerCorrectionApiTests.cs",
+        "tests/Desertod.Api.Tests/HospitalApiTests.cs"
+      ],
+      "observed_facts": [
+        "Collapse устанавливает DefeatedAt при разрушении общего замка; полный ремонт снимает поражение.",
+        "Отдельных SiegePhase и rare miracle не обнаружено. У царя есть HP-урон и конечная травма, не permadeath."
+      ]
+    },
+    {
+      "id": "director",
+      "repository": "game",
+      "purpose": "Снимки, предложения, review, исполнение и полномочия",
+      "entrypoints": [
+        "src/Desertod.Domain/Director/Almighty.cs",
+        "src/Desertod.Api/Game/GameService.Almighty.cs",
+        "src/Desertod.Api/Game/AlmightyService.cs",
+        "src/Desertod.Api/Game/GameEndpoints.cs"
+      ],
+      "existing_test_files": [
+        "tests/Desertod.Domain.Tests/AlmightyTests.cs",
+        "tests/Desertod.Api.Tests/AlmightyApiTests.cs",
+        "web/e2e/almighty.spec.ts"
+      ],
+      "observed_facts": [
+        "Текущие режимы Off/Observe/Propose; economy_report денег не меняет.",
+        "BeginAlmightyReviewAsync/CompleteAlmightyReviewAsync/DecideAlmightyAsync/SetAlmightyModeAsync.",
+        "Есть lease/подписанный bridge и повторная проверка условий; налогового executor ещё нет."
+      ]
+    },
+    {
+      "id": "client_sync",
+      "repository": "game",
+      "purpose": "React/Pixi, ревизии, reconnect и защита движения",
+      "entrypoints": [
+        "web/src/hooks.ts",
+        "web/src/api.ts",
+        "web/src/pages/GamePage.tsx",
+        "web/src/game/GameCanvas.tsx",
+        "web/src/game/VillageWorld.ts",
+        "web/src/game/combatSnapshot.ts",
+        "src/Desertod.Api/Game/VillageHub.cs"
+      ],
+      "existing_test_files": [
+        "web/e2e/app-resume.spec.ts",
+        "web/e2e/free-combat.spec.ts",
+        "web/e2e/combat-motion.spec.ts",
+        "web/e2e/live-combat.spec.ts"
+      ],
+      "observed_facts": [
+        "useLiveVillage/catchUp → adoptVillageState/mergeBattles → applyCitizen → Pixi.",
+        "sameStaticVillage предотвращает пересборку статики на боевом пакете; requestSync не найден.",
+        "Сохранять away-бойцов и revision/serverNow-защиту."
+      ]
+    },
+    {
+      "id": "economy_ui",
+      "repository": "game",
+      "purpose": "Хозяйственный кошелёк, рынок и отображение названий",
+      "entrypoints": [
+        "web/src/ui/EconomyPanel.tsx",
+        "web/src/ui/WalletHud.tsx",
+        "web/src/ui/DcoinIcon.tsx",
+        "web/src/ui/EnergyDrinkShop.tsx",
+        "web/src/api.ts"
+      ],
+      "existing_test_files": [
+        "web/e2e/kingdom-economy.spec.ts"
+      ],
+      "observed_facts": [
+        "Legacy Dcoin и TEST_CANDLE видны через экономические DTO; новый labels/asset mapping требует согласованного UI."
+      ]
+    },
+    {
+      "id": "feedback_notifications",
+      "repository": "game",
+      "purpose": "Уведомления, отчёт и контекст",
+      "entrypoints": [
+        "web/src/notifications.ts",
+        "web/src/reports/ReportButton.tsx",
+        "web/src/reports/capture.ts"
+      ],
+      "existing_test_files": [
+        "web/e2e/app-resume.spec.ts"
+      ],
+      "observed_facts": [
+        "Существующий отчёт и снимок сохраняют контракт отмены/контекста; расширение уведомлений не отправляет обращения автоматически."
+      ]
+    },
+    {
+      "id": "bot_wallet",
+      "repository": "bot",
+      "purpose": "Основной свечной счёт, ставки, игры и будущий Dcoin",
+      "entrypoints": [
+        "sramoslav/church.py",
+        "sramoslav/game_economy.py",
+        "sramoslav/games.py",
+        "sramoslav/feats.py",
+        "sramoslav/prihod.py",
+        "sramoslav/desertovia_hospital.py"
+      ],
+      "existing_test_files": [
+        "tests/test_game_economy.py",
+        "tests/test_desertovia_hospital.py"
+      ],
+      "observed_facts": [
+        "Church.balance/add/spend/earn_message, KV candles:{uid}/candles_total:{uid}.",
+        "Основной кошелёк не имеет полного журнала проводок; GameEconomy/Hospital используют более сильные атомарные образцы.",
+        "Свечи уже могут сокращать лечение через Hospital.heal: судьбу этой связки нужно решить."
+      ]
+    },
+    {
+      "id": "bot_payments",
+      "repository": "bot",
+      "purpose": "Донаты, связка личности и будущие Stars receipts",
+      "entrypoints": [
+        "sramoslav/donations.py",
+        "sramoslav/donation_reaction.py",
+        "sramoslav/youtube.py",
+        "sramoslav/town_proxy.py"
+      ],
+      "existing_test_files": [
+        "tests/test_donation_reaction.py",
+        "tests/test_youtube_web.py"
+      ],
+      "observed_facts": [
+        "Есть don/scev/yt_paid_event/yt_membership_event markers, но не всегда атомарно с начислением.",
+        "Реализации Stars successful_payment/pre_checkout/send_invoice/XTR в изученном коде не обнаружено.",
+        "Не переносить ненадёжный порядок marker-before-credit в новый платёжный путь."
+      ]
+    },
+    {
+      "id": "bot_memberships",
+      "repository": "bot",
+      "purpose": "Каталог YouTube и подтверждения будущего premium",
+      "entrypoints": [
+        "sramoslav/memberships.py",
+        "sramoslav/membership_studio.py",
+        "sramoslav/youtube.py"
+      ],
+      "existing_test_files": [
+        "tests/test_membership_panel.py",
+        "tests/test_membership_studio.py",
+        "tests/test_youtube_web.py"
+      ],
+      "observed_facts": [
+        "Пять подтверждённых уровней каталога. Наблюдение member-сообщений хранит окно35дней, не оплаченный expiry.",
+        "Memberships.confirm/refresh/import_studio/reward; новые/подаренные/milestone события различаются."
+      ]
+    },
+    {
+      "id": "bot_ai",
+      "repository": "bot",
+      "purpose": "Модельная цепочка, бюджет и связь директора",
+      "entrypoints": [
+        "sramoslav/almighty.py",
+        "sramoslav/llm.py",
+        "sramoslav/ai_budget.py",
+        "sramoslav/feedback.py",
+        "sramoslav/feedback_context.py"
+      ],
+      "existing_test_files": [
+        "tests/test_almighty.py"
+      ],
+      "observed_facts": [
+        "Существующая цепочка и бюджеты переиспользуются; не создавать обходной безлимитный Gemini-клиент.",
+        "Feedback не должен становиться прямой командой смены экономики/угроз."
+      ]
+    },
+    {
+      "id": "validation",
+      "repository": "game",
+      "purpose": "Проверенные команды и ограничения CI/нагрузки",
+      "entrypoints": [
+        ".github/workflows/ci.yml",
+        "global.json",
+        "web/package.json",
+        "web/playwright.config.ts",
+        "tests/Desertod.LoadTests/Program.cs"
+      ],
+      "existing_test_files": [
+        "web/tests/dungeonOrders.test.ts"
+      ],
+      "observed_facts": [
+        ".NET10 SDK10.0.300, Node24; browserCI desktopChrome/Pixel7, две части.",
+        "LoadTests создаёт Development-профили/деревни; не применять к production."
+      ]
+    },
+    {
+      "id": "bot_validation",
+      "repository": "bot",
+      "purpose": "Проверки и опасность default deploy",
+      "entrypoints": [
+        ".github/workflows/server.yml",
+        "deploy/ops.sh"
+      ],
+      "existing_test_files": [
+        "tests/test_game_economy.py"
+      ],
+      "observed_facts": [
+        "Push main после test может запустить default deploy. Документационный merge не обязательно безопасен для runtime."
+      ]
+    }
+  ]
+}

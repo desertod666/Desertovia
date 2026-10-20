@@ -1,0 +1,176 @@
+{
+  "policy": "confirmed rules bind all tasks; recommended choices allow labeled prototypes; open choices block only dependent unresolved behavior, not unrelated reversible work.",
+  "decisions": [
+    {
+      "id": "D100",
+      "status": "confirmed",
+      "question": "Валюты и прямое боевое усиление",
+      "recommendation": "Dcoin заменяет свечи; хозяйственные деньги отдельно. Premium удобство/умеренное ускорение без прямого усиления боя.",
+      "blocking_scope": "Any contradictory design is forbidden.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D101",
+      "status": "open",
+      "question": "Отдых: незаконченный цикл, бой и отключение",
+      "recommendation": "Отдельные серверные состояния; не мгновенный immunity disconnect. Выбрать до реализации: finish-before-rest, pause или иной порядок; не терять уже заработанное.",
+      "blocking_scope": "Rest admission, cycle settlement, combat join/retreat, reconnect tests.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D102",
+      "status": "open",
+      "question": "Смерть, потери и возвращение",
+      "recommendation": "Не применять permadeath по умолчанию. Предложить конечные травмы/потерю согласованного груза и бесплатное восстановление.",
+      "blocking_scope": "New death/loot/siege outcomes, not existing combat refactoring.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D103",
+      "status": "open",
+      "question": "Редкое чудо и цена спасения",
+      "recommendation": "Лимит по миру/главе либо восстановимое условие; единственный receipt; не полный возврат потерь. Молния — один вариант, не всегда обязательный.",
+      "blocking_scope": "Miracle executor and catastrophe release.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D104",
+      "status": "open",
+      "question": "Группа, выход из данжа, массовый состав и трофеи",
+      "recommendation": "Задать min/max/ready/leave/timeout/loot ownership; царский поход не единственный доступ к вершине. NPC-соседи для первого прототипа.",
+      "blocking_scope": "Party, active dungeon withdrawal, mass expedition.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D105",
+      "status": "open",
+      "question": "Перенос валют и TEST_CANDLE",
+      "recommendation": "Сначала инвентаризация и display compatibility; сохранить отдельные остатки. Выбрать курс, округление, расходные обещания и rollout authority.",
+      "blocking_scope": "Any real balance conversion or removal of legacy accounts.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D106",
+      "status": "recommended",
+      "question": "Модель трёх типов работы",
+      "recommendation": "Госзаказ с резервом оплаты/общим выходом; личная добыча без зарплаты; частный крафт из собственных материалов. Пространственное private не подменять молча.",
+      "blocking_scope": "Prototype allowed after explicit contracts; live ownership changes require documented final rule.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D107",
+      "status": "recommended",
+      "question": "Дань и денежное давление",
+      "recommendation": "Одна дань с реализованной частной прибыли, чистая госзарплата без повторного налога; казна+внешние расходы. Нет офлайн-накопления долгов.",
+      "blocking_scope": "Model and synthetic simulation; live calculation requires D108/D109.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D108",
+      "status": "open",
+      "question": "CostBasis: производство, старые вещи и распределение",
+      "recommendation": "Переиспользовать существующее пропорциональное списание где подходит; переносить стоимость потреблённых входов. Определить многопродуктовый выход и неизвестную историю.",
+      "blocking_scope": "Real profit tax and cost-based accounting migration.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D109",
+      "status": "open",
+      "question": "Налоговые ставки, эмиссия, сроки и quote",
+      "recommendation": "Версионированные будущие правила, явный лимит и расписание, бюджет госзаказов. Тестовые числа помечать synthetic, не defaults live.",
+      "blocking_scope": "Tax activation, director economic executor, real emission budgets.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D110",
+      "status": "open",
+      "question": "Точная таблица premium",
+      "recommendation": "Подтверждённые YouTube-уровни; не складывать льготы. Оценить общий эффект на выпуск/время/энергию. Нет HP/урона/боевого лута.",
+      "blocking_scope": "Paid entitlement effects and premium pricing/tiers.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D111",
+      "status": "needs_provider_verification",
+      "question": "Источник YouTube entitlement и срок",
+      "recommendation": "Проверить доступные официальные доказательства; не считать 35-дневный observed badge оплатой до даты. Выбрать grace и expiry.",
+      "blocking_scope": "Real premium grants/revocations, not mock UI.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D112",
+      "status": "open",
+      "question": "Stars товары, цены, возвраты и надёжная доставка",
+      "recommendation": "Dcoin-развлечения; XTR amount/payload/account/charge проверяются; atomic credit/receipt. Подтвердить актуальные условия провайдера.",
+      "blocking_scope": "Real invoice/payment enablement.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D113",
+      "status": "open",
+      "question": "Членство в группе и допусловие канала",
+      "recommendation": "Обязательная группа подтверждена; дополнительная подписка не выбрана. Определить join/leave/ban/unverifiable и доступ к уже купленному.",
+      "blocking_scope": "Membership-gated entry/revocation; identity foundation can proceed.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D114",
+      "status": "open",
+      "question": "Масштаб и измеримые SLO",
+      "recommendation": "Выбрать целевой concurrent online, активные бои, устройства/сети; измерить baseline перед численными p95/FPS/API budgets.",
+      "blocking_scope": "Performance acceptance and sizing conclusion.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D115",
+      "status": "open",
+      "question": "Контент первой 1.0",
+      "recommendation": "Определить достаточно разных районов/целей/врагов; сначала один сквозной качественный путь, не объявлять его полным бесконечным миром.",
+      "blocking_scope": "Final 1.0 content gate, not first vertical slice.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D116",
+      "status": "open",
+      "question": "Существующая свечная оплата ускоренного лечения",
+      "recommendation": "Выбрать: перенос как ограниченное опубликованное бытовое ускорение, перевод в хозяйственную услугу или retirement с сохранением обязательств.",
+      "blocking_scope": "Dcoin shop/healing migration and no-hidden-bridge acceptance.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D117",
+      "status": "recommended",
+      "question": "Уведомления и сроки хранения",
+      "recommendation": "Добровольные категории, тихие часы, агрегация, bounded retries. Обращения остаются в памяти/ежедневной сводке; без нового потока ownerDM.",
+      "blocking_scope": "Notification delivery defaults and new retention changes.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    },
+    {
+      "id": "D118",
+      "status": "recommended",
+      "question": "Музыкальный и художественный production brief",
+      "recommendation": "Pixel art + dark acoustic palette, 21 scenes. Выбрать главную оригинальную тему, формат/rights/loop points; промпт не готовый asset.",
+      "blocking_scope": "Asset acceptance; state-machine design can proceed.",
+      "owner": "product/integrator",
+      "production_activation": "not authorized by this planning package"
+    }
+  ]
+}

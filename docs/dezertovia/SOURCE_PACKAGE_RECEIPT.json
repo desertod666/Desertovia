@@ -1,0 +1,149 @@
+{
+  "recorded_on": "2026-10-20",
+  "source_thread_title": "ИГРЫ ДЕЗЕРТОВИИ 1",
+  "source_thread_id": "01a1272e-16a0-73ab-898b-ab855823c04b",
+  "cloud_path": "/workspace/shared/Dezertovia_1_0_AI_Agent_Package.zip",
+  "archive_bytes": 242658,
+  "archive_sha256": "9a4eee50b5c29280d4acda736abff5874bd47b922e6fffe853d5e6dc81862554",
+  "transfer": "27 programmatically emitted base64 stdout chunks; local reconstruction matches source SHA-256",
+  "owner_authorized_message": true,
+  "source_archive_mutated": false,
+  "archive_crc": "pass",
+  "safe_extraction_paths": "pass",
+  "manifest_hashes_checked": 22,
+  "files_in_archive": 23,
+  "package_document_date": "2026-10-19",
+  "farm_supplement_date": "2026-10-20",
+  "text_and_json_read": true,
+  "docx_read": "OOXML text extracted; unchanged source",
+  "pdf_read": "pypdf text extracted from all 9 pages; unchanged source",
+  "rendering_review": "not performed; source layout not edited or certified",
+  "pdf_docx_note": "One DOCX callout paragraph is not found verbatim in PDF extraction; rest of substantial paragraphs match after whitespace normalization. Both repeat implementation plan, not additional game rules.",
+  "originals_directory": "source-package",
+  "source_module_paths_checked": 131,
+  "missing_source_paths": [],
+  "tasks": 47,
+  "acceptance_cases": 40,
+  "decisions": 19,
+  "modules": 19,
+  "source_topological_layers": 21,
+  "music_scenes": 21,
+  "source_files": [
+    {
+      "path": "source-package/00_START_HERE.txt",
+      "bytes": 8536,
+      "sha256": "fb428629f1c880fe199c33927f05d8aceabf31cbb1e9999f9c56b79e803dfab0"
+    },
+    {
+      "path": "source-package/01_PRODUCT_CONTRACT.txt",
+      "bytes": 11438,
+      "sha256": "3eee1f468cc95e444d19eaa026bcca4f23a23ed5735915fe67aeacb04cc7cd15"
+    },
+    {
+      "path": "source-package/02_CODE_MAP.json",
+      "bytes": 20658,
+      "sha256": "ed79715971f6ee13bd9d75d6b298689e91ca22c19cc39f54714c9a46e435a58e"
+    },
+    {
+      "path": "source-package/03_ARCHITECTURE_CONTRACTS.txt",
+      "bytes": 17792,
+      "sha256": "e02dccc7badf01b85e6a59c7314b0380e8fc58f9089d78cb61a9d17b2e766cc0"
+    },
+    {
+      "path": "source-package/04_ROADMAP.txt",
+      "bytes": 11112,
+      "sha256": "af79b7787be260501e4b7e330ddcbd14f49f8697b20a7c5ebce177c1153bdc2b"
+    },
+    {
+      "path": "source-package/05_TASKS.json",
+      "bytes": 71799,
+      "sha256": "49b35aebfae14650047f8183ff089ba984149c329821998b6c6fcadd81916510"
+    },
+    {
+      "path": "source-package/06_ACCEPTANCE.json",
+      "bytes": 24736,
+      "sha256": "adcc3bea2ca8e124203364df5b27777a10a5b4e7887fe08fb9c1ecedb1c8b1b3"
+    },
+    {
+      "path": "source-package/07_DECISIONS.json",
+      "bytes": 11482,
+      "sha256": "e8d98e9da34635ffb2f253b3885007c75530911a444c5176e7651e5528e7c315"
+    },
+    {
+      "path": "source-package/08_VALIDATION_RELEASE.txt",
+      "bytes": 9916,
+      "sha256": "360fcea095f7c0e05abea3f43ced1c97c525de6050301561197bc4f101a8e6fa"
+    },
+    {
+      "path": "source-package/09_AGENT_WORKFLOW.txt",
+      "bytes": 7410,
+      "sha256": "bde30f2928aa77a7ddcf8b37c61a65c9f635ea699ed5cf88b4595caf0fb6ad01"
+    },
+    {
+      "path": "source-package/10_SHARED_FARM_REVIEW.txt",
+      "bytes": 17068,
+      "sha256": "c355d5e8df2724030bec5c4bccb35ebcf96b335980de8e08f60e5fe9dc51eb8c"
+    },
+    {
+      "path": "source-package/DEPENDENCY_LAYERS.json",
+      "bytes": 1104,
+      "sha256": "fccf3b7dd536569b934915b532ead6f1f81e29730a84b39f7ce5452604c0a430"
+    },
+    {
+      "path": "source-package/Dezertovia_1_0_Agent_Plan.docx",
+      "bytes": 48715,
+      "sha256": "19c9fd80dfe23def81adb5ef4e5effb028392fbc541fc775847eb4fcdbc32453"
+    },
+    {
+      "path": "source-package/Dezertovia_1_0_Agent_Plan.pdf",
+      "bytes": 77738,
+      "sha256": "967be474f08c94012155f505a32ba1a356d4f903e871dc88c35e8d7bf9ca2c67"
+    },
+    {
+      "path": "source-package/FARM_BALANCE_EXAMPLES.json",
+      "bytes": 5769,
+      "sha256": "89c0c810ff1fbece16b6b1556bb6e67f75da8bdb90646037b020a0b062865a4a"
+    },
+    {
+      "path": "source-package/FARM_SOURCE_RECEIPT.json",
+      "bytes": 323,
+      "sha256": "31ac3d40f6211437b28393f348cdd6e4614a0077a07b3bfc262c10fa122929d7"
+    },
+    {
+      "path": "source-package/IMPLEMENTATION_PLAN.txt",
+      "bytes": 28008,
+      "sha256": "5d160dc24deba66d89d2ead7270540fd9af4b3d56e5d490367278b7c835834b3"
+    },
+    {
+      "path": "source-package/PACKAGE_VERIFICATION.json",
+      "bytes": 1614,
+      "sha256": "af18a60d5e6b8f4ed43d5f64472768113e58dae0674a6166092ddcd6671ddd73"
+    },
+    {
+      "path": "source-package/REQUIREMENT_TRACEABILITY.json",
+      "bytes": 2468,
+      "sha256": "56b33f2ecd3a464fd7952da41c1255ca2e7138fa537a55978a8a439b33aa9589"
+    },
+    {
+      "path": "source-package/TASK_RESULT_TEMPLATE.json",
+      "bytes": 405,
+      "sha256": "1bea06b742ad4c31285cb1f78f60415ee17dde00c6cc334830292b4425453f47"
+    },
+    {
+      "path": "source-package/reference/MUSIC_PROMPTS.txt",
+      "bytes": 36120,
+      "sha256": "ccb164bd1beaba24144cc9f2d1a9553a2c56a7f9a0e314d54a0b12eb646e3a52"
+    },
+    {
+      "path": "source-package/reference/VISION.txt",
+      "bytes": 135776,
+      "sha256": "3997f5aa628ad4f9a4e586674773e83e60a3ae39c83c4d18feeb32c78ac44eca"
+    },
+    {
+      "path": "source-package/PACKAGE_MANIFEST.json",
+      "bytes": 3779,
+      "sha256": "ad91d618394a443f2225d5be732b55ab9da19714194f9a0c2ce069aeb29a6e44"
+    }
+  ],
+  "scope": "analysis and documentation only; no gameplay tests or release"
+}

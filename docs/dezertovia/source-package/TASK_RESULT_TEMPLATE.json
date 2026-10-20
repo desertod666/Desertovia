@@ -1,0 +1,19 @@
+{
+  "task_id": null,
+  "status": "planned",
+  "source_commits": {},
+  "changed_files": [],
+  "decisions_used": [],
+  "decisions_changed": [],
+  "migrations": [],
+  "checks": [],
+  "acceptance_evidence": [],
+  "acceptance_scope_checked": {},
+  "full_case_status": {},
+  "demo": null,
+  "runtime_changes": false,
+  "release_run_ids": [],
+  "limitations": [],
+  "next_task_ids": [],
+  "handoff_note": null
+}

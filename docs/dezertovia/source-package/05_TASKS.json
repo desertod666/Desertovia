@@ -1,0 +1,1762 @@
+{
+  "schema_version": 1,
+  "status": "planning_only",
+  "execution_authorization": "No game coding, repository publication or production rollout is authorized by this document-preparation task.",
+  "dispatch": "After future implementation authorization, dispatch one task whose dependencies are verified for the relevant environment; resolve dependent open decisions without blocking independent work.",
+  "default_environment": "isolated development/staging with synthetic identities, fake external providers and no live payments/messages/raids",
+  "task_statuses": [
+    "planned",
+    "ready",
+    "in_progress",
+    "implemented",
+    "verified",
+    "released",
+    "blocked"
+  ],
+  "tasks": [
+    {
+      "id": "T000",
+      "milestone": "M0",
+      "title": "Сверить свежую базу и инструкции",
+      "status": "planned",
+      "dependencies": [],
+      "module_ids": [
+        "validation",
+        "bot_validation"
+      ],
+      "decision_ids": [],
+      "implementation_steps": [
+        "Сверить AGENTS/ветки/SHA/грязные файлы и работу коллег без мутаций runtime.",
+        "Обновить карту только изменившихся фактов и границы будущего поручения."
+      ],
+      "acceptance_ids": [],
+      "shared_contracts": [
+        "integration"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {}
+    },
+    {
+      "id": "T001",
+      "milestone": "M0",
+      "title": "Разобрать существенные открытые решения",
+      "status": "planned",
+      "dependencies": [
+        "T000"
+      ],
+      "module_ids": [],
+      "decision_ids": [
+        "D101",
+        "D102",
+        "D104",
+        "D105",
+        "D108",
+        "D110",
+        "D114",
+        "D115"
+      ],
+      "implementation_steps": [
+        "Приоритизировать решения для первого среза, не требовать все ответы до независимой работы.",
+        "Оформить ADR/пример поведения; отделить recommendation/prototype от выбранного live правила."
+      ],
+      "acceptance_ids": [],
+      "shared_contracts": [
+        "product_contract"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {}
+    },
+    {
+      "id": "T002",
+      "milestone": "M0",
+      "title": "Изолированная тестовая среда",
+      "status": "planned",
+      "dependencies": [
+        "T000"
+      ],
+      "module_ids": [
+        "validation",
+        "bot_validation"
+      ],
+      "decision_ids": [],
+      "implementation_steps": [
+        "Отдельные БД/пользователи/домены и тестовые адаптеры Telegram/Gemini/платежей.",
+        "Подготовить синтетическое царство и доказать отсутствие реальных отправок."
+      ],
+      "acceptance_ids": [
+        "A34"
+      ],
+      "shared_contracts": [
+        "deployment",
+        "schema"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A34": "Только disposable fixtures, backup/restore базовой схемы и запрет live adapters. Не будущие миграции 1.0."
+      }
+    },
+    {
+      "id": "T003",
+      "milestone": "M0",
+      "title": "Воспроизводимая регрессия и часы",
+      "status": "planned",
+      "dependencies": [
+        "T002"
+      ],
+      "module_ids": [
+        "validation",
+        "bot_validation"
+      ],
+      "decision_ids": [],
+      "implementation_steps": [
+        "Запустить существующие подходящие проверки и сохранить фактические результаты.",
+        "Изолировать clock/random и данные сценариев, не менять игровые правила под неустойчивый тест."
+      ],
+      "acceptance_ids": [
+        "A03",
+        "A34"
+      ],
+      "shared_contracts": [
+        "test_harness"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A03": "Регрессия уже существующих идемпотентных команд и harness повторов; новые команды проверяются задачами-владельцами.",
+        "A34": "Воспроизводимость synthetic fixtures и restore до изменений; не полная миграция 1.0."
+      }
+    },
+    {
+      "id": "T004",
+      "milestone": "M0",
+      "title": "База производительности и целевой масштаб",
+      "status": "planned",
+      "dependencies": [
+        "T002"
+      ],
+      "module_ids": [
+        "validation",
+        "combat",
+        "client_sync"
+      ],
+      "decision_ids": [
+        "D114"
+      ],
+      "implementation_steps": [
+        "Отделить server work/lock/save/send, RTT, клиент и другие службы хоста.",
+        "Согласовать профиль нагрузки/устройства и сравниваемые пределы, не выдумывать live SLO."
+      ],
+      "acceptance_ids": [
+        "A35"
+      ],
+      "shared_contracts": [
+        "telemetry"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A35": "Базовый профиль текущего кода, изоляция генератора и раздельные метрики. Финальный масштаб проверяет T081."
+      }
+    },
+    {
+      "id": "T010",
+      "milestone": "M1",
+      "title": "Идентичность валют и совместимые labels",
+      "status": "planned",
+      "dependencies": [
+        "T001",
+        "T003"
+      ],
+      "module_ids": [
+        "economy",
+        "ownership_cost",
+        "bot_wallet",
+        "economy_ui",
+        "data"
+      ],
+      "decision_ids": [
+        "D100",
+        "D105"
+      ],
+      "implementation_steps": [
+        "Составить mapping старых account/asset/labels без слияния балансов.",
+        "Сначала совместимое чтение/отображение; отдельная репетиция любой конвертации."
+      ],
+      "acceptance_ids": [
+        "A01",
+        "A34"
+      ],
+      "shared_contracts": [
+        "schema",
+        "wallet_authority",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A01": "Mapping/labels и roundtrip текущих отдельных счетов; конвертация отложена до D105/T060.",
+        "A34": "Roundtrip только совместимых labels/account mapping; активные данные не переинтерпретируются."
+      }
+    },
+    {
+      "id": "T011",
+      "milestone": "M1",
+      "title": "Проверить учёт и границы денежных команд",
+      "status": "planned",
+      "dependencies": [
+        "T003",
+        "T010"
+      ],
+      "module_ids": [
+        "economy",
+        "data"
+      ],
+      "decision_ids": [],
+      "implementation_steps": [
+        "Расширить существующие receipts/проводки/резервы, не новый параллельный кошелёк.",
+        "Проверить два клиента, конфликт payload и crash вокруг commit."
+      ],
+      "acceptance_ids": [
+        "A02",
+        "A03",
+        "A08"
+      ],
+      "shared_contracts": [
+        "schema",
+        "transactions"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A02": "full_case",
+        "A03": "full_case",
+        "A08": "full_case"
+      }
+    },
+    {
+      "id": "T012",
+      "milestone": "M1",
+      "title": "Серверная политика безопасного отдыха",
+      "status": "planned",
+      "dependencies": [
+        "T001",
+        "T003"
+      ],
+      "module_ids": [
+        "presence_rest",
+        "combat",
+        "dungeons",
+        "data"
+      ],
+      "decision_ids": [
+        "D101",
+        "D102"
+      ],
+      "implementation_steps": [
+        "Ввести отдельные переходы и согласовать Start/Settle/Join/Retreat и отсутствие связи.",
+        "Обеспечить сохранение и совместимые DTO, не UI-only скрытие."
+      ],
+      "acceptance_ids": [
+        "A12",
+        "A13",
+        "A34"
+      ],
+      "shared_contracts": [
+        "schema",
+        "cycle",
+        "combat_admission",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A12": "full_case",
+        "A13": "full_case",
+        "A34": "Сохранение и restore новых rest-переходов на текущей схеме; не будущие валюты/осады."
+      }
+    },
+    {
+      "id": "T013",
+      "milestone": "M1",
+      "title": "Команды и проекции после reconnect",
+      "status": "planned",
+      "dependencies": [
+        "T003"
+      ],
+      "module_ids": [
+        "client_sync",
+        "dungeons",
+        "economy"
+      ],
+      "decision_ids": [],
+      "implementation_steps": [
+        "Зафиксировать requestId/revision/quote различия по видам команд.",
+        "Сохранить существующую очередь dungeon и catchUp; не replay устаревшего намерения."
+      ],
+      "acceptance_ids": [
+        "A03",
+        "A13",
+        "A17"
+      ],
+      "shared_contracts": [
+        "api_dto",
+        "signalr",
+        "client_state"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A03": "full_case",
+        "A13": "Транспорт reconnect/двух вкладок и отсутствие replay существующего боевого намерения. Политика допуска отдыха принадлежит T012.",
+        "A17": "full_case"
+      }
+    },
+    {
+      "id": "T014",
+      "milestone": "M1",
+      "title": "Мобильная оболочка и контекстные действия",
+      "status": "planned",
+      "dependencies": [
+        "T010",
+        "T012",
+        "T013"
+      ],
+      "module_ids": [
+        "client_sync",
+        "economy_ui",
+        "feedback_notifications"
+      ],
+      "decision_ids": [],
+      "implementation_steps": [
+        "Макет/демонстрация состояния, навигации, компактных денег/HP/energy.",
+        "Прямое боевое намерение, доступные действия/причины, сохранение отчёта и отмены."
+      ],
+      "acceptance_ids": [
+        "A32",
+        "A31"
+      ],
+      "shared_contracts": [
+        "api_dto",
+        "client_state"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A32": "Телефонная оболочка и существующие вход/кошелёк/бой/отдых с тестовыми DTO. Полная цепочка госзаказ/рынок проходит T035.",
+        "A31": "Существующие отчёт/отмена: не сохранять неотправленный снимок. Новые consent/quiet hours реализуются T064."
+      }
+    },
+    {
+      "id": "T015",
+      "milestone": "M1",
+      "title": "Права царя, посадника и доверенных сервисов",
+      "status": "planned",
+      "dependencies": [
+        "T001",
+        "T003"
+      ],
+      "module_ids": [
+        "work_building",
+        "director",
+        "economy"
+      ],
+      "decision_ids": [
+        "D113"
+      ],
+      "implementation_steps": [
+        "Определить матрицу прав без привилегии HP и доступа по нику.",
+        "Проверять actor на сервере и след операций казны; совместимость старых гражданских заявок."
+      ],
+      "acceptance_ids": [
+        "A14",
+        "A30"
+      ],
+      "shared_contracts": [
+        "authorization",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A14": "full_case",
+        "A30": "Матрица actor/role/service и связь аккаунта; ник не выдаёт права. Реальный group membership adapter и unknown/grace проверяются T064."
+      }
+    },
+    {
+      "id": "T020",
+      "milestone": "M2",
+      "title": "Себестоимость материалов и производства",
+      "status": "planned",
+      "dependencies": [
+        "T011"
+      ],
+      "module_ids": [
+        "ownership_cost",
+        "economy",
+        "data"
+      ],
+      "decision_ids": [
+        "D108"
+      ],
+      "implementation_steps": [
+        "Перенести стоимость фактически потреблённых входов через крафт и дробление.",
+        "Определить multi-output/legacy unknown; сделать инвариантные регрессии."
+      ],
+      "acceptance_ids": [
+        "A04",
+        "A05"
+      ],
+      "shared_contracts": [
+        "cycle",
+        "schema",
+        "inventory"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A04": "full_case",
+        "A05": "Классификация legacy unknown и выбранное правило basis на синтетической продаже. Настоящий tax event реализуется T024."
+      }
+    },
+    {
+      "id": "T021",
+      "milestone": "M2",
+      "title": "Явная собственность вида работы",
+      "status": "planned",
+      "dependencies": [
+        "T020",
+        "T015"
+      ],
+      "module_ids": [
+        "ownership_cost",
+        "work_building",
+        "economy_ui"
+      ],
+      "decision_ids": [
+        "D106"
+      ],
+      "implementation_steps": [
+        "Определить до старта public contract/private extraction/private craft.",
+        "Совместить с существующей пространственной логикой и личными складами без изменения старых предметов."
+      ],
+      "acceptance_ids": [
+        "A07",
+        "A04"
+      ],
+      "shared_contracts": [
+        "cycle",
+        "inventory",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A07": "full_case",
+        "A04": "full_case"
+      }
+    },
+    {
+      "id": "T022",
+      "milestone": "M2",
+      "title": "Ограниченные госзаказы и резерв зарплаты",
+      "status": "planned",
+      "dependencies": [
+        "T011",
+        "T021"
+      ],
+      "module_ids": [
+        "economy",
+        "work_building",
+        "data",
+        "economy_ui"
+      ],
+      "decision_ids": [
+        "D106",
+        "D109"
+      ],
+      "implementation_steps": [
+        "Добавить договор/фонд/количество/условия и сохранённые переходы.",
+        "Исполнение, конкуренция, отмена и истечение с возвратом остатка и без потери обещанной оплаты."
+      ],
+      "acceptance_ids": [
+        "A06",
+        "A07"
+      ],
+      "shared_contracts": [
+        "schema",
+        "transactions",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A06": "full_case",
+        "A07": "full_case"
+      }
+    },
+    {
+      "id": "T023",
+      "milestone": "M2",
+      "title": "Рынок, заказы поставки и безопасный резерв",
+      "status": "planned",
+      "dependencies": [
+        "T020",
+        "T021"
+      ],
+      "module_ids": [
+        "economy",
+        "economy_ui"
+      ],
+      "decision_ids": [
+        "D106"
+      ],
+      "implementation_steps": [
+        "Развить существующий рынок, не дублировать MarketLot.",
+        "Сохранить товар/стоимость при buy/cancel/retry, защитить общие базовые резервы."
+      ],
+      "acceptance_ids": [
+        "A08",
+        "A04",
+        "A07"
+      ],
+      "shared_contracts": [
+        "transactions",
+        "inventory",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A08": "full_case",
+        "A04": "full_case",
+        "A07": "full_case"
+      }
+    },
+    {
+      "id": "T024",
+      "milestone": "M2",
+      "title": "Версионированная дань на согласованную базу",
+      "status": "planned",
+      "dependencies": [
+        "T020",
+        "T023"
+      ],
+      "module_ids": [
+        "economy",
+        "data",
+        "economy_ui"
+      ],
+      "decision_ids": [
+        "D107",
+        "D108",
+        "D109"
+      ],
+      "implementation_steps": [
+        "Сначала расчёт/объяснение на синтетических данных, затем атомарный tax event.",
+        "Quote/effectiveAt/повтор/чистая госзарплата и неизменность старой сделки."
+      ],
+      "acceptance_ids": [
+        "A09",
+        "A05",
+        "A10"
+      ],
+      "shared_contracts": [
+        "transactions",
+        "schema",
+        "fiscal_policy"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A09": "full_case",
+        "A05": "full_case",
+        "A10": "Проводки нового tax event и сохранение суммы на synthetic fixtures внешнего расхода/эмиссии. Политика реальных источников и расходов — T025."
+      }
+    },
+    {
+      "id": "T025",
+      "milestone": "M2",
+      "title": "Оборот казны, эмиссия и настоящие изъятия",
+      "status": "planned",
+      "dependencies": [
+        "T022",
+        "T024"
+      ],
+      "module_ids": [
+        "economy",
+        "data"
+      ],
+      "decision_ids": [
+        "D109"
+      ],
+      "implementation_steps": [
+        "Разделить transfer/issuance/withdrawal и бюджет обязательств.",
+        "Проверить отсутствие казны без заработка и бесконтрольной NPC-скупки."
+      ],
+      "acceptance_ids": [
+        "A10",
+        "A11"
+      ],
+      "shared_contracts": [
+        "transactions",
+        "schema",
+        "fiscal_policy"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A10": "full_case",
+        "A11": "full_case"
+      }
+    },
+    {
+      "id": "T026",
+      "milestone": "M2",
+      "title": "Экономическая симуляция и первый хозяйственный срез",
+      "status": "planned",
+      "dependencies": [
+        "T022",
+        "T023",
+        "T024",
+        "T025"
+      ],
+      "module_ids": [
+        "economy",
+        "ownership_cost",
+        "economy_ui"
+      ],
+      "decision_ids": [
+        "D109",
+        "D110"
+      ],
+      "implementation_steps": [
+        "Сравнить доходы/корзину/концентрацию и долю госработ на фиксированных сценариях.",
+        "Показать реальную цепочку заказ→предмет→продажа→дань и объявленные ограничения."
+      ],
+      "acceptance_ids": [
+        "A11",
+        "A37"
+      ],
+      "shared_contracts": [
+        "economy_balance"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A11": "full_case",
+        "A37": "full_case"
+      }
+    },
+    {
+      "id": "T030",
+      "milestone": "M3",
+      "title": "Контракт группы и распределения похода",
+      "status": "planned",
+      "dependencies": [
+        "T012",
+        "T015"
+      ],
+      "module_ids": [
+        "dungeons",
+        "data",
+        "client_sync"
+      ],
+      "decision_ids": [
+        "D104"
+      ],
+      "implementation_steps": [
+        "Определить состав/готовность/выход/timeout/расход и владение трофеем.",
+        "Переиспользовать DungeonRun где подходит, не объявлять новые Party-имена готовыми."
+      ],
+      "acceptance_ids": [
+        "A15"
+      ],
+      "shared_contracts": [
+        "schema",
+        "api_dto",
+        "party"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A15": "Доменный contract/state-machine fixture группы: ready/leave/timeout/ownership и повторы переходов. Интеграция с настоящим DungeonRun/settlement — T032."
+      }
+    },
+    {
+      "id": "T031",
+      "milestone": "M3",
+      "title": "Ручной одиночный микробой",
+      "status": "planned",
+      "dependencies": [
+        "T012",
+        "T013"
+      ],
+      "module_ids": [
+        "combat",
+        "world",
+        "client_sync"
+      ],
+      "decision_ids": [
+        "D102"
+      ],
+      "implementation_steps": [
+        "Развить сцену из существующей Ambush, отличив её от мгновенного расчёта.",
+        "Короткое испытание с понятными потерями, исходом и возвратом в общий мир."
+      ],
+      "acceptance_ids": [
+        "A13",
+        "A14",
+        "A17"
+      ],
+      "shared_contracts": [
+        "combat_admission",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A13": "full_case",
+        "A14": "full_case",
+        "A17": "full_case"
+      }
+    },
+    {
+      "id": "T032",
+      "milestone": "M3",
+      "title": "Связанный групповой данж",
+      "status": "planned",
+      "dependencies": [
+        "T030",
+        "T013"
+      ],
+      "module_ids": [
+        "dungeons",
+        "client_sync",
+        "economy"
+      ],
+      "decision_ids": [
+        "D102",
+        "D104"
+      ],
+      "implementation_steps": [
+        "Группа, снабжение, осмысленные цели и активный выход по выбранной политике.",
+        "Результат связан с вещами/производством, settlement выдерживает повтор и отказ commit."
+      ],
+      "acceptance_ids": [
+        "A15",
+        "A03"
+      ],
+      "shared_contracts": [
+        "party",
+        "inventory",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A15": "full_case",
+        "A03": "full_case"
+      }
+    },
+    {
+      "id": "T033",
+      "milestone": "M3",
+      "title": "Осмысленное расширение округи",
+      "status": "planned",
+      "dependencies": [
+        "T004",
+        "T015"
+      ],
+      "module_ids": [
+        "world",
+        "combat",
+        "client_sync"
+      ],
+      "decision_ids": [
+        "D114",
+        "D115"
+      ],
+      "implementation_steps": [
+        "Несколько проверяемых маршрутов/ограничений, сохранение старых координат и номеров.",
+        "Не рассчитывать каждую пустую клетку постоянно; проверить воду/забор/пути и мобильную загрузку."
+      ],
+      "acceptance_ids": [
+        "A17",
+        "A35",
+        "A34"
+      ],
+      "shared_contracts": [
+        "world_coordinates",
+        "signalr"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A17": "full_case",
+        "A35": "Измерение новой округи/маршрутов относительно T004; не окончательная длительная жизнь всех подсистем.",
+        "A34": "Roundtrip world-изменений, сохранность старых координат и building IDs; не полный денежный перенос."
+      }
+    },
+    {
+      "id": "T034",
+      "milestone": "M3",
+      "title": "Подготовка приключения через хозяйство",
+      "status": "planned",
+      "dependencies": [
+        "T026",
+        "T032"
+      ],
+      "module_ids": [
+        "economy",
+        "dungeons",
+        "work_building"
+      ],
+      "decision_ids": [
+        "D104",
+        "D106"
+      ],
+      "implementation_steps": [
+        "Связать реальные припасы/редкий компонент/производство и заказы.",
+        "Показать роль снабженца без автоматической выдачи всех боевых трофеев."
+      ],
+      "acceptance_ids": [
+        "A03",
+        "A15",
+        "A38"
+      ],
+      "shared_contracts": [
+        "inventory",
+        "party",
+        "transactions"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A03": "full_case",
+        "A15": "full_case",
+        "A38": "full_case"
+      }
+    },
+    {
+      "id": "T035",
+      "milestone": "M3",
+      "title": "Плавность боя и сквозной мобильный опыт",
+      "status": "planned",
+      "dependencies": [
+        "T014",
+        "T031",
+        "T032",
+        "T033",
+        "T034",
+        "T004"
+      ],
+      "module_ids": [
+        "client_sync",
+        "combat",
+        "dungeons"
+      ],
+      "decision_ids": [
+        "D114"
+      ],
+      "implementation_steps": [
+        "Измерить server/client/network отдельно в нескольких боевых состояниях.",
+        "Сохранить revision/serverNow/static snapshot и проверить реальные мобильные сценарии."
+      ],
+      "acceptance_ids": [
+        "A17",
+        "A32",
+        "A35"
+      ],
+      "shared_contracts": [
+        "signalr",
+        "client_state"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A17": "full_case",
+        "A32": "full_case",
+        "A35": "full_case"
+      }
+    },
+    {
+      "id": "T040",
+      "milestone": "M4",
+      "title": "Массовая NPC-цель и царский поход",
+      "status": "planned",
+      "dependencies": [
+        "T030",
+        "T033",
+        "T034",
+        "T035"
+      ],
+      "module_ids": [
+        "combat",
+        "world",
+        "dungeons",
+        "economy"
+      ],
+      "decision_ids": [
+        "D104",
+        "D114",
+        "D115"
+      ],
+      "implementation_steps": [
+        "Сбор армии/обоз/фазы/отступление и цель NPC-поселения.",
+        "Царь уязвим; полноценный массовый путь не требует его постоянного присутствия."
+      ],
+      "acceptance_ids": [
+        "A14",
+        "A16",
+        "A35"
+      ],
+      "shared_contracts": [
+        "party",
+        "schema",
+        "combat_admission"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A14": "full_case",
+        "A16": "full_case",
+        "A35": "Нагрузочный профиль массовой NPC-сцены и синхронизации; итоговое совместное испытание хоста — T081."
+      }
+    },
+    {
+      "id": "T041",
+      "milestone": "M4",
+      "title": "Последняя осада как сохранённая фаза",
+      "status": "planned",
+      "dependencies": [
+        "T040",
+        "T012"
+      ],
+      "module_ids": [
+        "siege_recovery",
+        "combat",
+        "data"
+      ],
+      "decision_ids": [
+        "D102"
+      ],
+      "implementation_steps": [
+        "Связать DefeatedAt/Collapse с эвакуацией, последним рубежом и терминальным исходом.",
+        "Повтор/рестарт/выключение флага не теряют активных участников и имущество."
+      ],
+      "acceptance_ids": [
+        "A40",
+        "A14"
+      ],
+      "shared_contracts": [
+        "schema",
+        "siege_state"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A40": "full_case",
+        "A14": "full_case"
+      }
+    },
+    {
+      "id": "T042",
+      "milestone": "M4",
+      "title": "Редкая помощь с ценой и квитанцией",
+      "status": "planned",
+      "dependencies": [
+        "T041"
+      ],
+      "module_ids": [
+        "siege_recovery",
+        "combat",
+        "data"
+      ],
+      "decision_ids": [
+        "D103"
+      ],
+      "implementation_steps": [
+        "Один выбранный вариант чуда, условия/стоимость/лимит и исполнение.",
+        "Рестарт и параллельные triggers не сбрасывают лимит; не возвращать весь ущерб."
+      ],
+      "acceptance_ids": [
+        "A19",
+        "A40"
+      ],
+      "shared_contracts": [
+        "schema",
+        "siege_state",
+        "event_receipts"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A19": "full_case",
+        "A40": "full_case"
+      }
+    },
+    {
+      "id": "T043",
+      "milestone": "M4",
+      "title": "Восстановление и социальное лечение",
+      "status": "planned",
+      "dependencies": [
+        "T041",
+        "T022",
+        "T025"
+      ],
+      "module_ids": [
+        "siege_recovery",
+        "work_building",
+        "economy"
+      ],
+      "decision_ids": [
+        "D102",
+        "D109"
+      ],
+      "implementation_steps": [
+        "Доступный бесплатный старт после катастрофы и конечные задания.",
+        "Переиспользовать больницу/доставку, убрать возможность печати награды повторным переносом."
+      ],
+      "acceptance_ids": [
+        "A18",
+        "A06",
+        "A11"
+      ],
+      "shared_contracts": [
+        "recovery_policy",
+        "transactions"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A18": "full_case",
+        "A06": "full_case",
+        "A11": "full_case"
+      }
+    },
+    {
+      "id": "T050",
+      "milestone": "M5",
+      "title": "Снимок мира и каталог полномочий",
+      "status": "planned",
+      "dependencies": [
+        "T015",
+        "T025",
+        "T030"
+      ],
+      "module_ids": [
+        "director",
+        "economy",
+        "combat",
+        "dungeons"
+      ],
+      "decision_ids": [
+        "D109"
+      ],
+      "implementation_steps": [
+        "Агрегированная версия мира с evidence/неизвестными показателями.",
+        "Закрытый каталог kinds/parameters/budgets и права на реальные игровые действия."
+      ],
+      "acceptance_ids": [
+        "A20",
+        "A22"
+      ],
+      "shared_contracts": [
+        "director_contract",
+        "api_dto"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A20": "Валидация snapshot revision/action schema/permission catalog без выполнения. Исполнитель и receipt появятся T051.",
+        "A22": "Отказ неразрешённым kinds/полям и отсутствие секретов в DTO. Реальное исполнение и модельная граница — T051/T053."
+      }
+    },
+    {
+      "id": "T051",
+      "milestone": "M5",
+      "title": "Идемпотентный исполнитель решений",
+      "status": "planned",
+      "dependencies": [
+        "T050",
+        "T011"
+      ],
+      "module_ids": [
+        "director",
+        "economy",
+        "data"
+      ],
+      "decision_ids": [
+        "D109"
+      ],
+      "implementation_steps": [
+        "Свежесть/права/лимит/остатки и receipt в одной подтверждаемой операции.",
+        "Audit, stop отдельной категории и совместимость уже принятых обязательств."
+      ],
+      "acceptance_ids": [
+        "A20",
+        "A22"
+      ],
+      "shared_contracts": [
+        "director_contract",
+        "schema",
+        "transactions"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A20": "full_case",
+        "A22": "full_case"
+      }
+    },
+    {
+      "id": "T052",
+      "milestone": "M5",
+      "title": "Сценарный ритм и отказоустойчивое расписание",
+      "status": "planned",
+      "dependencies": [
+        "T050",
+        "T041",
+        "T042",
+        "T043"
+      ],
+      "module_ids": [
+        "director",
+        "combat",
+        "siege_recovery"
+      ],
+      "decision_ids": [
+        "D103"
+      ],
+      "implementation_steps": [
+        "Один источник назначения событий, end/cooldown/fallback и отсутствие дублей.",
+        "Ранения/недострои не вечный immunity; после катастрофы есть реальный выход."
+      ],
+      "acceptance_ids": [
+        "A21",
+        "A18",
+        "A19"
+      ],
+      "shared_contracts": [
+        "event_receipts",
+        "director_contract"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A21": "Расписание/fallback по синтетическому сигналу недоступности и идемпотентность событий. Настоящий модельный adapter — T053.",
+        "A18": "full_case",
+        "A19": "full_case"
+      }
+    },
+    {
+      "id": "T053",
+      "milestone": "M5",
+      "title": "Gemini через существующую модельную цепочку",
+      "status": "planned",
+      "dependencies": [
+        "T050"
+      ],
+      "module_ids": [
+        "bot_ai",
+        "director"
+      ],
+      "decision_ids": [],
+      "implementation_steps": [
+        "Переиспользовать общий бюджет/chain/cache; structured response и deadline.",
+        "Нет LLM на тик; invalid/429/timeout не останавливают мир и не выдают лишних прав."
+      ],
+      "acceptance_ids": [
+        "A21",
+        "A22"
+      ],
+      "shared_contracts": [
+        "ai_budget",
+        "director_contract"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A21": "Модельный adapter: timeout/429/budget/invalid response и проверяемый fallback без остановки существующих циклов.",
+        "A22": "full_case"
+      }
+    },
+    {
+      "id": "T054",
+      "milestone": "M5",
+      "title": "Экономические действия всевышнего",
+      "status": "planned",
+      "dependencies": [
+        "T051",
+        "T024",
+        "T025",
+        "T026"
+      ],
+      "module_ids": [
+        "director",
+        "economy"
+      ],
+      "decision_ids": [
+        "D109"
+      ],
+      "implementation_steps": [
+        "Налоги/заказы/разрешённые цены как настоящие доменные действия, не только текст.",
+        "Версии/срок/объяснение и сравнение эффекта без персональной охоты за неплательщиками."
+      ],
+      "acceptance_ids": [
+        "A23",
+        "A09",
+        "A10"
+      ],
+      "shared_contracts": [
+        "director_contract",
+        "fiscal_policy"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A23": "full_case",
+        "A09": "full_case",
+        "A10": "full_case"
+      }
+    },
+    {
+      "id": "T055",
+      "milestone": "M5",
+      "title": "Самостоятельность после теневого сравнения",
+      "status": "planned",
+      "dependencies": [
+        "T051",
+        "T052",
+        "T053",
+        "T054"
+      ],
+      "module_ids": [
+        "director",
+        "bot_ai"
+      ],
+      "decision_ids": [
+        "D114"
+      ],
+      "implementation_steps": [
+        "Реплей/теневое сравнение разных состояний и осмысленный автомат в staging.",
+        "Вкл/выкл права, бюджет, активные обязательства и проверка готовности к отдельному будущему rollout."
+      ],
+      "acceptance_ids": [
+        "A20",
+        "A21",
+        "A23",
+        "A39"
+      ],
+      "shared_contracts": [
+        "director_contract",
+        "deployment"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A20": "full_case",
+        "A21": "full_case",
+        "A23": "full_case",
+        "A39": "full_case"
+      }
+    },
+    {
+      "id": "T060",
+      "milestone": "M6",
+      "title": "Основной Dcoin батюшки и историческое лечение",
+      "status": "planned",
+      "dependencies": [
+        "T010",
+        "T011"
+      ],
+      "module_ids": [
+        "bot_wallet",
+        "bot_payments",
+        "economy_ui"
+      ],
+      "decision_ids": [
+        "D105",
+        "D116"
+      ],
+      "implementation_steps": [
+        "Установить одного владельца записи, receipts и совместимые labels без смешивания Gold.",
+        "Разобрать уже существующие расходы и отложенные награды, затем репетиция переноса."
+      ],
+      "acceptance_ids": [
+        "A01",
+        "A03",
+        "A29",
+        "A34"
+      ],
+      "shared_contracts": [
+        "wallet_authority",
+        "bot_kv",
+        "schema"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A01": "full_case",
+        "A03": "full_case",
+        "A29": "full_case",
+        "A34": "Миграция владельца свечного/Dcoin счёта и обязательств по D105/D116; полная межсистемная репетиция — T082."
+      }
+    },
+    {
+      "id": "T061",
+      "milestone": "M6",
+      "title": "YouTube entitlement и подтверждённый срок",
+      "status": "planned",
+      "dependencies": [
+        "T015",
+        "T060"
+      ],
+      "module_ids": [
+        "bot_memberships",
+        "bot_payments"
+      ],
+      "decision_ids": [
+        "D111"
+      ],
+      "implementation_steps": [
+        "Проверить доступный источник tier/expiry, различить observed/confirmed/unknown.",
+        "Поддержать подарки/grace/истечение/повтор/связь личности, не выдать бессрочную льготу по сообщению."
+      ],
+      "acceptance_ids": [
+        "A26",
+        "A30"
+      ],
+      "shared_contracts": [
+        "premium_contract",
+        "identity"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A26": "full_case",
+        "A30": "Подтверждение связанной личности для YouTube entitlement и отсутствие прав по нику; group gate — T064."
+      }
+    },
+    {
+      "id": "T062",
+      "milestone": "M6",
+      "title": "Каталог умеренных premium льгот",
+      "status": "planned",
+      "dependencies": [
+        "T061",
+        "T026"
+      ],
+      "module_ids": [
+        "bot_memberships",
+        "presence_rest",
+        "economy",
+        "work_building"
+      ],
+      "decision_ids": [
+        "D110",
+        "D116"
+      ],
+      "implementation_steps": [
+        "Явные tiers/caps/сроки, не складывать источники.",
+        "Измерить хозяйственный эффект и отсутствие прямого combat boost/офлайн XP."
+      ],
+      "acceptance_ids": [
+        "A24",
+        "A25",
+        "A29"
+      ],
+      "shared_contracts": [
+        "premium_contract",
+        "cycle"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A24": "full_case",
+        "A25": "full_case",
+        "A29": "full_case"
+      }
+    },
+    {
+      "id": "T063",
+      "milestone": "M6",
+      "title": "Stars: надёжный заказ и развлечительный Dcoin",
+      "status": "planned",
+      "dependencies": [
+        "T060",
+        "T011"
+      ],
+      "module_ids": [
+        "bot_payments",
+        "bot_wallet"
+      ],
+      "decision_ids": [
+        "D112"
+      ],
+      "implementation_steps": [
+        "Подтвердить правила провайдера, товары/валюту/сумму/payload/account.",
+        "Atomic charge receipt/credit, повторы, отказ commit и возврат; только mock до отдельного запуска."
+      ],
+      "acceptance_ids": [
+        "A27",
+        "A28",
+        "A29"
+      ],
+      "shared_contracts": [
+        "payment_ledger",
+        "wallet_authority"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A27": "full_case",
+        "A28": "full_case",
+        "A29": "full_case"
+      }
+    },
+    {
+      "id": "T064",
+      "milestone": "M6",
+      "title": "Настройки уведомлений и доступ по группе",
+      "status": "planned",
+      "dependencies": [
+        "T014",
+        "T015"
+      ],
+      "module_ids": [
+        "feedback_notifications",
+        "bot_memberships",
+        "bot_wallet"
+      ],
+      "decision_ids": [
+        "D113",
+        "D117"
+      ],
+      "implementation_steps": [
+        "Категории/consent/quiet hours/агрегация и проверяемый group gate.",
+        "Отказ отправки не повторяет игровой эффект; сохранять действующий daily digest репортов."
+      ],
+      "acceptance_ids": [
+        "A30",
+        "A31"
+      ],
+      "shared_contracts": [
+        "notification_contract",
+        "identity"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A30": "full_case",
+        "A31": "full_case"
+      }
+    },
+    {
+      "id": "T065",
+      "milestone": "M6",
+      "title": "Связанные мини-игры и общий бюджет наград",
+      "status": "planned",
+      "dependencies": [
+        "T060",
+        "T062"
+      ],
+      "module_ids": [
+        "bot_wallet",
+        "bot_payments",
+        "economy"
+      ],
+      "decision_ids": [
+        "D105",
+        "D110"
+      ],
+      "implementation_steps": [
+        "Общая личность и журнал событий без копии кошелька в каждой игре.",
+        "Проверить двойной донат/награду, продажу косметики за Gold и обязательность чужих режимов."
+      ],
+      "acceptance_ids": [
+        "A03",
+        "A24",
+        "A29"
+      ],
+      "shared_contracts": [
+        "wallet_authority",
+        "reward_budget"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A03": "full_case",
+        "A24": "full_case",
+        "A29": "full_case"
+      }
+    },
+    {
+      "id": "T070",
+      "milestone": "M7",
+      "title": "Музыкальные состояния и события",
+      "status": "planned",
+      "dependencies": [
+        "T013",
+        "T030",
+        "T041"
+      ],
+      "module_ids": [
+        "client_sync",
+        "combat",
+        "dungeons"
+      ],
+      "decision_ids": [
+        "D118"
+      ],
+      "implementation_steps": [
+        "Описать устойчивые states/priority/transition и редкие stingers.",
+        "Нет смены темы на каждый click/tax; actual siege/miracle отправляют подтверждённый сигнал."
+      ],
+      "acceptance_ids": [
+        "A33"
+      ],
+      "shared_contracts": [
+        "audio_state",
+        "api_dto"
+      ],
+      "risk": "medium",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A33": "Чистая state machine с fake audio backend: приоритеты, гистерезис, сигналы осады/чуда и bounded transitions. Browser unlock/mix — T072."
+      }
+    },
+    {
+      "id": "T071",
+      "milestone": "M7",
+      "title": "Оригинальный аудио/визуальный набор",
+      "status": "planned",
+      "dependencies": [
+        "T001"
+      ],
+      "module_ids": [],
+      "decision_ids": [
+        "D118",
+        "D115"
+      ],
+      "implementation_steps": [
+        "Выбрать главный мотив и первые village/dungeon/battle по reference/MUSIC_PROMPTS.",
+        "Отобрать активы/rights/masters/loops/variations и подтвердить единый pixel palette/night readability."
+      ],
+      "acceptance_ids": [
+        "A33",
+        "A32"
+      ],
+      "shared_contracts": [
+        "asset_manifest"
+      ],
+      "risk": "medium",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A33": "Проверяемые masters/rights/loop markers/вариации отобранных assets; не браузерный runtime.",
+        "A32": "Читаемость palette/night/силуэтов и звук на целевых экранах как asset review. Полный игровой путь — T035/T081."
+      }
+    },
+    {
+      "id": "T072",
+      "milestone": "M7",
+      "title": "Телефонный звук и баланс стрима",
+      "status": "planned",
+      "dependencies": [
+        "T070",
+        "T071",
+        "T014"
+      ],
+      "module_ids": [
+        "client_sync"
+      ],
+      "decision_ids": [
+        "D118"
+      ],
+      "implementation_steps": [
+        "Gesture unlock, mute, отдельные громкости, crossfade и bounded assets loading.",
+        "Проверить динамик/наушники/стрим и разборчивость атак/речи; не угадывать микрофон OBS без интеграции."
+      ],
+      "acceptance_ids": [
+        "A33",
+        "A32"
+      ],
+      "shared_contracts": [
+        "audio_state",
+        "asset_manifest"
+      ],
+      "risk": "medium",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A33": "full_case",
+        "A32": "full_case"
+      }
+    },
+    {
+      "id": "T080",
+      "milestone": "M8",
+      "title": "Длительная жизнь и общий игровой результат",
+      "status": "planned",
+      "dependencies": [
+        "T034",
+        "T040",
+        "T043",
+        "T055",
+        "T064",
+        "T065",
+        "T072"
+      ],
+      "module_ids": [
+        "economy",
+        "director",
+        "combat",
+        "dungeons",
+        "bot_wallet"
+      ],
+      "decision_ids": [
+        "D115"
+      ],
+      "implementation_steps": [
+        "Симуляция рабочих/частных/премиальных/вернувшихся жителей, дефицита и поражений.",
+        "Сквозная демонстрация владельцу с реальными интеграциями staging, без имитации настоящих платежей."
+      ],
+      "acceptance_ids": [
+        "A11",
+        "A18",
+        "A25",
+        "A36"
+      ],
+      "shared_contracts": [
+        "integration"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A11": "full_case",
+        "A18": "full_case",
+        "A25": "full_case",
+        "A36": "full_case"
+      }
+    },
+    {
+      "id": "T081",
+      "milestone": "M8",
+      "title": "Нагрузка и физические телефоны",
+      "status": "planned",
+      "dependencies": [
+        "T080",
+        "T004",
+        "T035"
+      ],
+      "module_ids": [
+        "validation",
+        "client_sync",
+        "combat"
+      ],
+      "decision_ids": [
+        "D114"
+      ],
+      "implementation_steps": [
+        "Профиль нагрузки/другие проекты/сети/устройства по утверждённым целям.",
+        "Разделить реальные наблюдения и headless CI; отработать regressions/аварию зависимости."
+      ],
+      "acceptance_ids": [
+        "A35",
+        "A32",
+        "A21"
+      ],
+      "shared_contracts": [
+        "telemetry",
+        "integration"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A35": "full_case",
+        "A32": "full_case",
+        "A21": "full_case"
+      }
+    },
+    {
+      "id": "T082",
+      "milestone": "M8",
+      "title": "Репетиция миграции и обратимого включения",
+      "status": "planned",
+      "dependencies": [
+        "T080",
+        "T060",
+        "T063"
+      ],
+      "module_ids": [
+        "data",
+        "economy",
+        "bot_wallet",
+        "director"
+      ],
+      "decision_ids": [
+        "D105",
+        "D112"
+      ],
+      "implementation_steps": [
+        "Сверить все активы/резервы/профили/стройки/раны/номера/действующие операции.",
+        "Повторный прогон, совместимость схемы и реальное восстановление вне production."
+      ],
+      "acceptance_ids": [
+        "A34",
+        "A01",
+        "A28"
+      ],
+      "shared_contracts": [
+        "schema",
+        "deployment",
+        "wallet_authority"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A34": "full_case",
+        "A01": "full_case",
+        "A28": "full_case"
+      }
+    },
+    {
+      "id": "T083",
+      "milestone": "M8",
+      "title": "Финальная готовность к будущему выпуску",
+      "status": "planned",
+      "dependencies": [
+        "T081",
+        "T082"
+      ],
+      "module_ids": [
+        "validation",
+        "bot_validation"
+      ],
+      "decision_ids": [
+        "D115"
+      ],
+      "implementation_steps": [
+        "Согласовать критерии/состав, точные SHA+CI, reviewed operator и наличие актуального разрешения установки.",
+        "Свежий preflight/backups/deploy/independent check только в явно разрешённый будущий этап; не назвать scheduled установленным."
+      ],
+      "acceptance_ids": [
+        "A36",
+        "A34"
+      ],
+      "shared_contracts": [
+        "deployment",
+        "integration"
+      ],
+      "risk": "high",
+      "done_when": "Зависимости verified в нужном окружении; поведение интегрировано; acceptance_scope проверен с evidence и без объявления scoped проверки полным PASS; передача по TASK_RESULT_TEMPLATE.json. Зависимое OPEN решение блокирует только соответствующее поведение.",
+      "acceptance_scope": {
+        "A36": "full_case",
+        "A34": "full_case"
+      }
+    }
+  ]
+}
