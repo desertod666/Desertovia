@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T18:21:45.117853+00:00",
+  "recorded_at_utc": "2026-10-20T18:50:03.094885+00:00",
   "status": "main_plan_active_reconnect_authority_rest_economy_farm",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "PKG-T014 independent UI slice plus PR76 integration",
+  "implemented_task": "PKG-T020 cost core verified; PKG-T021/T022 funded production-order slice implemented, full CI pending",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -40,11 +40,13 @@
     "hospital_bridge_enabled": false,
     "original_game_container_replaced": false,
     "bot_modified": false,
-    "current_source_restarted": true,
+    "current_source_restarted": false,
     "tool_recipes_verified_http": 8,
-    "local_world_migrations": 40,
+    "local_world_migrations": 42,
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
-    "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL"
+    "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
+    "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
+    "loaded_scope": "migration42 initial funded-work source; later DTO/UI followups not restarted yet"
   },
   "checks": {
     "baseline_ci": {
@@ -346,16 +348,43 @@
       "passed": 8,
       "failed": 0,
       "scope": "final44x44 cost hints, RU/EN known/legacy values, desktop/phone"
+    },
+    "production_cost_full_ci": {
+      "status": "success",
+      "sha": "28dc1a641536fd9fe8879d9b42143659a7cee481",
+      "run_id": 39474200795,
+      "receipt": "ECONOMY_COST_VERIFICATION_1_0.json",
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39474200795"
+    },
+    "work_order_domain": {
+      "passed": 564,
+      "failed": 0,
+      "scope": "whole Domain, explicit personal craft and production cost, reserved payment state machine"
+    },
+    "work_order_api": {
+      "passed": 4,
+      "failed": 0,
+      "scope": "real PostgreSQL; final-slot concurrency, actor/world denial, rollback, expiry/refund, accepted legacy transition and once-only pay after rest/order close; before later VillageState projection addition",
+      "interrupted_initial_run": "Initial quiet local run was cancelled to inspect apparent delay; fresh detailed run passed all4 in3.63min. No claim that the cancelled run passed."
+    },
+    "work_order_browser": {
+      "passed": 8,
+      "failed": 0,
+      "scope": "final form CSS, RU/EN desktop/phone at320px, publication request/deadline retry, public and personal work; screenshot inspected"
+    },
+    "work_order_full_ci": {
+      "status": "pending_new_source_push",
+      "scope": "current work-order source including latest receipt compatibility and departure cleanup"
+    },
+    "m1_late_combat_full_ci": {
+      "status": "success",
+      "run_id": 39473906108,
+      "sha": "ace2cff2eb874e8a82169664b18d282704ce28b2",
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39473906108",
+      "scope": "all five jobs success; details of M1 parent, later economy receipt separately recorded"
     }
   },
-  "open_questions": [
-    {
-      "id": "F001-reserve-loss",
-      "question": "Proportional actual food loss in communal and protected farm reserve, or immunity for protected reserve?",
-      "status": "asked_owner_waiting",
-      "blocks": "farm reserve damage behavior only"
-    }
-  ],
+  "open_questions": [],
   "known_followups": [
     {
       "id": "SEC-001",
@@ -371,10 +400,9 @@
     "bot_deployed": false
   },
   "next_tasks": [
-    "PKG-T020 core implemented and focused domain/API/browser verified; full candidate CI next",
-    "PKG-T021/T022 explicit ownership and treasury-funded work contracts next",
-    "F001 protected farm reserve; damage policy owner reply pending",
-    "M1 rest race followup ace2cff in PR75; fresh full CI pending"
+    "PKG-T021/T022 verify current source including explicit ownership and bounded funded production orders",
+    "F001/F002 farm rules contract and addressed bed generations; owner confirmed proportional losses",
+    "Continue T023/T024/T025/F003–006 and the rest of the integrated DAG"
   ],
   "screenshots": [
     "screenshots/foundation/economic-gold-ru-phone.png",
@@ -410,12 +438,12 @@
   "owner_decisions_2026_10_20": {
     "PKG-D101": "Owner confirmed: finish already accepted work, settle its result once, then Resting without new work/XP; retreat from combat before rest. Disconnect is not rest.",
     "PKG-D108": "Owner confirmed: transfer actual consumed personal input costs; allocate multi-output cost by recipe base prices with deterministic remainder. Legacy unknown basis stays explicitly unknown; no profit tax on its sale until a separate decision.",
-    "F001": "Protect 10% of actual harvest immediately for contributors; community receives90%. Owner answer supersedes reserve-first deferral."
+    "F001": "Protect 10% of actual harvest immediately for contributors; community receives90%. Owner answer supersedes reserve-first deferral.",
+    "F001-reserve-loss": "Owner confirmed proportional actual warehouse Food loss across communal stock and unclaimed farmer reserve, with corresponding claim reduction; claimed personal food follows normal rules. No money debt replaces destroyed harvest."
   },
   "active_tasks": [
-    "PKG-T020 core implemented and focused domain/API/browser verified; full candidate CI next",
-    "PKG-T021/T022 explicit ownership and treasury-funded work contracts next",
-    "F001 protected farm reserve; damage policy owner reply pending",
-    "M1 rest race followup ace2cff in PR75; fresh full CI pending"
+    "PKG-T021/T022 verify current source including explicit ownership and bounded funded production orders",
+    "F001/F002 farm rules contract and addressed bed generations; owner confirmed proportional losses",
+    "Continue T023/T024/T025/F003–006 and the rest of the integrated DAG"
   ]
 }

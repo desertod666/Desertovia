@@ -68,7 +68,7 @@ public static class CycleEngine
     /// Renewing inside the grace window keeps the streak; inputs are consumed up front.
     /// </summary>
     /// <param name="spot">Where on the map the player wants the goods gathered; see <see cref="WorkSpots"/>.</param>
-    public static void Start(Citizen citizen, TaskDefinition task, WorkContext context, DateTimeOffset now, TilePoint? spot = null, string? workplacePlotId = null)
+    public static void Start(Citizen citizen, TaskDefinition task, WorkContext context, DateTimeOffset now, TilePoint? spot = null, string? workplacePlotId = null, WorkOwnership? ownership = null)
     {
         var village = context.Village;
         if (context.CompletedProjects.Contains(ProjectCatalog.TsarBridge) && village.BridgeRuinedAt is null) village.BridgeOpened=true;
@@ -87,16 +87,19 @@ public static class CycleEngine
 
         if (Wilderness.IsWild(task)) spot = Wilderness.WorkSpot(village, task, spot);
         var selectedWorkplace = workplacePlotId is null
-            ? (citizen.CyclePrivateOutput && citizen.Spot is {} previousSpot
+            ? (ownership is WorkOwnership.PublicService or WorkOwnership.PublicContract
+                ? village.Structures.FirstOrDefault(b=>b.OwnerAccountId is null && b.Kind==task.RequiredBuilding && !b.Decommissioning && b.RuinedAt is null && b.Damage<100)
+                : citizen.CyclePrivateOutput && citizen.Spot is {} previousSpot
                 ? village.Structures.SingleOrDefault(b=>b.OwnerAccountId==citizen.AccountId && b.Kind==task.RequiredBuilding && !b.Decommissioning && WorldMap.Yard(b.PlotId)==previousSpot) : null)
             : village.Structures.SingleOrDefault(b=>b.PlotId==workplacePlotId && b.Kind==task.RequiredBuilding && !b.Decommissioning);
         if (workplacePlotId is not null && task.Effect is not (TaskEffect.Repair or TaskEffect.Unload) && (selectedWorkplace is null || selectedWorkplace.OwnerAccountId is {} owner && owner != citizen.AccountId))
             throw new GameRuleException("building.private", "Choose an available workplace belonging to you or the kingdom.");
-        var privateWorkplace = selectedWorkplace?.OwnerAccountId == citizen.AccountId || task.RequiredBuilding is {} needed && !village.Has(needed)
+        var privateWorkplace = selectedWorkplace?.OwnerAccountId == citizen.AccountId || ownership is not (WorkOwnership.PublicService or WorkOwnership.PublicContract) && task.RequiredBuilding is {} needed && !village.Has(needed)
             && village.Structures.Any(b => b.Kind == needed && b.OwnerAccountId == citizen.AccountId && !b.Decommissioning && b.RuinedAt is null && b.Damage<100);
         if (privateWorkplace && task.RequiredBuilding is {} ownKind)
             spot = WorldMap.Yard((selectedWorkplace ?? village.Structures.First(b=>b.Kind==ownKind && b.OwnerAccountId==citizen.AccountId && !b.Decommissioning && b.RuinedAt is null && b.Damage<100)).PlotId);
         citizen.CyclePrivateOutput = privateWorkplace || spot is {} ownSpot && !KingdomRules.Area(village).Contains(ownSpot.ToTile());
+        ApplyOwnership(citizen, task, privateWorkplace, ownership);
         if (task.RequiredBuilding is { } building && !village.Has(building) && !privateWorkplace)
         {
             throw new GameRuleException("task.needsBuilding", $"\"{task.Name}\" needs a {BuildingCatalog.Get(building).Name}.",
@@ -170,6 +173,7 @@ public static class CycleEngine
 
         var privateOutput = privateWorkplace || spot is {} personalSpot && !KingdomRules.Area(village).Contains(personalSpot.ToTile());
         citizen.CyclePrivateOutput = privateOutput;
+        ApplyOwnership(citizen, task, privateWorkplace, ownership);
         if (task.Effect == TaskEffect.Sharpen)
         {
             WeaponSharpening.Check(citizen, village, task.Outputs[0].Resource);
@@ -1046,6 +1050,25 @@ public static class CycleEngine
         citizen.CycleSettled = false;
         citizen.CycleInputCostBasis = 0;
         citizen.CycleInputCostBasisKnown = true;
+        citizen.CycleOwnership = citizen.CyclePrivateOutput
+            ? (task?.Inputs.Count > 0 ? WorkOwnership.PrivateCraft : WorkOwnership.PrivateExtraction)
+            : WorkOwnership.PublicService;
+        citizen.CyclePaymentMode = WorkPaymentMode.Legacy;
+        citizen.CycleWorkOrderClaimId = null;
+    }
+
+    private static void ApplyOwnership(Citizen citizen, TaskDefinition task, bool privateWorkplace, WorkOwnership? ownership)
+    {
+        if (ownership is null) return; // Older clients retain their existing workplace selection rules.
+        if (ownership is not (WorkOwnership.PublicService or WorkOwnership.PublicContract or WorkOwnership.PrivateExtraction or WorkOwnership.PrivateCraft)
+            || !WorkOrderRules.Supports(task))
+            throw new GameRuleException("workOrder.ownership", "Choose a supported ownership mode before starting work.");
+        var personal = ownership is WorkOwnership.PrivateExtraction or WorkOwnership.PrivateCraft;
+        if (personal && (task.Inputs.Count > 0 ? ownership != WorkOwnership.PrivateCraft : ownership != WorkOwnership.PrivateExtraction)
+            || personal && task.RequiredBuilding is not null && !privateWorkplace
+            || !personal && privateWorkplace)
+            throw new GameRuleException("workOrder.ownership", "The workplace, materials and result must have compatible owners.");
+        citizen.CyclePrivateOutput = personal;
     }
 
     /// <summary>The place on the map a task is done at, unless it is done at the camp, in a building or all over the land.</summary>

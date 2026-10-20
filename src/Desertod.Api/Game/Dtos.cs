@@ -203,6 +203,7 @@ public sealed record VillageStateDto(
     DungeonDto? Dungeon)
 {
     public DateTimeOffset SnapshotAt { get; init; }
+    public bool WorkContractsEnabled { get; init; }
     public TileArea KingdomArea { get; init; } = WorldMap.BuildArea;
     public FortificationQuote? FortificationUpgrade { get; init; }
     public int CastleLevel { get; init; }
@@ -383,6 +384,8 @@ public sealed record CitizenDto(
     public int ArrowSharpen { get; init; }
     public Guid AccountId { get; init; }
     public bool CyclePrivateOutput { get; init; }
+    public Desertod.Domain.Economy.WorkOwnership CycleOwnership { get; init; }
+    public Desertod.Domain.Economy.WorkPaymentMode CyclePaymentMode { get; init; }
     public IReadOnlyList<Desertod.Domain.Economy.PersonalGood> PersonalGoods { get; init; } = [];
     public IReadOnlyDictionary<string, double>? ActionEnergyCosts { get; init; }
     public string? DefenseSector { get; init; }
@@ -462,7 +465,8 @@ public sealed record CreateVillageRequest(string Name, string? Description = nul
 public sealed record JoinVillageRequest(string? InviteCode = null);
 
 /// <param name="Spot">Where on the map to gather, for tasks that allow it; null works at the task's workplace.</param>
-public sealed record StartTaskRequest(string TaskId, TilePoint? Spot = null, string? WorkplacePlotId = null);
+public sealed record StartTaskRequest(string TaskId, TilePoint? Spot = null, string? WorkplacePlotId = null,
+    Desertod.Domain.Economy.WorkOwnership? Ownership = null, Guid? WorkOrderId = null, Guid? RequestId = null);
 
 /// <param name="Spot">Where on the land the idle citizen walks to and waits.</param>
 public sealed record GoToRequest(TilePoint Spot);
@@ -762,7 +766,7 @@ public static class DtoMapper
         citizen.Armor,
         citizen.Arrows,
         Math.Round(CombatRules.Power(citizen), 1), citizen.Recovery)
-        { RestState=citizen.RestState, RestRequestedAt=citizen.RestRequestedAt, WeaponSharpen=citizen.WeaponSharpen, ArrowSharpen=citizen.ArrowSharpen, MealKind=citizen.MealKind,MealUntil=citizen.MealUntil,MealReadyAt=citizen.LastMealAt+PreparedMeals.Cooldown, VigorEnergy = village.VigorEnergy, VigorCooldownMinutes = village.VigorCooldownMinutes, AccountId = citizen.AccountId, CyclePrivateOutput = citizen.CyclePrivateOutput, PersonalGoods = citizen.PersonalGoods, ActionEnergyCosts = GameCatalog.Tasks.Select(task => new KeyValuePair<string, double>(task.Id, WorkEnergy.WithMedical(citizen, WorkEnergy.TaskCost(village, task, now), now)))
+        { RestState=citizen.RestState, RestRequestedAt=citizen.RestRequestedAt, WeaponSharpen=citizen.WeaponSharpen, ArrowSharpen=citizen.ArrowSharpen, MealKind=citizen.MealKind,MealUntil=citizen.MealUntil,MealReadyAt=citizen.LastMealAt+PreparedMeals.Cooldown, VigorEnergy = village.VigorEnergy, VigorCooldownMinutes = village.VigorCooldownMinutes, AccountId = citizen.AccountId, CyclePrivateOutput = citizen.CyclePrivateOutput, CycleOwnership = citizen.CycleOwnership, CyclePaymentMode = citizen.CyclePaymentMode, PersonalGoods = citizen.PersonalGoods, ActionEnergyCosts = GameCatalog.Tasks.Select(task => new KeyValuePair<string, double>(task.Id, WorkEnergy.WithMedical(citizen, WorkEnergy.TaskCost(village, task, now), now)))
             .Concat(BuildingCatalog.Jobs.Select(job => new KeyValuePair<string, double>(job.Id, WorkEnergy.WithMedical(citizen, WorkEnergy.JobCost(village, job, now), now))))
             .GroupBy(pair => pair.Key).ToDictionary(group => group.Key, group => group.Last().Value),
             DefenseSector=citizen.DefenseSector,DefenseReadyAt=citizen.DefenseReadyAt,

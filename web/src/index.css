@@ -2661,6 +2661,8 @@ button, input, select, textarea, .modal-header, .target-popup-header { font-fami
 .economy-panel details { border-top: 1px solid #b994513d; margin-top: .65rem; }
 .economy-balances { display: flex; flex-wrap: wrap; gap: .5rem 1rem; padding-block: .75rem; }
 .economy-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem),1fr)); gap: .5rem; margin-block: .65rem; align-items: end; }
+.work-orders .economy-controls > label:first-child,
+.work-orders .economy-controls > button { grid-column: 1 / -1; }
 .economy-panel label { display: flex; flex-direction: column; gap: .25rem; }
 .economy-panel input, .economy-panel select { width: 100%; max-width: 100%; }
 .economy-panel button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }

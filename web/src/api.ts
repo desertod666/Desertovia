@@ -1008,6 +1008,7 @@ export interface CivicOrder { buildingKind?:BuildingKind|null; id:string; plotId
 export interface Housing { plotId:string; beds:number; occupied:number; level:number; number?:number; ownerAccountId?:string|null; ownerName?:string|null; builtAt?:string|null }
 export interface MonasteryView {open:boolean;inRange:boolean;knowsRemedy:boolean;readyAt:string|null;wood:number;food:number;remedyRoom:number;yard:TilePoint}
 export interface VillageState {
+  workContractsEnabled?:boolean
   snapshotAt?: string
   bridgeDamage?:number
   bridgeRuinedAt?:string|null
@@ -1249,6 +1250,8 @@ export interface Citizen {
   vigorCooldownMinutes?: number
   accountId?: string
   cyclePrivateOutput?: boolean
+  cycleOwnership?:'Legacy'|'PublicService'|'PublicContract'|'PrivateExtraction'|'PrivateCraft'
+  cyclePaymentMode?:'Legacy'|'Voluntary'|'Reserved'
   personalGoods?: {kind:string;amount:number;costBasis:number;costBasisKnown?:boolean}[]
   actionEnergyCosts?: Record<string, number>
   homePlotId?:string|null
@@ -1517,10 +1520,16 @@ export function createOperationId() {
 }
 export interface EconomyRequest {
   requestId: string; action: string; resource?: string; amount?: number; price?: number; target?: string; x?: number; y?: number; building?: string
+  taskId?: string; cycles?: number; pay?: number; expiresAt?: string
 }
+export interface WorkOrder { id:string;taskId:string;policyVersion:number;payPerCycle:number;availableCycles:number;acceptedCycles:number;completedCycles:number;reservedCoins:number;expiresAt:string;status:'Open'|'Cancelled'|'Expired'|'Completed' }
 export interface EconomyCurrencyIdentity { id: string; ledgerAsset: string }
 
 export interface EconomyView {
+  workContractsEnabled?:boolean
+  canManageWorkOrders?:boolean
+  workOrders?:WorkOrder[]
+  workPayAwaitingRoom?:number
   /** Optional while old servers still expose only coins/testCandles. Balances and asset keys do not change. */
   currencies?: { coins: EconomyCurrencyIdentity; testCandles: EconomyCurrencyIdentity }
   siteRecoveries?:{id:string;plotId:string;personal:boolean;goods:{resource:string;amount:number}[]}[]
@@ -1586,8 +1595,9 @@ export const api = {
   leaveVillage: (slug: string) => request<void>('DELETE', `/api/villages/${encodeURIComponent(slug)}/me`),
   /** The Tsar deletes the village with everything in it. */
   deleteVillage: (slug: string) => request<void>('DELETE', `/api/villages/${encodeURIComponent(slug)}`),
-  startTask: (slug: string, taskId: string, spot: TilePoint | null = null, workplacePlotId?: string) =>
-    request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/me/task`, { taskId, spot, workplacePlotId }),
+  startTask: (slug: string, taskId: string, spot: TilePoint | null = null, workplacePlotId?: string,
+    terms?:{ownership?:'PublicService'|'PrivateExtraction'|'PrivateCraft';workOrderId?:string;requestId?:string}) =>
+    request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/me/task`, { taskId, spot, workplacePlotId, ...terms }),
   cancelTask: (slug: string) => request<Citizen>('DELETE', `/api/villages/${encodeURIComponent(slug)}/me/task`),
   startJob: (slug: string, plotId: string, stage: number, jobId: string) =>
     request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/me/job`, { plotId, stage, jobId }),

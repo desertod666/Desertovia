@@ -61,6 +61,7 @@ export interface MenuProps {
   /** Only known to the owner of a private village. */
   inviteCode: string | null
   onVillage: (state:VillageState)=>void
+  onCitizen?: (citizen:Citizen)=>void
   onNewInviteCode: () => Promise<void>
   onPrivatePlace?: (definition: BuildingDefinition) => void
   onPlace: (definition: BuildingDefinition) => void
@@ -150,7 +151,7 @@ export function GameMenu(props: MenuProps) {
         <div className="modal-body">
           {tab === 'village' && ruler && <DefensePanel slug={props.slug} village={village} ruler tsar={tsar} onVillage={props.onVillage}/>}
           {tab === 'village' && tsar && <AlmightyPanel slug={props.slug}/>}
-          {tab === 'village' && (tsar || citizen) && <EconomyPanel village={village} catalog={catalog} citizen={citizen} accountId={props.me.id} onPrivatePlace={props.onPrivatePlace}/>}
+          {tab === 'village' && (tsar || citizen) && <EconomyPanel village={village} catalog={catalog} citizen={citizen} accountId={props.me.id} onPrivatePlace={props.onPrivatePlace} onCitizen={props.onCitizen}/>}
           {tab==='village'&&(village.bridgeDamage??0)>0&&<p className="error small">{i18n.language==='ru'?'Царский мост повреждён. Восстановление — работа «Ремонт зданий» в заданиях.':'The royal bridge is damaged. Use Repair buildings in Tasks to restore it.'} {village.bridgeDamage}/100</p>}
           {tab === 'village' && <div className="row"><button onClick={props.onHospital}>🏥 Больница</button>{props.onMonastery&&<button onClick={props.onMonastery}>{i18n.language==='ru'?'Монастырь за рекой':'Monastery across the river'}</button>}</div>}
           {tab === 'village' && <section className="card village-population" title={t('chat.populationHelp')}>
@@ -320,6 +321,7 @@ export function GameMenu(props: MenuProps) {
           {tab === 'tasks' &&
             (citizen ? (
               <>
+                {village.workContractsEnabled&&<p className="small">{i18n.language==='ru'?'Общественная работа оплачивается по госзаказу. Без заказа — добровольно.':'Public work is paid through funded orders. Work without an order is voluntary.'} <button onClick={()=>props.onTab('village')}>{i18n.language==='ru'?'Госзаказы':'Work orders'}</button></p>}
                 <div className="chips">
                   {(Object.keys(FILTERS) as TaskFilter[]).map((key) => (
                     <button key={key} className={`chip ${filter === key ? 'active' : ''}`} onClick={() => setFilter(key)}>

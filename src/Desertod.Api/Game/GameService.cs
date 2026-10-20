@@ -1,4 +1,5 @@
 using Desertod.Domain.Skills;
+using Desertod.Domain.Economy;
 using System.Text;
 using Desertod.Domain;
 using Desertod.Domain.Buildings;
@@ -283,6 +284,7 @@ public sealed partial class GameService(
             var now = time.GetUtcNow();
             village.EnsureCamp(now);
             Departure.Leave(citizen, village, run, now);
+            await FinishWorkOrderAsync(db, village, citizen, false, true, now, cancellationToken);
 
             await db.ChatMessages.Where(m => m.CitizenId == citizen.Id).ExecuteDeleteAsync(cancellationToken);
             db.Citizens.Remove(citizen);
@@ -360,6 +362,11 @@ public sealed partial class GameService(
 
     public async Task<CitizenDto> StartTaskAsync(string slug, Guid accountId, StartTaskRequest request, CancellationToken cancellationToken)
     {
+        if (request.Ownership == WorkOwnership.PublicContract && request.WorkOrderId is null
+            || request.WorkOrderId is not null && request.Ownership is not (null or WorkOwnership.PublicContract)
+            || request.WorkOrderId is not null && (request.RequestId is null || request.RequestId == Guid.Empty)
+            || request.RequestId == Guid.Empty)
+            throw new GameRuleException("workOrder.ownership", "Choose the work order before starting contracted work.");
         var task = GameCatalog.FindTask(request.TaskId)
                    ?? throw new GameRuleException("task.unknown", $"Unknown task \"{request.TaskId}\".",
                        new Dictionary<string, object> { ["taskId"] = request.TaskId });
@@ -369,8 +376,11 @@ public sealed partial class GameService(
             key,
             "startTask",
             $"{request.TaskId} {request.Spot}",
-            (citizen, context, now) => CycleEngine.Start(citizen, task, context, now, request.Spot, request.WorkplacePlotId),
-            cancellationToken);
+            (citizen, context, now) => CycleEngine.Start(citizen, task, context, now, request.Spot, request.WorkplacePlotId,
+                request.WorkOrderId is null ? request.Ownership : WorkOwnership.PublicContract),
+            cancellationToken,
+            request.WorkOrderId, request.RequestId,
+            "start:" + Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(request))));
     }
 
     /// <summary>The citizen researches the technology the village voted for, at its building.</summary>
@@ -448,9 +458,19 @@ public sealed partial class GameService(
         string action,
         string detail,
         Action<Citizen, WorkContext, DateTimeOffset> start,
-        CancellationToken cancellationToken) =>
+        CancellationToken cancellationToken,
+        Guid? workOrderId = null, Guid? requestId = null, string? fingerprint = null) =>
         WithVillageAsync(key.VillageId, async db =>
         {
+            if (requestId is {} id && await db.EconomyReceipts.SingleOrDefaultAsync(r=>r.VillageId==key.VillageId && r.RequestId==id,cancellationToken) is {} prior)
+            {
+                var actor=await db.Citizens.Where(c=>c.Id==key.Id).Select(c=>c.AccountId).SingleAsync(cancellationToken);
+                if (prior.AccountId!=actor || prior.Fingerprint!=fingerprint)
+                    throw new GameRuleException("economy.reusedRequest","This request was already used for another operation.");
+                var accepted=await db.Citizens.SingleAsync(c=>c.Id==key.Id,cancellationToken);
+                var world=await db.Villages.SingleAsync(v=>v.Id==key.VillageId,cancellationToken);
+                return accepted.ToDto(world,time.GetUtcNow());
+            }
             await SyncHospitalAsync(db, key.VillageId, cancellationToken, true);
             var citizen = await db.Citizens.SingleAsync(c => c.Id == key.Id, cancellationToken);
             db.AuditActor = citizen.AccountId;
@@ -472,6 +492,9 @@ public sealed partial class GameService(
 
             var quests = await UpdateQuestsAsync(db, village, citizen, report, now, cancellationToken);
             start(citizen, context, now);
+            await AcceptWorkOrderAsync(db, village, citizen, workOrderId, now, cancellationToken);
+            if (requestId is {} commandId)
+                db.EconomyReceipts.Add(new EconomyReceipt{VillageId=village.Id,RequestId=commandId,AccountId=citizen.AccountId,Fingerprint=fingerprint!,At=now});
             await db.SaveChangesAsync(cancellationToken);
             logger.CitizenActed(citizen.Id, village.Slug, action, detail);
 
@@ -1060,6 +1083,7 @@ public sealed partial class GameService(
                 {village.TsarSpot=citizen.IdleSpot;village.TsarRescueByCitizenId=null;}
             }
             CycleEngine.Cancel(citizen, now, village);
+            await FinishWorkOrderAsync(db, village, citizen, false, true, now, cancellationToken);
             await db.SaveChangesAsync(cancellationToken);
             logger.CitizenActed(citizen.Id, slug, "cancelTask", "");
 
@@ -1476,6 +1500,7 @@ public sealed partial class GameService(
         var state=village.ToStateDto(context.Work, context.CompletedInOrder, electorate, quests, tsar, trips, dungeon, now);
         return state with
         {
+            WorkContractsEnabled=await db.KingdomEconomies.Where(e=>e.VillageId==village.Id).Select(e=>e.WorkContractsEnabled).SingleOrDefaultAsync(cancellationToken),
             Sites=state.Sites.Select(s=>s with {OwnerName=(s.OwnerAccountId??s.PlacedByAccountId) is {} id
                 ? residents.FirstOrDefault(c=>c.AccountId==id)?.Name??ownerNames.GetValueOrDefault(id):null}).ToArray(),
             Battles = (await db.RaidBattles.AsNoTracking().Where(b=>b.VillageId==village.Id && (b.FinishedAt==null || b.FinishedAt>=now.AddSeconds(-15))).OrderBy(b=>b.StartsAt).ToListAsync(cancellationToken)).Select(b=>b.ToBattleDto()).ToArray(),

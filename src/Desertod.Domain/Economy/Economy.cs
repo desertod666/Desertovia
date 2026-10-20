@@ -9,6 +9,7 @@ public sealed class KingdomEconomy
     public Guid VillageId { get; set; }
     public DateTimeOffset StartedAt { get; set; }
     public long TreasuryCoins { get; set; }
+    public bool WorkContractsEnabled { get; set; }
     public DateOnly FundDay { get; set; }
     public int CandlesIssuedToday { get; set; }
 }

@@ -1,6 +1,7 @@
 import type { Catalog, Citizen } from '../api'
 import { useI18n } from '../i18n'
 import { seconds } from './texts'
+import {Hint} from './Hint'
 
 /** "Next action in N seconds" status with a progress bar. `onCancel` adds a button that stops the running task. */
 export function NextAction({
@@ -34,6 +35,11 @@ export function NextAction({
       <div className={`next-action working ${compact ? 'compact' : ''}`}>
         <div>
           <strong>{i18n.task(activity)}</strong> {t('next.working', { seconds: seconds(endsAt - now) })}
+          {citizen.cycleOwnership&&citizen.cycleOwnership!=='Legacy'&&<Hint className="help-button" label={i18n.language==='ru'?'Чья работа и оплата':'Work ownership and pay'} text={citizen.cyclePrivateOutput
+            ? (i18n.language==='ru'?'Личные материалы и результат. Зарплаты из казны нет.':'Personal inputs and output. No treasury wages.')
+            :citizen.cyclePaymentMode==='Reserved'?(i18n.language==='ru'?'Материалы и результат общине. Оплата принятого цикла уже зарезервирована.':'Community inputs and output. Pay for this accepted cycle is reserved.')
+            :citizen.cyclePaymentMode==='Voluntary'?(i18n.language==='ru'?'Добровольная общественная работа без зарплаты. Для оплаты выберите госзаказ до начала работы.':'Voluntary public work without wages. Choose a funded order before starting to receive pay.')
+            :(i18n.language==='ru'?'Общественная работа на прежних условиях оплаты.':'Public work under the previous payment terms.')}>ⓘ</Hint>}
           {citizen.cycleTired && <span className="warning"> {t('next.tired')}</span>}
           {onCancel && citizen.restState !== 'RestRequested' && (
             <button className="next-cancel" disabled={pending} onClick={onCancel} title={t('next.cancelTitle')}>

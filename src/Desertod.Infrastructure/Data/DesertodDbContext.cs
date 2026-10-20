@@ -54,6 +54,8 @@ public sealed class DesertodDbContext(DbContextOptions<DesertodDbContext> option
     public DbSet<EconomyReceipt> EconomyReceipts => Set<EconomyReceipt>();
     public DbSet<LedgerEntry> LedgerEntries => Set<LedgerEntry>();
     public DbSet<MarketLot> MarketLots => Set<MarketLot>();
+    public DbSet<WorkOrder> WorkOrders => Set<WorkOrder>();
+    public DbSet<WorkOrderClaim> WorkOrderClaims => Set<WorkOrderClaim>();
 
     public DbSet<RaidLaunchReceipt> RaidLaunchReceipts => Set<RaidLaunchReceipt>();
     public DbSet<Desertod.Domain.Combat.RaidBattle> RaidBattles => Set<Desertod.Domain.Combat.RaidBattle>();
@@ -94,6 +96,18 @@ public sealed class DesertodDbContext(DbContextOptions<DesertodDbContext> option
         modelBuilder.Entity<Village>().Property(v=>v.TsarRestState).HasConversion<string>().HasMaxLength(16).HasDefaultValue(Desertod.Domain.Rules.RestState.Active);
         modelBuilder.Entity<Village>().Property(v=>v.VigorCooldownMinutes).HasDefaultValue(240);
         modelBuilder.Entity<KingdomEconomy>(b => { b.HasKey(x=>x.VillageId); b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade); });
+        modelBuilder.Entity<WorkOrder>(b => {
+            b.HasKey(x=>x.Id); b.HasAlternateKey(x=>new{x.VillageId,x.Id});
+            b.HasIndex(x=>new{x.VillageId,x.Status,x.ExpiresAt});
+            b.Property(x=>x.TaskId).HasMaxLength(80); b.Property(x=>x.Status).HasConversion<string>().HasMaxLength(16);
+            b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade);
+        });
+        modelBuilder.Entity<WorkOrderClaim>(b => {
+            b.HasKey(x=>x.Id); b.HasIndex(x=>new{x.CitizenId,x.CycleStartedAt}).IsUnique();
+            b.HasIndex(x=>new{x.VillageId,x.AccountId,x.Status});
+            b.Property(x=>x.Status).HasConversion<string>().HasMaxLength(16);
+            b.HasOne<WorkOrder>().WithMany().HasForeignKey(x=>new{x.VillageId,x.WorkOrderId}).HasPrincipalKey(x=>new{x.VillageId,x.Id}).OnDelete(DeleteBehavior.Cascade);
+        });
         modelBuilder.Entity<GameWallet>(b => { b.HasKey(x=>new{x.VillageId,x.AccountId}); b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade); b.HasOne<Account>().WithMany().HasForeignKey(x=>x.AccountId); });
         modelBuilder.Entity<EconomyReceipt>(b => { b.HasKey(x=>new{x.VillageId,x.RequestId}); b.Property(x=>x.Fingerprint).HasMaxLength(128); b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade); });
         modelBuilder.Entity<LedgerEntry>(b => { b.HasKey(x=>x.Id); b.HasIndex(x=>new{x.VillageId,x.At,x.Id}); b.HasIndex(x=>new{x.VillageId,x.OperationId}); b.Property(x=>x.Operation).HasMaxLength(80); b.Property(x=>x.Asset).HasMaxLength(40); b.Property(x=>x.Location).HasMaxLength(100); b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade); });

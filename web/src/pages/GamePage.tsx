@@ -465,6 +465,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   const research = () => run(() => api.research(slug))
 
   const renew = (finished: CycleReport) => {
+    if(citizen?.cycleOwnership==='PublicContract'){openMenu('village');return}
     if (finished.technologyId) {
       if (finished.technologyDiscovered) openMenu('technologies')
       else void research()
@@ -477,7 +478,11 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
       return
     }
     const task = catalog?.tasks.find((t) => t.id === finished.taskId)
-    if (task) void start(task, againAt(task), finished.targetPlotId ?? undefined)
+    if (task) {
+      const ownership=citizen?.cycleOwnership
+      if(ownership==='PrivateExtraction'||ownership==='PrivateCraft')void run(()=>api.startTask(slug,task.id,againAt(task),finished.targetPlotId??undefined,{ownership}))
+      else void start(task, againAt(task), finished.targetPlotId ?? undefined)
+    }
   }
 
   /** The same spot again, unless the picked camp tree has fallen; then the nearest tree is chopped. */
@@ -1054,6 +1059,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
         <ServerClock offsetMs={serverOffset}>
           {(now) => (
             <GameMenu
+              onCitizen={applyCitizen}
               slug={slug}
               tab={tab}
               onTab={setTab}
