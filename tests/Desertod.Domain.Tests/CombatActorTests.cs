@@ -12,6 +12,15 @@ namespace Desertod.Domain.Tests;
 public sealed class CombatActorTests
 {
     [Fact]
+    public void The_ruler_cannot_answer_its_own_call_with_a_second_resident_hero()
+    {
+        var v=NewVillage();var c=NewCitizen(v);c.AccountId=v.OwnerAccountId;
+        var run=DungeonRules.Open(v,"dead-lands","Ruler",1,Now);
+        Assert.Equal("dungeon.busy",Assert.Throws<GameRuleException>(()=>DungeonRules.Join(run,v,c,HeroClass.Brawler,Now)).Code);
+        Assert.Single(run.Heroes);Assert.Null(c.DungeonRunId);
+    }
+
+    [Fact]
     public void A_legacy_overlap_keeps_the_raid_bodies_in_place_and_returns_reserved_dungeon_gear()
     {
         var v=NewVillage();var c=NewCitizen(v);

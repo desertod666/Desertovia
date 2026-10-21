@@ -87,6 +87,8 @@ public static class DungeonRules
         {
             throw new GameRuleException("dungeon.busy", "You are away in the dungeon.");
         }
+        if(run.Heroes.Any(h=>h.AccountId==citizen.AccountId&&h.CitizenId!=citizen.Id&&!h.Settled))
+            throw new GameRuleException("dungeon.busy","This account already has a hero in the dungeon.");
 
         var definition = HeroClassCatalog.Get(heroClass);
         var hero = run.Hero(citizen.Id);

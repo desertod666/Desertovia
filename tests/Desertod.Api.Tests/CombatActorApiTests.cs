@@ -109,6 +109,13 @@ public sealed class CombatActorApiTests(DesertodApiFactory factory)
             Assert.Equal(HttpStatusCode.OK,(await v.Tsar.PutAsJsonAsync(v.Path+$"/battles/{battle}/order",new{mode="retreat"})).StatusCode);
             await using(var db=await Db())Assert.Equal("retreating",Assert.Single((await db.RaidBattles.SingleAsync(b=>b.Id==battle)).Fighters).Mode);
             await AssertRuleBrokenAsync(await v.Tsar.PutAsJsonAsync(v.Path+"/me/rest",new{resting=true}),"rest.retreatRequired");
+            await using(var db=await Db())
+            {
+                var fight=await db.RaidBattles.SingleAsync(b=>b.Id==battle);fight.FinishedAt=factory.Clock.GetUtcNow();await db.SaveChangesAsync();
+            }
+            await OkJsonAsync(await v.Tsar.PostAsJsonAsync(v.Path+"/dungeon",new{dungeonId="dead-lands"}));
+            await AssertRuleBrokenAsync(await v.Tsar.PostAsJsonAsync(v.Path+"/me/dungeon",new{@class="Brawler"}),"dungeon.busy");
+            await using(var db=await Db())Assert.Single((await db.DungeonRuns.SingleAsync(r=>r.VillageId==db.Villages.Single(w=>w.Slug==v.Slug).Id)).Heroes);
         }
         finally{await Cleanup(v);}
     }

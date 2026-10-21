@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-21T03:57:23.012322+00:00",
+  "recorded_at_utc": "2026-10-21T04:02:01.869805+00:00",
   "status": "main_plan_active_combat_actor_admission_locally_tested_candidate_ci_pending",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
@@ -40,13 +40,13 @@
     "hospital_bridge_enabled": false,
     "original_game_container_replaced": false,
     "bot_modified": false,
-    "current_source_restarted": true,
+    "current_source_restarted": false,
     "tool_recipes_verified_http": 8,
     "local_world_migrations": 51,
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "Current ground-route backend working tree loaded in Debug after backup025302Z; same core waiting route survived restart030628Z. Current frontend includes the verified journey clock fix. Schema51; no public deployment.",
+    "loaded_scope": "Shared dev API5180 still runs the earlier ground-route Debug source/schema51. Current combat-actor source verified in isolated real API test factories; frontend5190 uses current HMR source. No public deployment.",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
     "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
@@ -1674,15 +1674,15 @@
   "next_independent_work": "Common ruler/resident combat HP/damage/gear and finite injuries, preserving accepted battles; party/death/baggage OPEN rules not silently chosen.",
   "combat_actor_admission": {
     "schema_version": 1,
-    "recorded_at_utc": "2026-10-21T03:57:23.012322+00:00",
+    "recorded_at_utc": "2026-10-21T04:02:01.869805+00:00",
     "scope": "T015/T031 single physical combat actor and shared admission; full A14 common HP/damage unfinished",
     "source_base": "e47bf1b1f151d287052554124afe59e5b12b7777",
     "local": {
       "domain": {
-        "passed": 658,
+        "passed": 659,
         "failed": 0,
-        "total": 658,
-        "result": "TestResults/combat-actors-domain-final/Admin_DESKTOP-FQ85FTD_2026-10-21_05_42_04_net10.0.trx"
+        "total": 659,
+        "result": "TestResults/combat-actors-domain-latest/Admin_DESKTOP-FQ85FTD_2026-10-21_05_59_43_net10.0.trx"
       },
       "api_initial": {
         "passed": 5,
@@ -1697,7 +1697,10 @@
         "result": "TestResults/combat-actors-api-regression/Admin_DESKTOP-FQ85FTD_2026-10-21_05_44_00_net10.0.trx"
       },
       "api_final": {
-        "status": "running_or_pending"
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "result": "TestResults/combat-actors-api-final/Admin_DESKTOP-FQ85FTD_2026-10-21_05_57_47_net10.0.trx"
       },
       "client_unit": {
         "passed": 27,
@@ -1710,8 +1713,15 @@
         "failed": 0,
         "scope": "component harness:4 RU/EN ruler-resident cases at320px plus10 adjacent HUD/control cases, before final duplicate-priority refinement covered by3 client unit; not physical phone/full world proof"
       },
-      "api_regression_note": "37 PASS/1 new test failed by asserting a global worker result empty despite other fixture worlds. Assertion now excludes only this world; final8 API rerun required. Earlier broad run predates final new-work/cross-raid guards.",
-      "api_final_build_attempt": "A parallel test rebuild hit Windows DLL file locks, no tests ran; owning earlier run completed normally, final retry runs sequentially."
+      "api_royal_alias_latest": {
+        "passed": 1,
+        "failed": 0,
+        "total": 1,
+        "result": "TestResults/combat-actors-alias-latest/Admin_DESKTOP-FQ85FTD_2026-10-21_06_01_20_net10.0.trx"
+      },
+      "api_regression_note": "37 PASS/1 new test failed by asserting a global worker result empty despite other fixture worlds. Assertion now excludes only this world; corrected final8 API rerun passed. Final additional same-account dungeon alias guard has659 Domain PASS and a targeted API run. Earlier broad run predates final new-work/cross-raid guards.",
+      "api_final_build_attempt": "A parallel test rebuild hit Windows DLL file locks, no tests ran; owning earlier run completed normally, final retry runs sequentially.",
+      "api_final_scope": "Final8 cases PASS, then1 extended ruler-alias case PASS after the last same-account dungeon guard. Full candidate CI must also cover all existing APIs after the final guards."
     },
     "product_file_sha256": {
       "src/Desertod.Api/Game/GameService.CombatActors.cs": "1795a2f0694fe32cb57e3d421a8ac4c719efb8e49ba170a7476d5fdf0048a2a9",
@@ -1723,7 +1733,7 @@
       "src/Desertod.Api/Game/GameService.Almighty.cs": "1b00f7175b6f58e28475d65b3cff910e5fd417e04aa9c0c7625ac4bf94a31dee",
       "src/Desertod.Api/Game/GameService.cs": "4b93a02dc1e36a877638baeccadc2f22021c235dcf65b11f664f202c3766048f",
       "src/Desertod.Domain/Combat/RaidSimulation.cs": "5d991915b08e2ef102f438d9666b1ef75c33c9ad9c96ac249d3e14ac4fdff7f0",
-      "src/Desertod.Domain/Dungeons/DungeonRules.cs": "528a0bf531eef27ae704fdc053b8827eae426cb7a80cb19f01e452b52a2f10aa",
+      "src/Desertod.Domain/Dungeons/DungeonRules.cs": "1c67147723b1bf490e26ad2b0ed0d066c6ba4d3e15fb65101ae426140220ae54",
       "web/src/game/battleActor.ts": "302d8cc47e26286d5d0c3887967ecdc3e126c3a983628ae6d2f2259889e6e2a2",
       "web/src/pages/GamePage.tsx": "9d8a9933d2c195a48d059378131608efbda1f7052f827d14d09361a0ab1cc028",
       "web/src/ui/Hud.tsx": "67ece52d59681f9a30b8d88135c86a82f64fed29651e4b0af1b90e798b386c8f",
@@ -1733,7 +1743,6 @@
     "public_release": false,
     "schema_migrations": 0,
     "remaining": [
-      "final new API and broad regression results",
       "candidate full CI",
       "common HP/damage/gear profile preserving accepted battles",
       "party/loot decisions and rest of full DAG"
