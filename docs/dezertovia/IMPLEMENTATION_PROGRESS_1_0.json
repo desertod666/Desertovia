@@ -2168,7 +2168,20 @@
       }
     },
     "candidate_ci": {
-      "status": "not_yet_created"
+      "status": "correction_ready_new_exact_head_pending",
+      "previous_sha": "113e5702d6d1277dadb61a048de20dc6560b9173",
+      "pr": "https://github.com/desertod666/Desertovia/pull/91",
+      "previous_run": 39554235611,
+      "previous_backend": {
+        "job": 119070141247,
+        "domain_passed": 681,
+        "domain_failed": 1,
+        "api_passed": 391,
+        "api_failed": 1
+      },
+      "previous_frontend": "success",
+      "previous_docker": "success",
+      "previous_browsers": "not yet complete when correction prepared"
     },
     "public_release": false,
     "remaining": [
@@ -2199,7 +2212,7 @@
       "src/Desertod.Infrastructure/Data/Migrations/DesertodDbContextModelSnapshot.cs": "21a1b3bf33b495d5c87a308e58f93d1f8333fe52209d212a006df24f2cee8797",
       "tests/Desertod.Api.Tests/RoyalDungeonApiTests.cs": "cddb46d148a427a186ccb9488b42e7c849f4fd60ae0414fe21d15f2f2a4a8a90",
       "tests/Desertod.Api.Tests/RoyalDungeonMigrationTests.cs": "c2fe71a44d1079b4a507e8ec365e4ca015e0b60f3c42612e29db6cd0407a56aa",
-      "tests/Desertod.Domain.Tests/DungeonTests.cs": "e7f10dc090f0ed86415641294430cbca8457d4da1ab3471130993e3038f15d30",
+      "tests/Desertod.Domain.Tests/DungeonTests.cs": "2c489b2ffe869b6be91876b1436da268a076aebbb6166db6842f42a0a16d4d10",
       "tests/Desertod.Domain.Tests/RoyalDungeonTests.cs": "6be8225e739c6f676be9af27c2b0620124cebc2757234852fb1ae6e8501c708c",
       "tools/dev.ps1": "a95601081234e06ccfc94ea4c4ca995e4d285119bc559eeee8997e2d92e47954",
       "web/e2e/post-071-harness.tsx": "77328b9b3a3adc6f9225590092147671fa037ef92a0c82fb99d5829041e54664",
@@ -2210,7 +2223,9 @@
       "web/src/pages/DungeonPage.tsx": "4ca34edc758ad4e60b96a7894c73d2af6bf66d7046d2584d5956d9b9aa9e6d13",
       "web/src/ui/Dungeon.tsx": "4d60de0d15df89520234f124d54d13715ece68cb671cbd65f26f16d56dabcfe1",
       "web/src/ui/GameMenu.tsx": "603154879a61a34a31485e6e2a529de9a0e5a56413eed431254d1e286180c604",
-      "web/src/ui/royalDungeon.css": "7dd8815f37b633386bbc083ce71c2151e948ec67fbf99b121e8fb636e7301272"
+      "web/src/ui/royalDungeon.css": "7dd8815f37b633386bbc083ce71c2151e948ec67fbf99b121e8fb636e7301272",
+      "tests/Desertod.Api.Tests/WorkEncounterApiTests.cs": "20d136c14e0526d8b56f566445162c09b32bd5d62fbd4df8eef482f299b6124f",
+      "tests/Desertod.Domain.Tests/PlayerFeedback077Tests.cs": "fdc6b5ff7ae8f1f8618f09e63ad664ef757937a9749ee3751c286d9fc52ebcc0"
     },
     "api_vulnerable_final": {
       "passed": 22,
@@ -2218,6 +2233,18 @@
       "total": 22,
       "result": "TestResults/dungeon-royal-vulnerable/Admin_DESKTOP-FQ85FTD_2026-10-21_08_09_09_net10.0.trx",
       "scope": "4ordinary-body API with DevTools=false in accepted/restored checkpoint,10checkpoint/reconnect/retry,8combat-actor guard checks"
+    },
+    "ci_fixture_correction": {
+      "product_code_changed": false,
+      "changes": [
+        "After guarded partial downgrade, work encounter verifies only CheckpointJson and ReservedCoins columns that exist on the protected schema; isolated database and finally restore remain",
+        "Meal test uses a reachable outside work spot instead of an arbitrary possibly submerged seed-dependent tile",
+        "Dungeon departure checks the real reachable WesternExit, not obsolete fixed MarchSpot; wounded-stay and equipment checks remain"
+      ],
+      "domain_passed": 682,
+      "domain_failed": 0,
+      "result": "TestResults/dungeon-royal-ci-fixtures/Admin_DESKTOP-FQ85FTD_2026-10-21_08_24_41_net10.0.trx",
+      "local_api_guard": "pending, do not overwrite the still-running separate Director validation binary"
     }
   }
 }

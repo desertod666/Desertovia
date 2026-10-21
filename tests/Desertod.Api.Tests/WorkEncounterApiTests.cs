@@ -113,7 +113,7 @@ public sealed class WorkEncounterApiTests(DesertodApiFactory factory)
             {
                 var c=await db.Citizens.SingleAsync(c=>c.Id==s.A.Id);Assert.False(c.CycleSettled);
                 Assert.Equal(WorkClaimStatus.Working,(await db.WorkOrderClaims.SingleAsync(c=>c.WorkOrderId==s.Order)).Status);
-                Assert.Equal(10,(await db.WorkOrders.SingleAsync(o=>o.Id==s.Order)).ReservedCoins);
+                Assert.Equal(10,await db.WorkOrders.Where(o=>o.Id==s.Order).Select(o=>o.ReservedCoins).SingleAsync());
                 Assert.Equal(0,(await db.GameWallets.SingleAsync(w=>w.VillageId==c.VillageId&&w.AccountId==c.AccountId)).Coins);
                 Assert.Equal(1,await db.DungeonRuns.CountAsync(r=>r.WorkCitizenId==c.Id));
             }
@@ -183,7 +183,7 @@ public sealed class WorkEncounterApiTests(DesertodApiFactory factory)
             {
                 var error=await Assert.ThrowsAnyAsync<Exception>(()=>db.Database.MigrateAsync("20261021000703_InterruptedTravel"));
                 Assert.Contains("Work encounters or accepted encounter cycles exist",error.ToString());
-                Assert.Equal(before,(await db.DungeonRuns.AsNoTracking().SingleAsync(r=>r.Id==run)).CheckpointJson);
+                Assert.Equal(before,await db.DungeonRuns.AsNoTracking().Where(r=>r.Id==run).Select(r=>r.CheckpointJson).SingleAsync());
                 Assert.Equal(10,(await db.WorkOrders.SingleAsync(o=>o.Id==s.Order)).ReservedCoins);
                 Assert.Contains("20261021011454_WorkEncounters",await db.Database.GetAppliedMigrationsAsync());
             }
