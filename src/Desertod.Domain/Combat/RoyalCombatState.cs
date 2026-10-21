@@ -98,6 +98,9 @@ public static class RoyalInjury
         if(village.TsarInjuredUntil>now&&(body.Citizen.InjuredUntil is null||body.Citizen.InjuredUntil<village.TsarInjuredUntil))
             body.Citizen.InjuredUntil=village.TsarInjuredUntil;
         CombatRules.Heal(body.Citizen,village,now);
+        // Stop an actual rescue at its current position before clearing the claim used by Cancel.
+        if(village.TsarRescueByCitizenId is {} helperId&&residents.FirstOrDefault(c=>c.Id==helperId) is {} helper)
+            RescueRules.Cancel(helper,null,now,village);
         Clear(village);body.Commit();
     }
 }

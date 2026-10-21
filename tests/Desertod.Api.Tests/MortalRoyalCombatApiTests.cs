@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Desertod.Api.Game;
 using Desertod.Domain.Catalog;
+using Desertod.Domain.Buildings;
 using Desertod.Domain.Combat;
 using Desertod.Domain.Entities;
 using Desertod.Domain.Rules;
@@ -17,6 +18,35 @@ namespace Desertod.Api.Tests;
 [Collection(ApiCollection.Name)]
 public sealed class MortalRoyalCombatApiTests(DesertodApiFactory factory)
 {
+    [Fact]
+    public async Task Remedy_while_carried_saves_both_positions_and_stops_the_helper_once_after_reload()
+    {
+        var v=await players.FoundVillageAsync("Carried royal remedy");try
+        {
+            using var frozen=factory.Clock.Freeze();var helper=await players.JoinAsync(v,"Carrier");
+            Desertod.Domain.World.TilePoint expected;
+            await using(var db=await Db())
+            {
+                var w=await db.Villages.SingleAsync(w=>w.Slug==v.Slug);var c=await db.Citizens.SingleAsync(c=>c.Id==helper.Id);
+                var now=factory.Clock.GetUtcNow();w.Structures.Add(new(){Kind=BuildingKind.Hospital,PlotId="20,15",Level=1,BuiltAt=now});
+                w.Storages.Add(StorageBuilding.Create(StorageKind.Heap,"17,12",now));Assert.Equal(2,w.Store(ResourceKind.Remedy,2));
+                w.TsarSpot=new(16.5,16.5);w.TsarWoundedAt=now;w.TsarInjuredUntil=now.AddMinutes(40);w.TsarRescueByCitizenId=c.Id;
+                c.RescueJourney=RescueRules.PrepareRoute(w,new(15.5,13.5),w.TsarSpot.Value,w.OwnerAccountId,true,now,now);
+                c.RescuePatientId=w.OwnerAccountId;var at=c.RescueJourney.PickupAt.AddTicks((c.RescueJourney.ArrivesAt-c.RescueJourney.PickupAt).Ticks/2);
+                expected=c.RescueJourney.PositionAt(at);factory.Clock.Advance(at-now);await db.SaveChangesAsync();
+            }
+            var request=new RoyalHealRequest(Guid.NewGuid());
+            await OkJsonAsync(await v.Tsar.PostAsJsonAsync(v.Path+"/tsar/heal",request));
+            await OkJsonAsync(await v.Tsar.PostAsJsonAsync(v.Path+"/tsar/heal",request));
+            await using var read=await Db();var city=await read.Villages.SingleAsync(w=>w.Slug==v.Slug);var carrier=await read.Citizens.SingleAsync(c=>c.Id==helper.Id);
+            // PostgreSQL timestamps round100ns ticks to microseconds; compare physical position at that precision.
+            Assert.True(city.TsarSpot!.Value.DistanceTo(expected)<.00001);Assert.Equal(city.TsarSpot,carrier.Spot);Assert.Null(carrier.RescuePatientId);
+            Assert.NotNull(carrier.RescueJourney!.CompletedAt);Assert.False(carrier.RescueJourney.Delivered);
+            Assert.Equal(0,carrier.Renown);Assert.Equal(1,city.Stock(ResourceKind.Remedy));Assert.Null(city.TsarInjuredUntil);
+        }
+        finally{await Cleanup(v);}
+    }
+
     private readonly Players players=new(factory);
     private Task<DesertodDbContext> Db()=>factory.Services.GetRequiredService<IDbContextFactory<DesertodDbContext>>().CreateDbContextAsync();
     private async Task Cleanup(FoundedVillage v){await using var db=await Db();await db.Villages.Where(w=>w.Slug==v.Slug).ExecuteDeleteAsync();}

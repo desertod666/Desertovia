@@ -1,7 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Desertod.Domain.Catalog;
+using Desertod.Domain.Buildings;
 using Desertod.Domain.Combat;
+using Desertod.Domain.Dungeons;
 using Desertod.Domain.Entities;
 using Desertod.Domain.Rules;
 using Desertod.Domain.Skills;
@@ -12,6 +14,38 @@ namespace Desertod.Domain.Tests;
 
 public sealed class MortalRoyalCombatTests
 {
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Remedy_ends_a_rescue_at_the_actual_pickup_stage_without_teleport_or_delivery_reward(bool pickedUp)
+    {
+        var v=NewVillage();v.Id=Guid.Parse("11111111-1111-4111-8111-111111111111");
+        v.Structures.Add(new(){Kind=BuildingKind.Hospital,PlotId="20,15",Level=1,BuiltAt=Now});
+        var helper=NewCitizen(v);v.TsarSpot=new(16.5,16.5);v.TsarWoundedAt=Now;v.TsarInjuredUntil=Now.AddMinutes(40);
+        var route=RescueRules.PrepareRoute(v,new(15.5,13.5),v.TsarSpot.Value,v.OwnerAccountId,true,Now,Now);
+        helper.RescueJourney=route;helper.RescuePatientId=v.OwnerAccountId;v.TsarRescueByCitizenId=helper.Id;
+        var at=pickedUp?route.PickupAt.AddTicks((route.ArrivesAt-route.PickupAt).Ticks/2):Now;
+        var expected=pickedUp?route.PositionAt(at):v.TsarSpot.Value;
+        Assert.Equal("heal.none",Assert.Throws<GameRuleException>(()=>RoyalInjury.Heal(v,[helper],at)).Code);
+        Assert.Null(route.CompletedAt);Assert.Equal(helper.Id,v.TsarRescueByCitizenId);Assert.NotNull(helper.RescuePatientId);
+        v.Store(ResourceKind.Remedy,1);RoyalInjury.Heal(v,[helper],at);
+        Assert.Null(v.TsarInjuredUntil);Assert.Null(v.TsarRescueByCitizenId);Assert.Null(helper.RescuePatientId);
+        Assert.Equal(expected,v.TsarSpot);Assert.Equal(route.PositionAt(at),helper.Spot);Assert.Equal(at,route.CompletedAt);
+        Assert.False(route.Delivered);Assert.Equal(0,helper.Renown);Assert.Equal(0,v.Stock(ResourceKind.Remedy));
+        Assert.False(RescueRules.AdmitTsar(helper,v,route.ArrivesAt));Assert.Equal(expected,v.TsarSpot);
+    }
+
+    [Fact]
+    public void Recovered_native_hospital_patient_can_march_without_a_preceding_state_read()
+    {
+        var v=NewVillage();v.Id=Guid.Parse("11111111-1111-4111-8111-111111111111");
+        var run=DungeonRules.Open(v,DungeonCatalog.DeadLands,"Ruler",123,Now);
+        v.TsarWoundedAt=Now;v.TsarInjuredUntil=Now.AddSeconds(10);v.TsarHospitalizedAt=Now;
+        DungeonRules.March(run,v,[],run.GatheringEndsAt);
+        Assert.Equal(DungeonPhase.Marching,run.Phase);Assert.False(run.Tsar.Settled);Assert.NotNull(v.TsarTrip);
+        Assert.Null(v.TsarInjuredUntil);Assert.Null(v.TsarHospitalizedAt);
+    }
+
     private static (Village V,Citizen C,Raid Raid,RaidBattle Battle,RaidFighter Fighter) Fight(bool royal,ResourceKind? weapon=null,int arrows=0,bool legacy=false)
     {
         var v=NewVillage();v.Id=Guid.Parse("11111111-1111-4111-8111-111111111111");

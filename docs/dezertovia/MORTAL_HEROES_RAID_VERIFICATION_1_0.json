@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-10-21T04:42:45.772301+00:00",
+  "recorded_at_utc": "2026-10-21T05:10:57.809402+00:00",
   "scope": "Common mortal royal/resident body in new raids; dungeon Voivode profile and full A14 unfinished",
   "source_base": "2999073440198d86e348d7acc5bca3c36dbee238",
   "domain": {
-    "passed": 669,
+    "passed": 672,
     "failed": 0,
-    "total": 669,
-    "result": "TestResults/mortal-royal-domain-latest/Admin_DESKTOP-FQ85FTD_2026-10-21_06_29_38_net10.0.trx"
+    "total": 672,
+    "result": "TestResults/mortal-royal-final-domain/Admin_DESKTOP-FQ85FTD_2026-10-21_07_05_20_net10.0.trx"
   },
   "api_stages": {
     "first": {
@@ -34,7 +34,7 @@
       "total": 2,
       "result": "TestResults/mortal-royal-boundaries/Admin_DESKTOP-FQ85FTD_2026-10-21_06_40_16_net10.0.trx"
     },
-    "distinct_passed": 14,
+    "distinct_passed": 15,
     "cases": [
       "Desertod.Api.Tests.CombatActorApiTests.A_legacy_fighter_present_when_gathering_ends_is_not_removed_or_teleported_by_the_march",
       "Desertod.Api.Tests.CombatActorApiTests.A_raid_fighter_cannot_join_a_dungeon_or_discard_equipment_and_a_fighting_ruler_cannot_open_one",
@@ -49,9 +49,22 @@
       "Desertod.Api.Tests.MortalRoyalCombatApiTests.Concurrent_injury_healing_and_replay_spend_one_real_remedy_and_cannot_resurrect_a_fallen_fighter",
       "Desertod.Api.Tests.MortalRoyalCombatApiTests.Existing_resident_stats_are_the_rulers_actual_body_and_one_treatment_clears_the_shared_wound",
       "Desertod.Api.Tests.MortalRoyalCombatApiTests.Finite_native_hospital_care_blocks_movement_only_until_recovery_and_keeps_political_actions_available",
+      "Desertod.Api.Tests.MortalRoyalCombatApiTests.Remedy_while_carried_saves_both_positions_and_stops_the_helper_once_after_reload",
       "Desertod.Api.Tests.MortalRoyalMigrationTests.Migration_preserves_old_rows_health_and_json_then_retains_new_body_progress_and_refuses_lossy_rollback"
     ],
-    "scope": "13 then5 overlap by4; boundaries repeat existing cases. First3 fixture failures came from absent general storage, not free game supplies."
+    "scope": "Final combined run14 PASS/1 fixture assertion failure: PostgreSQL microsecond timestamp rounding caused2.7e-7 tile difference. Carrier assertion now tolerates1e-5 tile and still requires identical carrier/patient positions; corrected focused1 PASS.15 distinct API cases passed over these runs; no production change between runs and no repeated counts.",
+    "final15": {
+      "passed": 14,
+      "failed": 1,
+      "total": 15,
+      "result": "TestResults/mortal-royal-final-boundaries/Admin_DESKTOP-FQ85FTD_2026-10-21_07_06_11_net10.0.trx"
+    },
+    "carrier_corrected": {
+      "passed": 1,
+      "failed": 0,
+      "total": 1,
+      "result": "TestResults/mortal-royal-carrier-corrected/Admin_DESKTOP-FQ85FTD_2026-10-21_07_10_36_net10.0.trx"
+    }
   },
   "frontend": "TypeScript/Vite/oxlint passed",
   "browser": {
@@ -106,13 +119,13 @@
     "backup": "/tmp/foundation-before-restart-20261021T043127Z.dump"
   },
   "product_file_sha256": {
-    "src/Desertod.Domain/Combat/RoyalCombatState.cs": "93d166bba63f977e6cced6521defd682b3a360a959edb85a0c998a5d03917317",
+    "src/Desertod.Domain/Combat/RoyalCombatState.cs": "12e4d0ef727ae30562f16134354df015b2286a79c0cb891a4adea0df53872232",
     "src/Desertod.Domain/Combat/CombatRules.cs": "48600cef0553a187792bfdb6c1b044a0ef647229d59159ca393cebd68564a525",
     "src/Desertod.Domain/Combat/RaidSimulation.cs": "2bd4ad61eedb8db4be79db97534ec9a22d3025d1102adefcc68ec15077f16b9d",
     "src/Desertod.Domain/Combat/RaidBattle.cs": "31cc491434bd316bbd33b97841956ba5db505784f56d48fcfb816d013a506a44",
     "src/Desertod.Domain/Combat/RaidBalance.cs": "acb0c1b187edb4f8aa032d5f99fc0194796bbe8dcc54209919ea5422279fc558",
     "src/Desertod.Domain/Entities/Village.cs": "5cb37f95678dfc06270026a61fb3fe7633736295f05d7a455479e6f4294df1ae",
-    "src/Desertod.Api/Game/GameService.RoyalCombat.cs": "5d421de732e11a6a08c020101f7ccea12aeb34334377c19da3b4d3036e2a1907",
+    "src/Desertod.Api/Game/GameService.RoyalCombat.cs": "e6236b5bde3506c119853bdb4ec64337f2d3b62e4e6d1cd19a3d0abe0b2cf816",
     "src/Desertod.Api/Game/GameService.Battles.cs": "a6cb38d18ddc29b61e620aa5b35f3a70ea15f17428d68087362fe04ef37eb480",
     "src/Desertod.Api/Game/GameService.Travel.cs": "6e7e96a9cda5d20e4b21ddf2283039d4df821d6778abec23b317da7ee4f30fc4",
     "src/Desertod.Api/Game/GameService.cs": "6907feae17e24cd07dc77dbffcafeef47265ff23fb81ca85867339df0b264071",
@@ -123,7 +136,8 @@
     "web/src/api.ts": "df7978ed6e8e6301098ccc8dbdf8e5dd6c4d8917f2dca6710dfc2f0b78bf74d3",
     "web/src/ui/RoyalCombatSheet.tsx": "5592a0c3385e5737c6985871fd60c1a3fec111f1ae1b1c37c08fd42c7afd0eb2",
     "web/src/ui/GameMenu.tsx": "5ea32246ececb29a22a298db8654bd1e1ac58e73c08d60ba81acfe77d699d11a",
-    "web/src/index.css": "2bf11dc420ea0cc05965b149132d034403418a82983814e5aacdd12050a6f341"
+    "web/src/index.css": "2bf11dc420ea0cc05965b149132d034403418a82983814e5aacdd12050a6f341",
+    "src/Desertod.Domain/Dungeons/DungeonRules.cs": "aa084ead6db34de7921beeab8826302002bb689e5fd2bf06b6a8208d43c2b6bd"
   },
   "candidate_ci": "pending candidate commit",
   "public_release": false,
@@ -132,5 +146,8 @@
     "new dungeon body/class/equipment binding, settlement and legacy compatibility",
     "full alias rescue scenario, supplies, balance/load and physical phones",
     "remaining full1.0 DAG; no new death/baggage policy chosen"
-  ]
+  ],
+  "rescue_boundary": "Remedy cancels the real carrier at its actual position, after medicine validation and before clearing the claim; no delivery renown. Failed remedy preserves the route/claim. Replayed HTTP request spends once.",
+  "native_care_boundary": "Dungeon departure refreshes expired native hospital admission without requiring a preceding GET; role does not keep a healed body permanently down.",
+  "runtime_scope": "Shared dev API schema52 currently runs the earlier raid slice. Final carrier/departure corrections are verified by domain/API test hosts and pending shared-runtime reload; public game untouched."
 }

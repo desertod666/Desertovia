@@ -24,11 +24,17 @@ public sealed partial class GameService
             }
             var citizen=await db.Citizens.SingleOrDefaultAsync(c=>c.VillageId==village.Id&&c.AccountId==actor,ct);
             await RequireMovementReadyAsync(db,village.Id,actor,citizen?.Id,ct);
-            RoyalInjury.Heal(village,citizen is null?[]:[citizen],now);
+            var helper=village.TsarRescueByCitizenId is {} helperId
+                ?await db.Citizens.SingleOrDefaultAsync(c=>c.VillageId==village.Id&&c.Id==helperId,ct):null;
+            var participants=new List<Desertod.Domain.Entities.Citizen>();
+            if(citizen is not null)participants.Add(citizen);
+            if(helper is not null&&helper.Id!=citizen?.Id)participants.Add(helper);
+            RoyalInjury.Heal(village,participants,now);
             db.EconomyReceipts.Add(new(){VillageId=village.Id,AccountId=actor,RequestId=request.RequestId,Fingerprint=fingerprint,At=now});
             db.AuditActor=actor;db.AuditOperation="royal-injury-remedy";
             await db.SaveChangesAsync(ct);changes.Mark(village.Id);
             if(citizen is not null)await notifier.CitizenUpdated(slug,citizen.ToSummaryDto(now));
+            if(helper is not null&&helper.Id!=citizen?.Id)await notifier.CitizenUpdated(slug,helper.ToSummaryDto(now));
             return await BuildStateAsync(db,village,now,ct);
         },ct);
 }

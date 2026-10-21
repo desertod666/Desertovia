@@ -269,8 +269,11 @@ public static class DungeonRules
         Finish(run,DungeonOutcome.Abandoned,0,now);return false;
     }
 
-    private static bool TsarIsDown(Village village, DateTimeOffset now) =>
-        village.TsarInjuredUntil > now || village.TsarHospitalizedAt is not null;
+    private static bool TsarIsDown(Village village, DateTimeOffset now)
+    {
+        RoyalInjury.Refresh(village,now);
+        return village.TsarInjuredUntil > now || village.TsarHospitalizedAt is not null;
+    }
 
     public static void Start(DungeonRun run, DateTimeOffset now)
     {
