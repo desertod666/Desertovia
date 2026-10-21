@@ -2655,9 +2655,9 @@
       "original_task_id": "T070",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "partial_scoped_local_verified_linux_webkit_and_full_ci_required",
+        "status": "partial_scoped_verified_including_linux_webkit_full_ci_running",
         "evidence": "MUSIC_SCENES_1_0.md / MUSIC_SCENES_VERIFICATION_1_0.json: current world/dungeon phase adapters, stable priority/timer, actual GainNode volume and native fallback. New scene IDs use legacy files; original score/future siege/miracle/mix still incomplete.",
-        "runtime_verification": "33client unit, 8desktop/phone browser in cross-engine stage; Windows WebKit3fail due absent Web Audio, native fallback pass. Later6volume/fallback and4strict PCM ratio scenarios pass. Linux Audio WebKit and exact full CI pending; no physical phone proof."
+        "runtime_verification": "33client unit, 8desktop/phone browser in cross-engine stage; Windows WebKit3fail due absent Web Audio, native fallback pass. Later6volume/fallback and4strict PCM ratio scenarios pass. Linux Audio WebKit and exact full CI pending; no physical phone proof. Exact35ed0ef Linux Audio WebKit job119311957101:4PASS with actual RMS. Remaining full CI39626189219 still running; no physical phone proof."
       },
       "farm_concept_integration": [
         "Фазы дневной/ночной фермы, мягкая вода/земля/сбор; без отдельного проигрывателя фермы."
@@ -2741,9 +2741,9 @@
       "original_task_id": "T072",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "partial_scoped_local_verified_linux_webkit_and_full_ci_required",
+        "status": "partial_scoped_verified_including_linux_webkit_full_ci_running",
         "evidence": "MUSIC_SCENES_1_0.md / MUSIC_SCENES_VERIFICATION_1_0.json: current world/dungeon phase adapters, stable priority/timer, actual GainNode volume and native fallback. New scene IDs use legacy files; original score/future siege/miracle/mix still incomplete.",
-        "runtime_verification": "33client unit, 8desktop/phone browser in cross-engine stage; Windows WebKit3fail due absent Web Audio, native fallback pass. Later6volume/fallback and4strict PCM ratio scenarios pass. Linux Audio WebKit and exact full CI pending; no physical phone proof."
+        "runtime_verification": "33client unit, 8desktop/phone browser in cross-engine stage; Windows WebKit3fail due absent Web Audio, native fallback pass. Later6volume/fallback and4strict PCM ratio scenarios pass. Linux Audio WebKit and exact full CI pending; no physical phone proof. Exact35ed0ef Linux Audio WebKit job119311957101:4PASS with actual RMS. Remaining full CI39626189219 still running; no physical phone proof."
       },
       "farm_concept_integration": [
         "Проверить короткие звуки/петлю фермы и мягкий ночной вариант, отключение и разговор/телефон без навязчивости."

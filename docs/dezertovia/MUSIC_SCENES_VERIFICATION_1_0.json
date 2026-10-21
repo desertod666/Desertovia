@@ -2,7 +2,7 @@
   "recorded_at_utc": "2026-10-21T15:28:06.755287+00:00",
   "branch": "feat/desertovia-1-0-music-states",
   "source_parent": "3551b0d305b2ab8d9bba1a5e6facb740b1d3d209",
-  "status": "implemented_scoped_local_verified_linux_webkit_and_full_ci_required",
+  "status": "implemented_scoped_verified_including_linux_webkit_full_ci_running",
   "implemented": true,
   "verified": "scoped_only",
   "released": false,
@@ -233,7 +233,37 @@
   },
   "actual_phone_or_speaker_tested": false,
   "candidate_ci": {
-    "status": "not_yet_started"
+    "status": "running",
+    "head_sha": "35ed0efad4c1b28741aaef4905885e7d5c133819",
+    "run_id": 39626189219,
+    "jobs": {
+      "Audio WebKit": {
+        "id": 119311957101,
+        "conclusion": "success",
+        "passed": 4
+      },
+      "Frontend lint and build": {
+        "id": 119311956026,
+        "conclusion": "success"
+      },
+      "Docker image": {
+        "id": 119311956571,
+        "conclusion": "success"
+      },
+      "Backend tests": {
+        "id": 119311956608,
+        "status": "in_progress"
+      },
+      "Browser tests (1/2)": {
+        "id": 119311957086,
+        "status": "in_progress"
+      },
+      "Browser tests (2/2)": {
+        "id": 119311956487,
+        "status": "in_progress"
+      }
+    },
+    "observed_at_utc": "2026-10-21T15:34:00.644411+00:00"
   },
   "parent_ci": {
     "status": "verified_all_five_jobs_success",
@@ -265,11 +295,61 @@
   "no_model_calls": true,
   "no_public_deployment": true,
   "remaining": [
-    "Exact new full CI including Linux Audio WebKit",
-    "Current Windows WebKit failures require Linux supported-engine evidence; physical iPhone still separate",
+    "Remaining exact new backend and browser CI jobs",
+    "Linux WebKit4pass proves the actual graph; physical iPhone background/speaker still unverified",
     "Original master/provenance/rights/loops and all21 actual scored scenes",
     "Durable confirmed siege/miracle stingers after actual gameplay phases",
     "Crossfade and separate effects/notifications/speech mix; physical-device background/resume and stream acceptance",
     "Whole functional DAG and final UI redesign remain active"
-  ]
+  ],
+  "linux_webkit_ci": {
+    "head_sha": "35ed0efad4c1b28741aaef4905885e7d5c133819",
+    "run_id": 39626189219,
+    "audio_job_id": 119311957101,
+    "status": "Audio WebKit success; whole CI still running at observation",
+    "stats": {
+      "startTime": "2026-10-21T15:30:36.266Z",
+      "duration": 13100.893,
+      "expected": 4,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "artifact": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\ci-audio-webkit-39626189219\\audio-webkit-results.json",
+    "sha256": "5617484366a7a37cf083a1ee6efa74a0c56db4131213ee18a0ae621a5b98f036",
+    "samples": [
+      {
+        "name": "decoded-audio-at-25-percent",
+        "values": {
+          "elements": 1,
+          "contexts": 1,
+          "volume": 0.25,
+          "input": 0.001430185951199101,
+          "ratio": 0.24997862784094171
+        }
+      },
+      {
+        "name": "decoded-audio-at-75-percent",
+        "values": {
+          "elements": 1,
+          "contexts": 1,
+          "volume": 0.75,
+          "input": 0.3493649442908653,
+          "ratio": 0.7501010440603505
+        }
+      },
+      {
+        "name": "decoded-audio-at-zero-percent",
+        "values": {
+          "elements": 1,
+          "contexts": 1,
+          "volume": 0.0003965709765907377,
+          "input": 1.4499348701439969e-05,
+          "ratio": 0.003403467924214187,
+          "paused": true
+        }
+      }
+    ],
+    "physical_phone": false
+  }
 }

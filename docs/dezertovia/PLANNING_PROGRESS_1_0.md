@@ -1,7 +1,7 @@
 > T070/T072: текущие музыкальные состояния деревни/данжа, один контроллер и
 > GainNode исправляют ползунок, включая игнорируемый audio.volume.33client unit,
 > scoped desktop/320px signal/mute/reload/remount PASS. Windows WebKit без Web Audio;
-> Linux Audio WebKit и полный CI нового кода ещё нужны. Новых музыкальных мастеров нет.
+> Linux Audio WebKit35ed0ef:4PASS; полный CI39626189219 ещё идёт. Мастеров нет.
 > Родитель3551b0d: CI39622145133 все5 зелёные,726Domain/490API/422browser+2skip;
 > бот b4f12d6: CI39620873141 success,1121tests. Это проверки родителя.
 > MUSIC_SCENES_1_0.md / VERIFICATION; вся1.0 активна, UI в конце, выпуска нет.
