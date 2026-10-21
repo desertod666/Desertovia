@@ -227,7 +227,13 @@ public sealed class DungeonCheckpointApiTests(DesertodApiFactory factory)
         var rejected=await Assert.ThrowsAsync<GameRuleException>(()=>s.Game.SetRestAsync(s.Live.Slug,hero.Fighter.AccountId,new(true),default));
         Assert.Equal("rest.dungeonRequired",rejected.Code);
         using var worker=Worker(s.Runtime);
-        for(var i=0;i<20&&s.Live.Simulation.Hero(hero.Id)!.State!=HeroState.Left;i++)await Tick(worker,s.Live);
+        for(var i=0;i<20&&s.Live.Simulation.Hero(hero.Id)!.State!=HeroState.Left;i++)
+        {
+            // The worker normally samples monotonic wall time after its first tick. This
+            // manually driven scenario advances explicit .1s steps, even on a fast CI host.
+            s.Live.LastTickTimestamp=0;
+            await Tick(worker,s.Live);
+        }
         Assert.Equal(HeroState.Left,s.Live.Simulation.Hero(hero.Id)!.State);
         await using var db=await Contexts.CreateDbContextAsync();
         var run=await db.DungeonRuns.AsNoTracking().SingleAsync(r=>r.Id==s.Live.RunId);
