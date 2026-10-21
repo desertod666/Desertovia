@@ -93,6 +93,22 @@ public sealed class DungeonCheckpointApiTests(DesertodApiFactory factory)
     }
 
     [Fact]
+    public async Task A_group_viewer_reconnects_to_the_admitted_bodies_and_saved_map_even_before_runtime_restore()
+    {
+        using var frozen=factory.Clock.Freeze();var s=await Setup();
+        var body=s.Live.Simulation.Heroes.Single(h=>!h.IsTsar);
+        await players.ArrangeCitizenAsync(body.Id,(c,_)=>c.Stats.Endurance=9);
+        var saved=s.Live.Save!;
+        var view=Assert.IsType<DungeonRunDto>(await s.Game.GetDungeonRunAsync(s.Live.RunId,body.Fighter.AccountId,default));
+        Assert.Equal(saved.Heroes,view.Heroes);Assert.Equal(body.Id,view.MyHeroId);
+        Assert.All(view.Heroes,h=>Assert.Equal(1000,h.MaximumHealth));
+        Assert.Equal(saved.Fight.Definition.Width,view.Width);Assert.Equal(saved.Fight.Definition.Height,view.Height);
+        Assert.Equal(DungeonMapper.EncodeTiles(saved.Fight.Definition),view.Tiles);
+        var restored=new DungeonRuntime().Start(Assert.Single(await s.Game.RestoreDungeonsAsync(default),r=>r.RunId==s.Live.RunId));
+        Assert.Equal(view.Heroes,restored.Save!.Heroes);Assert.Equal(saved.ToJson(),restored.Save.ToJson());
+    }
+
+    [Fact]
     public async Task New_process_recovers_the_committed_fight_and_rejects_a_stale_writer()
     {
         var s = await Setup();

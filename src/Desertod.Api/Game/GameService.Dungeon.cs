@@ -400,7 +400,10 @@ public sealed partial class GameService
         var village = await db.Villages.AsNoTracking().SingleAsync(v => v.Id == run.VillageId, cancellationToken);
         var citizenIds = run.Heroes.Where(h => h.CitizenId is not null).Select(h => h.CitizenId!.Value).ToList();
         var citizens = await db.Citizens.AsNoTracking().Where(c => citizenIds.Contains(c.Id)).ToListAsync(cancellationToken);
-        var saved=run.Kind==DungeonRunKind.Ambush?DungeonSave.Read(run.CheckpointJson??throw new InvalidOperationException("Missing encounter checkpoint.")):null;
+        // A viewer reconnecting before the runtime restores a group run must see the
+        // admitted bodies and map, not recalculated stats or a later catalog revision.
+        var saved=run.CheckpointJson is {} json?DungeonSave.Read(json):null;
+        if(run.Kind==DungeonRunKind.Ambush&&saved is null)throw new InvalidOperationException("Missing encounter checkpoint.");
         var heroes = saved?.Heroes??await RunHeroesAsync(db, run, village, citizens, cancellationToken);
         var dungeon = saved?.Fight.Definition??DungeonCatalog.Get(run.DungeonId);
         var mine = accountId is { } id ? run.Heroes.FirstOrDefault(h => h.AccountId == id) : null;

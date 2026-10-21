@@ -9,7 +9,7 @@
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-mortal-heroes",
+  "branch": "feat/desertovia-1-0-dungeon-bodies",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -46,7 +46,7 @@
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "Shared dev API schema52 currently runs the earlier raid slice. Final carrier/departure corrections are verified by domain/API test hosts and pending shared-runtime reload; public game untouched.",
+    "loaded_scope": "PR90/d8df65d source loaded on local API5180; no new migration (52 already current). Read-only actual320px profile check passed, unchanged profile/no page errors. New group checkpoint metadata correction is tested in isolated host and not loaded here yet.",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
     "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
@@ -59,7 +59,8 @@
     "pre_camera_restart_backup": "/tmp/foundation-before-restart-20261021T021850Z.dump",
     "pre_ground_route_restart_backup": "/tmp/foundation-before-restart-20261021T025302Z.dump",
     "active_core_route_restart_backup": "/tmp/foundation-before-restart-20261021T030628Z.dump",
-    "pre_mortal_royal_backup": "/tmp/foundation-before-restart-20261021T043127Z.dump"
+    "pre_mortal_royal_backup": "/tmp/foundation-before-restart-20261021T043127Z.dump",
+    "pre_mortal_royal_final_backup": "/tmp/foundation-before-restart-20261021T051137Z.dump"
   },
   "checks": {
     "baseline_ci": {
@@ -1672,7 +1673,7 @@
       }
     }
   },
-  "next_independent_work": "Common saved royal body and ordinary combat class/equipment in new dungeon runs; preserve legacy80/8 and frozen checkpoints. UI redesign last per D-109.",
+  "next_independent_work": "First repair downgrade-test isolation found in PR90 CI; then common royal dungeon body/class/equipment, preserve old saves. Graphic redesign last.",
   "combat_actor_admission": {
     "schema_version": 1,
     "recorded_at_utc": "2026-10-21T04:02:01.869805+00:00",
@@ -1934,7 +1935,20 @@
       "web/src/index.css": "2bf11dc420ea0cc05965b149132d034403418a82983814e5aacdd12050a6f341",
       "src/Desertod.Domain/Dungeons/DungeonRules.cs": "aa084ead6db34de7921beeab8826302002bb689e5fd2bf06b6a8208d43c2b6bd"
     },
-    "candidate_ci": "pending candidate commit",
+    "candidate_ci": {
+      "sha": "d8df65d61677fb54a29021daf2e28692319bd92e",
+      "pr": "https://github.com/desertod666/Desertovia/pull/90",
+      "run": 39548135422,
+      "status": "in_progress_with_backend_failure",
+      "domain_passed": 672,
+      "api_passed": 374,
+      "api_failed": 12,
+      "backend_job": 119050880272,
+      "reason": "Existing downgrade tests undo later migration52 before reaching an older expected guard. Work encounter test leaves shared fixture schema missing RoyalCombat; regional isolated test queries current model after old-schema rollback. Fix test isolation/reapply, do not weaken data guards.",
+      "frontend": "success",
+      "docker": "success",
+      "browser": "still running at observation; no success claim"
+    },
     "public_release": false,
     "remaining": [
       "exact candidate full CI",
@@ -1944,7 +1958,7 @@
     ],
     "rescue_boundary": "Remedy cancels the real carrier at its actual position, after medicine validation and before clearing the claim; no delivery renown. Failed remedy preserves the route/claim. Replayed HTTP request spends once.",
     "native_care_boundary": "Dungeon departure refreshes expired native hospital admission without requiring a preceding GET; role does not keep a healed body permanently down.",
-    "runtime_scope": "Shared dev API schema52 currently runs the earlier raid slice. Final carrier/departure corrections are verified by domain/API test hosts and pending shared-runtime reload; public game untouched."
+    "runtime_scope": "PR90/d8df65d source loaded on local API5180; no new migration (52 already current). Read-only actual320px profile check passed, unchanged profile/no page errors. New group checkpoint metadata correction is tested in isolated host and not loaded here yet."
   },
   "owner_visual_boundary": {
     "decision": "D-108",
@@ -1970,6 +1984,41 @@
     "world_and_character_art": "preserve",
     "mortal_raid_checkpoint": "7784be8",
     "ui_draft": "separate local stash and qa/living-menu-deferred; not product",
-    "deferred_ui_asset": "../qa/living-menu-deferred/menu-frame-oak-v1.png and generation.json (built-in image_gen); draft code in separate named Git stash, not product"
+    "deferred_ui_asset": "../qa/living-menu-deferred/menu-frame-oak-v1.png and generation.json (built-in image_gen); draft code in separate named Git stash, not product",
+    "ui_stash_sha": "add7fe3dde5135c050a39ae5315cb921f89fbf5a"
+  },
+  "dungeon_checkpoint_view": {
+    "schema_version": 1,
+    "recorded_at_utc": "2026-10-21T05:17:01.576871+00:00",
+    "scope": "Group reconnect metadata uses saved bodies/map before runtime restore; common royal dungeon body/class/equipment still unfinished",
+    "source_base": "d8df65d61677fb54a29021daf2e28692319bd92e",
+    "api": {
+      "passed": 10,
+      "failed": 0,
+      "result": "TestResults/dungeon-bodies-checkpoint-metadata/Admin_DESKTOP-FQ85FTD_2026-10-21_07_14_11_net10.0.trx",
+      "cases": [
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.A_failed_retreat_commit_does_not_change_the_live_hero_and_a_retry_survives_reload",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.A_group_viewer_reconnects_to_the_admitted_bodies_and_saved_map_even_before_runtime_restore",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.Failed_write_does_not_publish_or_advance_and_is_retryable",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.Final_checkpoint_and_loot_commit_together_and_cannot_be_paid_again_after_restart",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.Manual_command_is_acknowledged_only_after_commit_and_cannot_control_another_hero",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.New_process_recovers_the_committed_fight_and_rejects_a_stale_writer",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.One_blocked_village_does_not_hold_up_another_fight",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.Recovery_preserves_gathering_march_and_bad_save_but_returns_legacy_running_heroes_home",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.Voluntary_retreat_is_owned_durable_and_cannot_enter_safe_rest_before_reaching_the_exit(tsar: False)",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.Voluntary_retreat_is_owned_durable_and_cannot_enter_safe_rest_before_reaching_the_exit(tsar: True)"
+      ]
+    },
+    "product_sha256": {
+      "src/Desertod.Api/Game/GameService.Dungeon.cs": "718005e2879e87d97ede610dcf338cc1b66151317936587a89a452b4da0873f3",
+      "tests/Desertod.Api.Tests/DungeonCheckpointApiTests.cs": "b6e0887619f09ff9795c520f5781334f3e7e2f4ebd968f12a8ce9e1f807df4c9"
+    },
+    "runtime": "not loaded into shared API yet; isolated API test host only",
+    "public_release": false,
+    "remaining": [
+      "Common royal dungeon body/class/equipment and legacy versioning",
+      "Full exact candidate CI",
+      "Broader1.0 DAG; graphic redesign last per D109"
+    ]
   }
 }
