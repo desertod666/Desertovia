@@ -78,7 +78,10 @@
     "DevTools": false
   },
   "candidate_ci": {
-    "status": "not_created"
+    "status": "in_progress",
+    "sha": "547af63cec9a58b9b9788286b88dd17f83ded398",
+    "run": 39557808739,
+    "pr": "https://github.com/desertod666/Desertovia/pull/92"
   },
   "source_sha256": {
     "src/Desertod.Domain/Director/AlmightyPermissions.cs": "8949fa9cad64e6f6f868f5ac27cbcea546d95898637a043365d2f190ea716a47",

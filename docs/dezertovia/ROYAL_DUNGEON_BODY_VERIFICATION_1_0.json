@@ -98,7 +98,7 @@
     }
   },
   "candidate_ci": {
-    "status": "backend_frontend_docker_success_browsers_pending",
+    "status": "success",
     "previous_sha": "113e5702d6d1277dadb61a048de20dc6560b9173",
     "pr": "https://github.com/desertod666/Desertovia/pull/91",
     "previous_run": 39554235611,
@@ -121,11 +121,18 @@
       "failed": 0
     },
     "frontend": "success",
-    "docker": "success"
+    "docker": "success",
+    "verified_at_utc": "2026-10-21T06:52:21.506828+00:00",
+    "browser": {
+      "desktop_job": 119073896712,
+      "desktop_passed": 208,
+      "phone_job": 119073896783,
+      "phone_passed": 206,
+      "skipped": 2
+    }
   },
   "public_release": false,
   "remaining": [
-    "Exact candidate full CI",
     "Full A14, group policy, loot ownership, recovery and remaining1.0 DAG",
     "Visual redesign last; physical phone/balance/load not covered"
   ],
@@ -184,6 +191,6 @@
     "domain_passed": 682,
     "domain_failed": 0,
     "result": "TestResults/dungeon-royal-ci-fixtures/Admin_DESKTOP-FQ85FTD_2026-10-21_08_24_41_net10.0.trx",
-    "local_api_guard": "pending, do not overwrite the still-running separate Director validation binary"
+    "local_api_guard": "PASS among the child final26API; exact parent backend392API also PASS"
   }
 }

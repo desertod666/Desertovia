@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-21T06:35:49.310681+00:00",
+  "recorded_at_utc": "2026-10-21T06:52:21.506828+00:00",
   "status": "main_plan_active_director_contract_locally_verified_exact_ci_pending",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
@@ -9,7 +9,7 @@
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-director-contracts",
+  "branch": "feat/desertovia-1-0-director-followup",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -2168,7 +2168,7 @@
       }
     },
     "candidate_ci": {
-      "status": "backend_frontend_docker_success_browsers_pending",
+      "status": "success",
       "previous_sha": "113e5702d6d1277dadb61a048de20dc6560b9173",
       "pr": "https://github.com/desertod666/Desertovia/pull/91",
       "previous_run": 39554235611,
@@ -2191,11 +2191,18 @@
         "failed": 0
       },
       "frontend": "success",
-      "docker": "success"
+      "docker": "success",
+      "verified_at_utc": "2026-10-21T06:52:21.506828+00:00",
+      "browser": {
+        "desktop_job": 119073896712,
+        "desktop_passed": 208,
+        "phone_job": 119073896783,
+        "phone_passed": 206,
+        "skipped": 2
+      }
     },
     "public_release": false,
     "remaining": [
-      "Exact candidate full CI",
       "Full A14, group policy, loot ownership, recovery and remaining1.0 DAG",
       "Visual redesign last; physical phone/balance/load not covered"
     ],
@@ -2254,7 +2261,7 @@
       "domain_passed": 682,
       "domain_failed": 0,
       "result": "TestResults/dungeon-royal-ci-fixtures/Admin_DESKTOP-FQ85FTD_2026-10-21_08_24_41_net10.0.trx",
-      "local_api_guard": "pending, do not overwrite the still-running separate Director validation binary"
+      "local_api_guard": "PASS among the child final26API; exact parent backend392API also PASS"
     }
   },
   "director_contract": {
@@ -2337,7 +2344,10 @@
       "DevTools": false
     },
     "candidate_ci": {
-      "status": "not_created"
+      "status": "in_progress",
+      "sha": "547af63cec9a58b9b9788286b88dd17f83ded398",
+      "run": 39557808739,
+      "pr": "https://github.com/desertod666/Desertovia/pull/92"
     },
     "source_sha256": {
       "src/Desertod.Domain/Director/AlmightyPermissions.cs": "8949fa9cad64e6f6f868f5ac27cbcea546d95898637a043365d2f190ea716a47",
