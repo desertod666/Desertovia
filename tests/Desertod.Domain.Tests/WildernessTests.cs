@@ -14,6 +14,9 @@ public class WildernessTests
     private static Village Wild()
     {
         var village = NewVillage();
+        // The hand-authored lookout and walking points need stable underlying
+        // terrain; a random village seed could put a pond at the passing point.
+        village.Id=Guid.Parse("11111111-1111-4111-8111-111111111111");
         village.Wilds = new Wilds
         {
             Ravine = Enumerable.Range(-12, 6).Select(x => new RavineSpan { X = x, Top = -20, Height = 2 }).ToList(),

@@ -2,8 +2,14 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Desertod.Api.Game;
+using Desertod.Domain;
+using Desertod.Domain.Entities;
+using Desertod.Domain.World;
+using Desertod.Infrastructure.Data;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Desertod.Api.Tests;
 
@@ -116,14 +122,30 @@ public sealed class PlayerFlowTests(DesertodApiFactory factory)
         await CreateCharacterAsync(citizen, "Scout");
         Assert.Equal(HttpStatusCode.OK, (await citizen.PostAsJsonAsync($"{path}/citizens", new { })).StatusCode);
 
-        var walked = await tsar.PostAsJsonAsync($"{path}/tsar/goto", new { spot = new { x = -30, y = -20 } });
+        // This is a shared-fog use case, not permission to walk through an authored
+        // ravine or a generated pond. Pick distant, reachable ground in this world.
+        TilePoint Reachable(Village world,int left,int top)
+        {
+            for(var y=top;y<top+8;y++)for(var x=left;x<left+8;x++)
+            {
+                var target=new TilePoint(x+.5,y+.5);
+                if(Exploration.IsExplored(world.Explored,x,y))continue;
+                try{RegionalTravel.Find(world,WorldMap.Places[WorldMap.Camp],target);return target;}
+                catch(GameRuleException e) when(e.Code is "spot.noPath" or "bridge.closed"){}
+            }
+            throw new InvalidOperationException("The scouting fixture needs reachable unexplored ground.");
+        }
+        await using var db=await factory.Services.GetRequiredService<IDbContextFactory<DesertodDbContext>>().CreateDbContextAsync();
+        var world=await db.Villages.AsNoTracking().SingleAsync(v=>v.Slug==slug);
+        var royalTarget=Reachable(world,-30,20);var residentTarget=Reachable(world,20,30);
+        var walked = await tsar.PostAsJsonAsync($"{path}/tsar/goto", new { spot = royalTarget });
         Assert.Equal(HttpStatusCode.OK, walked.StatusCode);
-        Assert.Equal(HttpStatusCode.OK, (await citizen.PostAsJsonAsync($"{path}/me/goto", new { spot = new { x = 20, y = 30 } })).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await citizen.PostAsJsonAsync($"{path}/me/goto", new { spot = residentTarget })).StatusCode);
 
         var village = await citizen.GetFromJsonAsync<JsonElement>(path);
         var explored = Convert.FromBase64String(village.GetProperty("state").GetProperty("explored").GetString()!);
         Assert.Equal(Domain.World.Exploration.Size, explored.Length);
-        Assert.False(Domain.World.Exploration.IsExplored(explored, 20, 30));
+        Assert.False(Exploration.IsExplored(explored,(int)Math.Floor(residentTarget.X),(int)Math.Floor(residentTarget.Y)));
 
         var blueprint = await tsar.PostAsJsonAsync($"{path}/blueprints", new { kind = "WoodPile", x = 0, y = 0 });
         Assert.Equal(HttpStatusCode.BadRequest, blueprint.StatusCode);
