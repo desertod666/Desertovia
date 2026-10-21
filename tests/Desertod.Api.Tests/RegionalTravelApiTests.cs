@@ -58,8 +58,17 @@ public sealed class RegionalTravelApiTests(DesertodApiFactory factory)
             await using(var db=await contexts.CreateDbContextAsync())
             {
                 fog=(await db.Villages.SingleAsync(w=>w.Slug==v.Slug)).Explored;
-                var error=await Assert.ThrowsAnyAsync<Exception>(()=>db.Database.MigrateAsync("20261020225359_AccountNotificationPreferences"));
-                Assert.Contains("Southern land has been explored",error.ToString());
+                var applied=(await db.Database.GetAppliedMigrationsAsync()).ToArray();
+                try
+                {
+                    var error=await Assert.ThrowsAnyAsync<Exception>(()=>db.Database.MigrateAsync("20261020225359_AccountNotificationPreferences"));
+                    Assert.Contains("Southern land has been explored",error.ToString());
+                    Assert.Contains("20261020232201_SouthernRegions",await db.Database.GetAppliedMigrationsAsync());
+                    // Read only the guarded column while later migrations may already be down.
+                    Assert.Equal(fog,await db.Villages.Where(w=>w.Slug==v.Slug).Select(w=>w.Explored).SingleAsync());
+                }
+                finally{await db.Database.MigrateAsync();}
+                Assert.Equal(applied,(await db.Database.GetAppliedMigrationsAsync()).ToArray());
             }
             await using var check=await contexts.CreateDbContextAsync();
             Assert.Contains("20261020232201_SouthernRegions",await check.Database.GetAppliedMigrationsAsync());
