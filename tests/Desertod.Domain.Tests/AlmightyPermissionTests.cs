@@ -7,6 +7,16 @@ namespace Desertod.Domain.Tests;
 
 public sealed class AlmightyPermissionTests
 {
+    [Fact]
+    public void Category_filter_keeps_observation_and_cannot_admit_unknown_or_malformed_actions()
+    {
+        AlmightyOption[] options=[new("none","Watch","Observe"),Advice,new("dungeon","Call","Gather"),
+            new("vigor_stronger","Tonic","Tune"),new("skeletons_small","Wave","Raid",EnemyKind.Skeleton)];
+        Assert.Equal(["none"],AlmightyPermissions.Filter(options,AlmightyPermissions.ControllableKinds.ToArray()).Select(o=>o.Id));
+        Assert.Equal(["none","economy_report","dungeon","vigor_stronger"],AlmightyPermissions.Filter(options,["raid"]).Select(o=>o.Id));
+        Assert.False(AlmightyPermissions.IsEnabled("wallet_credit",[]));
+        Assert.Throws<ArgumentException>(()=>AlmightyPermissions.Filter([new("skeletons_small","Wave","Wrong enemy",EnemyKind.Zombie)],["raid"]));
+    }
     private static readonly AlmightyFacts Facts=new(5,3,3,0,0,1,0,0,false,false);
     private static AlmightyObservedWorld World=>new(Facts,new(3,0,12,16),new Dictionary<string,int>{{"Food",7},{"Wood",4}},"Propose",8,720);
     private static AlmightyOption Advice=>new("economy_report","Advice","No currency changes");

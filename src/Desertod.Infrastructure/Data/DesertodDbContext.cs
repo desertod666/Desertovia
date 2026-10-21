@@ -51,6 +51,7 @@ public sealed partial class DesertodDbContext(DbContextOptions<DesertodDbContext
     public DbSet<AlmightyState> AlmightyStates => Set<AlmightyState>();
     public DbSet<AlmightyProposal> AlmightyProposals => Set<AlmightyProposal>();
     public DbSet<AlmightyObservation> AlmightyObservations => Set<AlmightyObservation>();
+    public DbSet<AlmightyPolicyChange> AlmightyPolicyChanges => Set<AlmightyPolicyChange>();
 
     public DbSet<KingdomEconomy> KingdomEconomies => Set<KingdomEconomy>();
     public DbSet<GameWallet> GameWallets => Set<GameWallet>();
@@ -153,6 +154,8 @@ public sealed partial class DesertodDbContext(DbContextOptions<DesertodDbContext
         modelBuilder.Entity<MarketLot>(b => { b.HasKey(x=>x.Id); b.HasIndex(x=>new{x.VillageId,x.Status,x.CreatedAt}); b.Property(x=>x.Resource).HasConversion<string>(); b.Property(x=>x.Status).HasMaxLength(16); b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade); });
         modelBuilder.Entity<AlmightyState>(b => {
             b.HasKey(x => x.VillageId);
+            b.Property(x => x.PolicyVersion).HasDefaultValue(0L);
+            b.Property(x => x.DisabledKinds).HasDefaultValueSql("ARRAY[]::text[]");
             b.Property(x => x.Version).IsConcurrencyToken();
             b.HasOne<Village>().WithMany().HasForeignKey(x => x.VillageId).OnDelete(DeleteBehavior.Cascade);
             b.HasIndex(x => x.NextReviewAt);
@@ -166,6 +169,12 @@ public sealed partial class DesertodDbContext(DbContextOptions<DesertodDbContext
         modelBuilder.Entity<AlmightyObservation>(b => {
             b.HasKey(x => x.Id);
             b.HasIndex(x => new { x.VillageId, x.At });
+            b.HasOne<Village>().WithMany().HasForeignKey(x => x.VillageId).OnDelete(DeleteBehavior.Cascade);
+        });
+        modelBuilder.Entity<AlmightyPolicyChange>(b => {
+            b.HasKey(x => new { x.VillageId, x.RequestId });
+            b.HasIndex(x => new { x.VillageId, x.At, x.RequestId });
+            b.Property(x => x.Kind).HasMaxLength(24);
             b.HasOne<Village>().WithMany().HasForeignKey(x => x.VillageId).OnDelete(DeleteBehavior.Cascade);
         });
         modelBuilder.Entity<Account>(account =>
