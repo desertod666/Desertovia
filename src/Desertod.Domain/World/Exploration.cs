@@ -17,6 +17,12 @@ public sealed class Trip
     public double ToY { get; set; }
     public double SpeedMultiplier { get; set; } = 1;
     public DateTimeOffset SetOutAt { get; set; }
+    public Guid Id { get; set; }
+    public DateTimeOffset? RouteEndsAt { get; set; }
+    public DateTimeOffset? BlockedAt { get; set; }
+    public string? BlockReason { get; set; }
+    public Guid? LastResumeRequestId { get; set; }
+    public string? LastResumeFingerprint { get; set; }
     private List<TripWaypoint>? waypoints;
     // Missing on historical JSON trips. Old journeys retain their original straight-line timing.
     public List<TripWaypoint> Waypoints {get=>waypoints??=[];set=>waypoints=value;}
@@ -37,7 +43,9 @@ public sealed class Trip
     private IEnumerable<TripWaypoint> Steps()=>Waypoints.Count==0?[new(){X=ToX,Y=ToY}]:Waypoints;
 
     public static Trip Start(TilePoint from, TilePoint to, DateTimeOffset now) =>
-        new() { FromX = from.X, FromY = from.Y, ToX = to.X, ToY = to.Y, SetOutAt = now };
+        new() { Id=Guid.CreateVersion7(),FromX = from.X, FromY = from.Y, ToX = to.X, ToY = to.Y, SetOutAt = now };
+
+    public bool Waiting(DateTimeOffset now)=>BlockedAt<=now;
 
     /// <summary>Where the walker is: on the way, or at the end once arrived.</summary>
     public TilePoint PositionAt(DateTimeOffset now)
@@ -47,6 +55,7 @@ public sealed class Trip
 
     public IEnumerable<(TilePoint From,TilePoint To)> WalkedSegments(DateTimeOffset now)
     {
+        if(BlockedAt is {} blocked&&blocked<now)now=blocked;
         if(now<SetOutAt)yield break;
         var remaining=(now-SetOutAt).TotalSeconds*Math.Max(.1,SpeedMultiplier)/Exploration.SecondsPerTile;
         var from=From;

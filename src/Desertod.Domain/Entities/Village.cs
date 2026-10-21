@@ -258,7 +258,6 @@ public sealed class Village
             throw new GameRuleException("spot.outsideLand", "This spot is beyond the land.");
         }
 
-        BankAccess.Require(this, spot);
         TsarTrip = RegionalTravel.SetOut(this,TsarTrip,TsarSpot??WorldMap.Places[WorldMap.Camp],spot,now);
         TsarSpot = spot;
     }
@@ -273,7 +272,7 @@ public sealed class Village
 
         foreach (var trip in TsarTrip is null ? trips : trips.Append(TsarTrip))
         {
-            if (BankAccess.CanReach(this, trip.To)) Exploration.Reveal(Explored, trip, now, Wilds?.Lookout);
+            if (trip.Waypoints.Count>0||BankAccess.CanReach(this, trip.To)) Exploration.Reveal(Explored, trip, now, Wilds?.Lookout);
         }
     }
 

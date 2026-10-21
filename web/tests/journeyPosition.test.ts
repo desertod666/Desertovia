@@ -16,3 +16,14 @@ test('medical speed and a future start preserve one continuous saved route',()=>
  assert.deepEqual(journeyPosition({...trip,speedMultiplier:.5},6000),{x:5,y:0,moving:true})
  assert.deepEqual(journeyPosition({...trip,snapshotAt:'2026-01-01T11:59:59Z'},0),{x:0,y:0,moving:false})
 })
+test('a new obstruction ahead stops at the saved point rather than the old arrival',()=>{
+ const blocked={...trip,blockedAt:'2026-01-01T12:00:03Z',blockReason:'gate'}
+ assert.deepEqual(journeyPosition(blocked,1500),{x:2.5,y:0,moving:true})
+ assert.deepEqual(journeyPosition(blocked,3000),{x:5,y:0,moving:false})
+ assert.deepEqual(journeyPosition(blocked,60000),{x:5,y:0,moving:false})
+})
+test('reloading after an obstruction retains its location even with a later server snapshot',()=>{
+ const blocked={...trip,blockedAt:'2026-01-01T12:00:13.500Z',snapshotAt:'2026-01-01T12:01:00Z'}
+ assert.deepEqual(journeyPosition(blocked,0),{x:10,y:5,moving:false})
+ assert.deepEqual(journeyPosition(blocked,60000),{x:10,y:5,moving:false})
+})

@@ -1133,7 +1133,7 @@ public sealed partial class GameService(
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
         var now = time.GetUtcNow();
         return await db.Citizens
-            .Where(c => c.RecoveryPausedAt == null && !c.CycleSettled && c.CycleEndsAt <= now)
+            .Where(c => c.RecoveryPausedAt == null && !c.CycleSettled && c.CycleEndsAt <= now && (c.Trip==null||c.Trip.BlockedAt==null||c.Trip.BlockedAt>now))
             .OrderBy(c => c.CycleEndsAt)
             .Select(c => new DueCitizen(c.VillageId, c.Id))
             .Take(batchSize)
@@ -1594,6 +1594,18 @@ public sealed partial class GameService(
                 var savesBeforeAction = db.SuccessfulSaves;
                 var result = await action(db);
                 await FinishAccountingAsync(db, villageId.Value, before, operation, db.SuccessfulSaves > savesBeforeAction, cancellationToken);
+                if(db.TravelChangedCitizens.Count>0)
+                {
+                    // Accounting clears the tracker after saving nested JSON. Read the final persisted
+                    // projection in this transaction rather than relying on a tracked village or person.
+                    var ids=db.TravelChangedCitizens.Select(c=>c.Id).ToArray();
+                    var people=await db.Citizens.AsNoTracking().Where(c=>ids.Contains(c.Id)).ToListAsync(cancellationToken);
+                    var worlds=people.Select(c=>c.VillageId).Distinct().ToArray();
+                    var slugs=await db.Villages.AsNoTracking().Where(v=>worlds.Contains(v.Id)).Select(v=>new{v.Id,v.Slug}).ToDictionaryAsync(v=>v.Id,v=>v.Slug,cancellationToken);
+                    foreach(var person in people)
+                        await notifier.CitizenUpdated(slugs[person.VillageId],person.ToSummaryDto(time.GetUtcNow()));
+                }
+                foreach(var changed in db.TravelChangedVillages)changes.Mark(changed);
                 await transaction.CommitAsync(cancellationToken);
                 notifications.Commit();
                 return result;

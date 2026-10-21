@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Desertod.Infrastructure.Data;
 
-public sealed class DesertodDbContext(DbContextOptions<DesertodDbContext> options) : DbContext(options)
+public sealed partial class DesertodDbContext(DbContextOptions<DesertodDbContext> options,TimeProvider? travelTime=null) : DbContext(options)
 {
     public int SuccessfulSaves { get; private set; }
 
@@ -26,6 +26,7 @@ public sealed class DesertodDbContext(DbContextOptions<DesertodDbContext> option
             FortificationUpgrades.ApplyReady(entry.Entity);
             Desertod.Domain.Buildings.BuildingNumbers.Ensure(entry.Entity);
         }
+        await ReconcileTravelAsync(travelTime??TimeProvider.System,cancellationToken);
         var count = await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         SuccessfulSaves++;
         return count;

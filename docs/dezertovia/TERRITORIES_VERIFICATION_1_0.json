@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-21T00:30:46.574531+00:00",
+  "scope": "T033 expanded territory and saved routes; later interrupted-route source excluded",
+  "source_sha": "856f052c651a0035c6faa84b7081783b6adc3f0e",
+  "pull_request": "https://github.com/desertod666/Desertovia/pull/83",
+  "ci": {
+    "run": 39519874855,
+    "url": "https://github.com/desertod666/Desertovia/actions/runs/39519874855",
+    "conclusion": "success",
+    "jobs": {
+      "backend": {
+        "id": 118961095997,
+        "domain_passed": 620,
+        "api_passed": 352
+      },
+      "desktop": {
+        "id": 118961096387,
+        "passed": 187
+      },
+      "phone": {
+        "id": 118961096529,
+        "passed": 185,
+        "skipped": 2
+      },
+      "docker": {
+        "id": 118961096428,
+        "conclusion": "success"
+      },
+      "frontend": {
+        "id": 118961096558,
+        "conclusion": "success"
+      }
+    }
+  },
+  "public_release": false,
+  "whole_1_0_complete": false
+}

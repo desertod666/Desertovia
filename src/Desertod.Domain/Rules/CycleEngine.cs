@@ -342,7 +342,7 @@ public static class CycleEngine
         if (citizen.ExhaustedUntil > now)
             throw new GameRuleException("citizen.exhausted", "You fainted from exhaustion. Wait until you recover.",
                 new Dictionary<string, object> { ["readyAt"] = citizen.ExhaustedUntil.Value });
-        if (citizen.WorkState(now) != WorkState.Working)
+        if (citizen.WorkState(now) != WorkState.Working && !(citizen.Trip?.Waiting(now)==true&&!citizen.CycleSettled))
         {
             throw new GameRuleException("task.notRunning", "There is no task running.");
         }
@@ -369,6 +369,7 @@ public static class CycleEngine
             citizen.CycleEndsAt = null;
         }
 
+        if(citizen.Trip?.Waiting(now)==true){citizen.IdleSpot=citizen.Trip.PositionAt(now);citizen.Trip=null;}
         citizen.CycleSettled = true;
         citizen.CurrentTaskId = null;
         citizen.CurrentTechnologyId = null;
@@ -390,7 +391,7 @@ public static class CycleEngine
     private static CycleReport? SettleCore(Citizen citizen, WorkContext context, DateTimeOffset now)
     {
         HospitalRules.Resume(citizen, now);
-        if (citizen.RecoveryPausedAt is not null || HospitalRules.IsAdmitted(citizen, now)
+        if (citizen.RecoveryPausedAt is not null || citizen.Trip?.Waiting(now)==true || HospitalRules.IsAdmitted(citizen, now)
             || citizen.CycleSettled || citizen.CurrentTaskId is null || citizen.CycleEndsAt is null
             || now < citizen.CycleEndsAt)
         {
@@ -1025,6 +1026,8 @@ public static class CycleEngine
 
     private static void CheckReady(Citizen citizen, DateTimeOffset now)
     {
+        if(!citizen.CycleSettled&&citizen.Trip?.BlockedAt is not null)
+            throw new GameRuleException("travel.blockedWork","Continue or cancel the accepted work before starting another task.");
         SafeRest.RequireActive(citizen.RestState);
         if (citizen.Status != CitizenStatus.Active)
         {

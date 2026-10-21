@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-20T23:50:44.200548+00:00",
-  "status": "main_plan_active_extended_territories_local_verified_ci_pending",
+  "recorded_at_utc": "2026-10-21T00:29:10.896634+00:00",
+  "status": "main_plan_active_interrupted_travel_under_verification",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-territories",
+  "branch": "feat/desertovia-1-0-travel-blocks",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -1196,7 +1196,37 @@
       "scope": "90-frame Chromium headless samples on this host, concurrent test load; not physical devices or a target-load/SLO pass",
       "followup": "1280px sample p95=50ms. Profile T035/T081 before claiming full-world rendering performance."
     },
-    "full_ci": "pending draft PR",
+    "full_ci": {
+      "run": 39519874855,
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39519874855",
+      "conclusion": "success",
+      "jobs": {
+        "backend": {
+          "id": 118961095997,
+          "domain_passed": 620,
+          "api_passed": 352
+        },
+        "desktop": {
+          "id": 118961096387,
+          "passed": 187
+        },
+        "phone": {
+          "id": 118961096529,
+          "passed": 185,
+          "skipped": 2
+        },
+        "docker": {
+          "id": 118961096428,
+          "conclusion": "success"
+        },
+        "frontend": {
+          "id": 118961096558,
+          "conclusion": "success"
+        }
+      },
+      "sha": "856f052c651a0035c6faa84b7081783b6adc3f0e",
+      "receipt": "TERRITORIES_VERIFICATION_1_0.json"
+    },
     "remaining": [
       "road events and NPC",
       "reaction to changing obstacles or bridge collapse during an accepted route",
@@ -1216,5 +1246,46 @@
       "snapshotAt": "2026-10-20T23:51:42.043752+00:00",
       "backup": "/tmp/foundation-before-restart-20261020T235045Z.dump"
     }
+  },
+  "delivery_focus": {
+    "reviewed_on": "2026-10-21",
+    "dag_cards": 53,
+    "not_started_in_this_assignment": 31,
+    "remaining_22_include_preparation_and_partial_slices": true,
+    "current": "T033 saved-route interruption and safe continuation; then T031 and independent adventure systems",
+    "farm_not_first_in_queue": true,
+    "overall_goal_complete": false
+  },
+  "interrupted_travel": {
+    "status": "implemented_domain_api_and_component_ui_verified_runtime_and_full_ci_pending",
+    "migration": 50,
+    "local_runtime_migration_applied": false,
+    "scope": [
+      "geometry reconciliation at persisted world changes",
+      "frozen position/fog and no work settlement while waiting",
+      "explicit authenticated idempotent resume and ordinary cancellation",
+      "compact conditional control with touch tooltip"
+    ],
+    "checks": {
+      "client_unit_pass": 20,
+      "frontend": "TypeScript/Vite/oxlint passed",
+      "api": {
+        "passed": 3,
+        "failed": 0,
+        "directory": "TestResults/interrupted-travel-api-detour",
+        "scope": "accepted contract frozen with no wage, duplicate resume/detour and safe rest; commit rollback and actor checks; old JSON reload",
+        "earlier_existing_route_cases_passed": 8,
+        "earlier_existing_cases_scope": "before final projection-read fix; not a claim of full candidate API regression"
+      },
+      "browser": "6 passed: RU/EN desktop/320px phone; explicit resume, same request on uncertain reply, tooltip, atlas and ordinary cancel",
+      "domain_full_pass": 628,
+      "domain_results_directory": "TestResults/interrupted-travel-domain-final"
+    },
+    "public_release": false,
+    "remaining": [
+      "local schema50 preservation and real blocked journey across restart",
+      "full candidate CI",
+      "T033 road events/NPC, group and supply links, target load and physical phones"
+    ]
   }
 }

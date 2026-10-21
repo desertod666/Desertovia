@@ -2464,9 +2464,21 @@ namespace Desertod.Infrastructure.Data.Migrations
                         {
                             b1.Property<Guid>("CitizenId");
 
+                            b1.Property<string>("BlockReason");
+
+                            b1.Property<DateTimeOffset?>("BlockedAt");
+
                             b1.Property<double>("FromX");
 
                             b1.Property<double>("FromY");
+
+                            b1.Property<Guid>("Id");
+
+                            b1.Property<string>("LastResumeFingerprint");
+
+                            b1.Property<Guid?>("LastResumeRequestId");
+
+                            b1.Property<DateTimeOffset?>("RouteEndsAt");
 
                             b1.Property<DateTimeOffset>("SetOutAt");
 
@@ -3491,9 +3503,21 @@ namespace Desertod.Infrastructure.Data.Migrations
                         {
                             b1.Property<Guid>("VillageId");
 
+                            b1.Property<string>("BlockReason");
+
+                            b1.Property<DateTimeOffset?>("BlockedAt");
+
                             b1.Property<double>("FromX");
 
                             b1.Property<double>("FromY");
+
+                            b1.Property<Guid>("Id");
+
+                            b1.Property<string>("LastResumeFingerprint");
+
+                            b1.Property<Guid?>("LastResumeRequestId");
+
+                            b1.Property<DateTimeOffset?>("RouteEndsAt");
 
                             b1.Property<DateTimeOffset>("SetOutAt");
 

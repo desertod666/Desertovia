@@ -303,7 +303,7 @@ public sealed class Citizen
         }
 
         if (ExhaustedUntil > now) throw new GameRuleException("citizen.exhausted", "You are unconscious and recovering.");
-        if (WorkState(now) == Entities.WorkState.Working)
+        if (WorkState(now) == Entities.WorkState.Working || !CycleSettled&&Trip?.Waiting(now)==true)
         {
             throw new GameRuleException("goto.working", "Finish the current task first.");
         }
@@ -325,9 +325,9 @@ public sealed class Citizen
     /// <summary>Starts a walk from where the citizen stands: their idle spot, or the camp.</summary>
     public void SetOut(TilePoint to, Village village, DateTimeOffset now)
     {
-        BankAccess.Require(village, to);
         Trip = RegionalTravel.SetOut(village,Trip,IdleSpot??WorldMap.Places[WorldMap.Camp],to,now);
         Trip.SpeedMultiplier = MedicalWalk(now);
+        if(Trip.Waypoints.Count>0)Trip.RouteEndsAt=Trip.ArrivesAt;
     }
 
     public void DropLoad()
@@ -377,7 +377,7 @@ public sealed class Citizen
 
     public WorkState WorkState(DateTimeOffset now)
     {
-        if (RecoveryPausedAt is not null) return Entities.WorkState.Paused;
+        if (RecoveryPausedAt is not null||!CycleSettled&&Trip?.Waiting(now)==true) return Entities.WorkState.Paused;
 
         if (CurrentTaskId is null || CycleEndsAt is null)
         {
