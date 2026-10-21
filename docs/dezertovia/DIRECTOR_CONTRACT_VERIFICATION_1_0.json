@@ -78,10 +78,20 @@
     "DevTools": false
   },
   "candidate_ci": {
-    "status": "in_progress",
-    "sha": "547af63cec9a58b9b9788286b88dd17f83ded398",
-    "run": 39557808739,
-    "pr": "https://github.com/desertod666/Desertovia/pull/92"
+    "status": "new_exact_candidate_required_after_exploration_fixture_fix",
+    "pr": "https://github.com/desertod666/Desertovia/pull/92",
+    "previous_sha": "547af63cec9a58b9b9788286b88dd17f83ded398",
+    "previous_run": 39557808739,
+    "previous_backend": {
+      "job": 119081614726,
+      "domain_passed": 685,
+      "domain_failed": 1,
+      "api_passed": 403,
+      "api_failed": 0
+    },
+    "previous_frontend": "success",
+    "previous_docker": "success",
+    "previous_browser": "not complete when correction prepared"
   },
   "source_sha256": {
     "src/Desertod.Domain/Director/AlmightyPermissions.cs": "8949fa9cad64e6f6f868f5ac27cbcea546d95898637a043365d2f190ea716a47",
@@ -89,12 +99,20 @@
     "src/Desertod.Api/Game/GameService.Almighty.cs": "27a4ed7feea266f82bc1a295608eae85b9d360d6871839d4d7ed73a4747a24a0",
     "tests/Desertod.Domain.Tests/AlmightyPermissionTests.cs": "d9de1cd1a48f7cccb55e2b47038af7e244a63c668221e79173ea3b050a229d0f",
     "tests/Desertod.Api.Tests/DirectorContractApiTests.cs": "e5f5547172a4cabbe54f4c69c5861433bff092596ded688853ccc5fb024a8d1c",
-    "tools/verify-director-bot.py": "35d7bb799fa2722b20df052e146175ff743a1b8dfccf19b701db12c8fe77e5a0"
+    "tools/verify-director-bot.py": "35d7bb799fa2722b20df052e146175ff743a1b8dfccf19b701db12c8fe77e5a0",
+    "tests/Desertod.Domain.Tests/ExplorationTests.cs": "2c45a6231bb841bb42a84850b914918625a848c6261132c1d48b9f98cc1b34a9"
   },
   "public_release": false,
   "remaining": [
     "Final-source API and full exact candidate CI",
     "Full T050 global revision/economic/party evidence; T051-055 executors/receipts/category stops/shadow comparison/autonomy",
     "Live model/Telegram integration, physical devices and wider1.0 DAG"
-  ]
+  ],
+  "ci_fixture_correction": {
+    "scope": "tests only; no product code or terrain rules changed",
+    "change": "Citizen exploration walk uses a reachable fixed-seed southern workplace, as adjacent exploration tests do, instead of a random northern forest behind a possible uncleared ravine; unseen-before/seen-at-arrival checks retained",
+    "domain_passed": 686,
+    "domain_failed": 0,
+    "result": "TestResults/director-ci-exploration-fixture/Admin_DESKTOP-FQ85FTD_2026-10-21_08_55_27_net10.0.trx"
+  }
 }

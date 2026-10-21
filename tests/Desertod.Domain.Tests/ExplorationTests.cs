@@ -76,12 +76,16 @@ public class ExplorationTests
     public void CitizenGoingToWork_SeesTheWorkplaceOnArrival()
     {
         var village = NewVillage();
+        // Use the same reachable seeded workplace as the other exploration walks.
+        // A random northern forest may be separated by an uncleared ravine.
+        village.Id = Guid.Parse("11111111-1111-4111-8111-111111111111");
+        village.Wilds = Wilderness.Generate(village.Id);
         var citizen = NewCitizen(village);
-        var woods = WorldMap.Places["deer-woods"];
+        var workplace = new TilePoint(-30, 20);
 
-        citizen.GoTo(woods, village, Now);
+        citizen.GoTo(workplace, village, Now);
 
-        Assert.False(Seen(Exploration.Seen(village.Explored, [citizen.Trip!], Now), woods));
-        Assert.True(Seen(Exploration.Seen(village.Explored, [citizen.Trip!], citizen.Trip!.ArrivesAt), woods));
+        Assert.False(Seen(Exploration.Seen(village.Explored, [citizen.Trip!], Now), workplace));
+        Assert.True(Seen(Exploration.Seen(village.Explored, [citizen.Trip!], citizen.Trip!.ArrivesAt), workplace));
     }
 }
