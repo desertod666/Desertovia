@@ -3276,8 +3276,39 @@
       "final_restart_backup": "/tmp/foundation-before-restart-20261021T102709Z.dump"
     },
     "candidate_ci": {
-      "status": "not_yet_verified",
-      "scope": "New monetary source requires its own full PR CI. Parent923bec6 results are recorded separately."
+      "status": "replacement_required",
+      "initial": {
+        "run": 39585054998,
+        "sha": "fa00aa197cf1e4d41df4c857e7e480d1b5dece20",
+        "domain_passed": 709,
+        "api_passed": 458,
+        "api_failed": 1,
+        "failed_test": "WorkEncounterApiTests.Migration_refuses_to_drop_an_accepted_encounter_and_keeps_its_fund_and_checkpoint",
+        "cause": "New monetary-history guard correctly stops the full downgrade before the old encounter guard; test must isolate its migration."
+      },
+      "local_fixture_fix": {
+        "path": "TestResults/encounter-guard-ci-fix/encounter-guard-ci-fix.trx",
+        "sha256": "aa9c8a764f4d0df72ac36fee845340ed1d96cbbde371d15f0fce8d8df663096c",
+        "counters": {
+          "total": "1",
+          "executed": "1",
+          "passed": "1",
+          "failed": "0",
+          "error": "0",
+          "timeout": "0",
+          "aborted": "0",
+          "inconclusive": "0",
+          "passedButRunAborted": "0",
+          "notRunnable": "0",
+          "notExecuted": "0",
+          "disconnected": "0",
+          "warning": "0",
+          "completed": "0",
+          "inProgress": "0",
+          "pending": "0"
+        },
+        "scope": "Execute EF-generated v51-to-v50 Down script in a rollback-only transaction in owned database. Encounter guard/checkpoint/fund/history remain checked. No guard relaxed or receipts removed. Local fixture run includes uncommitted funding foundation; new exact parent CI required."
+      }
     },
     "remaining": [
       "New exact candidate CI",

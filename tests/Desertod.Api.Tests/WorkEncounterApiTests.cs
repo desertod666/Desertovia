@@ -18,6 +18,8 @@ using Desertod.Infrastructure.Data;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using static Desertod.Api.Tests.Players;
@@ -170,8 +172,9 @@ public sealed class WorkEncounterApiTests(DesertodApiFactory factory)
     [Fact]
     public async Task Migration_refuses_to_drop_an_accepted_encounter_and_keeps_its_fund_and_checkpoint()
     {
-        // Downgrades can legitimately undo newer migrations before an older guard refuses.
-        // Never rehearse that against the shared API fixture or leave its workers on old schema.
+        // Exercise this guard independently: a newer financial-history guard legitimately
+        // refuses the full chain first. Execute EF's exact old Down script in a rollback-only
+        // transaction; neither newer receipts nor the shared fixture's schema are removed.
         var isolated=new DesertodApiFactory();await isolated.InitializeAsync();
         try
         {
@@ -179,15 +182,19 @@ public sealed class WorkEncounterApiTests(DesertodApiFactory factory)
             var run=await probe.Enter(s.V,s.A,s.End);await probe.Freeze(run);
             await using var db=await probe.Db();var before=(await db.DungeonRuns.AsNoTracking().SingleAsync(r=>r.Id==run)).CheckpointJson;
             var applied=(await db.Database.GetAppliedMigrationsAsync()).ToArray();
-            try
+            var script=db.GetService<IMigrator>().GenerateScript("20261021011454_WorkEncounters",
+                "20261021000703_InterruptedTravel",MigrationsSqlGenerationOptions.NoTransactions);
+            await using(var transaction=await db.Database.BeginTransactionAsync())
             {
-                var error=await Assert.ThrowsAnyAsync<Exception>(()=>db.Database.MigrateAsync("20261021000703_InterruptedTravel"));
-                Assert.Contains("Work encounters or accepted encounter cycles exist",error.ToString());
-                Assert.Equal(before,await db.DungeonRuns.AsNoTracking().Where(r=>r.Id==run).Select(r=>r.CheckpointJson).SingleAsync());
-                Assert.Equal(10,(await db.WorkOrders.SingleAsync(o=>o.Id==s.Order)).ReservedCoins);
-                Assert.Contains("20261021011454_WorkEncounters",await db.Database.GetAppliedMigrationsAsync());
+                try
+                {
+                    var error=await Assert.ThrowsAnyAsync<Exception>(()=>db.Database.ExecuteSqlRawAsync(script));
+                    Assert.Contains("Work encounters or accepted encounter cycles exist",error.ToString());
+                }
+                finally{await transaction.RollbackAsync();}
             }
-            finally{await db.Database.MigrateAsync();}
+            Assert.Equal(before,await db.DungeonRuns.AsNoTracking().Where(r=>r.Id==run).Select(r=>r.CheckpointJson).SingleAsync());
+            Assert.Equal(10,(await db.WorkOrders.SingleAsync(o=>o.Id==s.Order)).ReservedCoins);
             Assert.Equal(applied,(await db.Database.GetAppliedMigrationsAsync()).ToArray());
             await OkJsonAsync(await s.V.Tsar.GetAsync(s.V.Path));
             await using var shared=await Db();
