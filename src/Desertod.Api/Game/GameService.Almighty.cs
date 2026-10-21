@@ -124,7 +124,14 @@ public sealed partial class GameService
             var incomeDay = EconomyDay(now);
             var wagesToday = await db.GameWallets.Where(w=>w.VillageId==villageId && w.IncomeDay==incomeDay).SumAsync(w=>(long?)w.EarnedToday,ct) ?? 0;
             var tradingProfitToday = await db.GameWallets.Where(w=>w.VillageId==villageId && w.IncomeDay==incomeDay).SumAsync(w=>(long?)w.ProfitToday,ct) ?? 0;
+            var lease = Guid.CreateVersion7();
+            var permissions=AlmightyPermissions.Catalog(options);
+            var revision=AlmightyPermissions.Revision(new(facts,readiness,stock,state.Mode,village.VigorEnergy,village.VigorCooldownMinutes),options);
             var snapshot = JsonSerializer.Serialize(new {
+                contract=new{version=AlmightyPermissions.SnapshotVersion,worldId=villageId,observationId=lease,
+                    capturedAt=now,mode=state.Mode,revision,revisionScope=AlmightyPermissions.RevisionScope,
+                    scope="Observed evidence only; economic executors and party policy remain outside this contract."},
+                permissions,
                 now, facts, stock, previousStock,
                 raidPressure = new { raidPressure.Eligible, raidPressure.ProposalDue, raidPressure.BlockedBy,
                     raidPressure.NextProposalAt, lastEncounterAt = lastEncounter, approvedRestUntil = state.RestUntil, fallbackOption = fallbackRaid?.Id,
@@ -164,7 +171,6 @@ public sealed partial class GameService
                 chatIsUntrusted = true, memory = state.Intent, previous, options,
                 warning = "Условия выбранного события проверяются ещё раз при согласии царя. Не выдумывать новые инструменты/цены/награды."
             }, AlmightyJson);
-            var lease = Guid.CreateVersion7();
             state.Lease = lease; state.LeaseUntil = now.AddMinutes(2); state.LastReviewAt = now;
             state.NextReviewAt = now + AlmightyPolicy.ReviewInterval; state.LastSignal = signal;
             state.LastSnapshot = snapshot; state.CallsToday++; state.Version++;
@@ -177,10 +183,19 @@ public sealed partial class GameService
         WithVillageAsync(review.VillageId, async db => {
             var now = time.GetUtcNow();
             var state = await db.AlmightyStates.SingleAsync(s => s.VillageId == review.VillageId, ct);
-            if (state.Lease != review.Lease || state.LeaseUntil < now || state.Mode == "Off") return false;
+            if (state.Lease != review.Lease || state.LeaseUntil is not {} until || until <= now || state.Mode == "Off") return false;
+            var observation = await db.AlmightyObservations.SingleOrDefaultAsync(o => o.Id == review.Lease && o.VillageId==review.VillageId, ct);
+            if(observation is null)return false;
             state.Lease = null; state.LeaseUntil = null; state.Version++;
-            var observation = await db.AlmightyObservations.SingleAsync(o => o.Id == review.Lease, ct);
-            var chosen = answer is not null ? review.Options.FirstOrDefault(o => o.Id == answer.Option) : null;
+            using var saved=ReadAlmightyAdmission(observation.Snapshot,review.VillageId,review.Lease);
+            if(saved is null)
+            {
+                state.LastError="Сохранённый анализ Всевышнего повреждён или несовместим. Новых действий нет.";
+                observation.Reason=state.LastError;
+                await db.SaveChangesAsync(ct);return false;
+            }
+            var admittedOptions=saved.RootElement.GetProperty("options").Deserialize<List<AlmightyOption>>(AlmightyJson)!;
+            var chosen = answer is not null ? admittedOptions.FirstOrDefault(o => o.Id == answer.Option) : null;
             if (answer is null || answer.ErrorCode is not null || chosen is null || string.IsNullOrWhiteSpace(answer.Reason) || answer.Reason.Length > 1200 || (answer.Intent?.Length ?? 0) > 1000) {
                 state.LastError = (answer?.ErrorCode switch {
                     "budget.shared" => "Достигнут общий лимит запросов ИИ батюшки.",
@@ -198,11 +213,11 @@ public sealed partial class GameService
                 state.LastError = ""; state.Intent = string.IsNullOrWhiteSpace(answer.Intent) ? state.Intent : answer.Intent;
                 var reason = answer.Reason;
                 // Это явная страховка ритма, а не приписывание решения модели: только заявка царю.
-                using var snapshot = JsonDocument.Parse(review.Snapshot);
+                var snapshot = saved;
                 if (chosen.Enemy is null && snapshot.RootElement.TryGetProperty("raidPressure", out var pressure)
                     && pressure.GetProperty("proposalDue").GetBoolean()
                     && pressure.TryGetProperty("fallbackOption", out var fallback) && fallback.ValueKind == JsonValueKind.String
-                    && review.Options.FirstOrDefault(o => o.Id == fallback.GetString() && o.Enemy is not null) is { } dueRaid)
+                    && admittedOptions.FirstOrDefault(o => o.Id == fallback.GetString() && o.Enemy is not null) is { } dueRaid)
                 {
                     chosen = dueRaid;
                     state.Intent = "Поддерживать чередование ограниченных угроз и пауз; не ждать полного ремонта или лечения всех жителей.";
@@ -217,12 +232,51 @@ public sealed partial class GameService
                     : await db.AlmightyProposals.AnyAsync(p => p.VillageId == review.VillageId && p.Option == chosen.Id && p.CreatedAt > now.AddHours(-2) && (p.Status == "Rejected" || p.Status == "Applied"), ct);
                 if (state.Mode == "Propose" && chosen.Id != "none" && !pending && !duplicate && !(state.LastNoticeAt > now.AddMinutes(-30))) {
                     db.AlmightyProposals.Add(new() { VillageId = review.VillageId, ReviewId = review.Lease, Option = chosen.Id,
-                        Reason = reason, Intent = state.Intent, CreatedAt = now, ExpiresAt = now + AlmightyPolicy.ProposalLifetime, Snapshot = review.Snapshot });
+                        Reason = reason, Intent = state.Intent, CreatedAt = now, ExpiresAt = now + AlmightyPolicy.ProposalLifetime, Snapshot = observation.Snapshot });
                     state.LastNoticeAt = now;
                 }
             }
             await db.SaveChangesAsync(ct); return true;
         }, ct);
+
+    private static JsonDocument? ReadAlmightyAdmission(string json,Guid villageId,Guid observationId)
+    {
+        JsonDocument? saved=null;
+        try
+        {
+            saved=JsonDocument.Parse(json);
+            var options=saved.RootElement.GetProperty("options").Deserialize<List<AlmightyOption>>(AlmightyJson)
+                ??throw new JsonException("Missing options.");
+            AlmightyPermissions.Describe(options);
+            // Old in-flight reviews have no envelope; their stored allowlist remains authoritative.
+            if(saved.RootElement.TryGetProperty("contract",out var contract))
+            {
+                if(contract.GetProperty("version").GetInt32()!=AlmightyPermissions.SnapshotVersion
+                    ||contract.GetProperty("worldId").GetGuid()!=villageId
+                    ||contract.GetProperty("observationId").GetGuid()!=observationId)
+                    throw new JsonException("Unsupported director admission.");
+                var mode=contract.GetProperty("mode").GetString()??"";
+                if(!AlmightyPolicy.IsMode(mode))throw new JsonException("Unsupported director mode.");
+                var facts=saved.RootElement.GetProperty("facts").Deserialize<AlmightyFacts>(AlmightyJson)!;
+                var readiness=saved.RootElement.GetProperty("combat").GetProperty("readiness").Deserialize<RaidReadiness>(AlmightyJson)!;
+                var stock=saved.RootElement.GetProperty("stock").Deserialize<Dictionary<string,int>>(AlmightyJson)!;
+                if(facts is null||readiness is null||stock is null)throw new JsonException("Missing observed evidence.");
+                var vigor=saved.RootElement.GetProperty("vigor");
+                var revision=AlmightyPermissions.Revision(new(facts,readiness,stock,mode,
+                    vigor.GetProperty("vigorEnergy").GetInt32(),vigor.GetProperty("vigorCooldownMinutes").GetInt32()),options);
+                if(contract.GetProperty("revision").GetString()!=revision)
+                    throw new JsonException("Director evidence digest does not match.");
+                var permissions=saved.RootElement.GetProperty("permissions").Deserialize<List<AlmightyCapability>>(AlmightyJson);
+                if(permissions is null||!AlmightyPermissions.Catalog(options).SequenceEqual(permissions))
+                    throw new JsonException("Director permission descriptors do not match.");
+            }
+            return saved;
+        }
+        catch(Exception exception)when(exception is JsonException or ArgumentException or InvalidOperationException or KeyNotFoundException or FormatException)
+        {
+            saved?.Dispose();return null;
+        }
+    }
 
     public Task<string> DecideAlmightyAsync(Guid proposalId, Guid? accountId, string? telegramId, bool accept, CancellationToken ct) =>
         DecideAlmightyCoreAsync(proposalId, accountId, telegramId, accept, ct);

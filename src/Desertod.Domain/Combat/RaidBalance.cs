@@ -14,8 +14,7 @@ public static class RaidBalance
     public static readonly string[] Compositions = ["mixed", "swarm", "elite", "boss"];
     public static RaidReadiness Assess(Village village,IReadOnlyList<Citizen> citizens,IReadOnlySet<Guid> online,DateTimeOffset now,int waves=1)
     {
-        var healthy=citizens.Where(c=>c.Status==CitizenStatus.Active && c.RecoveryPausedAt is null
-            && !HospitalRules.IsAdmitted(c,now) && !CombatRules.IsInjured(c,now) && !(c.ExhaustedUntil>now) && c.Recovery?.Available!=false && c.DungeonRunId is null).ToList();
+        var healthy=citizens.Where(c=>RaidSimulation.CanFight(c,now)).ToList();
         var guards=healthy.Where(c=>online.Contains(c.Id)).ToList();
         // Readiness uses present capable residents, never a retired duty assignment.
         var readiness=guards.Sum(c=>CombatRules.Power(c)
