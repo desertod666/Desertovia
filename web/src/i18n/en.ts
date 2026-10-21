@@ -737,6 +737,7 @@ export const en = {
     'building.damaged': 'Damaged {percent}%: works slower until repaired',
     'dungeon.deadLands': 'Dead Lands',
     'dungeon.tsarTitle': 'Dungeon: Dead Lands',
+    'dungeon.mortalTsarHint': 'Three floors, with {seconds} s to answer the call. In new runs, the ruler uses ordinary stats, classes and real equipment. Experience is saved; existing group loot rules stay unchanged.',
     'dungeon.tsarHint':
       'Three floors: the dead woods, the graveyard, then the barrow king. Citizens have {seconds} s to answer. A hero who falls lives and walks home wounded; whoever is still standing goes on, even one against the king. You always fight as the Voivode and take nothing for yourself.',
     'dungeon.open': 'Call to the Dead Lands',

@@ -1265,7 +1265,8 @@
       },
       "implementation_evidence": "RECONNECT_REST_AUTHORITY_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json",
       "combat_actor_admission": "COMBAT_ACTORS_1_0.md / COMBAT_ACTORS_VERIFICATION_1_0.json; partial A14, common HP/damage unfinished",
-      "mortal_raid_body": "MORTAL_HEROES_RAID_1_0.md / MORTAL_HEROES_RAID_VERIFICATION_1_0.json; local pass, exact CI pending, dungeon/full A14 unfinished"
+      "mortal_raid_body": "MORTAL_HEROES_RAID_1_0.md / MORTAL_HEROES_RAID_VERIFICATION_1_0.json; PR90/8a6871d full CI green672Domain/386API/410browser+2skip; full A14 unfinished",
+      "royal_dungeon_body": "ROYAL_DUNGEON_BODY_1_0.md / ROYAL_DUNGEON_BODY_VERIFICATION_1_0.json; new ordinary body/class/equipment and once settlement, schema53 preservation and actual320px restart/retreat verified; candidate full CI pending, full task/A14 not complete"
     },
     {
       "id": "PKG-T020",
@@ -1676,7 +1677,8 @@
       "implementation_evidence": "DUNGEON_IMPLEMENTATION_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json",
       "verification_scope": "Shared manual scene, accepted-work private encounter and individual settlement verified in earlier receipts; current actor admission locally tested. Full A13/A14/A17 and group/supply/balance unfinished.",
       "combat_actor_admission": "COMBAT_ACTORS_1_0.md / COMBAT_ACTORS_VERIFICATION_1_0.json; partial A14, common HP/damage unfinished",
-      "mortal_raid_body": "MORTAL_HEROES_RAID_1_0.md / MORTAL_HEROES_RAID_VERIFICATION_1_0.json; local pass, exact CI pending, dungeon/full A14 unfinished"
+      "mortal_raid_body": "MORTAL_HEROES_RAID_1_0.md / MORTAL_HEROES_RAID_VERIFICATION_1_0.json; PR90/8a6871d full CI green672Domain/386API/410browser+2skip; full A14 unfinished",
+      "royal_dungeon_body": "ROYAL_DUNGEON_BODY_1_0.md / ROYAL_DUNGEON_BODY_VERIFICATION_1_0.json; new ordinary body/class/equipment and once settlement, schema53 preservation and actual320px restart/retreat verified; candidate full CI pending, full task/A14 not complete"
     },
     {
       "id": "PKG-T032",
@@ -1721,7 +1723,8 @@
         "status": "checkpoint_recovery_source_implemented",
         "evidence": "DUNGEON_IMPLEMENTATION_1_0.md: exact saved fight plus atomic settlement; new party/supply/loot policy still pending",
         "runtime_verification": "Exact c4b14db full CI39503802255:599 Domain/329 API/338 browser +2 normal skips; DUNGEON_VERIFICATION_1_0.json. Broader party/supply/voluntary exit pending."
-      }
+      },
+      "royal_dungeon_body": "ROYAL_DUNGEON_BODY_1_0.md / ROYAL_DUNGEON_BODY_VERIFICATION_1_0.json; new ordinary body/class/equipment and once settlement, schema53 preservation and actual320px restart/retreat verified; candidate full CI pending, full task/A14 not complete"
     },
     {
       "id": "PKG-T033",

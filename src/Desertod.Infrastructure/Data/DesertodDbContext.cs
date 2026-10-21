@@ -445,6 +445,7 @@ public sealed partial class DesertodDbContext(DbContextOptions<DesertodDbContext
             run.HasKey(r => r.Id);
             run.HasIndex(r => new { r.VillageId, r.Phase });
             run.Property(r => r.DungeonId).HasMaxLength(32);
+            run.Property(r=>r.CombatRulesVersion).HasDefaultValue(0);
             run.Property(r=>r.Kind).HasConversion<string>().HasMaxLength(16).HasDefaultValue(DungeonRunKind.Group);
             run.Property(r=>r.AmbushEnemy).HasConversion<string>().HasMaxLength(16);
             run.Property(r=>r.WorkTaskId).HasMaxLength(64);
@@ -459,6 +460,7 @@ public sealed partial class DesertodDbContext(DbContextOptions<DesertodDbContext
             {
                 hero.ToJson();
                 hero.Property(h => h.Class).HasConversion<string>();
+                hero.Property(h=>h.CombatClass).HasConversion<string>();
                 hero.Property(h => h.Killer).HasConversion<string>();
                 hero.PrimitiveCollection(h => h.Broken).ElementType(e => e.HasConversion<string>());
                 hero.Ignore(h => h.IsTsar);

@@ -1,6 +1,7 @@
 using Desertod.Domain;
 using Desertod.Domain.Rules;
 using Desertod.Domain.Catalog;
+using Desertod.Domain.Combat;
 using Desertod.Domain.Dungeons;
 using Desertod.Domain.Entities;
 using Desertod.Infrastructure.Data;
@@ -43,7 +44,8 @@ public sealed partial class GameService
             var now = time.GetUtcNow();
             if(await HasPersonalEncounterAsync(db,village.Id,accountId,cancellationToken))throw new GameRuleException("dungeon.busy","Leave the current fight first.");
             await RequireNoRaidActorAsync(db,village.Id,accountId,null,cancellationToken);
-            var run = DungeonRules.Open(village, dungeonId, await TsarNameAsync(db, village, cancellationToken), Random.Shared.Next(), now);
+            var royalResidents=await db.Citizens.Where(c=>c.VillageId==village.Id&&c.AccountId==accountId).ToListAsync(cancellationToken);
+            var run = DungeonRules.Open(village, dungeonId, await TsarNameAsync(db, village, cancellationToken), Random.Shared.Next(), now,royalResidents);
             db.DungeonRuns.Add(run);
             await db.SaveChangesAsync(cancellationToken);
             logger.DungeonPhase(slug, run.Id, run.Phase.ToString(), run.Heroes.Count);
@@ -88,18 +90,7 @@ public sealed partial class GameService
             .Where(r => r.VillageId == village.Id && r.Kind==DungeonRunKind.Group && r.Phase == DungeonPhase.Gathering)
             .FirstOrDefaultAsync(cancellationToken);
         var hero = run?.Hero(citizen.Id);
-        var leather = village.Stock(ResourceKind.LeatherArmor) + citizen.Carried(ResourceKind.LeatherArmor) > 0
-                      || citizen.Armor == ResourceKind.LeatherArmor;
-        return DungeonRules.AvailableClasses(citizen, village, hero)
-            .Select(HeroClassCatalog.Get)
-            .Select(definition => new HeroClassOfferDto(
-                definition.Class,
-                Math.Round(DungeonRules.Health(citizen, definition), 1),
-                Math.Round(DungeonRules.Damage(citizen, definition), 1),
-                definition.Range,
-                definition.Weapon,
-                definition.Armor ?? (leather ? ResourceKind.LeatherArmor : null)))
-            .ToList();
+        return ClassOffers(citizen,village,hero);
     }
 
     /// <summary>The citizen answers the Tsar's call, or switches class while the gathering lasts.</summary>
@@ -195,6 +186,7 @@ public sealed partial class GameService
             }
             foreach (var patient in citizens.Where(c => c.RecoveryPausedAt is not null).ToList())
             {
+                if(run.CombatRulesVersion==CombatantRules.CurrentVersion&&run.Tsar.RoyalBodyCitizenId==patient.Id)continue;
                 if (run.Phase == DungeonPhase.Gathering) DungeonRules.Leave(run, village, patient, now);
                 else if (run.Hero(patient.Id) is { } hero)
                     DungeonRules.Settle(run, hero, patient, village, new DungeonHeroOutcome(0, 0, [], 0, patient.Arrows, false, false, null), Random.Shared, now);
@@ -274,7 +266,7 @@ public sealed partial class GameService
                     continue;
                 }
 
-                var citizen = citizens.FirstOrDefault(c => c.Id == hero.CitizenId);
+                var citizen = citizens.FirstOrDefault(c => c.Id == (hero.IsTsar?hero.RoyalBodyCitizenId:hero.CitizenId));
                 // A retry after rollback must not reroll broken equipment.
                 var random = checkpoint is null ? Random.Shared : DungeonRandom.FromSeed(run.Seed ^ BitConverter.ToInt32(exit.HeroId.ToByteArray()));
                 if(run.Kind==DungeonRunKind.Ambush)
@@ -342,7 +334,7 @@ public sealed partial class GameService
         await using (var db = await contextFactory.CreateDbContextAsync(cancellationToken))
         {
             unfinished = (await db.DungeonRuns
-                    .Where(r => r.Kind==DungeonRunKind.Group && r.Phase == DungeonPhase.Running && r.CheckpointJson == null)
+                    .Where(r => r.Kind==DungeonRunKind.Group && r.CombatRulesVersion==0 && r.Phase == DungeonPhase.Running && r.CheckpointJson == null)
                     .Select(r => new { r.Id, r.VillageId })
                     .ToListAsync(cancellationToken))
                 .Select(r => (r.Id, r.VillageId))
@@ -398,9 +390,14 @@ public sealed partial class GameService
         if(run.Kind==DungeonRunKind.Ambush&&!run.Heroes.Any(h=>h.AccountId==accountId))throw new UnauthorizedAccessException();
 
         var village = await db.Villages.AsNoTracking().SingleAsync(v => v.Id == run.VillageId, cancellationToken);
-        var citizenIds = run.Heroes.Where(h => h.CitizenId is not null).Select(h => h.CitizenId!.Value).ToList();
+        var citizenIds = run.Heroes.Select(h=>h.IsTsar?h.RoyalBodyCitizenId:h.CitizenId).OfType<Guid>().ToList();
         var citizens = await db.Citizens.AsNoTracking().Where(c => citizenIds.Contains(c.Id)).ToListAsync(cancellationToken);
-        var saved=run.Kind==DungeonRunKind.Ambush?DungeonSave.Read(run.CheckpointJson??throw new InvalidOperationException("Missing encounter checkpoint.")):null;
+        // A viewer reconnecting before the runtime restores a group run must see the
+        // admitted bodies and map, not recalculated stats or a later catalog revision.
+        var saved=run.CheckpointJson is {} json?DungeonSave.Read(json):null;
+        if(run.Kind==DungeonRunKind.Ambush&&saved is null)throw new InvalidOperationException("Missing encounter checkpoint.");
+        if(run.CombatRulesVersion==CombatantRules.CurrentVersion&&run.Phase==DungeonPhase.Running&&saved is null)
+            throw new InvalidOperationException("Missing ordinary-body dungeon checkpoint; retain the accepted run for repair.");
         var heroes = saved?.Heroes??await RunHeroesAsync(db, run, village, citizens, cancellationToken);
         var dungeon = saved?.Fight.Definition??DungeonCatalog.Get(run.DungeonId);
         var mine = accountId is { } id ? run.Heroes.FirstOrDefault(h => h.AccountId == id) : null;
@@ -437,15 +434,25 @@ public sealed partial class GameService
                 continue;
             }
 
-            var definition = HeroClassCatalog.Get(hero.Class);
+            var definition = HeroClassCatalog.Get(hero.CombatClass??hero.Class);
             if (hero.IsTsar)
             {
+                RoyalInjury.Refresh(village,now,citizens);
                 if (village.TsarInjuredUntil > now || village.TsarHospitalizedAt is not null)
                 {
                     continue;
                 }
 
-                fighters.Add(new DungeonFighter(hero.AccountId, hero.AccountId, hero.Name, hero.Class,
+                if(run.CombatRulesVersion==CombatantRules.CurrentVersion)
+                {
+                    var body=DungeonRules.RoyalBody(run,village,citizens,now);
+                    if(body is null||!DungeonRules.CanMarch(body.Citizen,now))continue;
+                    var c=body.Citizen;
+                    fighters.Add(new DungeonFighter(hero.AccountId,hero.AccountId,hero.Name,hero.Class,
+                        DungeonRules.Health(c,definition),DungeonRules.Damage(c,definition),DungeonRules.Protection(c),
+                        hero.CombatClass==HeroClass.Archer?c.Arrows:null,definition.Heal>0&&hero.Remedies>0,invulnerable){CombatClass=hero.CombatClass,CombatDefinition=definition});
+                }
+                else fighters.Add(new DungeonFighter(hero.AccountId, hero.AccountId, hero.Name, hero.Class,
                     HeroClassCatalog.VoivodeHealth, HeroClassCatalog.VoivodeDamage, 0, null, false, invulnerable));
                 owners[hero.AccountId] = hero.AccountId;
                 continue;
@@ -467,7 +474,7 @@ public sealed partial class GameService
                 DungeonRules.Protection(citizen),
                 hero.Class == HeroClass.Archer ? citizen.Arrows : null,
                 definition.Heal > 0 && hero.Remedies > 0,
-                invulnerable));
+                invulnerable){CombatDefinition=run.CombatRulesVersion==CombatantRules.CurrentVersion?definition:null});
             owners[citizen.Id] = citizen.AccountId;
         }
 
@@ -494,10 +501,13 @@ public sealed partial class GameService
                 continue;
             }
 
-            var definition = HeroClassCatalog.Get(hero.Class);
+            var definition = HeroClassCatalog.Get(hero.CombatClass??hero.Class);
             if (hero.IsTsar)
             {
-                heroes.Add(new DungeonRunHeroDto(hero.AccountId, null, hero.Name, hero.Class, owner.Character?.Appearance, HeroClassCatalog.VoivodeHealth));
+                var health=run.CombatRulesVersion==CombatantRules.CurrentVersion
+                    ?DungeonRules.RoyalBody(run,village,citizens,run.OpenedAt) is {} body?DungeonRules.Health(body.Citizen,definition):0
+                    :HeroClassCatalog.VoivodeHealth;
+                heroes.Add(new DungeonRunHeroDto(hero.AccountId, null, hero.Name, hero.Class, owner.Character?.Appearance, health){CombatClass=hero.CombatClass});
             }
             else if (citizens.FirstOrDefault(c => c.Id == hero.CitizenId) is { } citizen)
             {

@@ -19,7 +19,10 @@ public sealed record DungeonHeroDto(
     int Kills,
     int Experience,
     IReadOnlyList<ResourceAmount> Loot,
-    IReadOnlyList<ResourceKind> Broken);
+    IReadOnlyList<ResourceKind> Broken)
+{
+    public HeroClass? CombatClass { get; init; }
+}
 
 /// <summary>The village's dungeon run: open, under way, or ended a moment ago.</summary>
 public sealed record DungeonDto(
@@ -34,7 +37,10 @@ public sealed record DungeonDto(
     DateTimeOffset? EndedAt,
     int Slain,
     int Foes,
-    IReadOnlyList<DungeonHeroDto> Heroes);
+    IReadOnlyList<DungeonHeroDto> Heroes)
+{
+    public int CombatRulesVersion { get; init; }
+}
 
 /// <summary>A class the citizen may pick now, with what it would give them.</summary>
 public sealed record HeroClassOfferDto(HeroClass Class, double Health, double Damage, double Range, ResourceKind? Weapon, ResourceKind? Armor);
@@ -47,7 +53,10 @@ public sealed record OpenDungeonRequest(string DungeonId = DungeonCatalog.DeadLa
 public sealed record DungeonInfoDto(string Id, string Name, int Width, int Height, int TimeLimitSeconds, int Foes);
 
 /// <param name="Id">The citizen, or the Tsar's account.</param>
-public sealed record DungeonRunHeroDto(Guid Id, Guid? CitizenId, string Name, HeroClass Class, Appearance? Appearance, double MaximumHealth);
+public sealed record DungeonRunHeroDto(Guid Id, Guid? CitizenId, string Name, HeroClass Class, Appearance? Appearance, double MaximumHealth)
+{
+    public HeroClass? CombatClass { get; init; }
+}
 
 /// <summary>Everything a viewer needs to draw a run: the map once, then <see cref="DungeonSnapshotDto"/> ten times a second.</summary>
 /// <param name="Tiles">One digit per tile, row by row from the top-left: the <see cref="DungeonTile"/> value.</param>
@@ -128,8 +137,8 @@ public static class DungeonMapper
                 h.Kills,
                 h.Experience,
                 h.Loot.Select(l => new ResourceAmount(l.Kind, l.Amount)).ToList(),
-                h.Broken))
-            .ToList());
+                h.Broken){CombatClass=h.CombatClass})
+            .ToList()){CombatRulesVersion=run.CombatRulesVersion};
 
     public static string EncodeTiles(DungeonDefinition dungeon) => string.Concat(dungeon.Tiles.Select(t => (char)('0' + (int)t)));
 

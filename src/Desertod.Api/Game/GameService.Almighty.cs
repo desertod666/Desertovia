@@ -280,7 +280,8 @@ public sealed partial class GameService
                         p.Result = "Нападение объявлено. Враги придут через 3 реальные минуты.";
                     } else if (p.Option == "dungeon") {
                         var definition = DungeonCatalog.Dungeons.First();
-                        db.DungeonRuns.Add(DungeonRules.Open(village, definition.Id, await TsarNameAsync(db, village, ct), Random.Shared.Next(), now));
+                        var royalResidents=await db.Citizens.Where(c=>c.VillageId==villageId&&c.AccountId==village.OwnerAccountId).ToListAsync(ct);
+                        db.DungeonRuns.Add(DungeonRules.Open(village, definition.Id, await TsarNameAsync(db, village, ct), Random.Shared.Next(), now,royalResidents));
                         p.Result = "Открыт добровольный сбор в поход. Игроки сами решают, участвовать ли.";
                     } else if (p.Option == "rest") {
                         state.RestUntil = now.AddHours(2); p.Result = "Передышка включена на 2 реальных часа. Уже объявленные волны сохраняются.";

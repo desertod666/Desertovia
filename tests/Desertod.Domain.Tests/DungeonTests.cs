@@ -121,7 +121,7 @@ public class DungeonTests
         var village = NewVillage();
         var citizen = NewCitizen(village).WithSkill(Skill.Guarding, 2);
         village.Store(ResourceKind.Sword, 1);
-        village.Store(ResourceKind.LeatherArmor, 1);
+        village.Store(ResourceKind.LeatherArmor, 2); // One real set is reserved by each ordinary body.
         var run = DungeonRules.Open(village, DungeonCatalog.DeadLands, "Tsar", 1, Now);
 
         DungeonRules.Join(run, village, citizen, HeroClass.Swordsman, Now);
@@ -400,8 +400,8 @@ public class DungeonTests
         DungeonRules.March(run, village, [citizen], closes);
 
         Assert.Equal(DungeonPhase.Marching, run.Phase);
-        Assert.Equal(DungeonRules.MarchSpot, citizen.Trip!.To);
-        Assert.Equal(DungeonRules.MarchSpot, village.TsarSpot);
+        Assert.Equal(RegionalTravel.WesternExit(village), citizen.Trip!.To);
+        Assert.Equal(RegionalTravel.WesternExit(village), village.TsarSpot);
         Assert.True(run.MarchEndsAt <= closes + DungeonRules.LongestMarch);
     }
 
@@ -422,7 +422,7 @@ public class DungeonTests
         DungeonRules.March(run, village, [healthy, wounded], run.GatheringEndsAt);
 
         Assert.Equal(DungeonPhase.Marching, run.Phase);
-        Assert.Equal(DungeonRules.MarchSpot, healthy.Trip!.To);
+        Assert.Equal(RegionalTravel.WesternExit(village), healthy.Trip!.To);
         Assert.Null(wounded.Trip);
         Assert.Null(wounded.DungeonRunId);
         Assert.Null(run.Hero(wounded.Id));

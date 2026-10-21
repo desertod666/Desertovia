@@ -73,7 +73,8 @@ function DungeonView() {
   }, [world, snapshot])
 
   const myHeroId = view?.myHeroId ?? null
-  const myClass = view?.heroes.find((hero) => hero.id === myHeroId)?.class ?? null
+  const mine = view?.heroes.find((hero) => hero.id === myHeroId)
+  const myClass = mine?.combatClass ?? mine?.class ?? null
   useEffect(() => {
     if (!world) return
     world.setHandlers(
@@ -141,7 +142,7 @@ export function DungeonHud({ view, snapshot, backTo,onRetreat }: { view: Dungeon
   else if (live?.state === 'Fleeing') hint = t('dungeon.fled')
   else if (live?.state === 'Left') hint = view.kind==='Ambush'?(i18n.language==='ru'?'Встреча закончилась. Можно вернуться в мир.':'The encounter has ended. Return to the world.'):t('dungeon.out')
   else if(live?.retreating)hint=i18n.language==='ru'?'Герой отходит к выходу.':'Your hero is withdrawing to the exit.'
-  else hint = hero.class === 'Healer' ? t('dungeon.hintHealer') : t('dungeon.hintFighter')
+  else hint = (hero.combatClass??hero.class) === 'Healer' ? t('dungeon.hintHealer') : t('dungeon.hintFighter')
 
   return (
     <>
@@ -161,7 +162,7 @@ export function DungeonHud({ view, snapshot, backTo,onRetreat }: { view: Dungeon
         <div className="card dungeon-hero">
           {running&&live.state==='Fighting'&&<div className="row dungeon-retreat"><button disabled={!!live.retreating} onClick={onRetreat}>{i18n.language==='ru'?(live.retreating?'Отступаю…':'Отступить'):(live.retreating?'Withdrawing…':'Retreat')}</button><Hint label={i18n.language==='ru'?'Об отступлении':'About retreat'} text={i18n.language==='ru'?'Герой идёт к входу и остаётся уязвимым до выхода. Закрытие страницы не завершает бой.':'Your hero walks to the entrance and remains vulnerable until leaving. Closing this page does not end the fight.'}>ⓘ</Hint></div>}
           <div>
-            <strong>{hero.name}</strong> · {i18n.heroClass(hero.class)}
+            <strong>{hero.name}</strong> · {i18n.heroClass(hero.combatClass??hero.class)}
           </div>
           <div className="bar thin">
             <div style={{ width: `${(live.health / Math.max(1, hero.maximumHealth)) * 100}%` }} />
@@ -203,7 +204,7 @@ export function DungeonResult({ view, backTo }: { view: DungeonRunView; backTo: 
           <ul className="feed">
             {run.heroes.map((hero) => (
               <li key={hero.citizenId ?? 'tsar'}>
-                {t('dungeon.result.hero', { name: hero.name, heroClass: i18n.heroClass(hero.class), kills: hero.kills })}
+                {t('dungeon.result.hero', { name: hero.name, heroClass: i18n.heroClass(hero.combatClass??hero.class), kills: hero.kills })}
                 {hero.loot.length > 0 && ` · ${t('dungeon.loot', { goods: i18n.goods(hero.loot) })}`}
                 {hero.experience > 0 && ` · ${t('dungeon.experience', { amount: hero.experience })}`}
                 {hero.killer && ` · ${t('dungeon.result.wounded', { enemy: i18n.enemy(hero.killer).toLowerCase() })}`}

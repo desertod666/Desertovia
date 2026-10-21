@@ -176,6 +176,12 @@ public static class GameEndpoints
         player.MapGet("/villages/{slug}/me/dungeon", (string slug, ClaimsPrincipal user, GameService game, CancellationToken cancellationToken) =>
             game.GetHeroClassesAsync(slug, user.RequireAccountId(), cancellationToken));
 
+        player.MapGet("/villages/{slug}/tsar/dungeon", (string slug, ClaimsPrincipal user, GameService game, CancellationToken cancellationToken) =>
+            game.GetRoyalHeroClassesAsync(slug, user.RequireAccountId(), cancellationToken));
+
+        player.MapPost("/villages/{slug}/tsar/dungeon", (string slug, JoinDungeonRequest request, ClaimsPrincipal user, GameService game, CancellationToken cancellationToken) =>
+            game.PickRoyalHeroClassAsync(slug, user.RequireAccountId(), request.Class, cancellationToken));
+
         player.MapPost("/villages/{slug}/me/dungeon", (string slug, JoinDungeonRequest request, ClaimsPrincipal user, GameService game, CancellationToken cancellationToken) =>
             game.JoinDungeonAsync(slug, user.RequireAccountId(), request.Class, cancellationToken));
 

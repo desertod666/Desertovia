@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-21T05:17:01.576871+00:00",
+  "scope": "Group reconnect metadata uses saved bodies/map before runtime restore; common royal dungeon body/class/equipment still unfinished",
+  "source_base": "d8df65d61677fb54a29021daf2e28692319bd92e",
+  "api": {
+    "passed": 10,
+    "failed": 0,
+    "result": "TestResults/dungeon-bodies-checkpoint-metadata/Admin_DESKTOP-FQ85FTD_2026-10-21_07_14_11_net10.0.trx",
+    "cases": [
+      "Desertod.Api.Tests.DungeonCheckpointApiTests.A_failed_retreat_commit_does_not_change_the_live_hero_and_a_retry_survives_reload",
+      "Desertod.Api.Tests.DungeonCheckpointApiTests.A_group_viewer_reconnects_to_the_admitted_bodies_and_saved_map_even_before_runtime_restore",
+      "Desertod.Api.Tests.DungeonCheckpointApiTests.Failed_write_does_not_publish_or_advance_and_is_retryable",
+      "Desertod.Api.Tests.DungeonCheckpointApiTests.Final_checkpoint_and_loot_commit_together_and_cannot_be_paid_again_after_restart",
+      "Desertod.Api.Tests.DungeonCheckpointApiTests.Manual_command_is_acknowledged_only_after_commit_and_cannot_control_another_hero",
+      "Desertod.Api.Tests.DungeonCheckpointApiTests.New_process_recovers_the_committed_fight_and_rejects_a_stale_writer",
+      "Desertod.Api.Tests.DungeonCheckpointApiTests.One_blocked_village_does_not_hold_up_another_fight",
+      "Desertod.Api.Tests.DungeonCheckpointApiTests.Recovery_preserves_gathering_march_and_bad_save_but_returns_legacy_running_heroes_home",
+      "Desertod.Api.Tests.DungeonCheckpointApiTests.Voluntary_retreat_is_owned_durable_and_cannot_enter_safe_rest_before_reaching_the_exit(tsar: False)",
+      "Desertod.Api.Tests.DungeonCheckpointApiTests.Voluntary_retreat_is_owned_durable_and_cannot_enter_safe_rest_before_reaching_the_exit(tsar: True)"
+    ]
+  },
+  "product_sha256": {
+    "src/Desertod.Api/Game/GameService.Dungeon.cs": "718005e2879e87d97ede610dcf338cc1b66151317936587a89a452b4da0873f3",
+    "tests/Desertod.Api.Tests/DungeonCheckpointApiTests.cs": "b6e0887619f09ff9795c520f5781334f3e7e2f4ebd968f12a8ce9e1f807df4c9"
+  },
+  "runtime": "not loaded into shared API yet; isolated API test host only",
+  "public_release": false,
+  "remaining": [
+    "Common royal dungeon body/class/equipment and legacy versioning",
+    "Full exact candidate CI",
+    "Broader1.0 DAG; graphic redesign last per D109"
+  ]
+}

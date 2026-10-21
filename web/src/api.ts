@@ -205,6 +205,7 @@ export type DungeonPhase = 'Gathering' | 'Marching' | 'Running' | 'Ended'
 export type DungeonOutcome = 'Pending' | 'Victory' | 'Defeat' | 'Abandoned' | 'Cancelled'
 
 export interface DungeonHero {
+  combatClass?: HeroClass | null
   /** Null for the Tsar. */
   citizenId: string | null
   name: string
@@ -223,6 +224,7 @@ export interface DungeonHero {
 
 /** The village's dungeon run: open, under way, or ended a moment ago. */
 export interface DungeonRun {
+  combatRulesVersion?: number
   id: string
   dungeonId: string
   phase: DungeonPhase
@@ -249,6 +251,7 @@ export interface HeroClassOffer {
 export type HeroState = 'Fighting' | 'Fleeing' | 'Left'
 
 export interface DungeonRunHero {
+  combatClass?: HeroClass | null
   /** The citizen, or the Tsar's account. */
   id: string
   citizenId: string | null
@@ -1702,6 +1705,8 @@ export const api = {
     request<VillageState>('POST', `/api/villages/${encodeURIComponent(slug)}/dungeon`, { dungeonId }),
   cancelDungeon: (slug: string) => request<VillageState>('DELETE', `/api/villages/${encodeURIComponent(slug)}/dungeon`),
   heroClasses: (slug: string) => request<HeroClassOffer[]>('GET', `/api/villages/${encodeURIComponent(slug)}/me/dungeon`),
+  royalHeroClasses: (slug: string) => request<HeroClassOffer[]>('GET', `/api/villages/${encodeURIComponent(slug)}/tsar/dungeon`),
+  pickRoyalHeroClass: (slug: string, heroClass: HeroClass) => request<VillageState>('POST', `/api/villages/${encodeURIComponent(slug)}/tsar/dungeon`, { class: heroClass }),
   joinDungeon: (slug: string, heroClass: HeroClass) =>
     request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/me/dungeon`, { class: heroClass }),
   leaveDungeon: (slug: string) => request<Citizen>('DELETE', `/api/villages/${encodeURIComponent(slug)}/me/dungeon`),

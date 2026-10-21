@@ -4,6 +4,7 @@ using Desertod.Domain.Combat;
 using Desertod.Domain.Economy;
 using Desertod.Domain.Rules;
 using Desertod.Domain.Storage;
+using Desertod.Domain.World;
 using static Desertod.Domain.Tests.TestWorld;
 namespace Desertod.Domain.Tests;
 
@@ -50,7 +51,10 @@ public sealed class PlayerFeedback077Tests
     {
         var village=NewVillage();var citizen=NewCitizen(village);citizen.IsHungry=true;citizen.Carry(ResourceKind.Food,1);
         var context=WorkContext.For(village);var stock=village.Stock(ResourceKind.Food);
-        CycleEngine.Start(citizen,Task("quarry-stone"),context,Now,new(-5,10));
+        // Test the meal, rather than an arbitrary tile that seeded terrain may put under water.
+        var outside=RegionalTravel.WesternExit(village);Assert.NotNull(outside);
+        Assert.False(KingdomRules.Area(village).Contains(outside.Value.ToTile()));
+        CycleEngine.Start(citizen,Task("quarry-stone"),context,Now,outside.Value);
         Assert.True(citizen.CyclePrivateOutput);
         var report=Finish(citizen,context);
         Assert.False(report.Hungry);Assert.False(citizen.IsHungry);Assert.Equal(0,citizen.Carried(ResourceKind.Food));

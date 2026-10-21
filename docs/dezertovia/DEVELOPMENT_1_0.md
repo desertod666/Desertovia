@@ -35,6 +35,18 @@ PKG-T010: нынешний `Coins` отображается как хозяйс�
 
 - SDK из `global.json`: 10.0.300. Локально установлен в соседний
   `tools/dotnet` официальным dotnet-install.ps1, без изменения системного SDK.
+- Исправление VS Code21.10: системный `dotnet`8.0.32 содержит только runtime,
+  поэтому C# Dev Kit сообщал `A compatible .NET SDK was not found`.
+  `global.json` теперь задаёт `sdk.paths = ["../tools/dotnet", "$host$"]`.
+  Для текущего локального workspace включён `dotnet.preferCSharpExtension: true`;
+  в `dotnet.server.environmentVariables` заданы абсолютный `DOTNET_ROOT` локального
+  SDK и PATH с этим каталогом перед прежним PATH. Настройка только терминала
+  не задаёт окружение языкового сервера. Локальный `.vscode/settings.json`
+  (игнорируется Git) также выбирает обычное расширение C# и `Desertod.slnx`.
+  После повторного открытия workspace журнал C#08:04:49 подтвердил
+  `Completed (re)load of 7 project(s)`; BuildHost выбрал `tools/dotnet/dotnet.exe`.
+  C# Dev Kit в этом workspace не используется. Системный SDK не устанавливался.
+  Это проверка загрузки проектов/анализа кода; новый запуск отладки F5 не проверялся.
 - Node 24 берётся из bundled runtime Codex, если он доступен; иначе нужен
   установленный Node 24. `tools/dev.ps1` настраивает PATH только своего процесса.
 - Расширение C# для VS Code установлено; `.vscode` содержит build/test задачи,

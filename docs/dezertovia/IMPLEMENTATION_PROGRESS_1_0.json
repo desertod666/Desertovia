@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-21T05:10:57.809402+00:00",
-  "status": "main_plan_active_common_mortal_raid_body_locally_verified_full_ci_pending",
+  "recorded_at_utc": "2026-10-21T06:10:15.946206+00:00",
+  "status": "main_plan_active_ordinary_dungeon_body_locally_checked_exact_candidate_ci_pending",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-mortal-heroes",
+  "branch": "feat/desertovia-1-0-dungeon-bodies",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -42,11 +42,11 @@
     "bot_modified": false,
     "current_source_restarted": true,
     "tool_recipes_verified_http": 8,
-    "local_world_migrations": 52,
+    "local_world_migrations": 53,
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "Shared dev API schema52 currently runs the earlier raid slice. Final carrier/departure corrections are verified by domain/API test hosts and pending shared-runtime reload; public game untouched.",
+    "loaded_scope": "Current ordinary dungeon body and previous checkpoint metadata source loaded in loopback API5180, schema53. DevTools explicitly false for ordinary combat QA. No public game changes.",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
     "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
@@ -59,7 +59,10 @@
     "pre_camera_restart_backup": "/tmp/foundation-before-restart-20261021T021850Z.dump",
     "pre_ground_route_restart_backup": "/tmp/foundation-before-restart-20261021T025302Z.dump",
     "active_core_route_restart_backup": "/tmp/foundation-before-restart-20261021T030628Z.dump",
-    "pre_mortal_royal_backup": "/tmp/foundation-before-restart-20261021T043127Z.dump"
+    "pre_mortal_royal_backup": "/tmp/foundation-before-restart-20261021T043127Z.dump",
+    "pre_mortal_royal_final_backup": "/tmp/foundation-before-restart-20261021T051137Z.dump",
+    "pre_dungeon_royal_backup": "/tmp/foundation-before-restart-20261021T055255Z.dump",
+    "pre_vulnerable_royal_qa_backup": "/tmp/foundation-before-restart-20261021T060913Z.dump"
   },
   "checks": {
     "baseline_ci": {
@@ -1672,7 +1675,7 @@
       }
     }
   },
-  "next_independent_work": "Common saved royal body and ordinary combat class/equipment in new dungeon runs; preserve legacy80/8 and frozen checkpoints. UI redesign last per D-109.",
+  "next_independent_work": "Finish exact candidate ordinary dungeon proof/CI; then independent functional DAG (Director/world actions and recovery) while party/loot decisions remain pending. UI redesign last per D109/D110.",
   "combat_actor_admission": {
     "schema_version": 1,
     "recorded_at_utc": "2026-10-21T04:02:01.869805+00:00",
@@ -1795,7 +1798,7 @@
   },
   "mortal_royal_raid": {
     "schema_version": 1,
-    "recorded_at_utc": "2026-10-21T05:10:57.809402+00:00",
+    "recorded_at_utc": "2026-10-21T05:21:34.493903+00:00",
     "scope": "Common mortal royal/resident body in new raids; dungeon Voivode profile and full A14 unfinished",
     "source_base": "2999073440198d86e348d7acc5bca3c36dbee238",
     "domain": {
@@ -1934,20 +1937,67 @@
       "web/src/index.css": "2bf11dc420ea0cc05965b149132d034403418a82983814e5aacdd12050a6f341",
       "src/Desertod.Domain/Dungeons/DungeonRules.cs": "aa084ead6db34de7921beeab8826302002bb689e5fd2bf06b6a8208d43c2b6bd"
     },
-    "candidate_ci": "pending candidate commit",
+    "candidate_ci": {
+      "status": "success",
+      "pr": "https://github.com/desertod666/Desertovia/pull/90",
+      "previous_run": 39548135422,
+      "previous_sha": "d8df65d61677fb54a29021daf2e28692319bd92e",
+      "previous_backend": {
+        "job": 119050880272,
+        "domain_passed": 672,
+        "api_passed": 374,
+        "api_failed": 12,
+        "cause": "Old work-encounter downgrade used the shared API database and removed newer columns before its older guard. Subsequent requests failed500. Isolated regional downgrade queried a full current entity after partially undoing newer migrations."
+      },
+      "previous_frontend": "success",
+      "previous_docker": "success",
+      "previous_browser": "not complete when correction prepared",
+      "sha": "8a6871df54c6241470593fd3caf74982abbe03ef",
+      "run": 39549109973,
+      "backend": {
+        "job": 119054301593,
+        "domain_passed": 672,
+        "api_passed": 386
+      },
+      "browser": {
+        "desktop_job": 119054301589,
+        "desktop_passed": 206,
+        "phone_job": 119054301655,
+        "phone_passed": 204,
+        "skipped": 2
+      },
+      "frontend": "success",
+      "docker": "success",
+      "verified_at_utc": "2026-10-21T06:10:15.946206+00:00"
+    },
     "public_release": false,
     "remaining": [
-      "exact candidate full CI",
       "new dungeon body/class/equipment binding, settlement and legacy compatibility",
       "full alias rescue scenario, supplies, balance/load and physical phones",
       "remaining full1.0 DAG; no new death/baggage policy chosen"
     ],
     "rescue_boundary": "Remedy cancels the real carrier at its actual position, after medicine validation and before clearing the claim; no delivery renown. Failed remedy preserves the route/claim. Replayed HTTP request spends once.",
     "native_care_boundary": "Dungeon departure refreshes expired native hospital admission without requiring a preceding GET; role does not keep a healed body permanently down.",
-    "runtime_scope": "Shared dev API schema52 currently runs the earlier raid slice. Final carrier/departure corrections are verified by domain/API test hosts and pending shared-runtime reload; public game untouched."
+    "runtime_scope": "Product d8df65d loaded in shared synthetic API5180 after backup /tmp/foundation-before-restart-20261021T051137Z.dump; schema52 unchanged. Read-only actual320px profile check passed. This correction changes tests only. Public game untouched.",
+    "downgrade_fixture_correction": {
+      "scope": "tests only; data-loss guards and product migration unchanged",
+      "changes": [
+        "Work encounter rollback uses its own API database and always reapplies latest schema before disposal",
+        "Regional guard reads only the protected fog column on old schema, then always reapplies latest schema",
+        "Both check latest migration list restored; work encounter test also verifies shared API schema and query remain intact"
+      ],
+      "local_api_passed": 5,
+      "local_api_failed": 0,
+      "result": "TestResults/mortal-royal-ci-isolation/Admin_DESKTOP-FQ85FTD_2026-10-21_07_19_33_net10.0.trx",
+      "cases": "Both guard tests plus previously failing legacy-work, market-stock and renewal tests",
+      "source_sha256": {
+        "tests/Desertod.Api.Tests/WorkEncounterApiTests.cs": "5dadd45a9de7d392e0597db168456ae80198dae4d632dfbdd4692896cc19197a",
+        "tests/Desertod.Api.Tests/RegionalTravelApiTests.cs": "ee04faabc82b8e85f1f6c989cb4f039e5fb623341a5c79978548a0a9c9ef71b8"
+      }
+    }
   },
   "owner_visual_boundary": {
-    "decision": "D-108",
+    "decision": "D-110",
     "preserve": [
       "character art",
       "map art",
@@ -1955,11 +2005,11 @@
       "existing game sprites"
     ],
     "redraw": "deferred until all functionality is ready",
-    "gameplay_scope_question": "resolved by D-109: all functionality first",
+    "gameplay_scope_question": "explicitly resolved by D-110: preserve world/character art; continue1.0 mechanics",
     "dependent_gameplay_changes": "continue within accepted1.0 decisions",
     "independent_work": "functional DAG; graphic redesign deferred",
     "prior_tested_slice": "local checkpoint on feat/desertovia-1-0-mortal-heroes; not released",
-    "status": "clarified_by_D109_functionality_first_interface_last"
+    "status": "explicit_owner_answer_D110"
   },
   "pending_work_after_scope_answer": "Apply common saved body/class/equipment to new dungeon runs, preserving old Voivode80/8 and frozen checkpoints; no unchosen party/death/baggage rules.",
   "owner_work_order": {
@@ -1970,6 +2020,231 @@
     "world_and_character_art": "preserve",
     "mortal_raid_checkpoint": "7784be8",
     "ui_draft": "separate local stash and qa/living-menu-deferred; not product",
-    "deferred_ui_asset": "../qa/living-menu-deferred/menu-frame-oak-v1.png and generation.json (built-in image_gen); draft code in separate named Git stash, not product"
+    "deferred_ui_asset": "../qa/living-menu-deferred/menu-frame-oak-v1.png and generation.json (built-in image_gen); draft code in separate named Git stash, not product",
+    "ui_stash_sha": "add7fe3dde5135c050a39ae5315cb921f89fbf5a",
+    "clarification": "D-110: Сохранить графику мира и персонажей; механики1.0 продолжать",
+    "deferred_wrong_root_ui": "Two orphan Hud/EconomyPanel drafts found under web/web/src/ui moved byte-for-byte to ../qa/living-menu-deferred/wrong-root-files; active source unchanged."
+  },
+  "dungeon_checkpoint_view": {
+    "schema_version": 1,
+    "recorded_at_utc": "2026-10-21T05:17:01.576871+00:00",
+    "scope": "Group reconnect metadata uses saved bodies/map before runtime restore; common royal dungeon body/class/equipment still unfinished",
+    "source_base": "d8df65d61677fb54a29021daf2e28692319bd92e",
+    "api": {
+      "passed": 10,
+      "failed": 0,
+      "result": "TestResults/dungeon-bodies-checkpoint-metadata/Admin_DESKTOP-FQ85FTD_2026-10-21_07_14_11_net10.0.trx",
+      "cases": [
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.A_failed_retreat_commit_does_not_change_the_live_hero_and_a_retry_survives_reload",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.A_group_viewer_reconnects_to_the_admitted_bodies_and_saved_map_even_before_runtime_restore",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.Failed_write_does_not_publish_or_advance_and_is_retryable",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.Final_checkpoint_and_loot_commit_together_and_cannot_be_paid_again_after_restart",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.Manual_command_is_acknowledged_only_after_commit_and_cannot_control_another_hero",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.New_process_recovers_the_committed_fight_and_rejects_a_stale_writer",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.One_blocked_village_does_not_hold_up_another_fight",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.Recovery_preserves_gathering_march_and_bad_save_but_returns_legacy_running_heroes_home",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.Voluntary_retreat_is_owned_durable_and_cannot_enter_safe_rest_before_reaching_the_exit(tsar: False)",
+        "Desertod.Api.Tests.DungeonCheckpointApiTests.Voluntary_retreat_is_owned_durable_and_cannot_enter_safe_rest_before_reaching_the_exit(tsar: True)"
+      ]
+    },
+    "product_sha256": {
+      "src/Desertod.Api/Game/GameService.Dungeon.cs": "718005e2879e87d97ede610dcf338cc1b66151317936587a89a452b4da0873f3",
+      "tests/Desertod.Api.Tests/DungeonCheckpointApiTests.cs": "b6e0887619f09ff9795c520f5781334f3e7e2f4ebd968f12a8ce9e1f807df4c9"
+    },
+    "runtime": "not loaded into shared API yet; isolated API test host only",
+    "public_release": false,
+    "remaining": [
+      "Common royal dungeon body/class/equipment and legacy versioning",
+      "Full exact candidate CI",
+      "Broader1.0 DAG; graphic redesign last per D109"
+    ],
+    "parent_test_fix": "Merged PR90/8a6871d:5 isolated downgrade/regression API PASS; no production-code change.10 checkpoint API result still applies to unchanged product files."
+  },
+  "vscode_sdk": {
+    "status": "7_projects_loaded",
+    "sdk": "10.0.300",
+    "loader": "C# extension (workspace prefers it over C# Dev Kit)",
+    "evidence": "C#.log21.10.2026 08:04:49 Completed (re)load of7 projects; BuildHost selected private tools/dotnet",
+    "F5_retested": false,
+    "system_sdk_changed": false
+  },
+  "royal_dungeon_body": {
+    "schema_version": 1,
+    "recorded_at_utc": "2026-10-21T06:10:15.946206+00:00",
+    "scope": "Ordinary saved body/class/equipment and one settlement for NEW group dungeon royal figures; legacy80/8 and frozen checkpoint compatibility",
+    "source_base": "2b8da94",
+    "domain": {
+      "passed": 682,
+      "failed": 0,
+      "total": 682,
+      "result": "TestResults/dungeon-royal-domain-final-source/Admin_DESKTOP-FQ85FTD_2026-10-21_07_48_51_net10.0.trx"
+    },
+    "api_final_before_vulnerability_fixture": {
+      "passed": 12,
+      "failed": 0,
+      "total": 12,
+      "result": "TestResults/dungeon-royal-api-final/Admin_DESKTOP-FQ85FTD_2026-10-21_07_46_05_net10.0.trx"
+    },
+    "api_first": {
+      "passed": 20,
+      "failed": 1,
+      "total": 21,
+      "result": "TestResults/dungeon-royal-api-first/Admin_DESKTOP-FQ85FTD_2026-10-21_07_38_34_net10.0.trx"
+    },
+    "browser": {
+      "passed": 8,
+      "failed": 0,
+      "scope": "4RU/EN320px royal class picker and4adjacent mortal profile checks",
+      "physical_phone": false
+    },
+    "frontend": "TypeScript/Vite/oxlint PASS",
+    "migration": {
+      "from": 52,
+      "to": 53,
+      "backup": "/tmp/foundation-before-restart-20261021T055255Z.dump",
+      "compared_rows_unchanged": {
+        "citizens": {
+          "rows": 28,
+          "sha256": "c6a96eff1fe3a758d0d3ce3a9485aa2d0a9623bf48720fc9063f5f9bd0de768b"
+        },
+        "worlds": {
+          "rows": 4,
+          "sha256": "c8d74acbbe81c6e5cc84211f52e411351e0fb59beda90d52a6cf73b895771581"
+        },
+        "wallets": {
+          "rows": 21,
+          "sha256": "085bbe71a4b57d2ff0954b3081036f3556d5c98b508a6171275e2d5ff02f162d"
+        },
+        "economy": {
+          "rows": 4,
+          "sha256": "190795d3b2416b315a9e9100a903e94a67f5ada7b062092815c374fe104ca690"
+        },
+        "battles": {
+          "rows": 1,
+          "sha256": "dc7e0680ac864efa250e3bc45ad8e453b5084bc492d7912612728cb2bb93ee89"
+        },
+        "orders": {
+          "rows": 1,
+          "sha256": "8af9465aeab271a2801725f42392b73842f7ba0b877cb018db759db645aa6bf9"
+        },
+        "claims": {
+          "rows": 1,
+          "sha256": "2da0fe2c943c37f3473da5e988cc13b10e79e263193d5b44b0585bbbf435881b"
+        },
+        "supply_orders": {
+          "rows": 1,
+          "sha256": "acca3843886390b9be3119751b11c2b87e8209f42069ecea020f9e0b5f853668"
+        },
+        "supply_deliveries": {
+          "rows": 1,
+          "sha256": "814dfce9780fed73b4a3596620e159a716a0f58d4b1449cffd2bbc9d4841c1f6"
+        },
+        "dungeons": {
+          "rows": 3,
+          "sha256": "7563c8b94d2081ff3b812bb72a258f1daa8aa59c4f24e57eb2f98259a21bd9d2"
+        }
+      },
+      "excluded_column": "DungeonRuns.CombatRulesVersion only",
+      "other_tables_compared": false
+    },
+    "actual_phone_qa": {
+      "first": "Selection20HP/reservation persisted across API restart, RetreatRequested and gear returned once. DevTools enabled, so NOT vulnerability proof. First helper failed after actions because checkpoint enum numbers were compared with JSON enum names. Saved raw state inspected read-only; no rerun of settlement.",
+      "ordinary_repeat": {
+        "fixture_only": true,
+        "scope": "actual320px menu → class reservation → API restart during gathering → same run/class → real fight → vulnerable retreat → one equipment return; reuses previous synthetic world and returned spear; DevTools=false; not production-chain proof",
+        "slug": "qa-royal-dungeon-mvhp9mmu",
+        "runId": "01a15d13-9b27-769e-b8ee-c4aa879678f2",
+        "health": 20,
+        "class": "Spearman",
+        "rules": 1,
+        "settled": true,
+        "stockSpear": 1,
+        "broken": [],
+        "errors": [],
+        "restart_backup_phase": "Gathering",
+        "restart_backup": "/tmp/foundation-before-restart-20261021T060913Z.dump",
+        "preparedAt": "2026-10-21T06:08:56.639Z",
+        "DevTools": false
+      }
+    },
+    "candidate_ci": {
+      "status": "correction_ready_new_exact_head_pending",
+      "previous_sha": "113e5702d6d1277dadb61a048de20dc6560b9173",
+      "pr": "https://github.com/desertod666/Desertovia/pull/91",
+      "previous_run": 39554235611,
+      "previous_backend": {
+        "job": 119070141247,
+        "domain_passed": 681,
+        "domain_failed": 1,
+        "api_passed": 391,
+        "api_failed": 1
+      },
+      "previous_frontend": "success",
+      "previous_docker": "success",
+      "previous_browsers": "not yet complete when correction prepared"
+    },
+    "public_release": false,
+    "remaining": [
+      "Exact candidate full CI",
+      "Full A14, group policy, loot ownership, recovery and remaining1.0 DAG",
+      "Visual redesign last; physical phone/balance/load not covered"
+    ],
+    "screenshots": [
+      "docs/dezertovia/verification/royal-dungeon/royal-gathering-320.png",
+      "docs/dezertovia/verification/royal-dungeon/royal-fight-320.png"
+    ],
+    "product_file_sha256": {
+      "src/Desertod.Api/Game/DungeonDtos.cs": "b1d05e50967a4c4f5421fd945de2837e5867af40838a77e67185546d544316ac",
+      "src/Desertod.Api/Game/GameEndpoints.cs": "d69b06eaf306b01558fb576174f99307b1b776701aa8969566094b49ead071f2",
+      "src/Desertod.Api/Game/GameService.Accounting.cs": "53c4d181d7cbf76ff9faeb9600166d415f8877026ea42334516be4b9cb4ea38d",
+      "src/Desertod.Api/Game/GameService.Almighty.cs": "691b94b15ab8074b5cd87c24bd5b51c89c37f124b5fc67003488294eca5c4919",
+      "src/Desertod.Api/Game/GameService.Dungeon.cs": "7165c5ee23931898c895311181bc2f18e425a04d3fce36a7bd3adf767cfdfdea",
+      "src/Desertod.Api/Game/GameService.RoyalDungeon.cs": "be0c36fd59750f29c9f9a280ca70ac26c878292d53c0729793c7d30316bd524f",
+      "src/Desertod.Domain/Combat/RoyalCombatState.cs": "68268dbc4620d9f5d17aaf7b00ed1a9387886e889940fb655b35984ff5b248a2",
+      "src/Desertod.Domain/Dungeons/DungeonRules.Royal.cs": "603c76bac8932b9c37c5497695515efd73208da64cda9d28ccbc8fd365de844b",
+      "src/Desertod.Domain/Dungeons/DungeonRules.cs": "b5c3e1437a63b2751a3d6b773e15336f87770ad2f6f27c280b33af85ac8eb6a0",
+      "src/Desertod.Domain/Dungeons/DungeonRun.cs": "2f6db496bb786fd6656bf37d21464510b9b8a1f7d5f3a91f5e5551097cdb6011",
+      "src/Desertod.Domain/Dungeons/DungeonSimulation.cs": "c237672b0433c8e5966ce2021f5995bdfb44b4a387f6fd4c1262a0fbdb40cec8",
+      "src/Desertod.Domain/Rules/Departure.cs": "038e9b7aca129e88b72a444356c0f193859af68acef729a7f33db2e22547e412",
+      "src/Desertod.Infrastructure/Data/DesertodDbContext.cs": "1973629273cf08d62e63a151c5965d06ad5e456d3200856c8d0da57469fe5e81",
+      "src/Desertod.Infrastructure/Data/Migrations/20261021053133_DungeonRoyalBodies.Designer.cs": "46b00d1f26f2c0f71b52193f333114e88152fb724bdb0516b84f2727ed3fe5ba",
+      "src/Desertod.Infrastructure/Data/Migrations/20261021053133_DungeonRoyalBodies.cs": "8699e30bb08bbba4e6a05c06342cdb96f5655f9a6dcce5875c8f07d15d4d9af9",
+      "src/Desertod.Infrastructure/Data/Migrations/DesertodDbContextModelSnapshot.cs": "21a1b3bf33b495d5c87a308e58f93d1f8333fe52209d212a006df24f2cee8797",
+      "tests/Desertod.Api.Tests/RoyalDungeonApiTests.cs": "cddb46d148a427a186ccb9488b42e7c849f4fd60ae0414fe21d15f2f2a4a8a90",
+      "tests/Desertod.Api.Tests/RoyalDungeonMigrationTests.cs": "c2fe71a44d1079b4a507e8ec365e4ca015e0b60f3c42612e29db6cd0407a56aa",
+      "tests/Desertod.Domain.Tests/DungeonTests.cs": "2c489b2ffe869b6be91876b1436da268a076aebbb6166db6842f42a0a16d4d10",
+      "tests/Desertod.Domain.Tests/RoyalDungeonTests.cs": "6be8225e739c6f676be9af27c2b0620124cebc2757234852fb1ae6e8501c708c",
+      "tools/dev.ps1": "a95601081234e06ccfc94ea4c4ca995e4d285119bc559eeee8997e2d92e47954",
+      "web/e2e/post-071-harness.tsx": "77328b9b3a3adc6f9225590092147671fa037ef92a0c82fb99d5829041e54664",
+      "web/e2e/royal-dungeon.spec.ts": "2a2ab1670291229ef945b5a4b7cec6ba1f4b3a3aee602ddfa2fff077b392b9bb",
+      "web/src/api.ts": "5f3901afdeea94b7d0a995ec68e5b188a01a4c99128f53cfdd2a951ca968d70f",
+      "web/src/i18n/en.ts": "24bb212e41f66ef66d70267d8ba40e3998bcd05ce4fe818a9a6ede222877eb6b",
+      "web/src/i18n/ru.ts": "f8db764bead3c16c90b51009b12afa0eb505699d6614ecc2f080c4ecaffd4c2b",
+      "web/src/pages/DungeonPage.tsx": "4ca34edc758ad4e60b96a7894c73d2af6bf66d7046d2584d5956d9b9aa9e6d13",
+      "web/src/ui/Dungeon.tsx": "4d60de0d15df89520234f124d54d13715ece68cb671cbd65f26f16d56dabcfe1",
+      "web/src/ui/GameMenu.tsx": "603154879a61a34a31485e6e2a529de9a0e5a56413eed431254d1e286180c604",
+      "web/src/ui/royalDungeon.css": "7dd8815f37b633386bbc083ce71c2151e948ec67fbf99b121e8fb636e7301272",
+      "tests/Desertod.Api.Tests/WorkEncounterApiTests.cs": "20d136c14e0526d8b56f566445162c09b32bd5d62fbd4df8eef482f299b6124f",
+      "tests/Desertod.Domain.Tests/PlayerFeedback077Tests.cs": "fdc6b5ff7ae8f1f8618f09e63ad664ef757937a9749ee3751c286d9fc52ebcc0"
+    },
+    "api_vulnerable_final": {
+      "passed": 22,
+      "failed": 0,
+      "total": 22,
+      "result": "TestResults/dungeon-royal-vulnerable/Admin_DESKTOP-FQ85FTD_2026-10-21_08_09_09_net10.0.trx",
+      "scope": "4ordinary-body API with DevTools=false in accepted/restored checkpoint,10checkpoint/reconnect/retry,8combat-actor guard checks"
+    },
+    "ci_fixture_correction": {
+      "product_code_changed": false,
+      "changes": [
+        "After guarded partial downgrade, work encounter verifies only CheckpointJson and ReservedCoins columns that exist on the protected schema; isolated database and finally restore remain",
+        "Meal test uses a reachable outside work spot instead of an arbitrary possibly submerged seed-dependent tile",
+        "Dungeon departure checks the real reachable WesternExit, not obsolete fixed MarchSpot; wounded-stay and equipment checks remain"
+      ],
+      "domain_passed": 682,
+      "domain_failed": 0,
+      "result": "TestResults/dungeon-royal-ci-fixtures/Admin_DESKTOP-FQ85FTD_2026-10-21_08_24_41_net10.0.trx",
+      "local_api_guard": "pending, do not overwrite the still-running separate Director validation binary"
+    }
   }
 }

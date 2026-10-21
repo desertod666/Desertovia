@@ -9,6 +9,7 @@ import {SafeRestControl} from '../src/ui/SafeRestControl'
 import {PersonalBattlePanel} from '../src/ui/PersonalBattlePanel'
 import {actorFighter} from '../src/game/battleActor'
 import {RoyalCombatSheet} from '../src/ui/RoyalCombatSheet'
+import {RoyalDungeonClassPicker} from '../src/ui/Dungeon'
 import type { Catalog, Citizen, RaidBattle, RaidUnit, VillageState } from '../src/api'
 import type {RestState} from '../src/api'
 import '../src/index.css'
@@ -17,6 +18,9 @@ const village={slug:'stand',resources:[{kind:'Wood',amount:10,capacity:30}],tsar
 const battle={id:'raid',fighters:[],finishedAt:null} as unknown as RaidBattle
 const legacyMode=new URLSearchParams(location.search).has('legacyFighter')
 const royalMode=new URLSearchParams(location.search).has('royalCombat')
+const royalDungeonMode=new URLSearchParams(location.search).has('royalDungeon')
+const royalDungeonVillage={...village,dungeon:{id:'royal-run',combatRulesVersion:1,phase:'Gathering',heroes:[{name:'Царь',citizenId:null,class:'Voivode',combatClass:'Brawler'}]}} as unknown as VillageState
+Object.assign(window,{royalDungeonStand:{initial:royalDungeonVillage}})
 const royalVillage={...village,tsar:{...village.tsar,injuredUntil:new Date(Date.now()+600000).toISOString(),combat:{strength:0,dexterity:0,endurance:0,guarding:0,renown:0,weapon:'Bow',armor:'LeatherArmor',arrows:1,weaponSharpen:0,arrowSharpen:2,raidHealth:32,power:6}}} as VillageState
 Object.assign(window,{royalStand:{initial:royalVillage}})
 const legacyCitizen={id:'old-ruler-resident',load:[],personalGoods:[]} as unknown as Citizen
@@ -29,6 +33,8 @@ if(hudData)hudData[1].state.resources.forEach((r:{amount:number},i:number)=>{r.a
 const citizen=needsMode?{id:'synthetic-citizen',accountId:'synthetic',energy:40,maximumEnergy:100,energyPerHour:5,serverNow:new Date().toISOString(),regenerationMultiplier:.5,shelterQuality:.5,isHungry:new URLSearchParams(location.search).has('hungry'),cycleTired:new URLSearchParams(location.search).has('tired'),cyclesSinceMeal:1,state:'Idle',injuredUntil:null,drinkReadyAt:null} as Citizen:null
 function Stand(){const [closed,close]=useState(false),[wallet,setWallet]=useState(false),[rest,setRest]=useState<RestState>('Active')
  const [royal,setRoyal]=useState(royalVillage)
+ const [royalDungeon,setRoyalDungeon]=useState(royalDungeonVillage)
+ if(royalDungeonMode)return <div className="card" style={{maxWidth:420,margin:8}}><RoyalDungeonClassPicker village={royalDungeon} onVillage={setRoyalDungeon}/></div>
  if(royalMode)return <div className="card" style={{maxWidth:420,margin:8}}><RoyalCombatSheet village={royal} now={Date.now()} onVillage={setRoyal}/></div>
  if(legacyMode){const fighter=actorFighter(battle.fighters,'owner',legacyCitizen.id)!;return <div className="game-root"><BattleControls village={village} battle={battle} unit={unit} citizen={legacyCitizen} catalog={{tasks:[]} as unknown as Catalog} tsar accountId="owner" onClose={()=>{}}/><div style={{position:'absolute',bottom:12,left:8}}><PersonalBattlePanel slug="stand" battle={battle} fighter={fighter} remedies={2} now={Date.now()} onError={message=>{throw new Error(message)}}/></div></div>}
  if(hudData)return <div className="game-root"><div className="hud"><TopBar village={hudData[1].state} catalog={hudData[0]} citizen={citizen} citizens={new Map()} onForecast={async()=>{}} rest={restMode?<SafeRestControl state={rest} onChange={async resting=>setRest(resting?'Resting':'Active')}/>:undefined} wallet={<WalletHud slug="stand" onOpen={()=>setWallet(true)}/>}/>{needsMode&&<BottomBar citizen={citizen} catalog={hudData[0]} structures={hudData[1].state.structures} now={Date.now()} phone={innerWidth<=720} tsar={false} ruler={false} hasResult={false} poll={null} onMenu={()=>{}} onInventory={()=>{}} onShowResult={()=>{}} pending={false} onCancelTask={()=>{}} drinks={0} onDrink={()=>{}} remedies={0} onHeal={()=>{}}/>}</div></div>

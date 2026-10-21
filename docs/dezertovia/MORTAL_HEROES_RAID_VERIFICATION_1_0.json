@@ -140,7 +140,7 @@
     "src/Desertod.Domain/Dungeons/DungeonRules.cs": "aa084ead6db34de7921beeab8826302002bb689e5fd2bf06b6a8208d43c2b6bd"
   },
   "candidate_ci": {
-    "status": "new_candidate_required_after_test_isolation_fix",
+    "status": "success",
     "pr": "https://github.com/desertod666/Desertovia/pull/90",
     "previous_run": 39548135422,
     "previous_sha": "d8df65d61677fb54a29021daf2e28692319bd92e",
@@ -153,11 +153,27 @@
     },
     "previous_frontend": "success",
     "previous_docker": "success",
-    "previous_browser": "not complete when correction prepared"
+    "previous_browser": "not complete when correction prepared",
+    "sha": "8a6871df54c6241470593fd3caf74982abbe03ef",
+    "run": 39549109973,
+    "backend": {
+      "job": 119054301593,
+      "domain_passed": 672,
+      "api_passed": 386
+    },
+    "browser": {
+      "desktop_job": 119054301589,
+      "desktop_passed": 206,
+      "phone_job": 119054301655,
+      "phone_passed": 204,
+      "skipped": 2
+    },
+    "frontend": "success",
+    "docker": "success",
+    "verified_at_utc": "2026-10-21T06:10:15.946206+00:00"
   },
   "public_release": false,
   "remaining": [
-    "exact candidate full CI",
     "new dungeon body/class/equipment binding, settlement and legacy compatibility",
     "full alias rescue scenario, supplies, balance/load and physical phones",
     "remaining full1.0 DAG; no new death/baggage policy chosen"

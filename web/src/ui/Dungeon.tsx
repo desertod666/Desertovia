@@ -12,6 +12,7 @@ import {
   type VillageState,
 } from '../api'
 import { useI18n } from '../i18n'
+import './royalDungeon.css'
 
 const GATHERING_SECONDS = 60
 
@@ -71,12 +72,14 @@ export function DungeonPanel({
   error,
   onOpen,
   onCancel,
+  onVillage,
 }: {
   village: VillageState
   pending: boolean
   error: string | null
   onOpen: () => void
   onCancel: () => void
+  onVillage?: (next: VillageState) => void
 }) {
   const { t } = useI18n()
   const run = village.dungeon
@@ -84,7 +87,8 @@ export function DungeonPanel({
   return (
     <section className="card">
       <h3>{t('dungeon.tsarTitle')}</h3>
-      <p className="small">{t('dungeon.tsarHint', { seconds: GATHERING_SECONDS })}</p>
+      <p className="small">{t(active&&!run.combatRulesVersion?'dungeon.tsarHint':'dungeon.mortalTsarHint', { seconds: GATHERING_SECONDS })}</p>
+      {active&&run.phase==='Gathering'&&run.combatRulesVersion===1&&onVillage&&<RoyalDungeonClassPicker village={village} onVillage={onVillage}/>}
       {!active ? (
         <button className="primary" disabled={pending} onClick={onOpen}>
           {t('dungeon.open')}
@@ -97,6 +101,35 @@ export function DungeonPanel({
       {error && <p className="error">{error}</p>}
     </section>
   )
+}
+
+/** Functional class selection in the existing menu; graphic redesign is deferred by D-109. */
+export function RoyalDungeonClassPicker({village,onVillage}:{village:VillageState;onVillage:(next:VillageState)=>void}) {
+  const i18n=useI18n(),{t}=i18n,run=village.dungeon
+  const current=run?.heroes.find(h=>h.citizenId===null)?.combatClass??'Brawler'
+  const [offers,setOffers]=useState<HeroClassOffer[]|null>(null),[selected,select]=useState<HeroClass>(current)
+  const [pending,setPending]=useState(false),[error,setError]=useState<string|null>(null)
+  useEffect(()=>{
+    let cancelled=false
+    setOffers(null);select(current);setError(null)
+    api.royalHeroClasses(village.slug).then(value=>{if(!cancelled)setOffers(value)},exception=>{if(!cancelled)setError(i18n.error(exception))})
+    return ()=>{cancelled=true}
+  },[village.slug,run?.id,current,i18n])
+  const offer=offers?.find(o=>o.class===selected)
+  return <form className="royal-dungeon-class" onSubmit={async event=>{
+    event.preventDefault();if(pending||!offer||selected===current)return
+    setPending(true);setError(null)
+    try{onVillage(await api.pickRoyalHeroClass(village.slug,selected))}catch(exception){setError(i18n.error(exception))}finally{setPending(false)}
+  }}>
+    <p className="small">{t('dungeon.joined',{heroClass:i18n.heroClass(current)})}</p>
+    <div className="row"><label>{t('dungeon.pickClass')} <select aria-label={t('dungeon.pickClass')} value={selected} disabled={pending||!offers} onChange={e=>select(e.target.value as HeroClass)}>
+      {!offers&&<option value={current}>{t('loading')}</option>}
+      {offers?.map(o=><option key={o.class} value={o.class}>{i18n.heroClass(o.class)}</option>)}
+    </select></label><button disabled={pending||!offer||selected===current}>{pending?t('loading'):t('dungeon.accept')}</button></div>
+    {offer&&<p className="small">{t('dungeon.classStats',{health:offer.health,damage:offer.damage,range:offer.range})}</p>}
+    {offer&&(offer.weapon||offer.armor)&&<p className="small">{t('dungeon.classGear',{gear:[offer.weapon,offer.armor].filter((kind):kind is string=>kind!==null).map(kind=>i18n.resource(kind)).join(', ')})}</p>}
+    {error&&<p className="error" role="alert">{error}</p>}
+  </form>
 }
 
 /**

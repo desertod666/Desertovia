@@ -373,6 +373,11 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<string>("CheckpointJson")
                         .HasColumnType("jsonb");
 
+                    b.Property<int>("CombatRulesVersion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
                     b.Property<string>("DungeonId")
                         .IsRequired()
                         .HasMaxLength(32)
@@ -2189,6 +2194,8 @@ namespace Desertod.Infrastructure.Data.Migrations
                             b1.Property<string>("Class")
                                 .IsRequired();
 
+                            b1.Property<string>("CombatClass");
+
                             b1.Property<int>("Experience");
 
                             b1.Property<string>("Killer");
@@ -2201,6 +2208,8 @@ namespace Desertod.Infrastructure.Data.Migrations
                                 .IsRequired();
 
                             b1.Property<int>("Remedies");
+
+                            b1.Property<Guid?>("RoyalBodyCitizenId");
 
                             b1.Property<bool>("Settled");
 
