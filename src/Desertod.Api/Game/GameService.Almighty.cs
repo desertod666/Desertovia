@@ -133,13 +133,15 @@ public sealed partial class GameService
             var wagesToday=economicAnalysis.CurrentPartialDay.Wages.Total;
             var tradingProfitToday=economicAnalysis.CurrentPartialDay.KnownPrivatePositiveProfit.Total-economicAnalysis.CurrentPartialDay.KnownPrivateLoss;
             var lease = Guid.CreateVersion7();
+            var finance=await FinanceEnvelopeAsync(db,village,state,now,now,ct);
+            if(finance is not null) options.AddRange(finance.Commands.Select(FinanceOption));
             var permissions=AlmightyPermissions.Catalog(options);
             var revision=AlmightyPermissions.Revision(new(facts,readiness,stock,state.Mode,village.VigorEnergy,village.VigorCooldownMinutes),options);
             var snapshot = JsonSerializer.Serialize(new {
                 contract=new{version=AlmightyPermissions.SnapshotVersion,worldId=villageId,observationId=lease,
                     capturedAt=now,mode=state.Mode,revision,revisionScope=AlmightyPermissions.RevisionScope,
-                    scope="Observed evidence only; economic executors and party policy remain outside this contract."},
-                permissions,
+                    scope="Observed world evidence; delegated economic execution has a separate finance revision and fresh server admission. Party policy is separate."},
+                permissions, finance,
                 directorPolicy=new{state.PolicyVersion,state.DisabledKinds},
                 now, facts, stock, previousStock,
                 raidPressure = new { raidPressure.Eligible, raidPressure.ProposalDue, raidPressure.BlockedBy,
@@ -234,6 +236,18 @@ public sealed partial class GameService
             } else {
                 state.LastError = ""; state.Intent = string.IsNullOrWhiteSpace(answer.Intent) ? state.Intent : answer.Intent;
                 var reason = answer.Reason;
+                if(DirectorFinanceRules.IsOption(chosen.Id))
+                {
+                    var applied=await ExecuteDirectorFinanceAsync(db,state,observation,saved.RootElement,chosen.Id,reason,now,ct);
+                    observation.Option=chosen.Id;
+                    if(!applied)
+                    {
+                        state.LastError="Экономические условия или полномочия изменились. Нужен новый анализ; деньги и заказы не изменены.";
+                        observation.Reason=state.LastError; state.NextReviewAt=now+AlmightyPolicy.ImportantInterval;
+                    }
+                    else await OfferDueRaidAfterFinanceAsync(db,state,observation,saved.RootElement,admittedOptions,now,ct);
+                    await db.SaveChangesAsync(ct); return applied;
+                }
                 // Это явная страховка ритма, а не приписывание решения модели: только заявка царю.
                 var snapshot = saved;
                 if (chosen.Enemy is null && snapshot.RootElement.TryGetProperty("raidPressure", out var pressure)
@@ -252,7 +266,7 @@ public sealed partial class GameService
                     ? await db.AlmightyProposals.AnyAsync(p => p.VillageId == review.VillageId && p.CreatedAt > now - AlmightyPolicy.RaidProposalInterval
                         && raidOptionIds.Contains(p.Option), ct)
                     : await db.AlmightyProposals.AnyAsync(p => p.VillageId == review.VillageId && p.Option == chosen.Id && p.CreatedAt > now.AddHours(-2) && (p.Status == "Rejected" || p.Status == "Applied"), ct);
-                if (state.Mode == "Propose" && chosen.Id != "none" && !pending && !duplicate && !(state.LastNoticeAt > now.AddMinutes(-30))) {
+                if (state.Mode is "Propose" or "AutoEconomy" && chosen.Id != "none" && !pending && !duplicate && !(state.LastNoticeAt > now.AddMinutes(-30))) {
                     db.AlmightyProposals.Add(new() { VillageId = review.VillageId, ReviewId = review.Lease, Option = chosen.Id,
                         Reason = reason, Intent = state.Intent, CreatedAt = now, ExpiresAt = now + AlmightyPolicy.ProposalLifetime, Snapshot = observation.Snapshot });
                     state.LastNoticeAt = now;
@@ -321,7 +335,7 @@ public sealed partial class GameService
             if (p.Status != "Pending") return p.Result.Length > 0 ? p.Result : p.Status;
             var now = time.GetUtcNow();
             var state = await DirectorStateAsync(db, villageId, now, ct);
-            if (p.ExpiresAt <= now || state.Mode != "Propose") { p.Status = "Expired"; p.Result = "Предложение устарело или директор выключен."; }
+            if (p.ExpiresAt <= now || state.Mode is not ("Propose" or "AutoEconomy")) { p.Status = "Expired"; p.Result = "Предложение устарело или директор выключен."; }
             else if (!accept) { p.Status = "Rejected"; p.Result = "Отклонено царём."; }
             else {
                 var facts = await DirectorFactsAsync(db, village, state, now, ct);

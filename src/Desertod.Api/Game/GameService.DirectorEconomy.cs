@@ -127,7 +127,7 @@ public sealed partial class GameService
                         rows=funding.Scheduled.Select(p=>new object[]{p.Version,p.Enabled,p.DailyIssueLimit,p.EffectiveAt}),
                         count=funding.ScheduledCount,truncated=funding.ScheduledTruncated},
                     funding.BudgetDay,funding.BudgetRevision,funding.IssuedToday,funding.RemainingAllowance,funding.FundedWorkEnabled,
-                    automaticIssueExecutorAvailable=false,allowanceIsNotMoney=true},
+                    automaticIssueExecutorAvailable=true,requiresExplicitDelegationAndAutoEconomy=true,allowanceIsNotMoney=true},
                 acceptedWorkPromises=promised,promisesAreSubsetOfWorkReserved=true,
                 totalRecordedMoney=wallets+(economy?.TreasuryCoins??0)+workReserved+supplyReserved,
                 walletBalances=new{holders=wealth.People,zeroBalances=wealth.WithoutRecordedIncome,
@@ -141,7 +141,7 @@ public sealed partial class GameService
                     meaning="Finalized server receipts reconcile every wallet, treasury and reserve. Unvalidated history and externally changed anchors are not proven issuance. A pending current action is finalized after this observation."}},
             new{newOfferPolicyVersion=policy?.Version,newOffersTaxEnabled=policy?.Enabled??false,
                 brackets=policy?.Brackets??[],settlement="Frozen offer terms: older enabled policies may still settle when new offers are tax-free.",
-                wagesExempt=true,unknownCostExempt=true,automaticEconomicExecutorAvailable=false},
+                wagesExempt=true,unknownCostExempt=true,automaticEconomicExecutorAvailable=true,requiresExplicitDelegationAndAutoEconomy=true},
             new{communalFood=village.Storages.Where(x=>x.OwnerAccountId is null).SelectMany(x=>x.Goods).Where(x=>x.Kind==ResourceKind.Food).Sum(x=>x.Amount),
                 hungryResidents=residents.Count(x=>x.IsHungry),grainIsNotReadyFood=true,
                 farmEntitlementsNotYetIncluded=true},
@@ -150,6 +150,6 @@ public sealed partial class GameService
                 "Known private profit includes market and public supply deliveries; supply tax is not implemented. Wages are separate and exempt. Positive gains and losses are separate; unknown cost is not zero cost.",
                 "Balances and opening stock are not earnings. TotalRecordedMoney covers wallets/treasury/work/supply funds. Treasury funding allowance is a ceiling, not issued money or a promise to spend it. New public wages need backed orders; old accepted wages retain their terms. Historical completeness is not guaranteed.",
                 "Analyze affordability, inequality of burden, treasury obligations and food; use actual evidence and acknowledge short history. Exact tax settings are for the director to assess, not fixed defaults. Never create retrospective debt or modify accepted offer terms.",
-                "This observation is analysis, not authority to debit wallets. Future autonomous fiscal actions require versioned executors, fresh validation, limits, audit and owner category controls. Dcoin and real payments are outside this analysis."});
+                "This observation is analysis, not authority to debit wallets. Autonomous fiscal actions require versioned executors, fresh validation, limits, audit and owner category controls. Dcoin and real payments are outside this analysis."});
     }
 }

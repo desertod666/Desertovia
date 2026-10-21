@@ -1,0 +1,130 @@
+{
+  "recorded_at_utc": "2026-10-21T13:41:37.840222+00:00",
+  "branch": "feat/desertovia-1-0-director-finance",
+  "source_parent": "c8cd2e6",
+  "status": "implemented_partial_verification_running",
+  "implemented": true,
+  "verified": "scoped_only_expanded_checks_running",
+  "released": false,
+  "checks": {
+    "domain": {
+      "path": "TestResults/director-finance-domain/director-finance-domain.trx",
+      "sha256": "05532a87f4d27205edfbd2119edda9e42ddf528dcf8389989c0927fb29340461",
+      "counters": {
+        "total": "726",
+        "executed": "726",
+        "passed": "726",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    "api_initial_connected": {
+      "path": "TestResults/director-finance-admission/director-finance-admission.trx",
+      "sha256": "76abb4afd07975343f5dc365fcbca0d31695d20174d57068ff4a8e15dacbf711",
+      "counters": {
+        "total": "39",
+        "executed": "39",
+        "passed": "39",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    "api_initial_unconnected": {
+      "path": "TestResults/director-finance-initial/director-finance-initial.trx",
+      "result": "39startup failures; absent loopback database tunnel, no game assertion executed"
+    },
+    "bot": {
+      "command": "private bot-contract-python -m unittest tests.test_almighty -q",
+      "passed": 13,
+      "mocked_only": true
+    },
+    "frontend": {
+      "typescript": "PASS",
+      "vite": "PASS before final percentage label edit",
+      "oxlint": "PASS with pre-existing warnings"
+    },
+    "expanded_api": {
+      "status": "running",
+      "session": 22700,
+      "scope": "finance tax/day/retention, migration, economy observation and large snapshots"
+    }
+  },
+  "migration": {
+    "from": 57,
+    "to": 58,
+    "old_columns_preserved": true,
+    "tables": {
+      "Accounts": 287,
+      "Citizens": 28,
+      "Villages": 7,
+      "KingdomEconomies": 7,
+      "GameWallets": 23,
+      "LedgerEntries": 88,
+      "EconomyReceipts": 15,
+      "MarketLots": 0,
+      "TaxPolicies": 0,
+      "MarketTaxQuotes": 0,
+      "MarketTaxEvents": 0,
+      "WorkOrders": 2,
+      "WorkOrderClaims": 1,
+      "SupplyOrders": 1,
+      "SupplyDeliveries": 1,
+      "FarmCrops": 0,
+      "AlmightyStates": 1,
+      "AlmightyObservations": 0,
+      "AlmightyProposals": 0,
+      "AlmightyPolicyChanges": 2,
+      "DungeonRuns": 5,
+      "RaidBattles": 1,
+      "VillageProjects": 10,
+      "MonetaryBatches": 5,
+      "TreasuryFundingPolicies": 2,
+      "TreasuryIssueDays": 1,
+      "TreasuryIssues": 1
+    },
+    "new_defaults": {
+      "policies": 0,
+      "days": 0,
+      "actions": 0,
+      "markedLedger": 0
+    },
+    "new_nullable_ledger_column_ignored": true,
+    "pre_upgrade_backup": "/tmp/foundation-before-restart-20261021T133531Z.dump",
+    "raw_snapshots_committed": false
+  },
+  "private_http": {
+    "status": "not_yet_run"
+  },
+  "candidate_ci": {
+    "status": "not_yet_started"
+  },
+  "remaining": [
+    "Exact final candidate API/browser/CI/restart evidence",
+    "T026/A11 quantitative calibration, market demand and private craft inputs",
+    "Wider T054 adaptive threshold/target selection and farm/building/adventure funding integration",
+    "T055 shadow comparisons and actual bounded staging director loop",
+    "Full1.0 DAG, final UI after functionality; no public deployment or real payments"
+  ]
+}

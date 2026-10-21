@@ -114,7 +114,7 @@ public sealed partial class GameService
             }
         }
         db.LedgerEntries.Add(new LedgerEntry { VillageId = village, OperationId = operation, AccountId = account,
-            FinancialBatchId = batch, Operation = action, Asset = asset, Location = location, Delta = amount, At = now });
+            FinancialBatchId = batch, DirectorReviewId = db.DirectorReviewId, Operation = action, Asset = asset, Location = location, Delta = amount, At = now });
     }
 
     private async Task PayUsefulWorkAsync(DesertodDbContext db, Village village, CycleReport? report, DateTimeOffset now, CancellationToken ct)
@@ -440,7 +440,7 @@ public sealed partial class GameService
         var rows = await query.OrderByDescending(x => x.At).ThenByDescending(x => x.Id).Take(51).ToListAsync(ct);
         var names = await db.Accounts.Where(a => rows.Select(x => x.AccountId).Contains(a.Id)).Select(a => new { a.Id, a.DisplayName }).ToDictionaryAsync(a => a.Id, a => a.DisplayName, ct);
         var journal = rows.Take(50).Select(x => new LedgerDto(x.Id, x.At, x.Operation, x.Asset, x.Location, x.Delta,
-            x.AccountId is {} id ? names.GetValueOrDefault(id, "Resident") : null)).ToArray();
+            x.DirectorReviewId is not null ? "Всевышний" : x.AccountId is {} id ? names.GetValueOrDefault(id, "Resident") : null)).ToArray();
         var lots = await db.MarketLots.AsNoTracking().Where(x => x.VillageId == village.Id && (x.Status == "open" || x.SellerAccountId == account))
             .OrderByDescending(x => x.CreatedAt).Take(100).ToListAsync(ct);
         var sellers = lots.Select(x=>x.SellerAccountId).Distinct().ToArray();

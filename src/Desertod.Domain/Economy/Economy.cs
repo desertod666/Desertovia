@@ -46,6 +46,7 @@ public sealed class EconomyReceipt
 
 public sealed class LedgerEntry
 {
+    public Guid? DirectorReviewId { get; set; }
     public Guid Id { get; set; } = Guid.CreateVersion7();
     public Guid VillageId { get; set; }
     public Guid OperationId { get; set; }

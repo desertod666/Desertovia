@@ -4,7 +4,7 @@ using Desertod.Domain.Combat;
 
 namespace Desertod.Domain.Director;
 
-/// <summary>Describes existing owner-approved handlers; it never grants autonomous authority.</summary>
+/// <summary>Describes closed handlers; economic authority additionally requires a separate fresh delegation.</summary>
 public sealed record AlmightyPermission(string OptionId,string Kind,bool RequiresOwnerApproval,bool Autonomous,
     EnemyKind? Enemy=null,string? Sector=null,string? Composition=null);
 
@@ -16,14 +16,14 @@ public sealed record AlmightyObservedWorld(AlmightyFacts Facts,RaidReadiness Rea
 public static class AlmightyPermissions
 {
     public const int SnapshotVersion=1;
-    public static IReadOnlyList<string> ControllableKinds { get; } = Array.AsReadOnly<string>(["advice","notice","rest","raid","dungeon","vigor"]);
+    public static IReadOnlyList<string> ControllableKinds { get; } = Array.AsReadOnly<string>(["advice","notice","rest","raid","dungeon","vigor","economy"]);
     public static readonly string[] RevisionScope=["facts","stock","readiness","mode","vigor","offeredPermissions"];
 
     public static string? KindForOptionId(string id) => id switch
     {
         "none"=>"observe", "economy_report"=>"advice", "work_notice"=>"notice", "rest"=>"rest", "dungeon"=>"dungeon",
         "vigor_stronger" or "vigor_weaker" or "vigor_frequent" or "vigor_rare"=>"vigor",
-        _=>AlmightyPolicy.RaidOptionIds().Contains(id,StringComparer.Ordinal)?"raid":null,
+        _=>DirectorFinanceRules.IsOption(id)?"economy":AlmightyPolicy.RaidOptionIds().Contains(id,StringComparer.Ordinal)?"raid":null,
     };
 
     public static bool IsEnabled(string optionId,IReadOnlyCollection<string> disabledKinds) =>
@@ -77,10 +77,11 @@ public static class AlmightyPermissions
                 "rest"=>"rest",
                 "dungeon"=>"dungeon",
                 "vigor_stronger" or "vigor_weaker" or "vigor_frequent" or "vigor_rare"=>"vigor",
+                _ when DirectorFinanceRules.IsOption(option.Id)=>"economy",
                 _=>throw new ArgumentException("Unknown director permission.",nameof(option)),
             };
         }
-        return new(option.Id,kind,option.Id!="none",false,option.Enemy,option.Sector,option.Composition);
+        return new(option.Id,kind,option.Id!="none"&&kind!="economy",kind=="economy",option.Enemy,option.Sector,option.Composition);
     }
 
     /// <summary>A digest of named observed evidence, not a revision of every row in the world.</summary>

@@ -52,7 +52,7 @@ public sealed partial class GameService
 
     private async Task<StockSnapshot> BeginAccountingAsync(DesertodDbContext db, Guid villageId, CancellationToken ct)
     {
-        db.FinancialBatchId = Guid.CreateVersion7(); db.FinancialBatchStarted = false;
+        db.FinancialBatchId = Guid.CreateVersion7(); db.FinancialBatchStarted = false; db.DirectorReviewId = null;
         var before = (await SnapshotStockAsync(db, villageId, ct)) with { Money = await SnapshotMoneyAsync(db, villageId, ct) };
         if (!before.Exists || await db.KingdomEconomies.AnyAsync(x => x.VillageId == villageId, ct)) return before;
         var now = time.GetUtcNow();
