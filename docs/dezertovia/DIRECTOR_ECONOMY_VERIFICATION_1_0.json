@@ -92,7 +92,30 @@
       "exit_code": 0
     },
     "initial_domain_failure": "Existing hunting-level fixture used a random deer-woods route. Only fixture seed fixed; no game/nav change. Full696 passed afterward.",
-    "intermediate_api_failure": "34/35 passed; old large snapshot39361 exceeded unchanged36000botlimit. Compact full-day table and context-only budget fixed; final16 includes large snapshot and3budget preservation tests."
+    "intermediate_api_failure": "34/35 passed; old large snapshot39361 exceeded unchanged36000botlimit. Compact full-day table and context-only budget fixed; final16 includes large snapshot and3budget preservation tests.",
+    "royal_legacy_ci_regression": {
+      "path": "TestResults/royal-dungeon-fiscal-ci/Admin_DESKTOP-FQ85FTD_2026-10-21_11_39_00_net10.0.trx",
+      "sha256": "512e21d85c10bdc4ee961b9a4a7bb6039fdd500957b1b481d0ae28402cded134",
+      "counters": {
+        "total": "4",
+        "executed": "4",
+        "passed": "4",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      },
+      "scope": "Cancellation/royal classes/shared wound/legacy80HP. Legacy body fixture starts at a valid departure to isolate health/cancellation from procedural bounded marches; explicit phase diagnostic added. Product source unchanged."
+    }
   },
   "shared_runtime": {
     "api": "http://127.0.0.1:5180",
@@ -174,10 +197,46 @@
     "tests/Desertod.Api.Tests/MarketTaxApiTests.cs": "a6c5ab062fe89577e6f1721fe175c4f45e65e476b385e46616d689712b98cd55",
     "tests/Desertod.Api.Tests/MarketTaxMigrationTests.cs": "3adec3ddc71241de6f1a759020d4a31130c73c9d4fb374be24cb859a8ba9388a",
     "tests/Desertod.Domain.Tests/SaleTaxTests.cs": "f769cf222d53869be6b85dfe80b540f718b0a8d3816e8d0a667b20bebf30b399",
-    "tests/Desertod.Domain.Tests/WildlifeTests.cs": "bf20a31c05fe098815db027959feebbafbc566edc554e948bf6952639e94a3cf"
+    "tests/Desertod.Domain.Tests/WildlifeTests.cs": "bf20a31c05fe098815db027959feebbafbc566edc554e948bf6952639e94a3cf",
+    "tests/Desertod.Api.Tests/RoyalDungeonApiTests.cs": "68b7b78693bdca13003b9469f3c01b22785d02edd960752f1e20e643b61242ae"
   },
   "candidate_ci": {
-    "status": "not_created"
+    "status": "replacement_candidate_pending",
+    "previous_run": {
+      "run_id": 39577534873,
+      "sha": "b53d2dcec8bf59b4d94e0100eafd2630e7113664",
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39577534873",
+      "domain_passed": 696,
+      "api_passed": 453,
+      "api_failed": 1,
+      "failed_test": "RoyalDungeonApiTests.Cancelling_returns_all_reserved_royal_gear_and_a_legacy_call_keeps_its_80_health_contract",
+      "frontend": "success",
+      "docker": "success",
+      "browser": "still running at replacement; not claimed passed"
+    },
+    "local_fix": {
+      "path": "TestResults/royal-dungeon-fiscal-ci/Admin_DESKTOP-FQ85FTD_2026-10-21_11_39_00_net10.0.trx",
+      "sha256": "512e21d85c10bdc4ee961b9a4a7bb6039fdd500957b1b481d0ae28402cded134",
+      "counters": {
+        "total": "4",
+        "executed": "4",
+        "passed": "4",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      },
+      "scope": "Cancellation/royal classes/shared wound/legacy80HP. Legacy body fixture starts at a valid departure to isolate health/cancellation from procedural bounded marches; explicit phase diagnostic added. Product source unchanged."
+    }
   },
   "remaining": [
     "Full exact-candidate CI",
@@ -185,5 +244,6 @@
     "Full fiscal issuance/withdrawal/budget T025 and integrated T026",
     "Supply-delivery tax, farm cash/natural entitlements and unresolved product rules",
     "Full1.0 DAG; final visual redesign after functionality. No public deployment or real payments authorized."
-  ]
+  ],
+  "pull_request": "https://github.com/desertod666/Desertovia/pull/95"
 }

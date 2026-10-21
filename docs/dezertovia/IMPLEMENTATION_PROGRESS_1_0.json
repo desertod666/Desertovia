@@ -901,7 +901,30 @@
         "exit_code": 0
       },
       "initial_domain_failure": "Existing hunting-level fixture used a random deer-woods route. Only fixture seed fixed; no game/nav change. Full696 passed afterward.",
-      "intermediate_api_failure": "34/35 passed; old large snapshot39361 exceeded unchanged36000botlimit. Compact full-day table and context-only budget fixed; final16 includes large snapshot and3budget preservation tests."
+      "intermediate_api_failure": "34/35 passed; old large snapshot39361 exceeded unchanged36000botlimit. Compact full-day table and context-only budget fixed; final16 includes large snapshot and3budget preservation tests.",
+      "royal_legacy_ci_regression": {
+        "path": "TestResults/royal-dungeon-fiscal-ci/Admin_DESKTOP-FQ85FTD_2026-10-21_11_39_00_net10.0.trx",
+        "sha256": "512e21d85c10bdc4ee961b9a4a7bb6039fdd500957b1b481d0ae28402cded134",
+        "counters": {
+          "total": "4",
+          "executed": "4",
+          "passed": "4",
+          "failed": "0",
+          "error": "0",
+          "timeout": "0",
+          "aborted": "0",
+          "inconclusive": "0",
+          "passedButRunAborted": "0",
+          "notRunnable": "0",
+          "notExecuted": "0",
+          "disconnected": "0",
+          "warning": "0",
+          "completed": "0",
+          "inProgress": "0",
+          "pending": "0"
+        },
+        "scope": "Cancellation/royal classes/shared wound/legacy80HP. Legacy body fixture starts at a valid departure to isolate health/cancellation from procedural bounded marches; explicit phase diagnostic added. Product source unchanged."
+      }
     }
   },
   "open_questions": [
@@ -2896,7 +2919,42 @@
       "scope": "Compared20old tables. Lots/FarmCrops/observations/proposals empty here; populated quote/settlement and old-lot upgrade proven in isolated API/migration fixtures. No production migration."
     },
     "candidate_ci": {
-      "status": "not_created"
+      "status": "replacement_candidate_pending",
+      "previous_run": {
+        "run_id": 39577534873,
+        "sha": "b53d2dcec8bf59b4d94e0100eafd2630e7113664",
+        "url": "https://github.com/desertod666/Desertovia/actions/runs/39577534873",
+        "domain_passed": 696,
+        "api_passed": 453,
+        "api_failed": 1,
+        "failed_test": "RoyalDungeonApiTests.Cancelling_returns_all_reserved_royal_gear_and_a_legacy_call_keeps_its_80_health_contract",
+        "frontend": "success",
+        "docker": "success",
+        "browser": "still running at replacement; not claimed passed"
+      },
+      "local_fix": {
+        "path": "TestResults/royal-dungeon-fiscal-ci/Admin_DESKTOP-FQ85FTD_2026-10-21_11_39_00_net10.0.trx",
+        "sha256": "512e21d85c10bdc4ee961b9a4a7bb6039fdd500957b1b481d0ae28402cded134",
+        "counters": {
+          "total": "4",
+          "executed": "4",
+          "passed": "4",
+          "failed": "0",
+          "error": "0",
+          "timeout": "0",
+          "aborted": "0",
+          "inconclusive": "0",
+          "passedButRunAborted": "0",
+          "notRunnable": "0",
+          "notExecuted": "0",
+          "disconnected": "0",
+          "warning": "0",
+          "completed": "0",
+          "inProgress": "0",
+          "pending": "0"
+        },
+        "scope": "Cancellation/royal classes/shared wound/legacy80HP. Legacy body fixture starts at a valid departure to isolate health/cancellation from procedural bounded marches; explicit phase diagnostic added. Product source unchanged."
+      }
     }
   }
 }
