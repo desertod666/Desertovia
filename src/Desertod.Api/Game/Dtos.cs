@@ -1,3 +1,4 @@
+using Desertod.Domain;
 using Desertod.Domain.Buildings;
 using Desertod.Domain.Catalog;
 using Desertod.Domain.Combat;
@@ -463,7 +464,7 @@ public sealed record GoToRequest(TilePoint Spot);
 
 /// <param name="PlotId">The storage building to take from.</param>
 /// <param name="Amount">How much to take; less is taken when the building has less or the hands are nearly full.</param>
-public sealed record TakeRequest(string PlotId, ResourceKind Resource, int Amount = StorageRules.TakeLimit, int? Sharpen = null);
+public sealed record TakeRequest(string PlotId, ResourceKind Resource, int Amount = StorageRules.TakeLimit, int? Sharpen = null, int? Durability = null);
 
 public sealed record StartJobRequest(string PlotId, int Stage, string JobId);
 
@@ -518,7 +519,7 @@ public static class DtoMapper
             .Select(s => new StorageDto(
                 s.Kind,
                 s.PlotId,
-                (s.OwnerAccountId is null ? s.Goods : []).OrderBy(g => g.Kind).ThenBy(g => g.Sharpen).Select(g => new ResourceAmount(g.Kind, g.Amount, g.Sharpen)).ToList(),
+                (s.OwnerAccountId is null ? s.Goods : []).OrderBy(g => g.Kind).ThenBy(g => g.Sharpen).ThenBy(g => g.Durability).Select(g => ToolCatalog.Amount(g.Kind, g.Amount, g.Sharpen, g.Durability)).ToList(),
                 s.Slots().Select(slot => new StorageSlotDto(slot.Kind, slot.Fill)).ToList(),
                 s.Damage) { Number = s.Number, DisplayNumber=labels.GetValueOrDefault(s.Number), OwnerAccountId = s.OwnerAccountId, RuinedAt=s.RuinedAt })
             .ToList(),
@@ -741,7 +742,7 @@ public static class DtoMapper
         citizen.CycleEndsAt,
         citizen.GraceEndsAt,
         citizen.CycleTired && !citizen.CycleSettled,
-        citizen.Load.Select(g => new ResourceAmount(g.Kind, g.Amount, g.Sharpen)).ToList(),
+        citizen.Load.Select(g => ToolCatalog.Amount(g.Kind, g.Amount, g.Sharpen, g.Durability)).ToList(),
         citizen.ShelterQuality,
         citizen.IsHungry,
         citizen.CyclesSinceMeal,

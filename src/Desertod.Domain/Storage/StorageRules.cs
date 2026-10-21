@@ -1,3 +1,4 @@
+using Desertod.Domain;
 using Desertod.Domain.Catalog;
 using Desertod.Domain.Entities;
 
@@ -19,11 +20,13 @@ public static class StorageRules
         var unloaded = new List<ResourceAmount>();
         foreach (var good in citizen.Load.ToList())
         {
-            var stored = destination is null ? village.Store(good.Kind, good.Amount, good.Sharpen) : destination.Put(good.Kind, good.Amount, good.Sharpen);
+            var stored = destination is null
+                ? village.Store(good.Kind, good.Amount, good.Sharpen, good.Durability)
+                : destination.Put(good.Kind, good.Amount, good.Sharpen, good.Durability);
             if (stored > 0)
             {
-                citizen.TakeFromLoad(good.Kind, stored, good.Sharpen);
-                unloaded.Add(new ResourceAmount(good.Kind, stored, good.Sharpen));
+                citizen.TakeFromLoad(good.Kind, stored, good.Sharpen, good.Durability);
+                unloaded.Add(ToolCatalog.Amount(good.Kind, stored, good.Sharpen, good.Durability));
             }
         }
 
@@ -46,7 +49,7 @@ public static class StorageRules
     /// An idle citizen takes up to <paramref name="amount"/> of a good out of one storage building into their hands,
     /// holding at most <see cref="TakeLimit"/>. Returns the amount taken.
     /// </summary>
-    public static int Take(Citizen citizen, Village village, string plotId, ResourceKind kind, int amount, DateTimeOffset now, int? sharpen = null)
+    public static int Take(Citizen citizen, Village village, string plotId, ResourceKind kind, int amount, DateTimeOffset now, int? sharpen = null, int? durability = null)
     {
         if (amount < 1)
         {
@@ -78,29 +81,22 @@ public static class StorageRules
 
         var wanted = Math.Min(amount, room);
         var taken = 0;
-        if (sharpen is int level)
+        foreach (var good in building.Goods
+            .Where(g => g.Kind == kind && (sharpen is null || g.Sharpen == sharpen) && (durability is null || g.Durability == durability))
+            .OrderBy(g => g.Sharpen)
+            .ThenBy(g => g.Durability)
+            .ToList())
         {
-            taken = building.Take(kind, wanted, level);
-            if (taken > 0)
+            if (taken >= wanted)
             {
-                citizen.Carry(kind, taken, level);
+                break;
             }
-        }
-        else
-        {
-            foreach (var good in building.Goods.Where(g => g.Kind == kind).OrderBy(g => g.Sharpen).ToList())
-            {
-                if (taken >= wanted)
-                {
-                    break;
-                }
 
-                var slice = building.Take(kind, wanted - taken, good.Sharpen);
-                if (slice > 0)
-                {
-                    citizen.Carry(kind, slice, good.Sharpen);
-                    taken += slice;
-                }
+            var slice = building.Take(kind, wanted - taken, good.Sharpen, good.Durability);
+            if (slice > 0)
+            {
+                citizen.Carry(kind, slice, good.Sharpen, ToolCatalog.Get(kind) is null ? null : good.Durability);
+                taken += slice;
             }
         }
 

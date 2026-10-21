@@ -10,6 +10,17 @@ export interface PatchNote {
 
 export const PATCH_NOTES: readonly PatchNote[] = [
   {
+    version:'0.7.17',date:'2026-10-21',
+    title:{ru:'Топоры и кирки',en:'Axes and pickaxes'},
+    changes:{
+      ru:['Деревянные, каменные, железные и стальные инструменты можно изготовить и взять со склада. Подходящий лучший инструмент используется автоматически.',
+        'Каменные и более прочные инструменты увеличивают добычу за работу. Время работы прежнее; деревянные инструменты дают обычную добычу.',
+        'Износ сохраняется в руках и на общем складе. Видно оставшееся число применений и сообщение о поломке. Добыча золота ограничена остатком жилы.'],
+      en:['Craft wooden, stone, iron and steel tools and take them from storage. The best matching tool is used automatically.',
+        'Stone and stronger tools increase yield per job. Job duration stays unchanged; wooden tools give ordinary yield.',
+        'Wear persists in hands and communal storage, with remaining uses and breakage feedback. Gold extraction respects the remaining vein.']}
+  },
+  {
     version:'0.7.16',date:'2026-10-19',
     title:{ru:'Исправления обращений и стройки',en:'Feedback and construction fixes'},
     changes:{

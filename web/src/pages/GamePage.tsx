@@ -569,11 +569,11 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   }
 
   /** Keeps the storage view open, so the player sees the goods move into their hands. */
-  const takeFromStorage = async (plotId: string, resource: string, amount: number, sharpen?: number) => {
+  const takeFromStorage = async (plotId: string, resource: string, amount: number, sharpen?: number, durability?: number) => {
     setPending(true)
     setError(null)
     try {
-      applyCitizen(await api.takeFromStorage(slug, plotId, resource, amount, sharpen))
+      applyCitizen(await api.takeFromStorage(slug, plotId, resource, amount, sharpen, durability))
     } catch (exception) {
       setError(i18n.error(exception))
     } finally {

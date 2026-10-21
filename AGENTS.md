@@ -1,3 +1,12 @@
+# 0.7.17 — отдельный выпуск работы Вадима, 21.10.2026
+
+Владелец явно разрешил commit/push/PR и установку0.7.17 на живой сервер,
+подтвердив исключение из локальных ограничений цели1.0. Только PR76 b617f8d9,
+его проверенные исправления и нумерация. Незавершённый код1.0 не включать.
+База live4bb125f/0.7.16, release-base main b9b4b32; сохранить игроков/настройки,
+заранее проверенный PGbackup, точный CI и отдельную проверку после установки.
+До фактической квитанции считать PREPARED, не установленной.
+
 # 0.7.16 УСТАНОВЛЕНА И НЕЗАВИСИМО ПРОВЕРЕНА — 19 октября 2026
 
 Verified 2026-10-19T10:40:06.689723+00:00. Gameexact4bb125f2dc05711ebaf4dac2723f3ee19eae3ea9, CI39236625836 SUCCESS537Domain/288API/238browser+2normalSkip (120+120 cases, both shards required),4unit/lint/build/Docker. Botexact8dbbc3a000367a84c12869f6aed0a2b12318c148, CI39236650441 SUCCESS1104/serverSKIPPED.45operatorguards and16additional Chromium/WebKit checks. SourcePR71 merged72521742; botPR95/96/98 finalmerge1366a0b8, exact tested trees.

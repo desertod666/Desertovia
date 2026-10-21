@@ -1968,6 +1968,8 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                             b1.Property<int>("Amount");
 
+                            b1.Property<int>("Durability");
+
                             b1.Property<string>("Kind")
                                 .IsRequired();
 
@@ -2424,6 +2426,8 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                                     b2.Property<int>("Amount");
 
+                                    b2.Property<int>("Durability");
+
                                     b2.Property<string>("Kind")
                                         .IsRequired();
 
@@ -2527,6 +2531,8 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                                     b2.Property<int>("Amount");
 
+                                    b2.Property<int>("Durability");
+
                                     b2.Property<string>("Kind")
                                         .IsRequired();
 
@@ -2593,6 +2599,8 @@ namespace Desertod.Infrastructure.Data.Migrations
                                         .ValueGeneratedOnAdd();
 
                                     b2.Property<int>("Amount");
+
+                                    b2.Property<int>("Durability");
 
                                     b2.Property<string>("Kind")
                                         .IsRequired();
@@ -3114,6 +3122,8 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                                     b2.Property<int>("Amount");
 
+                                    b2.Property<int>("Durability");
+
                                     b2.Property<string>("Kind")
                                         .IsRequired();
 
@@ -3137,6 +3147,8 @@ namespace Desertod.Infrastructure.Data.Migrations
                                         .ValueGeneratedOnAdd();
 
                                     b2.Property<int>("Amount");
+
+                                    b2.Property<int>("Durability");
 
                                     b2.Property<string>("Kind")
                                         .IsRequired();

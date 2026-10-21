@@ -308,7 +308,7 @@ public sealed class Village
         StorageCatalog.IsGood(kind) ? Storages.Where(s => s.OwnerAccountId == null && s.RuinedAt is null && s.Damage<100).Sum(s => s.FreeSpace(kind)) : int.MaxValue;
 
     /// <summary>Stores as much as fits, specialised buildings first, and returns the stored amount.</summary>
-    public int Store(ResourceKind kind, int amount, int sharpen = 0)
+    public int Store(ResourceKind kind, int amount, int sharpen = 0, int? durability = null)
     {
         if (!StorageCatalog.IsGood(kind))
         {
@@ -327,7 +327,7 @@ public sealed class Village
                 break;
             }
 
-            stored += building.Put(kind, amount - stored, sharpen);
+            stored += building.Put(kind, amount - stored, sharpen, durability);
         }
 
         return stored;

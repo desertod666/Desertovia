@@ -346,7 +346,18 @@ Raised by Bards, food surplus and finished projects. Lowered by food shortage an
 
 ### 6.4 Tools
 
-Smiths forge tools that are placed in the village tool shed (shared, not personal): +10% yield for the matching task family per tool tier, up to +30%. This gives crafters a reason to exist and makes the economy circular.
+Axes and pickaxes are personal goods. A citizen uses the best matching tool in their hands while gathering. An axe speeds wood. A pickaxe speeds stone, coal, iron ore, and gold. The tool is not taken from storage automatically.
+
+| Tier | Uses | Gathering speed |
+|------|------|-----------------|
+| Wood | 5 | ×1 (same as bare hands) |
+| Stone | 8 | ×1.25 |
+| Iron | 12 | ×1.5 |
+| Steel | 20 | ×1.75 |
+
+Each use spends one point of durability. At 0 the tool leaves the hands. Stacks of the same tool with different wear stay separate in the hands and in communal storage, so storing a tool does not repair it. A personal warehouse still stores a count only, and a tool taken back from there is fresh.
+
+Wooden tools are made at the camp. Stone tools need the Stone tools discovery. Iron and steel tools are forged at the smithy; steel is folded iron (two ingots) and needs Forging plus Smithing 3. The Stone tools discovery still adds its own ×1.25 to chopping and quarrying, on top of a tool in hand.
 
 ### 6.5 Discovery rolls (Scout, Deep Miner)
 
