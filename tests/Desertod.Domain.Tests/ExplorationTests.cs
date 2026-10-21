@@ -24,7 +24,11 @@ public class ExplorationTests
     public void WalkedLand_IsSeenOnlyOnceTheWalkerGetsThere()
     {
         var village = NewVillage();
-        var far = new TilePoint(-30, -20);
+        // A fixed reachable point below the ravine. The former northern destination
+        // could sit behind an uncleared pass, which a real walk must not cross.
+        village.Id = Guid.Parse("11111111-1111-4111-8111-111111111111");
+        village.Wilds = Wilderness.Generate(village.Id);
+        var far = new TilePoint(-30, 20);
 
         village.TsarGoTo(far, Now);
         var trip = village.TsarTrip!;
@@ -40,7 +44,11 @@ public class ExplorationTests
     public void TheNextWalk_KeepsWhatTheLastOneSaw()
     {
         var village = NewVillage();
-        var far = new TilePoint(-30, -20);
+        // A fixed reachable point below the ravine. The former northern destination
+        // could sit behind an uncleared pass, which a real walk must not cross.
+        village.Id = Guid.Parse("11111111-1111-4111-8111-111111111111");
+        village.Wilds = Wilderness.Generate(village.Id);
+        var far = new TilePoint(-30, 20);
         village.TsarGoTo(far, Now);
         var arrived = village.TsarTrip!.ArrivesAt;
 

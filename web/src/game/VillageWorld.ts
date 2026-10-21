@@ -1,5 +1,5 @@
 import {FortificationView} from './FortificationView'
-import {journeyPosition} from './journeyPosition'
+import {journeyPosition,receiveJourney,type JourneySample} from './journeyPosition'
 import {wallVisualStage} from './fortificationState'
 import {buildingOrdinal,buildingSuffix} from '../buildingLabels'
 import { combatDiagnostics } from './combatDiagnostics'
@@ -166,7 +166,7 @@ interface Walker {
   carrierId:string|null
   pickupAt:number
   rescueJourney:CitizenSummary['rescueJourney']
-  journey?:{value:NonNullable<CitizenSummary['journey']>;receivedAt:number}|null
+  journey?:JourneySample|null
 }
 
 interface Bubble {
@@ -576,7 +576,7 @@ export class VillageWorld {
     }
     walker.sprite.texture = texture
     walker.label.text = tsar.name
-    walker.journey=tsar.journey?{value:tsar.journey,receivedAt:performance.now()}:null
+    walker.journey=receiveJourney(walker.journey,tsar.journey,performance.now())
     walker.injuredUntil = tsar.injuredUntil ? Date.parse(tsar.injuredUntil) : 0
     walker.normalSubtitle=this.tsarTitle
     walker.inHospital=walker.injuredUntil>Date.now()&&!!tsar.hospitalizedAt
@@ -888,7 +888,7 @@ export class VillageWorld {
       walker.treatmentCause=duel?'после дуэли':'после боя'
       walker.carrierId=citizen.rescueByCitizenId??null
       walker.rescueJourney=citizen.rescueJourney??null
-      walker.journey=citizen.journey?{value:citizen.journey,receivedAt:performance.now()}:null
+      walker.journey=receiveJourney(walker.journey,citizen.journey,performance.now())
       walker.pickupAt=walker.rescueJourney&&!walker.rescueJourney.completedAt?Date.parse(walker.rescueJourney.pickupAt):0
       if(injured&&!walker.inHospital&&!walker.carrierId&&citizen.rescueRequestedAt)walker.treatmentCause='Просит помощи'
       if (injured && !walker.carrierId && !walker.inHospital && stayAt) {

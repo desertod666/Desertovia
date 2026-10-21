@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-21T02:20:41.913319+00:00",
-  "status": "main_plan_active_work_encounter_candidate_ci_and_camera_candidate_pending",
+  "recorded_at_utc": "2026-10-21T03:25:50.121267+00:00",
+  "status": "main_plan_active_all_land_ground_route_slice_locally_verified_candidate_ci_pending",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-combat-camera",
+  "branch": "feat/desertovia-1-0-ground-routes",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "T035 independent client camera/touch work in progress; T031 accepted-work candidatePR86 full browser CI pending",
+  "implemented_task": "T033 new SetOut trips use saved ground routes, reachable activity/departure/arrival and blocked return integration; broader world/party/supply work unfinished",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -46,7 +46,7 @@
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "Debug backend rebuilt from b73217b product source after synthetic backup20261021T021850Z; current camera frontend working tree served by Vite5190. No public deployment.",
+    "loaded_scope": "Current ground-route backend working tree loaded in Debug after backup025302Z; same core waiting route survived restart030628Z. Current frontend includes the verified journey clock fix. Schema51; no public deployment.",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
     "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
@@ -56,7 +56,9 @@
     "pre_supply_backup": "/tmp/foundation-before-restart-20261020T220853Z.dump",
     "pre_notifications_backup": "/tmp/foundation-before-restart-20261020T230542Z.dump",
     "pre_territories_backup": "/tmp/foundation-before-restart-20261020T233102Z.dump",
-    "pre_camera_restart_backup": "/tmp/foundation-before-restart-20261021T021850Z.dump"
+    "pre_camera_restart_backup": "/tmp/foundation-before-restart-20261021T021850Z.dump",
+    "pre_ground_route_restart_backup": "/tmp/foundation-before-restart-20261021T025302Z.dump",
+    "active_core_route_restart_backup": "/tmp/foundation-before-restart-20261021T030628Z.dump"
   },
   "checks": {
     "baseline_ci": {
@@ -1405,7 +1407,7 @@
     "priority": "Continue world/combat/party/supply, siege/recovery/director and remaining UI/monetization/music. No optional farm polish ahead of missing systems."
   },
   "work_encounter_candidate": {
-    "status": "working_tree_actual_320px_manual_victory_restart_once_pay_rest_verified_full_ci_pending",
+    "status": "accepted_work_encounter_full_ci_and_actual_restart_verified_broader_combat_pending",
     "schema": 51,
     "migration_preservation": "28 existing synthetic residents and compared old village/citizen/wallet/economy/dungeon rows unchanged by migration50→51; new columns excluded from comparison",
     "runtime_backup": "/tmp/foundation-before-restart-20261021T015055Z.dump",
@@ -1444,22 +1446,38 @@
     },
     "distinct_local_api_cases": 18,
     "ci": {
-      "run": 39530679155,
       "sha": "b73217b0d4c6612bf8a3344615882a39787a7a63",
-      "status": "in_progress",
-      "backend": {
-        "conclusion": "success",
-        "domain_passed": 644,
-        "api_passed": 366,
-        "job": 118995592115
-      },
-      "frontend": "success",
-      "docker": "success",
-      "both_browser_shards": "in_progress"
+      "run": 39530679155,
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39530679155",
+      "conclusion": "success",
+      "jobs": {
+        "backend": {
+          "id": 118995592115,
+          "domain_passed": 644,
+          "api_passed": 366
+        },
+        "desktop": {
+          "id": 118995592498,
+          "passed": 195
+        },
+        "phone": {
+          "id": 118995592434,
+          "passed": 193,
+          "skipped": 2
+        },
+        "frontend": {
+          "id": 118995592390,
+          "conclusion": "success"
+        },
+        "docker": {
+          "id": 118995592319,
+          "conclusion": "success"
+        }
+      }
     }
   },
   "combat_camera": {
-    "status": "implemented_local_browser_verified_exact_candidate_ci_pending",
+    "status": "camera_touch_slice_full_ci_verified_broader_T035_pending",
     "source_base": "b73217b0d4c6612bf8a3344615882a39787a7a63",
     "scope": "independent T035 camera/touch improvement; broader performance and integrated supplies dependencies unfinished",
     "features": [
@@ -1477,6 +1495,126 @@
       "scope": "final14 real Pixi touch/HUD camera cases; prior11 retreat/encounter/corpse cases before final anchor-only fix",
       "visual_review": "actual rendered1280px and320px RU/EN screenshots inspected; controls below header, sprites visible; physical phone not verified"
     },
-    "public_release": false
-  }
+    "public_release": false,
+    "ci": {
+      "sha": "d884bf6bee554122ee52511de752ae87771a8959",
+      "run": 39532500726,
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39532500726",
+      "conclusion": "success",
+      "jobs": {
+        "backend": {
+          "id": 119001449997,
+          "conclusion": "success"
+        },
+        "desktop": {
+          "id": 119001449878,
+          "passed": 202
+        },
+        "phone": {
+          "id": 119001449972,
+          "passed": 200,
+          "skipped": 2
+        },
+        "frontend": {
+          "id": 119001449885,
+          "conclusion": "success"
+        },
+        "docker": {
+          "id": 119001449691,
+          "conclusion": "success"
+        }
+      }
+    },
+    "pull_request": "https://github.com/desertod666/Desertovia/pull/87"
+  },
+  "ground_routes": {
+    "status": "new_ground_routes_actual_restart_resume_and_renderer_clock_locally_verified_full_ci_pending",
+    "domain_passed": 656,
+    "domain_results": "TestResults/ground-routes-domain-final",
+    "api_runs": [
+      {
+        "passed": 11,
+        "failed": 1,
+        "scope": "12 ground/region/interruption cases; new gate test parsed empty200 as JSON, assertion corrected"
+      },
+      {
+        "passed": 13,
+        "failed": 1,
+        "scope": "14 ground/checkpoint cases; march gate closure occurred after the walker had passed; the remaining case now uses explicitly advanced frozen test time"
+      }
+    ],
+    "boundary_case_run": "live handle86840; do not start duplicate",
+    "startup": {
+      "migrations_before": 51,
+      "migrations_after": 51,
+      "citizens": 28,
+      "worlds": 4,
+      "wallets": 21,
+      "economy": 4,
+      "dungeons": 3,
+      "all_compared_raw_rows_equal": true,
+      "backup": "/tmp/foundation-before-restart-20261021T025302Z.dump",
+      "scope": "complete rows of the named tables, including old trips and checkpoints; other tables not compared"
+    },
+    "remaining": [
+      "exact candidate full CI",
+      "multi-stop job haul/production transport",
+      "road events/NPC/group/supply and target load"
+    ],
+    "api_distinct_passed": 23,
+    "api_boundary_rerun": {
+      "passed": 1,
+      "failed": 0,
+      "scope": "real requests with explicitly advanced frozen test UTC; no production clock change"
+    },
+    "client_unit_passed": 24,
+    "frontend": "TypeScript/Vite/oxlint passed",
+    "actual_ui": {
+      "fixture_only": true,
+      "coreOnly": true,
+      "restarted": true,
+      "sameJourney": true,
+      "sameStoppedPosition": true,
+      "resumedThroughActualUi": true,
+      "arrived": {
+        "x": 15.5,
+        "y": 13.5,
+        "moving": false
+      },
+      "walletUnchanged": true,
+      "personalGoodsUnchanged": true,
+      "noWorkRestart": true,
+      "errors": []
+    },
+    "renderer_regression": {
+      "before": {
+        "fixture_only": true,
+        "phase": "diagnosed-renderer-clock-reset",
+        "run": "01a15c77-5cfb-7dfe-bebc-d6ace1027553",
+        "viewport": 320,
+        "maxErrorInTiles": 5.460253415466275,
+        "samples": 35,
+        "actualScene": true,
+        "reappliedUnchangedAuthoritativeData": true,
+        "arrivedVisually": false,
+        "errors": []
+      },
+      "after": {
+        "fixture_only": true,
+        "phase": "verified-renderer-clock-preserved",
+        "run": "01a15c79-4f68-71e0-88df-747c00648df6",
+        "viewport": 320,
+        "maxErrorInTiles": 0.026833496093749964,
+        "samples": 35,
+        "actualScene": true,
+        "reappliedUnchangedAuthoritativeData": true,
+        "arrivedVisually": true,
+        "errors": []
+      },
+      "scope": "same authoritative data repeatedly reapplied in actual local320px scene; not a global FPS/network benchmark"
+    },
+    "active_route_restart_backup": "/tmp/foundation-before-restart-20261021T030628Z.dump",
+    "candidate_ci": "pending candidate commit"
+  },
+  "next_independent_work": "Shared ruler/resident combat admission and health/damage rules A14, preserving accepted battles; new death/baggage policy remains pending."
 }

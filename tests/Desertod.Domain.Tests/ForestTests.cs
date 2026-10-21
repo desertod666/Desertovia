@@ -184,7 +184,11 @@ public class ForestTests
         var citizen = NewCitizen(village, (Stat.Strength, 3), (Stat.Endurance, 3));
         var context = new WorkContext { Village = village };
 
-        CycleEngine.Start(citizen, Task("chop-wood"), context, Now, new TilePoint(-10.5, 5.5));
+        // Outside the managed grove, on the guaranteed dry southern camp approach.
+        // An arbitrary western point can be a pond for this world's seed.
+        var wild = new TilePoint(15.5, 26.5);
+        Assert.False(Forest.Area.Contains(wild.ToTile()));
+        CycleEngine.Start(citizen, Task("chop-wood"), context, Now, wild);
         var report = Finish(citizen, context);
 
         Assert.Contains(report.Produced, p => p.Resource == ResourceKind.Wood && p.Amount > 0);

@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-21T03:25:50.121267+00:00",
+  "scope": "new SetOut ground routes across old/new map and real dungeon departure/arrival/return; broader world/party/supply unfinished",
+  "source_base": "d884bf6bee554122ee52511de752ae87771a8959",
+  "product_file_sha256": {
+    "src/Desertod.Domain/World/RegionalTravel.cs": "3bd1894fb9a9f8b7db17e45232b74584568f64c79f038763d7d5fe6dc7e8c364",
+    "src/Desertod.Domain/Dungeons/DungeonRules.cs": "d2770798420606a6855c041016055de5c1483d6eea6d5eb9f9e5a9051ad80e6c",
+    "src/Desertod.Domain/Entities/Citizen.cs": "75351b9e65a8178e5a5c742dd34558eee84e9d7d33650779aa9ce0f7bb830e9e",
+    "src/Desertod.Domain/Entities/Village.cs": "9b210e8082dd2b5d35eec060a015e45172c76446d59ad5f6654a420362e5363e",
+    "src/Desertod.Domain/Rules/CycleEngine.cs": "2a20d1b88cb45b07ab185490878c6d1df20e8c7ed6478699048a0b0b75f92ff5",
+    "src/Desertod.Api/Game/GameService.Dungeon.cs": "805ddc9f65fe3a1d2bf966f4d34ae7a5a5ea2aa0bb36de63b58f75c781bc53f7",
+    "src/Desertod.Api/Game/GameService.Almighty.cs": "7da2715ea22fca0051551154311ff8fea6cfa8133633d2584262b31a63f14585",
+    "web/src/game/VillageWorld.ts": "75aa976f3474b7e4a13951cb8d50ee99eb6c11cad5a4d7376cab346be74e1952",
+    "web/src/game/journeyPosition.ts": "08bd17bc9ca4df184f7937eafcef3660e51014db37286c96e128805c0aee1ea3"
+  },
+  "local_checks": {
+    "domain_passed": 656,
+    "api_distinct_passed": 23,
+    "api_scope": "9 earlier region/interruption cases;13 ground/checkpoint PASS plus corrected deterministic boundary rerun1; full exact candidate CI still required",
+    "client_unit_passed": 24,
+    "frontend": "TypeScript/Vite/oxlint passed"
+  },
+  "startup_preservation": {
+    "migrations_before": 51,
+    "migrations_after": 51,
+    "citizens": 28,
+    "worlds": 4,
+    "wallets": 21,
+    "economy": 4,
+    "dungeons": 3,
+    "all_compared_raw_rows_equal": true,
+    "backup": "/tmp/foundation-before-restart-20261021T025302Z.dump",
+    "scope": "complete rows of the named tables, including old trips and checkpoints; other tables not compared"
+  },
+  "actual_ui": {
+    "fixture_only": true,
+    "coreOnly": true,
+    "restarted": true,
+    "sameJourney": true,
+    "sameStoppedPosition": true,
+    "resumedThroughActualUi": true,
+    "arrived": {
+      "x": 15.5,
+      "y": 13.5,
+      "moving": false
+    },
+    "walletUnchanged": true,
+    "personalGoodsUnchanged": true,
+    "noWorkRestart": true,
+    "errors": []
+  },
+  "active_route_restart_backup": "/tmp/foundation-before-restart-20261021T030628Z.dump",
+  "renderer_regression": {
+    "before": {
+      "fixture_only": true,
+      "phase": "diagnosed-renderer-clock-reset",
+      "run": "01a15c77-5cfb-7dfe-bebc-d6ace1027553",
+      "viewport": 320,
+      "maxErrorInTiles": 5.460253415466275,
+      "samples": 35,
+      "actualScene": true,
+      "reappliedUnchangedAuthoritativeData": true,
+      "arrivedVisually": false,
+      "errors": []
+    },
+    "after": {
+      "fixture_only": true,
+      "phase": "verified-renderer-clock-preserved",
+      "run": "01a15c79-4f68-71e0-88df-747c00648df6",
+      "viewport": 320,
+      "maxErrorInTiles": 0.026833496093749964,
+      "samples": 35,
+      "actualScene": true,
+      "reappliedUnchangedAuthoritativeData": true,
+      "arrivedVisually": true,
+      "errors": []
+    },
+    "scope": "same authoritative data repeatedly reapplied in actual local320px scene; not a global FPS/network benchmark"
+  },
+  "full_candidate_ci": "pending candidate commit",
+  "public_release": false,
+  "whole_1_0_complete": false
+}

@@ -203,19 +203,22 @@ public sealed partial class GameService
                 village.EnsureCamp(now);
                 DungeonRules.March(run, village, citizens, now);
                 var battles=await db.RaidBattles.Where(b=>b.VillageId==village.Id&&b.FinishedAt==null).ToListAsync(cancellationToken);
-                foreach(var battle in battles)
+                foreach(var battle in battles.Where(_=>run.Phase==DungeonPhase.Marching))
                     foreach(var fighter in battle.Fighters.Where(f=>f.IsTsar&&f.AccountId==village.OwnerAccountId))
                     {fighter.Active=false;fighter.TargetUnitId=null;fighter.DestinationX=null;fighter.DestinationY=null;battle.Revision++;}
 
             }
             else if (run.Phase == DungeonPhase.Marching && run.MarchEndsAt <= now)
             {
-                DungeonRules.Start(run, now);
-                start = await BuildStartAsync(db, run, village, citizens, cancellationToken);
-                var initial = new DungeonSimulation(start.Dungeon, start.Fighters);
-                var save = new DungeonSave(0, initial.Capture(), DungeonRandom.FromSeed(start.Seed).State, start.Heroes, []);
-                run.CheckpointJson = save.ToJson();
-                start = start with { Save = save };
+                if(DungeonRules.CompleteMarch(run,village,citizens,now))
+                {
+                    DungeonRules.Start(run, now);
+                    start = await BuildStartAsync(db, run, village, citizens, cancellationToken);
+                    var initial = new DungeonSimulation(start.Dungeon, start.Fighters);
+                    var save = new DungeonSave(0, initial.Capture(), DungeonRandom.FromSeed(start.Seed).State, start.Heroes, []);
+                    run.CheckpointJson = save.ToJson();
+                    start = start with { Save = save };
+                }
             }
             else
             {

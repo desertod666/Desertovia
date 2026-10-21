@@ -227,7 +227,7 @@ public static class CycleEngine
         var farmYard = farmTargets.FirstOrDefault() is {} farm ? WorldMap.Yard(farm.PlotId) : (TilePoint?)null;
         if ((spot ?? repairYard ?? unloadYard ?? farmYard ?? NaturalPlace(task)) is { } destination)
         {
-            citizen.SetOut(destination, village, now);
+            citizen.SetOut(destination, village, now, approach: Wilderness.ObstacleOf(task) is not null || task.Workplace == WorldMap.Pier);
         }
 
         var work = SkillRules.WorkTime(citizen, task.Skill, task.SkillLevel, TimeSpan.FromSeconds(task.WorkSeconds));
@@ -237,7 +237,13 @@ public static class CycleEngine
         var walk = (repairYard ?? unloadYard) is { } yard ? WorldMap.Walk(WorldMap.Places[WorldMap.Camp], yard)
             : farmTargets.Count>0 ? FarmRules.Walk(village,task,now,citizen.CyclePrivateOutput ? citizen.AccountId : null,farmTargets)!.Value
             : Walk(citizen, village, task, spot, now);
-        if(citizen.Trip is {Waypoints.Count:>0} journey&&journey.ArrivesAt-now>walk)walk=journey.ArrivesAt-now;
+        if(citizen.Trip is {Waypoints.Count:>0} journey)
+        {
+            // The saved trip already includes medical walking speed. Begin applies
+            // that speed once to the walking budget, not a second time to the route.
+            var normalTravel=(journey.ArrivesAt-now)*citizen.MedicalWalk(now);
+            if(normalTravel>walk)walk=normalTravel;
+        }
         Begin(citizen, task.Id, work + walk, WorkEnergy.TaskCost(village, task, now), village, now, walk);
         citizen.CycleInputCostBasis = inputBasis;
         citizen.CycleFarmTargets=farmTargets;

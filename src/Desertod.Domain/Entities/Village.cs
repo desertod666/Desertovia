@@ -244,7 +244,7 @@ public sealed class Village
     }
 
     /// <summary>The Tsar walks to a spot on the land and stays there. The land on the way is seen as they get there.</summary>
-    public void TsarGoTo(TilePoint spot, DateTimeOffset now)
+    public void TsarGoTo(TilePoint spot, DateTimeOffset now, bool waitIfBlocked = false)
     {
         SafeRest.RequireActive(TsarRestState);
         if (TsarInjuredUntil > now || TsarHospitalizedAt is not null)
@@ -258,7 +258,7 @@ public sealed class Village
             throw new GameRuleException("spot.outsideLand", "This spot is beyond the land.");
         }
 
-        TsarTrip = RegionalTravel.SetOut(this,TsarTrip,TsarSpot??WorldMap.Places[WorldMap.Camp],spot,now);
+        TsarTrip = RegionalTravel.SetOut(this,TsarTrip,TsarSpot??WorldMap.Places[WorldMap.Camp],spot,now,waitIfBlocked:waitIfBlocked);
         TsarSpot = spot;
     }
 

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-21T03:25:50.121267+00:00",
+  "scope": "T035 camera/touch/HUD slice; broader physical and performance acceptance unfinished",
+  "source_sha": "d884bf6bee554122ee52511de752ae87771a8959",
+  "pull_request": "https://github.com/desertod666/Desertovia/pull/87",
+  "ci": {
+    "sha": "d884bf6bee554122ee52511de752ae87771a8959",
+    "run": 39532500726,
+    "url": "https://github.com/desertod666/Desertovia/actions/runs/39532500726",
+    "conclusion": "success",
+    "jobs": {
+      "backend": {
+        "id": 119001449997,
+        "conclusion": "success"
+      },
+      "desktop": {
+        "id": 119001449878,
+        "passed": 202
+      },
+      "phone": {
+        "id": 119001449972,
+        "passed": 200,
+        "skipped": 2
+      },
+      "frontend": {
+        "id": 119001449885,
+        "conclusion": "success"
+      },
+      "docker": {
+        "id": 119001449691,
+        "conclusion": "success"
+      }
+    }
+  },
+  "local_checks": {
+    "frontend": "TypeScript/Vite/oxlint pass on final product code",
+    "browser_final_camera_passed": 14,
+    "browser_adjacent_passed": 11,
+    "browser_shared_renderer_skipped": 1,
+    "distinct_browser_passed": 25,
+    "scope": "final14 real Pixi touch/HUD camera cases; prior11 retreat/encounter/corpse cases before final anchor-only fix",
+    "visual_review": "actual rendered1280px and320px RU/EN screenshots inspected; controls below header, sprites visible; physical phone not verified"
+  },
+  "public_release": false,
+  "whole_1_0_complete": false
+}
