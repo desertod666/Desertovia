@@ -102,6 +102,9 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<int>("AvailableReserves")
                         .HasColumnType("integer");
 
+                    b.Property<int>("CombatRulesVersion")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Composition")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1844,6 +1847,8 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                             b1.Property<Guid>("CitizenId");
 
+                            b1.Property<int?>("CombatRulesVersion");
+
                             b1.Property<double>("DamageDealt");
 
                             b1.Property<double>("DamageTaken");
@@ -2417,6 +2422,33 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.OwnsOne("Desertod.Domain.Entities.Appearance", "Appearance", b1 =>
+                        {
+                            b1.Property<Guid>("CitizenId");
+
+                            b1.Property<string>("Gender")
+                                .IsRequired();
+
+                            b1.Property<int>("HairColor");
+
+                            b1.Property<int>("OutfitColor");
+
+                            b1.Property<int>("SkinTone");
+
+                            b1.Property<int>("Style");
+
+                            b1.HasKey("CitizenId");
+
+                            b1.ToTable("Citizens");
+
+                            b1
+                                .ToJson("Appearance")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CitizenId");
+                        });
+
                     b.OwnsMany("Desertod.Domain.Entities.CarriedGood", "Load", b1 =>
                         {
                             b1.Property<Guid>("CitizenId");
@@ -2439,33 +2471,6 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                             b1
                                 .ToJson("Load")
-                                .HasColumnType("jsonb");
-
-                            b1.WithOwner()
-                                .HasForeignKey("CitizenId");
-                        });
-
-                    b.OwnsOne("Desertod.Domain.Entities.Appearance", "Appearance", b1 =>
-                        {
-                            b1.Property<Guid>("CitizenId");
-
-                            b1.Property<string>("Gender")
-                                .IsRequired();
-
-                            b1.Property<int>("HairColor");
-
-                            b1.Property<int>("OutfitColor");
-
-                            b1.Property<int>("SkinTone");
-
-                            b1.Property<int>("Style");
-
-                            b1.HasKey("CitizenId");
-
-                            b1.ToTable("Citizens");
-
-                            b1
-                                .ToJson("Appearance")
                                 .HasColumnType("jsonb");
 
                             b1.WithOwner()
@@ -2495,6 +2500,75 @@ namespace Desertod.Infrastructure.Data.Migrations
                             b1
                                 .ToJson("PersonalGoods")
                                 .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CitizenId");
+                        });
+
+                    b.OwnsMany("Desertod.Domain.Skills.SkillProgress", "Skills", b1 =>
+                        {
+                            b1.Property<Guid>("CitizenId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd();
+
+                            b1.Property<int>("Experience");
+
+                            b1.Property<string>("Kind")
+                                .IsRequired();
+
+                            b1.Property<int>("Level");
+
+                            b1.HasKey("CitizenId", "__synthesizedOrdinal");
+
+                            b1.ToTable("Citizens");
+
+                            b1
+                                .ToJson("Skills")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CitizenId");
+                        });
+
+                    b.OwnsOne("Desertod.Domain.Stats.StatBlock", "Stats", b1 =>
+                        {
+                            b1.Property<Guid>("CitizenId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("Charisma")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("CharismaExperience")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("Dexterity")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("DexterityExperience")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("Endurance")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("EnduranceExperience")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("Intelligence")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("IntelligenceExperience")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("Strength")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("StrengthExperience")
+                                .HasColumnType("integer");
+
+                            b1.HasKey("CitizenId");
+
+                            b1.ToTable("Citizens");
 
                             b1.WithOwner()
                                 .HasForeignKey("CitizenId");
@@ -2681,75 +2755,6 @@ namespace Desertod.Infrastructure.Data.Migrations
                                 });
 
                             b1.Navigation("Steps");
-                        });
-
-                    b.OwnsMany("Desertod.Domain.Skills.SkillProgress", "Skills", b1 =>
-                        {
-                            b1.Property<Guid>("CitizenId");
-
-                            b1.Property<int>("__synthesizedOrdinal")
-                                .ValueGeneratedOnAdd();
-
-                            b1.Property<int>("Experience");
-
-                            b1.Property<string>("Kind")
-                                .IsRequired();
-
-                            b1.Property<int>("Level");
-
-                            b1.HasKey("CitizenId", "__synthesizedOrdinal");
-
-                            b1.ToTable("Citizens");
-
-                            b1
-                                .ToJson("Skills")
-                                .HasColumnType("jsonb");
-
-                            b1.WithOwner()
-                                .HasForeignKey("CitizenId");
-                        });
-
-                    b.OwnsOne("Desertod.Domain.Stats.StatBlock", "Stats", b1 =>
-                        {
-                            b1.Property<Guid>("CitizenId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<int>("Charisma")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("CharismaExperience")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("Dexterity")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("DexterityExperience")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("Endurance")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("EnduranceExperience")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("Intelligence")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("IntelligenceExperience")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("Strength")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("StrengthExperience")
-                                .HasColumnType("integer");
-
-                            b1.HasKey("CitizenId");
-
-                            b1.ToTable("Citizens");
-
-                            b1.WithOwner()
-                                .HasForeignKey("CitizenId");
                         });
 
                     b.Navigation("Appearance");
@@ -3410,6 +3415,119 @@ namespace Desertod.Infrastructure.Data.Migrations
                             b1.Navigation("Participation");
 
                             b1.Navigation("Recent");
+                        });
+
+                    b.OwnsOne("Desertod.Domain.Combat.RoyalCombatState", "RoyalCombat", b1 =>
+                        {
+                            b1.Property<Guid>("VillageId");
+
+                            b1.Property<string>("Armor");
+
+                            b1.Property<int>("ArrowSharpen");
+
+                            b1.Property<int>("Arrows");
+
+                            b1.Property<int>("Renown");
+
+                            b1.Property<string>("Weapon");
+
+                            b1.Property<int>("WeaponSharpen");
+
+                            b1.HasKey("VillageId");
+
+                            b1.ToTable("Villages");
+
+                            b1
+                                .ToJson("RoyalCombat")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("VillageId");
+
+                            b1.OwnsMany("Desertod.Domain.Entities.CarriedGood", "Load", b2 =>
+                                {
+                                    b2.Property<Guid>("RoyalCombatStateVillageId");
+
+                                    b2.Property<int>("__synthesizedOrdinal")
+                                        .ValueGeneratedOnAdd();
+
+                                    b2.Property<int>("Amount");
+
+                                    b2.Property<int>("Durability");
+
+                                    b2.Property<string>("Kind")
+                                        .IsRequired();
+
+                                    b2.Property<int>("Sharpen");
+
+                                    b2.HasKey("RoyalCombatStateVillageId", "__synthesizedOrdinal");
+
+                                    b2.ToTable("Villages");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("RoyalCombatStateVillageId");
+                                });
+
+                            b1.OwnsMany("Desertod.Domain.Skills.SkillProgress", "Skills", b2 =>
+                                {
+                                    b2.Property<Guid>("RoyalCombatStateVillageId");
+
+                                    b2.Property<int>("__synthesizedOrdinal")
+                                        .ValueGeneratedOnAdd();
+
+                                    b2.Property<int>("Experience");
+
+                                    b2.Property<string>("Kind")
+                                        .IsRequired();
+
+                                    b2.Property<int>("Level");
+
+                                    b2.HasKey("RoyalCombatStateVillageId", "__synthesizedOrdinal");
+
+                                    b2.ToTable("Villages");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("RoyalCombatStateVillageId");
+                                });
+
+                            b1.OwnsOne("Desertod.Domain.Stats.StatBlock", "Stats", b2 =>
+                                {
+                                    b2.Property<Guid>("RoyalCombatStateVillageId");
+
+                                    b2.Property<int>("Charisma");
+
+                                    b2.Property<int>("CharismaExperience");
+
+                                    b2.Property<int>("Dexterity");
+
+                                    b2.Property<int>("DexterityExperience");
+
+                                    b2.Property<int>("Endurance");
+
+                                    b2.Property<int>("EnduranceExperience");
+
+                                    b2.Property<int>("Intelligence");
+
+                                    b2.Property<int>("IntelligenceExperience");
+
+                                    b2.Property<int>("Strength");
+
+                                    b2.Property<int>("StrengthExperience");
+
+                                    b2.HasKey("RoyalCombatStateVillageId");
+
+                                    b2.ToTable("Villages");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("RoyalCombatStateVillageId");
+                                });
+
+                            b1.Navigation("Load");
+
+                            b1.Navigation("Skills");
+
+                            b1.Navigation("Stats")
+                                .IsRequired();
                         });
 
                     b.OwnsMany("Desertod.Domain.Combat.SavedRaidPreset", "RaidPresets", b1 =>
@@ -4093,6 +4211,8 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Navigation("Raids");
 
                     b.Navigation("Research");
+
+                    b.Navigation("RoyalCombat");
 
                     b.Navigation("SiteRecoveries");
 

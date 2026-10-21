@@ -33,6 +33,7 @@ public sealed partial class GameService
             var now=time.GetUtcNow();var openWork=citizen is not null&&!citizen.CycleSettled&&citizen.CurrentTaskId is not null;
             if(!(openWork&&citizen!.RestState==RestState.RestRequested))SafeRest.RequireActive(tsar?village.TsarRestState:citizen!.RestState);
             if(citizen is not null){HospitalRules.RequireReady(citizen,now);if(Desertod.Domain.Combat.CombatRules.IsInjured(citizen,now))throw new GameRuleException("citizen.injured","Wait for the wound to heal before travelling.");}
+            if(tsar)Desertod.Domain.Combat.RoyalInjury.Refresh(village,now);
             if(tsar&&(village.TsarInjuredUntil>now||village.TsarHospitalizedAt is not null))throw new GameRuleException("tsar.injured","Wait for the wound to heal before travelling.");
             await RequireMovementReadyAsync(db,village.Id,actor,citizen?.Id,ct);
             var resumed=citizen is null?RegionalTravel.Resume(village,trip,now):RegionalTravel.Resume(citizen,village,now);

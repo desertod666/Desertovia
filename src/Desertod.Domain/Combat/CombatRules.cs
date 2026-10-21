@@ -61,12 +61,14 @@ public static class CombatRules
     public static bool IsInjured(Citizen citizen, DateTimeOffset now) => citizen.InjuredUntil is { } until && now < until;
 
     /// <summary>Fight power: strength and agility, training as a guard, and the weapon in hand.</summary>
-    public static double Power(Citizen citizen) =>
+    public static double Power(Citizen citizen) => Power(citizen,UsableWeapon(citizen));
+
+    public static double Power(Citizen citizen,WeaponDefinition? weapon) =>
         UnarmedPower
         + StrengthPower * citizen.Stats.Strength
         + DexterityPower * citizen.Stats.Dexterity
         + GuardingPower * citizen.SkillLevel(Skill.Guarding)
-        + (UsableWeapon(citizen) is { } weapon
+        + (weapon is not null
             ? weapon.Power + WeaponSharpening.Bonus(weapon.Kind == ResourceKind.Bow ? citizen.ArrowSharpen : citizen.WeaponSharpen)
             : 0);
 
@@ -78,9 +80,9 @@ public static class CombatRules
     /// Takes the best weapon and armor from the citizen's hands or village storage. A citizen who already holds
     /// a weapon or armor (because storage had no room to take it back) keeps it.
     /// </summary>
-    public static void Arm(Citizen citizen, Village village)
+    public static void Arm(Citizen citizen, Village village,bool liveCombat=false)
     {
-        if (citizen.Weapon is null && BestWeapon(citizen, village) is { } best)
+        if (citizen.Weapon is null && BestWeapon(citizen, village,liveCombat) is { } best)
         {
             Take(citizen, village, best.Weapon.Kind, 1, best.Sharpen);
             citizen.Weapon = best.Weapon.Kind;
@@ -360,7 +362,7 @@ public static class CombatRules
     /// <summary>The sharpest usable weapon the citizen can reach. Equal power keeps the catalog order: sword, then bow, then spear.</summary>
     private readonly record struct WeaponPick(WeaponDefinition Weapon, int Sharpen, int ArrowEdge);
 
-    private static WeaponPick? BestWeapon(Citizen citizen, Village village)
+    private static WeaponPick? BestWeapon(Citizen citizen, Village village,bool liveCombat)
     {
         WeaponPick? best = null;
         var rank = 0;
@@ -370,7 +372,7 @@ public static class CombatRules
             if (weapon.Kind == ResourceKind.Bow)
             {
                 if (Available(citizen, village, ResourceKind.Bow) > 0
-                    && WeaponSharpening.BestEdge(citizen, village, weapon.Arrows) is int edge)
+                    && WeaponSharpening.BestEdge(citizen, village, liveCombat?1:weapon.Arrows) is int edge)
                 {
                     Consider(weapon, 0, edge);
                 }

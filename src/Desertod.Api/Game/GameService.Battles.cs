@@ -32,6 +32,7 @@ public sealed partial class GameService
             // A queued order must never create a second actor or restore spent health.
             next.Fighters.RemoveAll(x=>x.IsTsar==f.IsTsar&&x.ActorId==f.ActorId);
             next.Fighters.Add(new(){CitizenId=f.CitizenId,AccountId=f.AccountId,IsTsar=f.IsTsar,X=f.X,Y=f.Y,Health=f.Health,MaximumHealth=f.MaximumHealth,
+                CombatRulesVersion=f.CombatRulesVersion,Weapon=f.Weapon,Armor=f.Armor,Arrows=f.Arrows,
                 Mode=f.Mode,Guard=f.Guard,Active=f.Active,Wounded=f.Wounded,HealReadyAt=f.HealReadyAt,HealingReceipts=f.HealingReceipts,NextAttackAt=now.AddSeconds(1)});
         }
     }
@@ -88,7 +89,14 @@ public sealed partial class GameService
                 if(battle.Phase=="Warning")throw new GameRuleException("battle.notActive","The battle has not started.");
                 var own=ownFighter
                     ??throw new GameRuleException("battle.notActive","You are not actively fighting.");
-                if(order.Mode=="heal") { if(BattleActions.Heal(village,own.IsTsar?null:citizen,own,order.RequestId??Guid.Empty,now))battle.RemediesUsed++; }
+                if(order.Mode=="heal")
+                {
+                    var commonRoyal=own.IsTsar&&own.CombatRulesVersion==CombatantRules.CurrentVersion;
+                    var body=commonRoyal?RoyalCombatBody.ForFighter(village,own,citizen is null?[]:[citizen],now):null;
+                    if(commonRoyal&&body is null)throw new GameRuleException("battle.notReady","The admitted body is no longer available.");
+                    if(BattleActions.Heal(village,body?.Citizen??(own.IsTsar?null:citizen),own,order.RequestId??Guid.Empty,now))battle.RemediesUsed++;
+                    body?.Commit();
+                }
                 else BattleActions.Retreat(battle,own,new RaidNavigation(village));
                 battle.Revision++;db.AuditActor=actor;db.AuditOperation="battle-"+order.Mode;
                 await db.SaveChangesAsync(ct);changes.Mark(villageId);
@@ -111,8 +119,14 @@ public sealed partial class GameService
                 if(fighter is null)
                 {
                     var p=nav.NearestFree(village.TsarTrip?.PositionAt(now)??village.TsarSpot??WorldMap.Places[WorldMap.Camp]);
-                    fighter=new(){IsTsar=true,AccountId=actor,X=p.X,Y=p.Y,Health=HeroClassCatalog.VoivodeHealth,
-                        MaximumHealth=HeroClassCatalog.VoivodeHealth,Guard=false,Active=true,NextAttackAt=now.AddSeconds(1)};
+                    var body=battle.CombatRulesVersion==CombatantRules.CurrentVersion?RoyalCombatBody.Resolve(village,citizen is null?[]:[citizen],now):null;
+                    if(body is not null&&!RaidSimulation.CanFight(body.Citizen,now))throw new GameRuleException("battle.notReady","Wait until recovery or return from the dungeon.");
+                    if(body is not null)CombatRules.Arm(body.Citizen,village,liveCombat:true);
+                    var health=body is null?HeroClassCatalog.VoivodeHealth:CombatantRules.RaidHealth(body.Citizen);
+                    fighter=new(){IsTsar=true,AccountId=actor,CitizenId=body is null?Guid.Empty:citizen?.Id??Guid.Empty,X=p.X,Y=p.Y,Health=health,
+                        MaximumHealth=health,Guard=false,Active=true,NextAttackAt=now.AddSeconds(1),CombatRulesVersion=battle.CombatRulesVersion,
+                        Weapon=body?.Citizen.Weapon,Armor=body?.Citizen.Armor,Arrows=body?.Citizen.Arrows??0};
+                    body?.Commit();
                     battle.Fighters.Add(fighter);village.TsarTrip=null;village.TsarSpot=p;
                 }
             }
@@ -123,10 +137,10 @@ public sealed partial class GameService
                 fighter=battle.Fighters.SingleOrDefault(f=>!f.IsTsar&&f.CitizenId==citizen!.Id);
                 if(fighter is null)
                 {
-                    if(citizen!.Weapon is null)CombatRules.Arm(citizen,village);
+                    if(citizen!.Weapon is null)CombatRules.Arm(citizen,village,liveCombat:battle.CombatRulesVersion==CombatantRules.CurrentVersion);
                     var p=nav.NearestFree(citizen!.Trip?.PositionAt(now)??citizen.Spot??citizen.IdleSpot??WorldMap.Places[WorldMap.Camp]);
-                    fighter=new(){CitizenId=citizen.Id,X=p.X,Y=p.Y,Health=32+citizen.Stats.Endurance*4,
-                        MaximumHealth=32+citizen.Stats.Endurance*4,Guard=false,Active=true,NextAttackAt=now.AddSeconds(1)};
+                    fighter=new(){CitizenId=citizen.Id,X=p.X,Y=p.Y,Health=CombatantRules.RaidHealth(citizen),
+                        MaximumHealth=CombatantRules.RaidHealth(citizen),CombatRulesVersion=battle.CombatRulesVersion,Guard=false,Active=true,NextAttackAt=now.AddSeconds(1)};
                     battle.Fighters.Add(fighter);
                 }
             }

@@ -23,6 +23,7 @@ import { useI18n } from '../i18n'
 import type { UiKey } from '../i18n/en'
 import { BuildPanel } from './BuildPanel'
 import { CharacterSheet } from './CharacterSheet'
+import { RoyalCombatSheet } from './RoyalCombatSheet'
 import { JoinVillageForm } from './CreateCharacterForm'
 import { TABS, tabsFor, type MenuTab } from './menuTabs'
 import { NextAction } from './NextAction'
@@ -214,6 +215,7 @@ export function GameMenu(props: MenuProps) {
                 <section className="card">
                   <h3>{t('tsar.title')}</h3>
                   <p className="small">{t('tsar.role')}</p>
+                  <RoyalCombatSheet village={village} now={now} onVillage={props.onVillage}/>
                   <button className="primary" onClick={() => onTab('build')}>
                     {t('hud.build')}
                   </button>

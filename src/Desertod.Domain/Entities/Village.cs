@@ -107,6 +107,7 @@ public sealed class Village
 
     /// <summary>The Tsar's last walk; the land along it is seen as they get there.</summary>
     public Trip? TsarTrip { get; set; }
+    public RoyalCombatState? RoyalCombat { get; set; }
     public RestState TsarRestState { get; set; }
     public DateTimeOffset? TsarRestRequestedAt { get; set; }
     public DateTimeOffset? TsarInjuredUntil { get; set; }
@@ -247,6 +248,7 @@ public sealed class Village
     public void TsarGoTo(TilePoint spot, DateTimeOffset now, bool waitIfBlocked = false)
     {
         SafeRest.RequireActive(TsarRestState);
+        RoyalInjury.Refresh(this,now);
         if (TsarInjuredUntil > now || TsarHospitalizedAt is not null)
         {
             throw new GameRuleException("tsar.injured", "You are wounded and cannot walk.",

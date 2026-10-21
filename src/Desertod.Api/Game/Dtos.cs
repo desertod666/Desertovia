@@ -253,6 +253,7 @@ public sealed record WalkJourneyDto(TilePoint From,IReadOnlyList<TripWaypoint> W
 
 public sealed record TsarDto(string Name, Appearance? Appearance, TilePoint? Spot, DateTimeOffset? InjuredUntil = null)
 {
+    public RoyalCombatDto? Combat { get; init; }
     public WalkJourneyDto? Journey { get; init; }
     public RestState RestState { get; init; }
     public DateTimeOffset? RestRequestedAt { get; init; }
@@ -260,6 +261,14 @@ public sealed record TsarDto(string Name, Appearance? Appearance, TilePoint? Spo
     public DateTimeOffset? HospitalizedAt { get; init; }
     public Guid? RescueByCitizenId { get; init; }
     public DateTimeOffset? RescueRequestedAt { get; init; }
+}
+
+public sealed record RoyalCombatDto(int Strength,int Dexterity,int Endurance,int Guarding,int Renown,
+    ResourceKind? Weapon,ResourceKind? Armor,int Arrows,int WeaponSharpen,int ArrowSharpen,double RaidHealth,double Power)
+{
+    public static RoyalCombatDto From(Citizen body,Village village)=>new(body.Stats.Strength,body.Stats.Dexterity,body.Stats.Endurance,
+        body.SkillLevel(Desertod.Domain.Skills.Skill.Guarding),body.Renown,body.Weapon,body.Armor,body.Arrows,body.WeaponSharpen,body.ArrowSharpen,
+        Desertod.Domain.Combat.CombatantRules.RaidHealth(body),Desertod.Domain.Combat.CombatantRules.LivePower(body));
 }
 
 /// <param name="Objectives">Rulers' objectives (planning) carry no numbers; citizen objectives carry progress.</param>

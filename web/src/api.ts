@@ -1105,6 +1105,7 @@ export type RestState = 'Active' | 'RestRequested' | 'Resting'
 export interface WalkJourney {id?:string;blockedAt?:string|null;blockReason?:'gate'|'bridge'|'path'|null;from:TilePoint;waypoints:{x:number;y:number;cost:number}[];setOutAt:string;arrivesAt:string;speedMultiplier:number;snapshotAt:string}
 export interface ResumeJourneyRequest{requestId:string;journeyId:string;blockedAt:string}
 export interface Tsar {
+  combat?:{strength:number;dexterity:number;endurance:number;guarding:number;renown:number;weapon:string|null;armor:string|null;arrows:number;weaponSharpen:number;arrowSharpen:number;raidHealth:number;power:number}|null
   journey?:WalkJourney|null
   restState?: RestState
   restRequestedAt?: string | null
@@ -1653,6 +1654,7 @@ export const api = {
   hospitalHeal: (slug: string, payment: HospitalPayment) => request<HospitalReceipt>('POST', `/api/villages/${encodeURIComponent(slug)}/hospital/heal`, payment),
   hospitalUpgrade: (slug: string, plot: string) => request<VillageState>('POST', `/api/villages/${encodeURIComponent(slug)}/hospital/${encodeURIComponent(plot)}/upgrade`),
   heal: (slug: string) => request<Citizen>('POST', `/api/villages/${encodeURIComponent(slug)}/me/heal`),
+  healRoyal: (slug:string,requestId:string) => request<VillageState>('POST',`/api/villages/${encodeURIComponent(slug)}/tsar/heal`,{requestId}),
   upgradeFortifications: (slug:string) => request<VillageState>('POST', `/api/villages/${encodeURIComponent(slug)}/fortifications/upgrade`),
   raidEditor: (slug:string) => request<RaidEditorView>('GET', `/api/villages/${encodeURIComponent(slug)}/raid-editor`),
   previewRaid: (slug:string, settings:RaidSettings) => request<RaidPreview>('POST', `/api/villages/${encodeURIComponent(slug)}/raid-editor/preview`, settings),

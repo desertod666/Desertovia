@@ -798,7 +798,9 @@ public sealed partial class GameService(
             var village = await db.Villages.SingleAsync(v => v.Id == citizen.VillageId, cancellationToken);
             var now = time.GetUtcNow();
             var raids = await FightDueRaidsAsync(db, village, null, now, cancellationToken);
+            var sharedRoyalWound=citizen.AccountId==village.OwnerAccountId&&citizen.WoundedAt is not null&&citizen.WoundedAt==village.TsarWoundedAt;
             CombatRules.Heal(citizen, village, now);
+            if(sharedRoyalWound)RoyalInjury.Clear(village);
             await db.SaveChangesAsync(cancellationToken);
             logger.CitizenActed(citizen.Id, slug, "heal", "");
 
@@ -1508,8 +1510,11 @@ public sealed partial class GameService(
             .Where(a => a.Id == village.OwnerAccountId)
             .Select(a => new { a.DisplayName, a.Character })
             .SingleAsync(cancellationToken);
+        RoyalInjury.Refresh(village,now,residents);
         var tsar = new TsarDto(owner.Character?.Name ?? owner.DisplayName, owner.Character?.Appearance, village.TsarSpot, village.TsarInjuredUntil)
             { Journey=WalkJourneyDto.FromTrip(village.TsarTrip,now), RestState=village.TsarRestState, RestRequestedAt=village.TsarRestRequestedAt, AccountId=village.OwnerAccountId, HospitalizedAt=village.TsarHospitalizedAt, RescueByCitizenId=village.TsarRescueByCitizenId, RescueRequestedAt=village.TsarRescueRequestedAt };
+        var royalBody=RoyalCombatBody.Preview(village,residents,now);
+        tsar=tsar with {Combat=RoyalCombatDto.From(royalBody,village)};
         var trips = await LoadTripsAsync(db, village.Id, cancellationToken);
         var shownSince = now - DungeonRules.ShownAfterEnd;
         var dungeon = await db.DungeonRuns.AsNoTracking()
