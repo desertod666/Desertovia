@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_on": "2026-10-19",
+  "recorded_on": "2026-10-22",
   "phase": "released_verified",
   "architecture": "adapt_existing_dotnet_react_pixi",
   "source_commits": {
@@ -23,7 +23,9 @@
     "release_0_7_12": "56a62381eb33b35e401e1766c2f4525d2709b361",
     "release_0_7_13": "a4bc0ec46170b5b3c94356d2c7b2c03f90e7eab3",
     "release_0_7_14": "a616b6485b9ea469f2272d322c4c9753c90c939a",
-    "release_0_7_15": "52f2f6ccb39d276be9a260f027198eb02f165e09"
+    "release_0_7_15": "52f2f6ccb39d276be9a260f027198eb02f165e09",
+    "release_0_7_16": "4bb125f2dc05711ebaf4dac2723f3ee19eae3ea9",
+    "release_0_7_17": "fbcb044c94ce8aaed26cde6c3f4ffcb42e60747a"
   },
   "source_repository": "buhaiov-vs/Desertovia",
   "release_repository": "desertod666/Desertovia",
@@ -2383,13 +2385,18 @@
     }
   },
   "candidate_0_7_17": {
-    "status": "local_review",
+    "status": "released_verified",
     "source_pr": 76,
     "source_sha": "b617f8d9f38fcc700400dbf2e7239f931d8d2127",
     "release_base": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "live_previous": "4bb125f2dc05711ebaf4dac2723f3ee19eae3ea9",
     "version": "0.7.17",
     "includes_unfinished_1_0": false,
-    "installed": false
+    "installed": true,
+    "ci": 39683834345,
+    "preflight": 39685102312,
+    "install": 39685186116,
+    "independent_check": 39685720287,
+    "receipt": "RELEASE_0_7_17_RESULT.json"
   }
 }

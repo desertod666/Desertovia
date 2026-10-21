@@ -1,0 +1,83 @@
+{
+  "phase": "post0717_verified",
+  "version": "0.7.17",
+  "game_sha": "fbcb044c94ce8aaed26cde6c3f4ffcb42e60747a",
+  "ci": 39683834345,
+  "progress": {
+    "profiles_before": 154,
+    "profiles_after": 154,
+    "lost_profiles_or_progress": 0,
+    "accounts_preserved": 156,
+    "login_bindings_preserved": 156
+  },
+  "combat_preservation": {
+    "existing_battles_preserved": 0,
+    "existing_enemy_ids_and_health_checked": 0
+  },
+  "migrations": 39,
+  "frontend": {
+    "version": "0.7.17",
+    "checked_chunks": 26,
+    "tool_controls_present": true
+  },
+  "postgres_backup": {
+    "created": true,
+    "full_restore_verified": true,
+    "sha256": "c7133164beec2ee1d28c03b150b89ea24405d0f82adaa72b773b3f7d5dff3549",
+    "bytes": 5422064,
+    "profiles": 154,
+    "migrations": 38
+  },
+  "bot_code_and_config_preserved": true,
+  "game_config_preserved_except_release_sha": true,
+  "building_display_numbers_preserved": true,
+  "runtime": [
+    "10.0.13"
+  ],
+  "synthetic_messages": 0,
+  "payments": 0,
+  "forced_battles": 0,
+  "checked_at_utc": "2026-10-21T22:20:19Z",
+  "source_pr": 103,
+  "partner_pr": 76,
+  "partner_sha": "b617f8d9f38fcc700400dbf2e7239f931d8d2127",
+  "source_merge_sha": "e7fa66cc4d3f614464c0060abfd233ab0eca967e",
+  "checks": {
+    "domain": 548,
+    "api": 289,
+    "browser_passed": 238,
+    "browser_normal_skips": 2,
+    "browser_shards": {
+      "1": {
+        "passed": 120,
+        "skipped": 0
+      },
+      "2": {
+        "passed": 118,
+        "skipped": 2
+      }
+    },
+    "client_unit": 4,
+    "frontend": "pass",
+    "docker": "pass",
+    "additional_real_tools_ui": [
+      "desktop",
+      "phone"
+    ],
+    "operator_guard_tests": 4
+  },
+  "limitations": [
+    "Tool bonus affects gathered yield, not duration.",
+    "Personal economy inventory remains count-only; work tool wear belongs to hands and communal storage.",
+    "Browser phone emulation, not a physical handset test.",
+    "Existing lint warnings and API-test-only SignalR10.0.12 advisory remain; production runtime must be at least10.0.13.",
+    "Bot runtime and version registry are outside this game-only release."
+  ],
+  "preflight_run": 39685102312,
+  "install_run": 39685186116,
+  "independent_check_run": 39685720287,
+  "independent_check": "success",
+  "local_date": "2026-10-22",
+  "timezone": "Europe/Oslo",
+  "unfinished_1_0_included": false
+}
