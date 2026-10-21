@@ -1,0 +1,119 @@
+{
+  "recorded_at_utc": "2026-10-21T16:09:45.352463+00:00",
+  "bot_branch": "feat/desertovia-dcoin-ledger",
+  "bot_source_parent": "b4f12d674444e6c23490508db6affad2c6b7e852",
+  "status": "implemented_scoped_exact_full_bot_ci_verified",
+  "implemented": true,
+  "verified": "scoped_exact_full_ci",
+  "released": false,
+  "authority": "Existing bot candles:<uid>/candles_total:<uid> KV; one shared SQLite posting writer; no conversion, mirror wallet or Gold authority",
+  "integration": [
+    "Church add/spend/message rewards with source IDs and original day cap",
+    "GameEconomy reserve/finish/award/event/restart recovery",
+    "Hospital existing payment/refund transaction",
+    "Runner revision-bound continue and settlement",
+    "Story fresh persisted bonus phase and rewards",
+    "Atomic existing donation credits and held YouTube transfer"
+  ],
+  "checks": {
+    "wallet_and_hospital_final": {
+      "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\dcoin-wallet-core-final.log",
+      "sha256": "ecced5932ecfee5b7718e022ac006cb493029eacf5290279463789298f87a1c8",
+      "tests_ran": 27,
+      "duration_seconds": 9.987,
+      "result": "passed",
+      "tail": "OK"
+    },
+    "broad_integration_before_windows_fixture_cleanup": {
+      "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\dcoin-wallet-integration-tests.log",
+      "sha256": "0b2d71ec154e0eb26f748bc7bd56d753202e7b8bc0ccbb31579e7fec64d4a694",
+      "tests_ran": 208,
+      "duration_seconds": 154.553,
+      "result": "failed",
+      "tail": "FAILED (errors=34)"
+    },
+    "broad_integration_final": {
+      "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\dcoin-wallet-integration-final.log",
+      "sha256": "840643d5fb075fd106eb0cd396f124e2cd5184d041a3295f186469d1edd07ae5",
+      "tests_ran": 208,
+      "duration_seconds": 152.36,
+      "result": "failed",
+      "tail": "FAILED (failures=1)"
+    },
+    "isolated_question_timing": {
+      "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\dcoin-question-timing-check.log",
+      "sha256": "086973b5f86cb82542a38a6d5c707da30dcb0a0ff581709d574078c4a438241b",
+      "tests_ran": 1,
+      "duration_seconds": 1.821,
+      "result": "passed",
+      "tail": "OK"
+    },
+    "earlier_utf8_child_failure": {
+      "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\dcoin-wallet-local-tests.log",
+      "sha256": "1891977d03e611a0d7d3c0c7ff905a49f21030e761987167d1dbfb75d1acb457",
+      "tests_ran": 55,
+      "duration_seconds": 35.907,
+      "result": "failed",
+      "tail": "FAILED (errors=1)"
+    },
+    "earlier_minimum_donation_fixture": {
+      "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\dcoin-wallet-expanded-tests.log",
+      "sha256": "6e26aeb0df35673fd7e7784c3753b621f7eebbe41a37415373f6233af2520614",
+      "tests_ran": 58,
+      "duration_seconds": 37.363,
+      "result": "failed",
+      "tail": "FAILED (failures=1)"
+    },
+    "python_compileall": "PASS; sramoslav plus changed tests; no provider calls"
+  },
+  "new_tests": {
+    "wallet_upgrade_held_cases": 16,
+    "stale_story_bonus_case": 1
+  },
+  "scenario_corrections": [
+    "Hospital payment/refund must not create a missing rank-total key when rank does not change; source corrected, guard retained",
+    "Runner repeated synthetic cases seed through wallet postings, not by bypassing a journaled account",
+    "Windows shared test fixtures close their owned SQLite handles before removing temporary files; UTF-8 propagated to child Python tools",
+    "Legacy candles_for explicitly grants minimum1 for any positive old donation. New tiny-donation fixture corrected to preserve that rule; rates/product code not changed",
+    "Final broad208test run has207pass and1cooldown scheduling assertion; isolated unchanged case1pass. It is not recorded as a green broad run; full Linux CI required"
+  ],
+  "synthetic_upgrade": {
+    "old_tables_compared": 31,
+    "old_kv_rows": 7,
+    "new_tables": [
+      "dcoin_openings",
+      "dcoin_receipts"
+    ],
+    "old_rows_preserved": true,
+    "opening_and_receipt_rows_at_upgrade": 0,
+    "legacy_stake_recovered_once": true,
+    "pending_hospital_and_unlinked_rewards_preserved": true,
+    "gold_test_key_unchanged": true,
+    "scope": "Owned disposable SQLite fixture; no private/public production database copied or mutated"
+  },
+  "known_limits": [
+    "Legacy one-off calls without stable IDs are atomic/audited, not semantically idempotent",
+    "Unknown direct KV edits refuse new posts as audit_mismatch; no automatic reconciliation or invented income",
+    "No general provider-charge receipt or Stars/refund policy; no paid activation",
+    "Existing profile forget policy removes new linked journal tables; future external charge retention is a separate contract",
+    "Final Dcoin labels/cutover and TEST_CANDLE/healing decisions remain scoped open",
+    "Fresh actual-runtime copy and whole1.0 staging migration/performance acceptance still required"
+  ],
+  "candidate_ci": {
+    "status": "success",
+    "run_id": 39632730158,
+    "head_sha": "1174e08e7c0373d97958ae87ae42c6cbf0a51850",
+    "job_id": 119335006057,
+    "unit_tests_ran": 1138,
+    "duration_seconds": 213.682,
+    "server_job": "skipped",
+    "observed_at_utc": "2026-10-21T16:20:12.875886+00:00",
+    "scope": "Full bot test workflow; no public install/provider/actual user-data proof"
+  },
+  "no_real_messages_or_payments_or_model_calls": true,
+  "game_schema_changed": false,
+  "game_runtime_schema": 59,
+  "other_bot_config_and_secrets_changed": false,
+  "bot_source_sha": "1174e08e7c0373d97958ae87ae42c6cbf0a51850",
+  "bot_pr": "https://github.com/desertod666/TG-bots/pull/107"
+}

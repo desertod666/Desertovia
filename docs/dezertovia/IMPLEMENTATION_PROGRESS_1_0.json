@@ -2,14 +2,14 @@
   "schema_version": 1,
   "decision": "D-104",
   "recorded_at_utc": "2026-10-21T14:43:36.149456+00:00",
-  "status": "main_plan_active_music_volume_linux_webkit_verified_full_ci_running",
+  "status": "main_plan_active_dcoin_journal_exact_full_ci_verified_semantic_commands_follow",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-music-states",
+  "branch": "feat/desertovia-1-0-dcoin-ledger",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "T070 existing world/dungeon music scene controller and T072 actual GainNode volume; partial scoped checks. Entire1.0 remains active.",
+  "implemented_task": "Partial T060 bot-owned Dcoin ledger over unchanged legacy KV, atomic business integration and held YouTube obligations. Checks running; no conversion or public release.",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -1790,7 +1790,7 @@
       }
     }
   },
-  "next_independent_work": "Continue functional DAG after exact music/signal CI; final UI stays last per D109/D110. Pending group/loot/farm input policy decisions block only their dependent behavior.",
+  "next_independent_work": "Continue remaining stable business IDs for owner adjustment/shop commands over the verified bot1174e08 journal, then the full functional DAG. No conversion, paid activation or UI redesign before functional completion.",
   "combat_actor_admission": {
     "schema_version": 1,
     "recorded_at_utc": "2026-10-21T04:02:01.869805+00:00",
@@ -4193,9 +4193,9 @@
     "recorded_at_utc": "2026-10-21T15:28:06.755287+00:00",
     "branch": "feat/desertovia-1-0-music-states",
     "source_parent": "3551b0d305b2ab8d9bba1a5e6facb740b1d3d209",
-    "status": "implemented_scoped_verified_including_linux_webkit_full_ci_running",
+    "status": "implemented_scoped_exact_full_ci_verified",
     "implemented": true,
-    "verified": "scoped_only",
+    "verified": "scoped_exact_full_ci",
     "released": false,
     "scope": [
       "One scene controller across existing village/dungeon pages",
@@ -4424,7 +4424,7 @@
     },
     "actual_phone_or_speaker_tested": false,
     "candidate_ci": {
-      "status": "running",
+      "status": "verified_all_six_jobs_success",
       "head_sha": "35ed0efad4c1b28741aaef4905885e7d5c133819",
       "run_id": 39626189219,
       "jobs": {
@@ -4443,18 +4443,24 @@
         },
         "Backend tests": {
           "id": 119311956608,
-          "status": "in_progress"
+          "conclusion": "success"
         },
         "Browser tests (1/2)": {
           "id": 119311957086,
-          "status": "in_progress"
+          "conclusion": "success"
         },
         "Browser tests (2/2)": {
           "id": 119311956487,
-          "status": "in_progress"
+          "conclusion": "success"
         }
       },
-      "observed_at_utc": "2026-10-21T15:34:00.644411+00:00"
+      "observed_at_utc": "2026-10-21T15:56:22Z",
+      "domain_passed": 726,
+      "api_passed": 490,
+      "client_unit_passed": 33,
+      "browser_passed": 428,
+      "browser_skipped": 2,
+      "linux_webkit_audio_passed": 4
     },
     "parent_ci": {
       "status": "verified_all_five_jobs_success",
@@ -4486,7 +4492,7 @@
     "no_model_calls": true,
     "no_public_deployment": true,
     "remaining": [
-      "Remaining exact new backend and browser CI jobs",
+      "Remaining complete T070/T072 gameplay/audio/physical-device acceptance, not another required test of35ed0ef",
       "Linux WebKit4pass proves the actual graph; physical iPhone background/speaker still unverified",
       "Original master/provenance/rights/loops and all21 actual scored scenes",
       "Durable confirmed siege/miracle stingers after actual gameplay phases",
@@ -4543,5 +4549,124 @@
       ],
       "physical_phone": false
     }
+  },
+  "dcoin_wallet_1_0": {
+    "recorded_at_utc": "2026-10-21T16:09:45.352463+00:00",
+    "bot_branch": "feat/desertovia-dcoin-ledger",
+    "bot_source_parent": "b4f12d674444e6c23490508db6affad2c6b7e852",
+    "status": "implemented_scoped_exact_full_bot_ci_verified",
+    "implemented": true,
+    "verified": "scoped_exact_full_ci",
+    "released": false,
+    "authority": "Existing bot candles:<uid>/candles_total:<uid> KV; one shared SQLite posting writer; no conversion, mirror wallet or Gold authority",
+    "integration": [
+      "Church add/spend/message rewards with source IDs and original day cap",
+      "GameEconomy reserve/finish/award/event/restart recovery",
+      "Hospital existing payment/refund transaction",
+      "Runner revision-bound continue and settlement",
+      "Story fresh persisted bonus phase and rewards",
+      "Atomic existing donation credits and held YouTube transfer"
+    ],
+    "checks": {
+      "wallet_and_hospital_final": {
+        "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\dcoin-wallet-core-final.log",
+        "sha256": "ecced5932ecfee5b7718e022ac006cb493029eacf5290279463789298f87a1c8",
+        "tests_ran": 27,
+        "duration_seconds": 9.987,
+        "result": "passed",
+        "tail": "OK"
+      },
+      "broad_integration_before_windows_fixture_cleanup": {
+        "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\dcoin-wallet-integration-tests.log",
+        "sha256": "0b2d71ec154e0eb26f748bc7bd56d753202e7b8bc0ccbb31579e7fec64d4a694",
+        "tests_ran": 208,
+        "duration_seconds": 154.553,
+        "result": "failed",
+        "tail": "FAILED (errors=34)"
+      },
+      "broad_integration_final": {
+        "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\dcoin-wallet-integration-final.log",
+        "sha256": "840643d5fb075fd106eb0cd396f124e2cd5184d041a3295f186469d1edd07ae5",
+        "tests_ran": 208,
+        "duration_seconds": 152.36,
+        "result": "failed",
+        "tail": "FAILED (failures=1)"
+      },
+      "isolated_question_timing": {
+        "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\dcoin-question-timing-check.log",
+        "sha256": "086973b5f86cb82542a38a6d5c707da30dcb0a0ff581709d574078c4a438241b",
+        "tests_ran": 1,
+        "duration_seconds": 1.821,
+        "result": "passed",
+        "tail": "OK"
+      },
+      "earlier_utf8_child_failure": {
+        "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\dcoin-wallet-local-tests.log",
+        "sha256": "1891977d03e611a0d7d3c0c7ff905a49f21030e761987167d1dbfb75d1acb457",
+        "tests_ran": 55,
+        "duration_seconds": 35.907,
+        "result": "failed",
+        "tail": "FAILED (errors=1)"
+      },
+      "earlier_minimum_donation_fixture": {
+        "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\dcoin-wallet-expanded-tests.log",
+        "sha256": "6e26aeb0df35673fd7e7784c3753b621f7eebbe41a37415373f6233af2520614",
+        "tests_ran": 58,
+        "duration_seconds": 37.363,
+        "result": "failed",
+        "tail": "FAILED (failures=1)"
+      },
+      "python_compileall": "PASS; sramoslav plus changed tests; no provider calls"
+    },
+    "new_tests": {
+      "wallet_upgrade_held_cases": 16,
+      "stale_story_bonus_case": 1
+    },
+    "scenario_corrections": [
+      "Hospital payment/refund must not create a missing rank-total key when rank does not change; source corrected, guard retained",
+      "Runner repeated synthetic cases seed through wallet postings, not by bypassing a journaled account",
+      "Windows shared test fixtures close their owned SQLite handles before removing temporary files; UTF-8 propagated to child Python tools",
+      "Legacy candles_for explicitly grants minimum1 for any positive old donation. New tiny-donation fixture corrected to preserve that rule; rates/product code not changed",
+      "Final broad208test run has207pass and1cooldown scheduling assertion; isolated unchanged case1pass. It is not recorded as a green broad run; full Linux CI required"
+    ],
+    "synthetic_upgrade": {
+      "old_tables_compared": 31,
+      "old_kv_rows": 7,
+      "new_tables": [
+        "dcoin_openings",
+        "dcoin_receipts"
+      ],
+      "old_rows_preserved": true,
+      "opening_and_receipt_rows_at_upgrade": 0,
+      "legacy_stake_recovered_once": true,
+      "pending_hospital_and_unlinked_rewards_preserved": true,
+      "gold_test_key_unchanged": true,
+      "scope": "Owned disposable SQLite fixture; no private/public production database copied or mutated"
+    },
+    "known_limits": [
+      "Legacy one-off calls without stable IDs are atomic/audited, not semantically idempotent",
+      "Unknown direct KV edits refuse new posts as audit_mismatch; no automatic reconciliation or invented income",
+      "No general provider-charge receipt or Stars/refund policy; no paid activation",
+      "Existing profile forget policy removes new linked journal tables; future external charge retention is a separate contract",
+      "Final Dcoin labels/cutover and TEST_CANDLE/healing decisions remain scoped open",
+      "Fresh actual-runtime copy and whole1.0 staging migration/performance acceptance still required"
+    ],
+    "candidate_ci": {
+      "status": "success",
+      "run_id": 39632730158,
+      "head_sha": "1174e08e7c0373d97958ae87ae42c6cbf0a51850",
+      "job_id": 119335006057,
+      "unit_tests_ran": 1138,
+      "duration_seconds": 213.682,
+      "server_job": "skipped",
+      "observed_at_utc": "2026-10-21T16:20:12.875886+00:00",
+      "scope": "Full bot test workflow; no public install/provider/actual user-data proof"
+    },
+    "no_real_messages_or_payments_or_model_calls": true,
+    "game_schema_changed": false,
+    "game_runtime_schema": 59,
+    "other_bot_config_and_secrets_changed": false,
+    "bot_source_sha": "1174e08e7c0373d97958ae87ae42c6cbf0a51850",
+    "bot_pr": "https://github.com/desertod666/TG-bots/pull/107"
   }
 }

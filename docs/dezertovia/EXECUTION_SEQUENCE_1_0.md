@@ -1,7 +1,16 @@
+> T060: bot1174e08 / PR107 — общий журнал прежнего свечного/Dcoin KV,
+> без конвертации Gold/TEST_CANDLE. Message/game/hospital/runner/story и
+> старые отложенные YouTube-награды связаны с атомарной записью.27wallet/hospital
+> PASS;31старую таблицу/7KV сохранили в synthetic.208broad:207PASS+1timing fail,
+> изолированно1PASS. Точный1174e08: botCI39632730158 SUCCESS1138tests.
+> ВесьT060/1.0 не завершён; дальше устойчивые ID оставшихся денежных команд.
+> DCOIN_WALLET_1_0.md / VERIFICATION; никакой публичной установки/платежей.
+
 > T070/T072: текущие музыкальные состояния деревни/данжа, один контроллер и
 > GainNode исправляют ползунок, включая игнорируемый audio.volume.33client unit,
 > scoped desktop/320px signal/mute/reload/remount PASS. Windows WebKit без Web Audio;
-> Linux Audio WebKit35ed0ef:4PASS; полный CI39626189219 ещё идёт. Мастеров нет.
+> Точный35ed0ef: CI39626189219 все6PASS;726Domain/490API/428browser+2skip,
+> 33client unit/4WebKit audio,frontend/Docker. Новых музыкальных мастеров нет.
 > Родитель3551b0d: CI39622145133 все5 зелёные,726Domain/490API/422browser+2skip;
 > бот b4f12d6: CI39620873141 success,1121tests. Это проверки родителя.
 > MUSIC_SCENES_1_0.md / VERIFICATION; вся1.0 активна, UI в конце, выпуска нет.

@@ -2,9 +2,9 @@
   "recorded_at_utc": "2026-10-21T15:28:06.755287+00:00",
   "branch": "feat/desertovia-1-0-music-states",
   "source_parent": "3551b0d305b2ab8d9bba1a5e6facb740b1d3d209",
-  "status": "implemented_scoped_verified_including_linux_webkit_full_ci_running",
+  "status": "implemented_scoped_exact_full_ci_verified",
   "implemented": true,
-  "verified": "scoped_only",
+  "verified": "scoped_exact_full_ci",
   "released": false,
   "scope": [
     "One scene controller across existing village/dungeon pages",
@@ -233,7 +233,7 @@
   },
   "actual_phone_or_speaker_tested": false,
   "candidate_ci": {
-    "status": "running",
+    "status": "verified_all_six_jobs_success",
     "head_sha": "35ed0efad4c1b28741aaef4905885e7d5c133819",
     "run_id": 39626189219,
     "jobs": {
@@ -252,18 +252,24 @@
       },
       "Backend tests": {
         "id": 119311956608,
-        "status": "in_progress"
+        "conclusion": "success"
       },
       "Browser tests (1/2)": {
         "id": 119311957086,
-        "status": "in_progress"
+        "conclusion": "success"
       },
       "Browser tests (2/2)": {
         "id": 119311956487,
-        "status": "in_progress"
+        "conclusion": "success"
       }
     },
-    "observed_at_utc": "2026-10-21T15:34:00.644411+00:00"
+    "observed_at_utc": "2026-10-21T15:56:22Z",
+    "domain_passed": 726,
+    "api_passed": 490,
+    "client_unit_passed": 33,
+    "browser_passed": 428,
+    "browser_skipped": 2,
+    "linux_webkit_audio_passed": 4
   },
   "parent_ci": {
     "status": "verified_all_five_jobs_success",
@@ -295,7 +301,7 @@
   "no_model_calls": true,
   "no_public_deployment": true,
   "remaining": [
-    "Remaining exact new backend and browser CI jobs",
+    "Remaining complete T070/T072 gameplay/audio/physical-device acceptance, not another required test of35ed0ef",
     "Linux WebKit4pass proves the actual graph; physical iPhone background/speaker still unverified",
     "Original master/provenance/rights/loops and all21 actual scored scenes",
     "Durable confirmed siege/miracle stingers after actual gameplay phases",

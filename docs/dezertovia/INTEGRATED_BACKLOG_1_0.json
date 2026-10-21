@@ -331,15 +331,17 @@
         "sramoslav/games.py",
         "sramoslav/feats.py",
         "sramoslav/prihod.py",
-        "sramoslav/desertovia_hospital.py"
+        "sramoslav/desertovia_hospital.py",
+        "sramoslav/dcoin_wallet.py"
       ],
       "existing_test_files": [
         "tests/test_game_economy.py",
-        "tests/test_desertovia_hospital.py"
+        "tests/test_desertovia_hospital.py",
+        "tests/test_dcoin_wallet.py"
       ],
       "observed_facts": [
         "Church.balance/add/spend/earn_message, KV candles:{uid}/candles_total:{uid}.",
-        "Основной кошелёк не имеет полного журнала проводок; GameEconomy/Hospital используют более сильные атомарные образцы.",
+        "Current source1174e08: shared posting journal/lazy opening and atomic legacy integrations, same canonical KV. Stable business IDs replay; one-off legacy calls without IDs remain explicitly non-deduplicated. Exact CI39632730158 passed1138tests; whole wallet cutover and semantic IDs remain open.",
         "Свечи уже могут сокращать лечение через Hospital.heal: судьбу этой связки нужно решить."
       ]
     },
@@ -2347,7 +2349,7 @@
       "id": "PKG-T060",
       "milestone": "M6",
       "title": "Основной Dcoin батюшки и историческое лечение",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partially_implemented",
       "dependencies": [
         "PKG-T010",
         "PKG-T011"
@@ -2387,9 +2389,9 @@
       "original_task_id": "T060",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "partial",
-        "evidence": "Church wallet/KV candles есть, полного ledger нет; свечи уже ускоряют Hospital.heal, перенос требует PKG-D105/116.",
-        "runtime_verification": "not_run_this_assignment"
+        "status": "partial_scoped_exact_full_ci_verified",
+        "evidence": "DCOIN_WALLET_1_0.md / VERIFICATION: bot1174e08 shared atomic journal over unchanged candles KV; business integrations, source IDs, held obligation transfer. No Gold/TestCandle conversion, new paid product or Stars.",
+        "runtime_verification": "1174e08 exact CI39632730158 SUCCESS1138tests, server skipped. Local27wallet/hospital PASS; additive synthetic31old tables/7KV preserved. Earlier208local run timing failure and isolated pass retained in evidence. Full T060/cutover/provider contract remains unfinished."
       }
     },
     {
@@ -2614,7 +2616,7 @@
       "source": "source-package/05_TASKS.json",
       "current_support": {
         "status": "partial",
-        "evidence": "Мини-игры/свечные награды есть; единая новая Dcoin receipt/budget и no-gold-bridge требуют сверки.",
+        "evidence": "Legacy shared GameEconomy20/day retained and writer journal integrated with GameEconomy/Runner/Story. All games/reward policies/entitlements and stable provider IDs remain incomplete; DCOIN_WALLET_VERIFICATION_1_0.json.",
         "runtime_verification": "not_run_this_assignment"
       }
     },
@@ -2655,9 +2657,9 @@
       "original_task_id": "T070",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "partial_scoped_verified_including_linux_webkit_full_ci_running",
+        "status": "partial_scoped_exact_full_ci_verified",
         "evidence": "MUSIC_SCENES_1_0.md / MUSIC_SCENES_VERIFICATION_1_0.json: current world/dungeon phase adapters, stable priority/timer, actual GainNode volume and native fallback. New scene IDs use legacy files; original score/future siege/miracle/mix still incomplete.",
-        "runtime_verification": "33client unit, 8desktop/phone browser in cross-engine stage; Windows WebKit3fail due absent Web Audio, native fallback pass. Later6volume/fallback and4strict PCM ratio scenarios pass. Linux Audio WebKit and exact full CI pending; no physical phone proof. Exact35ed0ef Linux Audio WebKit job119311957101:4PASS with actual RMS. Remaining full CI39626189219 still running; no physical phone proof."
+        "runtime_verification": "Exact35ed0ef CI39626189219 all6green:726Domain/490API/33client unit/428browser+2skip/4Linux WebKit audio, frontend/Docker. Original scores/full phase/mix/physical acceptance remain open."
       },
       "farm_concept_integration": [
         "Фазы дневной/ночной фермы, мягкая вода/земля/сбор; без отдельного проигрывателя фермы."
@@ -2741,9 +2743,9 @@
       "original_task_id": "T072",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "partial_scoped_verified_including_linux_webkit_full_ci_running",
+        "status": "partial_scoped_exact_full_ci_verified",
         "evidence": "MUSIC_SCENES_1_0.md / MUSIC_SCENES_VERIFICATION_1_0.json: current world/dungeon phase adapters, stable priority/timer, actual GainNode volume and native fallback. New scene IDs use legacy files; original score/future siege/miracle/mix still incomplete.",
-        "runtime_verification": "33client unit, 8desktop/phone browser in cross-engine stage; Windows WebKit3fail due absent Web Audio, native fallback pass. Later6volume/fallback and4strict PCM ratio scenarios pass. Linux Audio WebKit and exact full CI pending; no physical phone proof. Exact35ed0ef Linux Audio WebKit job119311957101:4PASS with actual RMS. Remaining full CI39626189219 still running; no physical phone proof."
+        "runtime_verification": "Exact35ed0ef CI39626189219 all6green:726Domain/490API/33client unit/428browser+2skip/4Linux WebKit audio, frontend/Docker. Original scores/full phase/mix/physical acceptance remain open."
       },
       "farm_concept_integration": [
         "Проверить короткие звуки/петлю фермы и мягкий ночной вариант, отключение и разговор/телефон без навязчивости."
