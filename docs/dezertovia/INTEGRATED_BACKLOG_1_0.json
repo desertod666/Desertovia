@@ -1817,7 +1817,7 @@
       "id": "PKG-T035",
       "milestone": "M3",
       "title": "Плавность боя и сквозной мобильный опыт",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partial_readable_camera_touch_controls_local_browser_verified_full_ci_and_broader_dependencies_pending",
       "dependencies": [
         "PKG-T014",
         "PKG-T031",

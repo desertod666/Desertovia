@@ -2,7 +2,7 @@
   "schema_version": 1,
   "recorded_at_utc": "2026-10-21T01:57:15.233823+00:00",
   "scope": "T031 accepted-work private encounter and one normal work settlement; broader A14/group/balance unfinished",
-  "source": "working tree based on85e647d21ca9088b76c201956a3de9288802b75f; exact candidate CI pending",
+  "source": "b73217b0d4c6612bf8a3344615882a39787a7a63",
   "local_checks": {
     "domain_passed": 644,
     "earlier_distinct_api_passed": 17,
@@ -62,7 +62,16 @@
     "errors": []
   },
   "active_fight_restart_backup": "/tmp/foundation-before-restart-20261021T015055Z.dump",
-  "full_candidate_ci": "pending",
+  "full_candidate_ci": {
+    "run": 39530679155,
+    "sha": "b73217b0d4c6612bf8a3344615882a39787a7a63",
+    "status": "in_progress",
+    "backend": "success",
+    "frontend": "success",
+    "docker": "success",
+    "both_browser_shards": "in_progress"
+  },
   "public_release": false,
-  "whole_1_0_complete": false
+  "whole_1_0_complete": false,
+  "pull_request": "https://github.com/desertod666/Desertovia/pull/86"
 }
