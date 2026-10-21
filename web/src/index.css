@@ -265,6 +265,10 @@ kbd {
   pointer-events: auto;
 }
 
+/* Empty top-bar padding must not intercept the minimap underneath it. */
+.hud > .hud-top { pointer-events: none; }
+.hud-top > * { pointer-events: auto; }
+
 .hud-top {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
