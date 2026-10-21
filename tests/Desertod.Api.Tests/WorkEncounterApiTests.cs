@@ -170,16 +170,31 @@ public sealed class WorkEncounterApiTests(DesertodApiFactory factory)
     [Fact]
     public async Task Migration_refuses_to_drop_an_accepted_encounter_and_keeps_its_fund_and_checkpoint()
     {
-        var s=await Accepted();try
+        // Downgrades can legitimately undo newer migrations before an older guard refuses.
+        // Never rehearse that against the shared API fixture or leave its workers on old schema.
+        var isolated=new DesertodApiFactory();await isolated.InitializeAsync();
+        try
         {
-            var run=await Enter(s.V,s.A,s.End);await Freeze(run);
-            await using var db=await Db();var before=(await db.DungeonRuns.AsNoTracking().SingleAsync(r=>r.Id==run)).CheckpointJson;
-            var error=await Assert.ThrowsAnyAsync<Exception>(()=>db.Database.MigrateAsync("20261021000703_InterruptedTravel"));
-            Assert.Contains("Work encounters or accepted encounter cycles exist",error.ToString());
-            Assert.Equal(before,(await db.DungeonRuns.AsNoTracking().SingleAsync(r=>r.Id==run)).CheckpointJson);
-            Assert.Equal(10,(await db.WorkOrders.SingleAsync(o=>o.Id==s.Order)).ReservedCoins);
-            Assert.Contains("20261021011454_WorkEncounters",await db.Database.GetAppliedMigrationsAsync());
-        }finally{await Cleanup(s.V);}
+            var probe=new WorkEncounterApiTests(isolated);var s=await probe.Accepted();
+            var run=await probe.Enter(s.V,s.A,s.End);await probe.Freeze(run);
+            await using var db=await probe.Db();var before=(await db.DungeonRuns.AsNoTracking().SingleAsync(r=>r.Id==run)).CheckpointJson;
+            var applied=(await db.Database.GetAppliedMigrationsAsync()).ToArray();
+            try
+            {
+                var error=await Assert.ThrowsAnyAsync<Exception>(()=>db.Database.MigrateAsync("20261021000703_InterruptedTravel"));
+                Assert.Contains("Work encounters or accepted encounter cycles exist",error.ToString());
+                Assert.Equal(before,(await db.DungeonRuns.AsNoTracking().SingleAsync(r=>r.Id==run)).CheckpointJson);
+                Assert.Equal(10,(await db.WorkOrders.SingleAsync(o=>o.Id==s.Order)).ReservedCoins);
+                Assert.Contains("20261021011454_WorkEncounters",await db.Database.GetAppliedMigrationsAsync());
+            }
+            finally{await db.Database.MigrateAsync();}
+            Assert.Equal(applied,(await db.Database.GetAppliedMigrationsAsync()).ToArray());
+            await OkJsonAsync(await s.V.Tsar.GetAsync(s.V.Path));
+            await using var shared=await Db();
+            Assert.Equal(applied,(await shared.Database.GetAppliedMigrationsAsync()).ToArray());
+            _=await shared.Villages.AsNoTracking().FirstAsync();
+        }
+        finally{await ((IAsyncLifetime)isolated).DisposeAsync();}
     }
 
     [Fact]
