@@ -2392,6 +2392,16 @@
         "status": "partial_scoped_exact_full_ci_verified",
         "evidence": "DCOIN_WALLET_1_0.md / VERIFICATION: bot1174e08 shared atomic journal over unchanged candles KV; business integrations, source IDs, held obligation transfer. No Gold/TestCandle conversion, new paid product or Stars.",
         "runtime_verification": "1174e08 exact CI39632730158 SUCCESS1138tests, server skipped. Local27wallet/hospital PASS; additive synthetic31old tables/7KV preserved. Earlier208local run timing failure and isolated pass retained in evidence. Full T060/cutover/provider contract remains unfinished."
+      },
+      "owner_and_goods_commands": {
+        "evidence": "DCOIN_COMMANDS_1_0.md / DCOIN_COMMANDS_VERIFICATION_1_0.json",
+        "source": "40ea4e740f339b53db0baec345cc5e5972eb4631",
+        "local_tests": 54,
+        "ci_run": 39637536510,
+        "ci_status": "success",
+        "released": false,
+        "full_task_complete": false,
+        "ci_tests_passed": 1154
       }
     },
     {
@@ -3925,5 +3935,21 @@
     "cash_before_harvest": false,
     "destroyed_crop": "no Food/no wage; return reserved fund, keep work history",
     "owner_confirmed": true
+  },
+  "source_goal_binding": {
+    "owner_instruction": "Найди все файлы что были при старте диалога. Там был план. Добавь его в цель",
+    "recorded_at_utc": "2026-10-21T16:50:50.045102+00:00",
+    "goal_file": "GOAL_1_0.md",
+    "original_files": 23,
+    "original_tasks": 47,
+    "farm_cards": 6,
+    "original_archive_sha256": "9a4eee50b5c29280d4acda736abff5874bd47b922e6fffe853d5e6dc81862554",
+    "inventory": "SOURCE_PLAN_INVENTORY_1_0.json",
+    "roadmap": "source-package/04_ROADMAP.txt",
+    "task_cards": "source-package/05_TASKS.json",
+    "dependency_layers": "source-package/DEPENDENCY_LAYERS.json",
+    "acceptance": "source-package/06_ACCEPTANCE.json",
+    "execution": "EXECUTION_SEQUENCE_1_0.md",
+    "rule": "Original plan plus explicit subsequent owner decisions is binding. Later progress receipts do not replace the plan. No next game block until sequence/acceptance reconciliation."
   }
 }

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-21T14:43:36.149456+00:00",
-  "status": "main_plan_active_dcoin_journal_exact_full_ci_verified_semantic_commands_follow",
+  "recorded_at_utc": "2026-10-21T16:50:50.045102+00:00",
+  "status": "active_original_source_plan_bound_to_goal_sequence_reconciliation_in_progress",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "Partial T060 bot-owned Dcoin ledger over unchanged legacy KV, atomic business integration and held YouTube obligations. Checks running; no conversion or public release.",
+  "implemented_task": "Partial T060 owner/goods commands saved at bot40ea4e7/PR108;54local tests and exact full CI39637536510 all1154tests PASS; server skipped. Original source package is binding goal input; next new game block awaits original-order/acceptance reconciliation.",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -1790,7 +1790,7 @@
       }
     }
   },
-  "next_independent_work": "Continue remaining stable business IDs for owner adjustment/shop commands over the verified bot1174e08 journal, then the full functional DAG. No conversion, paid activation or UI redesign before functional completion.",
+  "next_independent_work": "Reconcile original M0/M1 and later implemented/verified acceptance receipts, then select earliest unfinished available original task. Do not automatically proceed to T033 or extend T060 simply because it is convenient.",
   "combat_actor_admission": {
     "schema_version": 1,
     "recorded_at_utc": "2026-10-21T04:02:01.869805+00:00",
@@ -4668,5 +4668,94 @@
     "other_bot_config_and_secrets_changed": false,
     "bot_source_sha": "1174e08e7c0373d97958ae87ae42c6cbf0a51850",
     "bot_pr": "https://github.com/desertod666/TG-bots/pull/107"
+  },
+  "source_goal_binding": {
+    "owner_instruction": "Найди все файлы что были при старте диалога. Там был план. Добавь его в цель",
+    "recorded_at_utc": "2026-10-21T16:50:50.045102+00:00",
+    "goal_file": "GOAL_1_0.md",
+    "original_files": 23,
+    "original_tasks": 47,
+    "farm_cards": 6,
+    "original_archive_sha256": "9a4eee50b5c29280d4acda736abff5874bd47b922e6fffe853d5e6dc81862554",
+    "inventory": "SOURCE_PLAN_INVENTORY_1_0.json",
+    "roadmap": "source-package/04_ROADMAP.txt",
+    "task_cards": "source-package/05_TASKS.json",
+    "dependency_layers": "source-package/DEPENDENCY_LAYERS.json",
+    "acceptance": "source-package/06_ACCEPTANCE.json",
+    "execution": "EXECUTION_SEQUENCE_1_0.md",
+    "rule": "Original plan plus explicit subsequent owner decisions is binding. Later progress receipts do not replace the plan. No next game block until sequence/acceptance reconciliation."
+  },
+  "dcoin_commands_1_0": {
+    "recorded_at_utc": "2026-10-21T16:52:24.873126+00:00",
+    "status": "implemented_scoped_exact_full_bot_ci_verified",
+    "task": "partial PKG-T060",
+    "implemented": true,
+    "verified": "scoped_exact_full_bot_ci",
+    "released": false,
+    "bot_branch": "feat/desertovia-dcoin-commands",
+    "source_parent": "029417638d4c46a2dce7ac625c5c81ec6cf91ef4",
+    "source_files": {
+      "sramoslav/admin.py": "c6e5c38dd1409b5eda818eb24de010c92759f2692514565bad5025a5aa79e01e",
+      "sramoslav/church.py": "85de55f688fca76bae5f9f2d447e68114c4f4068f696bc6566c9297315e4c66c",
+      "sramoslav/db.py": "8d2bdee4c94c8a4bc097909b6e6989183ae8d75846aff86e7d99f507870330b9",
+      "sramoslav/dcoin_wallet.py": "bd5ebbc14c76a4dc54c3d8ed1715805e68f2b93313d0a0dfe0de40e343bef3f3",
+      "sramoslav/dcoin_shop.py": "f2af066ce7752d6addd0d042e72510923854c80c1ccc87f96e21a868420b116e",
+      "sramoslav/shop_requests.py": "325c4e7061f5bd0e0cbaa3098a631d53376f16bf68bfb2cab087fb0277c4a3d9",
+      "sramoslav/prihod.py": "5e2e3f72c47f1943a1c770764f3c5fcc35d5caae8dcd666b6540151f255789ad",
+      "tests/test_dcoin_commands.py": "39be80b50501588a094261be05d55a4d715250452e20963a7cb41dbf99a87d86",
+      "tests/test_bot.py": "6e0b82cb15fbf56aab44aeb81795b521ee6c4a32970842e34ba2cee55ff256ed",
+      "tests/test_prihod.py": "582d7bc3c92b4c65f3047e3acacc96fc9df18fe4111c60cc89416600648f2eb8"
+    },
+    "checks": {
+      "initial_focused": {
+        "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\dcoin-commands-focused.log",
+        "sha256": "b5f0133170f36e9f797621dc9e69332d47e77a3fd0f13794c1427c3f67c8ed0d",
+        "tests_ran": 41,
+        "duration_seconds": 31.342,
+        "result": "passed"
+      },
+      "expanded_final": {
+        "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\dcoin-commands-expanded.log",
+        "sha256": "4395beb4b7b67bc5d77f793b4b8cd643c5d56cf0a707c063d68a59372d33d7e1",
+        "tests_ran": 54,
+        "duration_seconds": 45.716,
+        "result": "passed"
+      }
+    },
+    "syntax": "compileall PASS; actual embedded page JavaScript parsed by Node in expanded tests",
+    "new_tests": 16,
+    "schema": "Two additive tables: dcoin_shop_orders and opaque dcoin_retired_requests; old wallet/KV rows untouched on startup",
+    "implemented_scope": [
+      "Owner form stable nonce, original actual result, conflict, no repeated rank announcement",
+      "Atomic title/indulgence delivery with accepted quote and business receipt",
+      "Telegram command/confirmation replay and price binding",
+      "Browser saved approved request, matching-user acknowledgment and reopen retry",
+      "Erasure of user-linked records plus keyed unlinked retired-request hashes",
+      "Atomic indulgence consumption; external delivery stops on failed debit; legacy roast refund rank_delta=0"
+    ],
+    "remaining": [
+      "Blessing/roast durable outbox, uncertain-send/restart/reconciliation and semantic IDs",
+      "Provider and other legacy reward IDs, entitlements, combined reward budget and full T060/T065 acceptance",
+      "No naming/cutover/Gold conversion, real Stars charges, model probes, public messages or public deployment"
+    ],
+    "next_game_slice": "Not selected: reconcile earliest unfinished available original-plan task and acceptance before opening a new block.",
+    "local_runtime_restarted": false,
+    "real_user_database_read_or_changed": false,
+    "bot_source_sha": "40ea4e740f339b53db0baec345cc5e5972eb4631",
+    "pull_request": "https://github.com/desertod666/TG-bots/pull/108",
+    "ci": {
+      "source_sha": "40ea4e740f339b53db0baec345cc5e5972eb4631",
+      "run_id": 39637536510,
+      "url": "https://github.com/desertod666/TG-bots/actions/runs/39637536510",
+      "status": "completed",
+      "conclusion": "success",
+      "test_job": 119352055517,
+      "tests_passed": 1154,
+      "duration_seconds": 219.308,
+      "server_job": "skipped",
+      "log_path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\dcoin-commands-ci-39637536510.log",
+      "log_sha256": "e708c2f471e69c68293d22e240c25b2f3c8ea6076222a45b3827ede35691f5ee",
+      "scope": "Exact bot command/wallet source, all1154tests; not whole Desertovia1.0 and no public installation."
+    }
   }
 }
