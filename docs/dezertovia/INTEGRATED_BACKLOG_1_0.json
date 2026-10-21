@@ -2140,7 +2140,7 @@
       "current_support": {
         "status": "partial",
         "evidence": "Owner-only category stops, separate policy version, atomic durable category acknowledgements/audit; no autonomous economic executor. DIRECTOR_POLICY_1_0.md and DIRECTOR_POLICY_VERIFICATION_1_0.json.",
-        "runtime_verification": "loopback HTTP/restart, schema53-to54 old-row comparison and isolated migration/history/concurrency tests; full exact CI pending"
+        "runtime_verification": "loopback HTTP/restart, schema53-to54 old-row comparison and isolated migration/history/concurrency tests; exact597c74a CI39562557428 all5 green,687Domain/413API/414browser+2skip"
       },
       "implementation_evidence": [
         "DIRECTOR_POLICY_1_0.md",
@@ -2198,7 +2198,7 @@
       "id": "PKG-T053",
       "milestone": "M5",
       "title": "Gemini через существующую модельную цепочку",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partially_implemented",
       "dependencies": [
         "PKG-T050"
       ],
@@ -2228,10 +2228,14 @@
       "original_task_id": "T053",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "source_partial_target",
-        "evidence": "Bot chain/ai_budget существуют; не нужен обходной Gemini клиент, новый structured action adapter предстоит.",
-        "runtime_verification": "not_run_this_assignment"
-      }
+        "status": "partial",
+        "evidence": "Existing chain/cache/shared budgets reused; response-size/structure checks,50s independent deadline including synchronous startup, safe failures/late results. DIRECTOR_RESILIENCE_1_0.md and verification JSON.",
+        "runtime_verification": "25 final API/boundary checks plus1 shared login regression,13mockedBot, local schema54 restart/preservation/HTTP. Live model/Telegram and full exact CI not covered yet."
+      },
+      "implementation_evidence": [
+        "DIRECTOR_RESILIENCE_1_0.md",
+        "DIRECTOR_RESILIENCE_VERIFICATION_1_0.json"
+      ]
     },
     {
       "id": "PKG-T054",

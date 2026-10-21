@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-21T07:29:20.936299+00:00",
-  "status": "main_plan_active_director_category_policy_locally_verified_exact_ci_pending",
+  "recorded_at_utc": "2026-10-21T07:57:17.009206+00:00",
+  "status": "main_plan_active_director_resilience_locally_verified_exact_ci_pending",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-director-followup",
+  "branch": "feat/desertovia-1-0-director-resilience",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "Partial T051: owner-controlled categories over existing handlers; atomic policy/audit/idempotent category receipt; no autonomous economic executor",
+  "implemented_task": "Partial T053: existing signed bridge/chain with bounded response and independent analysis deadline, safe failure codes and late-result isolation",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -46,7 +46,7 @@
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "Director category stops loaded in local API5180, schema54. Compared old rows unchanged; private HTTP rehearsal retained two receipts across restart and stale replay did not reapply stop. AI/Telegram/DevTools false.",
+    "loaded_scope": "Director resilience loaded in local API5180 after backup075247Z, schema54 unchanged; compared state/two policy receipts/wallets/economies/work/dungeons/battle preserved, actual old replay HTTP check passed. AI/Telegram/DevTools false.",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
     "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
@@ -63,7 +63,8 @@
     "pre_mortal_royal_final_backup": "/tmp/foundation-before-restart-20261021T051137Z.dump",
     "pre_dungeon_royal_backup": "/tmp/foundation-before-restart-20261021T055255Z.dump",
     "pre_vulnerable_royal_qa_backup": "/tmp/foundation-before-restart-20261021T060913Z.dump",
-    "pre_director_policy_backup": "/tmp/foundation-before-restart-20261021T072555Z.dump"
+    "pre_director_policy_backup": "/tmp/foundation-before-restart-20261021T072555Z.dump",
+    "pre_director_resilience_backup": "/tmp/foundation-before-restart-20261021T075247Z.dump"
   },
   "checks": {
     "baseline_ci": {
@@ -2520,7 +2521,27 @@
       "DevTools": false
     },
     "candidate_ci": {
-      "status": "not_created"
+      "status": "success_all_five_jobs",
+      "pr": "https://github.com/desertod666/Desertovia/pull/93",
+      "sha": "597c74a536039ff606925c539fe2667ed6e4b8e4",
+      "run": 39562557428,
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39562557428",
+      "backend": {
+        "job": 119097014814,
+        "domain_passed": 687,
+        "api_passed": 413,
+        "failed": 0
+      },
+      "browser": {
+        "desktop_job": 119097014619,
+        "desktop_passed": 208,
+        "phone_job": 119097014854,
+        "phone_passed": 206,
+        "skipped": 2
+      },
+      "frontend": "success",
+      "docker": "success",
+      "verified_at_utc": "2026-10-21T07:57:17.009206+00:00"
     },
     "public_release": false,
     "source_sha256": {
@@ -2541,11 +2562,151 @@
       "tools/verify-director-policy.py": "232b858670b594bafa0b339ffc833589c58b2db7a2f645f4c418861a532297ff"
     },
     "remaining": [
-      "Full exact-candidate CI",
       "Category controls and visible audit in final interface phase D109",
       "Full autonomous T051 executor/admission/funding/receipts, shadow comparison and remaining1.0 DAG",
       "Live model/Telegram, physical devices, production/load not verified"
     ],
     "existing_dependency_warning": "Restore reports pre-existing NU1903 for Microsoft.AspNetCore.SignalR.Common10.0.12; no dependency change in this slice. Review separately before final release."
+  },
+  "director_resilience": {
+    "schema_version": 1,
+    "recorded_at_utc": "2026-10-21T07:57:17.009206+00:00",
+    "scope": "Partial T053: existing signed bridge/chain with bounded response and independent analysis deadline, safe failure codes and late-result isolation",
+    "source_base": "597c74a536039ff606925c539fe2667ed6e4b8e4",
+    "first_boundary": {
+      "result": "TestResults/director-resilience-boundary/Admin_DESKTOP-FQ85FTD_2026-10-21_09_39_48_net10.0.trx",
+      "passed": 21,
+      "failed": 0,
+      "total": 21
+    },
+    "intermediate_api": {
+      "result": "TestResults/director-resilience-api/Admin_DESKTOP-FQ85FTD_2026-10-21_09_42_44_net10.0.trx",
+      "passed": 37,
+      "failed": 0,
+      "total": 37
+    },
+    "final_source_api": {
+      "result": "TestResults/director-resilience-final/Admin_DESKTOP-FQ85FTD_2026-10-21_09_49_30_net10.0.trx",
+      "passed": 25,
+      "failed": 0,
+      "total": 25
+    },
+    "shared_login_regression": {
+      "result": "TestResults/director-resilience-login/Admin_DESKTOP-FQ85FTD_2026-10-21_09_55_16_net10.0.trx",
+      "passed": 1,
+      "failed": 0,
+      "total": 1
+    },
+    "api_scope_note": "Intermediate37 includes14 old Almighty cases before the final synchronous-startup deadline extension. Final25 exercises the exact product with23 boundary/deadline cases and2 PostgreSQL API cases. Last1 adds shared login regression without product changes. Counts overlap; do not sum them as distinct coverage.",
+    "domain": {
+      "source_unchanged_from_base": true,
+      "inherited_ci": 39562557428,
+      "passed": 687,
+      "rerun_locally": false
+    },
+    "frontend": {
+      "source_changed": false,
+      "inherited_ci": 39562557428,
+      "note": "No client/UI change; parent frontend passed. Full new-candidate CI still required."
+    },
+    "bot": {
+      "recorded_at_utc": "2026-10-21T07:52:33.972388+00:00",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "python": "3.12.14",
+      "actual_snapshot_characters": 14992,
+      "options": 6,
+      "capability_kinds": 3,
+      "snapshot_sha256": "c2ecabde733830a693daa0ad8ca12eebad419328c15056559c6dbb2844bc7c9a",
+      "scope": "Existing bot HTTP/parser/cache tests plus exact exported synthetic C#v1 observation through existing bot handle; AI/Telegram mocked, no paid models or real messages",
+      "bot_changed": false,
+      "source_sha256": {
+        "sramoslav/almighty.py": "518b8a320e543c3787f10c2f94044cbce699d46ba3a11b9d93a0c96ab0d92eba",
+        "tests/test_almighty.py": "f4915d0d1e5b2dfdb224eef45af34809ce5b66415afcb9e5cadc9f2a863259f6"
+      }
+    },
+    "bot_scope_note": "Unchanged actual saved C#v1 fixture from category-policy tests is valid here because snapshot construction/permissions did not change. Existing Python chain/cache/budgets and API remain mocked; C# strict reply checks use a fake HTTP transport.",
+    "runtime": {
+      "loaded": true,
+      "api": "http://127.0.0.1:5180",
+      "schema": 54,
+      "migration_added": false,
+      "backup": "/tmp/foundation-before-restart-20261021T075247Z.dump",
+      "compared_rows_unchanged": {
+        "states": {
+          "rows": 1,
+          "sha256": "b873fe9a4bcc654818bc0e43ceda26238ac2720d99632ffa9baa9ff1f80d3af9"
+        },
+        "observations": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "proposals": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "policy_receipts": {
+          "rows": 2,
+          "sha256": "33c68e574b1d2a27698a577810fa5342c97ed341c9095572cb910f7f0f3037f9"
+        },
+        "wallets": {
+          "rows": 22,
+          "sha256": "3ec8b8f2af008d398461794a6f8daf46b7eed88e006c12a61e75195c14909d4b"
+        },
+        "economy": {
+          "rows": 6,
+          "sha256": "ec5ad2e2caabc1394e0ee2b565ffec85a790aa87c95c370e5360128b82f5eaa5"
+        },
+        "orders": {
+          "rows": 1,
+          "sha256": "8af9465aeab271a2801725f42392b73842f7ba0b877cb018db759db645aa6bf9"
+        },
+        "claims": {
+          "rows": 1,
+          "sha256": "2da0fe2c943c37f3473da5e988cc13b10e79e263193d5b44b0585bbbf435881b"
+        },
+        "dungeons": {
+          "rows": 5,
+          "sha256": "58822ec9801172152139efa57d0061593b0a591d9c36440aaebba78afe5a9b80"
+        },
+        "battles": {
+          "rows": 1,
+          "sha256": "dc7e0680ac864efa250e3bc45ad8e453b5084bc492d7912612728cb2bb93ee89"
+        }
+      },
+      "http_restart": {
+        "verifiedAtUtc": "2026-10-21T07:53:54.808416+00:00",
+        "scope": "Actual loopback HTTP; durable original acknowledgement, current policy and two audit rows across an external API restart",
+        "policyVersion": 2,
+        "auditRows": 2,
+        "staleReplayUnchanged": true,
+        "modelCalls": 0,
+        "privateSyntheticWorld": true,
+        "publicRelease": false
+      },
+      "limits": "One Director state and two policy receipts are nonempty. Observation/proposal tables are empty in shared fixture. Other tables not compared. Failure/deadline/world-work behavior proven by isolated API tests, not by enabling a real model in the shared runtime.",
+      "model_enabled": false,
+      "DevTools": false
+    },
+    "candidate_ci": {
+      "status": "not_created"
+    },
+    "public_release": false,
+    "source_sha256": {
+      "src/Desertod.Api/Auth/TelegramBrowserBridge.cs": "16a28c04c0086eee29ae222d4bcb3bd7d3743a52e817332c029aba1a208a68e5",
+      "src/Desertod.Api/Game/AlmightyAnalysis.cs": "3fd72168bdf870e8598dd23da700377119ded68fcf93816f450e5ad79a16ae48",
+      "src/Desertod.Api/Game/AlmightyService.cs": "3e79ba94ae92b33a3d2f46e6806df961fecdfec59d1e2b0c39ccdfcbd481b80a",
+      "src/Desertod.Api/Game/GameService.Almighty.cs": "3936e9107d400819cfa42922a1f1226b2ed9969b44c6325e1f4c952b8cd1dcf3",
+      "tests/Desertod.Api.Tests/DirectorBridgeTests.cs": "e0a7d8b76b1a1de2f19ae012672159672c256c457ecfd50d42f389b92d1713ba",
+      "tests/Desertod.Api.Tests/DirectorResilienceApiTests.cs": "12ec0398be8ed90847c4415f2f6e12c400d68b8a274b6aa808318599efbdae49"
+    },
+    "remaining": [
+      "Full exact-candidate CI",
+      "Live Gemini chain/provider and Telegram delivery, physical devices, production/load not verified",
+      "Full director economic executor, scheduling/shadow/autonomy and remaining1.0 DAG"
+    ],
+    "existing_dependency_warning": "Pre-existing NU1903 SignalR.Common10.0.12 remains; review before final release. No dependency change in this slice."
   }
 }
