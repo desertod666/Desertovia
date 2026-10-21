@@ -30,7 +30,11 @@ public sealed record DungeonFighter(
     double Protection,
     int? Arrows,
     bool CanHeal,
-    bool Invulnerable = false);
+    bool Invulnerable = false)
+{
+    public HeroClass? CombatClass { get; init; }
+    public HeroClassDefinition? CombatDefinition { get; init; }
+}
 
 public enum DungeonEventKind
 {
@@ -74,7 +78,7 @@ public sealed class SimulatedHero
     internal PathFollower Path { get; } = new();
 
     public bool IsTsar => Fighter.Class == HeroClass.Voivode;
-    public HeroClassDefinition Definition => HeroClassCatalog.Get(Fighter.Class);
+    public HeroClassDefinition Definition => Fighter.CombatDefinition??HeroClassCatalog.Get(Fighter.CombatClass??Fighter.Class);
 
     /// <summary>An archer out of arrows fights hand to hand.</summary>
     public double Range => Arrows is 0 ? HeroClassCatalog.Get(HeroClass.Brawler).Range : Definition.Range;
@@ -397,9 +401,11 @@ public sealed partial class DungeonSimulation
         foe.Target = null;
         killer.Kills++;
         events.Add(new DungeonEvent(DungeonEventKind.Slain, killer.Id, foe.Id));
-        foreach (var hero in heroes.Where(h => h.State == HeroState.Fighting && !h.IsTsar))
+        foreach (var hero in heroes.Where(h => h.State == HeroState.Fighting && (!h.IsTsar||h.Fighter.CombatClass is not null)))
         {
             hero.Experience += foe.Definition.Experience;
+            // Keep existing group loot allocation until its separate owner decision.
+            if(hero.IsTsar)continue;
             foreach (var loot in foe.Definition.Loot)
             {
                 if (random.NextDouble() >= loot.Chance)

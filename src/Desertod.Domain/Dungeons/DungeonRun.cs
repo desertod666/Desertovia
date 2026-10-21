@@ -42,6 +42,8 @@ public sealed class DungeonRun
     public Guid Id { get; set; } = Guid.CreateVersion7();
     public Guid VillageId { get; set; }
     public DungeonRunKind Kind { get; set; }
+    /// <summary>Zero keeps previously announced dungeon rules. New calls use ordinary royal bodies.</summary>
+    public int CombatRulesVersion { get; set; }
     public Guid? WorkCitizenId { get; set; }
     public DateTimeOffset? WorkStartedAt { get; set; }
     public string? WorkTaskId { get; set; }
@@ -84,6 +86,10 @@ public sealed class DungeonHero
     public Guid AccountId { get; set; }
     public required string Name { get; set; }
     public HeroClass Class { get; set; }
+    /// <summary>Ordinary combat class; Class remains Voivode for the ruler's existing figure and identity.</summary>
+    public HeroClass? CombatClass { get; set; }
+    /// <summary>Frozen source of the ruler's body; null uses saved RoyalCombat, never a later resident.</summary>
+    public Guid? RoyalBodyCitizenId { get; set; }
 
     /// <summary>Reaches the edge of the land then, on the march.</summary>
     public DateTimeOffset? ArrivesAt { get; set; }

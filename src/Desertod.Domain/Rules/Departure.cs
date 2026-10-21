@@ -23,7 +23,7 @@ public static class Departure
 
         if (run is not null)
         {
-            DungeonRules.Desert(run, village, citizen);
+            DungeonRules.Desert(run, village, citizen,now);
         }
 
         CombatRules.Disarm(citizen, village);

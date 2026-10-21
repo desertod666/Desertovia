@@ -258,6 +258,7 @@ export function GameMenu(props: MenuProps) {
               )}
               {tsar && (
                 <DungeonPanel
+                  onVillage={props.onVillage}
                   village={village}
                   pending={pending}
                   error={props.dungeonError}

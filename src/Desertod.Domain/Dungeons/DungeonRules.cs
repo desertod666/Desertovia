@@ -27,7 +27,7 @@ public sealed record DungeonHeroOutcome(
 /// and their crafts; the gear is taken from storage at once. When the gathering closes, the heroes walk to the edge of
 /// the land and the fight starts. Each hero comes back on their own, with what they won and, if they fell, a wound.
 /// </summary>
-public static class DungeonRules
+public static partial class DungeonRules
 {
     public static TimeSpan Gathering { get; } = TimeSpan.FromSeconds(60);
 
@@ -40,13 +40,14 @@ public static class DungeonRules
     /// <summary>The heroes gather at the west edge of the land, on the camp's row, and come back from there.</summary>
     public static TilePoint MarchSpot { get; } = new(WorldMap.Land.X + 0.5, WorldMap.Places[WorldMap.Camp].Y);
 
-    public static DungeonRun Open(Village village, string dungeonId, string tsarName, int seed, DateTimeOffset now)
+    public static DungeonRun Open(Village village, string dungeonId, string tsarName, int seed, DateTimeOffset now,IReadOnlyList<Citizen>? residents=null)
     {
         SafeRest.RequireActive(village.TsarRestState);
         var dungeon = DungeonCatalog.Get(dungeonId);
         if(RegionalTravel.WesternExit(village) is null)throw new GameRuleException("spot.noPath","There is no open route to the dungeon departure.");
-        return new DungeonRun
+        var run = new DungeonRun
         {
+            CombatRulesVersion=CombatantRules.CurrentVersion,
             VillageId = village.Id,
             DungeonId = dungeon.Id,
             Phase = DungeonPhase.Gathering,
@@ -57,6 +58,8 @@ public static class DungeonRules
             Foes = dungeon.TotalFoes,
             Heroes = [new DungeonHero { AccountId = village.OwnerAccountId, Name = tsarName, Class = HeroClass.Voivode }],
         };
+        PrepareRoyal(run,village,residents??[],now);
+        return run;
     }
 
     /// <summary>Classes the citizen may pick now; the gear they already hold for <paramref name="hero"/> counts as available.</summary>
@@ -130,8 +133,14 @@ public static class DungeonRules
     /// The citizen leaves the village: their gear goes back to storage. Before the march they drop out of the run;
     /// later their hero stays in it, and what they find is lost.
     /// </summary>
-    public static void Desert(DungeonRun run, Village village, Citizen citizen)
+    public static void Desert(DungeonRun run, Village village, Citizen citizen,DateTimeOffset? now=null)
     {
+        if(run.CombatRulesVersion==CombatantRules.CurrentVersion&&run.Tsar.RoyalBodyCitizenId==citizen.Id)
+        {
+            if(run.Phase!=DungeonPhase.Gathering)throw new GameRuleException("dungeon.busy","Return from the dungeon before leaving this body.");
+            ReleaseRoyal(run,village,[citizen],now??run.OpenedAt);
+            citizen.DungeonRunId=null;return;
+        }
         if (run.Hero(citizen.Id) is not { } hero)
         {
             citizen.DungeonRunId = null;
@@ -160,6 +169,8 @@ public static class DungeonRules
             ReturnGear(citizen, village, run.Hero(citizen.Id)!);
             citizen.DungeonRunId = null;
         }
+
+        ReleaseRoyal(run,village,citizens,now);
 
         run.Phase = DungeonPhase.Ended;
         run.Outcome = DungeonOutcome.Cancelled;
@@ -206,19 +217,21 @@ public static class DungeonRules
             anyone = true;
         }
 
-        if (TsarIsDown(village, now)||busyAccounts?.Contains(village.OwnerAccountId)==true)
+        if (TsarIsDown(village, now)||busyAccounts?.Contains(village.OwnerAccountId)==true
+            ||run.CombatRulesVersion==CombatantRules.CurrentVersion&&!RoyalCanMarch(run,village,citizens,now))
         {
+            ReleaseRoyal(run,village,citizens,now);
             run.Tsar.Settled = true;
         }
         else
         {
             try
             {
-                village.TsarGoTo(destination,now);
+                TravelRoyal(run,village,citizens,destination,now);
                 run.Tsar.ArrivesAt=village.TsarTrip!.ArrivesAt;
                 latest=Max(latest,run.Tsar.ArrivesAt.Value);anyone=true;
             }
-            catch(GameRuleException e) when(e.Code is "spot.noPath" or "bridge.closed"){run.Tsar.Settled=true;}
+            catch(GameRuleException e) when(e.Code is "spot.noPath" or "bridge.closed"){ReleaseRoyal(run,village,citizens,now);run.Tsar.Settled=true;}
         }
 
         if (!anyone)
@@ -259,11 +272,14 @@ public static class DungeonRules
             }
         }
         foreach(var missing in run.Heroes.Where(h=>!h.IsTsar&&h.CitizenId is {} id&&!present.Contains(id)))missing.Settled=true;
-        if(!run.Tsar.Settled&&(TsarIsDown(village,now)||!Arrived(village.TsarTrip,now)))
+        var royalDown=TsarIsDown(village,now)||run.CombatRulesVersion==CombatantRules.CurrentVersion&&!RoyalCanMarch(run,village,citizens,now);
+        if(!run.Tsar.Settled&&(royalDown||!Arrived(village.TsarTrip,now)))
         {
-            run.Tsar.Settled=true;
-            if(!TsarIsDown(village,now))village.TsarGoTo(WorldMap.Places[WorldMap.Camp],now,waitIfBlocked:true);
+            if(!royalDown)TravelRoyal(run,village,citizens,WorldMap.Places[WorldMap.Camp],now,waitIfBlocked:true);
             else{village.TsarSpot=village.TsarTrip?.PositionAt(now)??village.TsarSpot;village.TsarTrip=null;}
+            SyncRoyalLocation(run,village,citizens,now);
+            ReleaseRoyal(run,village,citizens,now);
+            run.Tsar.Settled=true;
         }
         if(run.Heroes.Any(h=>!h.Settled))return true;
         Finish(run,DungeonOutcome.Abandoned,0,now);return false;
@@ -302,7 +318,14 @@ public static class DungeonRules
         hero.Kills = outcome.Kills;
         hero.KnockedOut = outcome.KnockedOut;
         hero.Killer = outcome.Killer;
-        if (hero.IsTsar)
+        RoyalCombatBody? royal=null;
+        if(hero.IsTsar&&run.CombatRulesVersion==CombatantRules.CurrentVersion)
+        {
+            royal=RoyalBody(run,village,citizen is null?[]:[citizen],now);
+            if(royal is null)return;
+            citizen=royal.Citizen;
+        }
+        if (hero.IsTsar&&royal is null)
         {
             if (outcome.KnockedOut)
             {
@@ -321,14 +344,14 @@ public static class DungeonRules
             return;
         }
 
-        var definition = HeroClassCatalog.Get(hero.Class);
+        var definition = HeroClassCatalog.Get(hero.CombatClass??hero.Class);
         hero.Experience = outcome.Experience;
         var renown = Progression.AddExperience(citizen.Stats, definition.Stat, outcome.Experience).RenownGained;
         SkillRules.AddExperience(citizen, Skill.Guarding, outcome.Experience);
         SkillRules.CatchUp(citizen);
         citizen.Renown += renown;
 
-        foreach (var good in outcome.Loot.Where(g => g.Amount > 0))
+        foreach (var good in outcome.Loot.Where(g => royal is null&&g.Amount > 0))
         {
             var stored = village.Store(good.Resource, good.Amount);
             if (stored < good.Amount)
@@ -360,16 +383,18 @@ public static class DungeonRules
         {
             if (outcome.Killer is { } killer)
             {
-                CombatRules.Injure(citizen, TimeSpan.FromMinutes(EnemyCatalog.Get(killer).InjuryMinutes), now, rewardEligible: true);
+                CombatRules.Injure(citizen, TimeSpan.FromMinutes(EnemyCatalog.Get(killer).InjuryMinutes), now, rewardEligible: royal is null);
             }
 
-            StayDown(citizen, now);
+            if(royal is null)StayDown(citizen, now);
+            else StayDown(village,outcome,now);
         }
         else
         {
-            citizen.SetOut(WorldMap.Places[WorldMap.Camp], village, now, waitIfBlocked:true);
-            citizen.IdleSpot = null;
+            if(royal is null){citizen.SetOut(WorldMap.Places[WorldMap.Camp], village, now, waitIfBlocked:true);citizen.IdleSpot = null;}
+            else TravelRoyal(run,village,[citizen],WorldMap.Places[WorldMap.Camp],now,waitIfBlocked:true);
         }
+        if(royal is not null){SyncRoyalLocation(run,village,[citizen],now);royal.Commit();}
     }
 
     /// <summary>A fallen hero is down. The walk home is not started, so they are not both wounded and on the road.</summary>
@@ -446,6 +471,7 @@ public static class DungeonRules
             village.TsarGoTo(WorldMap.Places[WorldMap.Camp], now, waitIfBlocked:true);
         }
 
+        ReleaseRoyal(run,village,citizens,now);
         run.Tsar.Settled = true;
         Finish(run, DungeonOutcome.Abandoned, run.Slain, now);
     }

@@ -26,6 +26,7 @@ try {
             $env:ConnectionStrings__Desertod = 'Host=127.0.0.1;Port=55432;Database=desertovia_foundation;Username=desertovia_dev;Password=desertovia_dev_only'
             $env:Game__AlmightyEnabled = 'false'
             $env:Game__HospitalEnabled = 'false'
+            $env:Game__DevTools = 'false'
             $env:Authentication__Telegram__BotToken = ''
             $env:Authentication__Telegram__BotUsername = ''
             $env:Authentication__Telegram__BrowserBridgeUrl = ''

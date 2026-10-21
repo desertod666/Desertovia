@@ -121,7 +121,7 @@ public class DungeonTests
         var village = NewVillage();
         var citizen = NewCitizen(village).WithSkill(Skill.Guarding, 2);
         village.Store(ResourceKind.Sword, 1);
-        village.Store(ResourceKind.LeatherArmor, 1);
+        village.Store(ResourceKind.LeatherArmor, 2); // One real set is reserved by each ordinary body.
         var run = DungeonRules.Open(village, DungeonCatalog.DeadLands, "Tsar", 1, Now);
 
         DungeonRules.Join(run, village, citizen, HeroClass.Swordsman, Now);

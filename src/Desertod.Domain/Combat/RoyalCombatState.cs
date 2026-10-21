@@ -41,6 +41,7 @@ public sealed class RoyalCombatState
 public sealed class RoyalCombatBody
 {
     public Citizen Citizen { get; }
+    public bool IsResident => state is null;
     private readonly RoyalCombatState? state;
     private RoyalCombatBody(Citizen citizen,RoyalCombatState? storage){Citizen=citizen;state=storage;}
 
@@ -52,10 +53,13 @@ public sealed class RoyalCombatBody
     }
     /// <summary>The admitted body keeps its source even if the account's resident membership changes later.</summary>
     public static RoyalCombatBody? ForFighter(Village village,RaidFighter fighter,IEnumerable<Citizen> residents,DateTimeOffset now)
+        => ForSource(village,fighter.CitizenId==Guid.Empty?null:fighter.CitizenId,residents,now);
+
+    public static RoyalCombatBody? ForSource(Village village,Guid? citizenId,IEnumerable<Citizen> residents,DateTimeOffset now)
     {
-        if(fighter.CitizenId!=Guid.Empty)
+        if(citizenId is {} source)
         {
-            var resident=residents.FirstOrDefault(c=>c.Id==fighter.CitizenId&&c.AccountId==village.OwnerAccountId);
+            var resident=residents.FirstOrDefault(c=>c.Id==source&&c.AccountId==village.OwnerAccountId);
             return resident is null?null:new(resident,null);
         }
         var state=village.RoyalCombat??=new();return new(state.Bind(village,now),state);

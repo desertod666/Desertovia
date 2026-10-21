@@ -1,0 +1,3 @@
+.royal-dungeon-class select, .royal-dungeon-class button { min-height: 44px; max-width: 100%; }
+.royal-dungeon-class .row > label { flex: 1 1 160px; min-width: 0; }
+.royal-dungeon-class select { display: block; margin-top: 4px; }
