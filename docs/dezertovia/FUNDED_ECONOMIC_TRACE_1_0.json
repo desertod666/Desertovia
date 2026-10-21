@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "synthetic_only": true,
+  "selected_live_balance": false,
+  "verification": "TREASURY_FUNDING_VERIFICATION_1_0.json",
+  "scenario": "FundedEconomicLoopApiTests.Zero_money_workers_earn_from_a_bounded_fund_then_trade_known_cost_goods_and_return_tax_without_double_wages",
+  "starting_condition": "communal TownHall storage, zero monetary balances, two residents",
+  "declared_daily_ceiling": 300,
+  "issued_into_treasury": 300,
+  "order": {
+    "cycles": 2,
+    "pay_per_cycle": 100,
+    "reserve": 200,
+    "paid": 200,
+    "remaining": 0
+  },
+  "known_cost_sale": {
+    "resource": "Wood",
+    "public_purchase_cost": 2,
+    "price": 22,
+    "positive_profit": 20,
+    "tax_basis_points": 1000,
+    "tax": 2
+  },
+  "separate_private_production": {
+    "resource": "Wood",
+    "basis_known": true,
+    "monetary_basis": 0,
+    "public_wage": 0,
+    "common_output": 0,
+    "sale_price": 20,
+    "tax": 2
+  },
+  "final": {
+    "producer_wallet": 136,
+    "buyer_wallet": 58,
+    "treasury": 106,
+    "work_reserve": 0,
+    "money_total": 300,
+    "journal_net": 300,
+    "controlled_issuance": 300,
+    "legacy_wage_issuance": 0,
+    "tax_transfers": 4
+  },
+  "limits": "Successful bounded cash trace with actual public/private production and retries; not full A11/A37/T026 calibration, farm/craft/catastrophe/premium proof."
+}

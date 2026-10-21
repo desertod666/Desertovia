@@ -29,6 +29,6 @@ internal static class EconomyCommitFailure
     }
     private static void CheckTable(string table)
     {
-        if(table is not ("EconomyReceipts" or "NotificationPreferenceReceipts"))throw new ArgumentException("Unsupported fixture receipt table.",nameof(table));
+        if(table is not ("EconomyReceipts" or "NotificationPreferenceReceipts" or "TreasuryIssues"))throw new ArgumentException("Unsupported fixture receipt table.",nameof(table));
     }
 }

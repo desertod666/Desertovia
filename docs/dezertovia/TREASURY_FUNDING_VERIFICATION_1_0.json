@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-21T11:06:37.498142+00:00",
+  "scope": "T025 bounded declared treasury funding, partial T026/A37. Full1.0 remains active.",
+  "source_parent": "c42cb11a7250e038513b8dacb0e0dd33b15a08b1",
+  "implemented": true,
+  "verified": "Scoped local checks and private HTTP/restart passed; new full CI required",
+  "released": false,
+  "source_hashes": {
+    "src/Desertod.Domain/Economy/TreasuryFunding.cs": "e11af1085331264d40bb7a91416829d5be57b0952b065a4267980f6a633b38e4",
+    "src/Desertod.Domain/Economy/MonetaryAudit.cs": "c1b371a582794b341f2b42eb509d32c49530b764354c4abdf09586eff48cd7fe",
+    "src/Desertod.Api/Game/GameService.TreasuryFunding.cs": "69c9345256331d3ac1dd08b319a855f5ca336084c81f3dbadbb71d015fba79fc",
+    "src/Desertod.Api/Game/GameService.DirectorEconomy.cs": "81685b88c2723db088bc9fb12b7bf60e8d94b47fc80084abaa12b316acfb8d3d",
+    "src/Desertod.Api/Game/GameService.MonetaryAudit.cs": "e10ae152411c2c861aa09cdaf2be0f833b983cb38258ade6b4ae25fe0e3953e3",
+    "src/Desertod.Api/Game/GameEndpoints.cs": "993a6c0beb51987a739e77fa819f8cbe84e4799cd494b77dc58058c95b03a175",
+    "src/Desertod.Infrastructure/Data/DesertodDbContext.Funding.cs": "3a1215a8c755470e6f0619c54de84309f66a52ce2620221ab27d07bd81a46694",
+    "src/Desertod.Infrastructure/Data/DesertodDbContext.cs": "c35f20962b1ca2f24e336615dc436339dccea0ed8222e7efbec77d28f4ad45c5",
+    "src/Desertod.Infrastructure/Data/Migrations/20261021103846_TreasuryFunding.cs": "2db40762f1f97975ce94f93d65c3e7c71f5629fb149e2c81d00069da140b5854",
+    "tests/Desertod.Api.Tests/TreasuryFundingApiTests.cs": "02e2265a60233e4843d6b79123b0f8c5c5670214a9626bd794f69c284cf0de21",
+    "tests/Desertod.Api.Tests/TreasuryFundingMigrationTests.cs": "edd921271d868e799671c4d2555adcacc87a3fea092e358dfaed74b2f2596f09",
+    "tests/Desertod.Api.Tests/FundedEconomicLoopApiTests.cs": "31b795598c1ce332c06afdb9b4234bc6c3af0f0152013a1000a654195bfec115",
+    "tests/Desertod.Api.Tests/AlmightyApiTests.cs": "f6016c9edd96c85dff882e30581cedd980f42c86a214539a148614bb5124102c",
+    "tests/Desertod.Domain.Tests/TreasuryFundingTests.cs": "7a24380f3a4fe3afbff7b96813524b3f3d1ec25da34df5379127d95735c5d7f5"
+  },
+  "checks": {
+    "funding-domain-full": {
+      "path": "TestResults/funding-domain-full/funding-domain-full.trx",
+      "sha256": "78aba8a2cf3e57faa85dd6cfd8f008b4d59a63b9dbac493c904bdf4f82770d0f",
+      "counters": {
+        "total": "721",
+        "executed": "721",
+        "passed": "721",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    "funding-api": {
+      "path": "TestResults/funding-api/funding-api.trx",
+      "sha256": "a04af9093550b3d535b47ec19a14700328813f8159e3f18ea9c6dca49520c0f3",
+      "counters": {
+        "total": "14",
+        "executed": "14",
+        "passed": "13",
+        "failed": "1",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    "funding-final": {
+      "path": "TestResults/funding-final/funding-final.trx",
+      "sha256": "b3f67c76677b1137f3cabfa9155bc037f13a81e2bc480f8153c29214e2f51270",
+      "counters": {
+        "total": "2",
+        "executed": "2",
+        "passed": "2",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    "funding-private-loop": {
+      "path": "TestResults/funding-private-loop/funding-private-loop.trx",
+      "sha256": "4735876dbb62a1f02ca792b09ceb1adeadd4bbc7bbc74728543849faffe9b5dd",
+      "counters": {
+        "total": "1",
+        "executed": "1",
+        "passed": "1",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    }
+  },
+  "distinct_api_boundary_migration_scenarios_passed_across_stages": 14,
+  "initial_fixture_failure": "Synthetic kingdom omitted storage: production stayed in hands, therefore buy-stock correctly refused. Existing TownHall storage added as scenario precondition; goods/pay were not inserted via SQL. Day-boundary fixtures anchor newly founded worlds at08:00UTC before explicit midnight. Corrected2/2, expanded private production1/1 passed.",
+  "migration": {
+    "from": 56,
+    "to": 57,
+    "backup": "/tmp/foundation-before-restart-20261021T105741Z.dump",
+    "compared_tables": {
+      "Accounts": {
+        "rows": 287,
+        "sha256": "eca5dc08fc300536bba1ba830d7901c146f8db22b961b52c9d8ef46dc953cdc3"
+      },
+      "Citizens": {
+        "rows": 28,
+        "sha256": "c6a96eff1fe3a758d0d3ce3a9485aa2d0a9623bf48720fc9063f5f9bd0de768b"
+      },
+      "Villages": {
+        "rows": 7,
+        "sha256": "317043a926895ab5c13c2f7bd61c51c70bf73debed864f285f355f465b405ab7"
+      },
+      "KingdomEconomies": {
+        "rows": 7,
+        "sha256": "1ace9e7861b7231e748765ac9c1c5a6247bc2084068baf3f2576e65f6f63c50a"
+      },
+      "GameWallets": {
+        "rows": 23,
+        "sha256": "0b629ec64709fcb6236443654c66717d2c7ae0bf35c44fa956d56eb0dc2f92a2"
+      },
+      "LedgerEntries": {
+        "rows": 87,
+        "sha256": "2c194732e6823867832ad9dcb5f1ed88197168811fd7c33963f560ff64fd76aa"
+      },
+      "EconomyReceipts": {
+        "rows": 15,
+        "sha256": "0a30f4dbb65c44491875e65373f8120c6344ad55dc8dfaeca9192f15c2584216"
+      },
+      "MarketLots": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "TaxPolicies": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "MarketTaxQuotes": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "MarketTaxEvents": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "WorkOrders": {
+        "rows": 2,
+        "sha256": "655f4c7c86976c7e3981e2e69b52ef730c7b3894799e38d64c4e06fcdcf127d7"
+      },
+      "WorkOrderClaims": {
+        "rows": 1,
+        "sha256": "2da0fe2c943c37f3473da5e988cc13b10e79e263193d5b44b0585bbbf435881b"
+      },
+      "SupplyOrders": {
+        "rows": 1,
+        "sha256": "acca3843886390b9be3119751b11c2b87e8209f42069ecea020f9e0b5f853668"
+      },
+      "SupplyDeliveries": {
+        "rows": 1,
+        "sha256": "814dfce9780fed73b4a3596620e159a716a0f58d4b1449cffd2bbc9d4841c1f6"
+      },
+      "FarmCrops": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "AlmightyStates": {
+        "rows": 1,
+        "sha256": "b873fe9a4bcc654818bc0e43ceda26238ac2720d99632ffa9baa9ff1f80d3af9"
+      },
+      "AlmightyObservations": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "AlmightyProposals": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "AlmightyPolicyChanges": {
+        "rows": 2,
+        "sha256": "33c68e574b1d2a27698a577810fa5342c97ed341c9095572cb910f7f0f3037f9"
+      },
+      "DungeonRuns": {
+        "rows": 5,
+        "sha256": "58822ec9801172152139efa57d0061593b0a591d9c36440aaebba78afe5a9b80"
+      },
+      "RaidBattles": {
+        "rows": 1,
+        "sha256": "dc7e0680ac864efa250e3bc45ad8e453b5084bc492d7912612728cb2bb93ee89"
+      },
+      "VillageProjects": {
+        "rows": 10,
+        "sha256": "a0f144366532b2f1b3d23912a96cffca40cf83542721c401dba12be310ab1a9f"
+      },
+      "MonetaryBatches": {
+        "rows": 4,
+        "sha256": "3ce3b2fa4e41e55211af756ae9ddeb49049e03d69fcb4e1107426a7a2be9302d"
+      }
+    },
+    "all_old_rows_equal": true,
+    "new_tables_at_upgrade": {
+      "policies": 0,
+      "days": 0,
+      "issues": 0
+    },
+    "raw_snapshots_committed": false
+  },
+  "private_http": {
+    "before_restart": {
+      "phase": "before",
+      "syntheticOnly": true,
+      "policyVersion": 2,
+      "enabled": false,
+      "issuedToday": 60,
+      "remaining": 0,
+      "budgetRevision": 1,
+      "wallet": 800,
+      "treasury": 160,
+      "oldIssueReplayIdentical": true
+    },
+    "after_restart": {
+      "phase": "after",
+      "syntheticOnly": true,
+      "policyVersion": 2,
+      "enabled": false,
+      "issuedToday": 60,
+      "remaining": 0,
+      "budgetRevision": 1,
+      "wallet": 800,
+      "treasury": 160,
+      "oldIssueReplayIdentical": true
+    },
+    "pre_restart_backup": "/tmp/foundation-before-restart-20261021T110302Z.dump",
+    "scope": "Own pre-existing synthetic QA world only; one60coin issue under an explicit100ceiling, then policy paused. Old issue acknowledgement survives pause/restart; cap excess rejected. Other worlds receive no policy/issue; model/Telegram/DevTools false."
+  },
+  "candidate_ci": {
+    "status": "not_yet_verified",
+    "scope": "New funding source requires its own exact PR checks. Parent PR96 backend709Domain/459API passed; full parent CI observed separately."
+  },
+  "remaining": [
+    "Director T054 authority/mode/category, fresh economic admission, system actor and automatic decision/consequence loop",
+    "Quantitative T026/A11 labor/time/food/distribution/demand scenarios and private craft inputs; this cash trace is not a chosen balance",
+    "Farm funds/natural entitlements and other full1.0 DAG tasks",
+    "Full exact candidate CI and later T081/T082/final UI. No public deployment or real payments."
+  ]
+}

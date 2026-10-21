@@ -110,6 +110,7 @@ public sealed partial class GameService
         var unvalidated=await ledger.CountAsync(x=>x.Asset=="DZK"&&x.FinancialBatchId==null,ct);
         var liveHash=HoldingHash(await SnapshotMoneyAsync(db,village.Id,ct));
         var anchors=await ObserveMonetaryAnchorsAsync(db,village.Id,start,now,ct);
+        var funding=await FundingStateAsync(db,village.Id,now,ct);
         var history=new{
             columns=new[]{"day","residentsEligibleByDayEnd","observedFinancialActors","financialCohortPeople","withoutRecordedWages","withoutKnownPrivateProfit","wageRecipients","wageTotal","wageMedianAmongRecipients","wageP90AmongRecipients","wageMaximum",
                 "profitRecipients","knownPrivatePositiveProfit","profitMedianAmongRecipients","profitP90AmongRecipients","profitMaximum","knownPrivateLoss",
@@ -120,6 +121,13 @@ public sealed partial class GameService
         };
         return new(1,now,start,economy?.StartedAt,first,residents.Count,history,Summarize(today.UtcDateTime,false),
             new{treasury=economy?.TreasuryCoins??0,walletCoins=wallets,workReserved,supplyReserved,
+                treasuryFunding=new{funding.LatestVersion,
+                    active=funding.Current is {} fund?new{fund.Version,fund.Enabled,fund.DailyIssueLimit,fund.EffectiveAt}:null,
+                    scheduled=new{columns=new[]{"version","enabled","dailyIssueLimit","effectiveAt"},
+                        rows=funding.Scheduled.Select(p=>new object[]{p.Version,p.Enabled,p.DailyIssueLimit,p.EffectiveAt}),
+                        count=funding.ScheduledCount,truncated=funding.ScheduledTruncated},
+                    funding.BudgetDay,funding.BudgetRevision,funding.IssuedToday,funding.RemainingAllowance,funding.FundedWorkEnabled,
+                    automaticIssueExecutorAvailable=false,allowanceIsNotMoney=true},
                 acceptedWorkPromises=promised,promisesAreSubsetOfWorkReserved=true,
                 totalRecordedMoney=wallets+(economy?.TreasuryCoins??0)+workReserved+supplyReserved,
                 walletBalances=new{holders=wealth.People,zeroBalances=wealth.WithoutRecordedIncome,
@@ -140,7 +148,7 @@ public sealed partial class GameService
             new[]{"All residents and recorded financial actors are included; recipient percentiles exclude zeros, withoutRecordedIncome includes eligible residents without receipts. No activity or hours are inferred from income.",
                 "completeDays is a column-labelled table of full UTC days; currentPartialDay is unfinished. Days before accounting/history coverage are omitted. Missing receipts cannot prove zero economic activity.",
                 "Known private profit includes market and public supply deliveries; supply tax is not implemented. Wages are separate and exempt. Positive gains and losses are separate; unknown cost is not zero cost.",
-                "Balances and opening stock are not earnings. TotalRecordedMoney is recorded wallets/treasury/work/supply funds, not a complete T025 issuance policy or a guarantee of historical ledger completeness.",
+                "Balances and opening stock are not earnings. TotalRecordedMoney covers wallets/treasury/work/supply funds. Treasury funding allowance is a ceiling, not issued money or a promise to spend it. New public wages need backed orders; old accepted wages retain their terms. Historical completeness is not guaranteed.",
                 "Analyze affordability, inequality of burden, treasury obligations and food; use actual evidence and acknowledge short history. Exact tax settings are for the director to assess, not fixed defaults. Never create retrospective debt or modify accepted offer terms.",
                 "This observation is analysis, not authority to debit wallets. Future autonomous fiscal actions require versioned executors, fresh validation, limits, audit and owner category controls. Dcoin and real payments are outside this analysis."});
     }

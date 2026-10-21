@@ -65,6 +65,14 @@ public sealed partial class GameService
         var postings = await db.LedgerEntries.AsNoTracking()
             .Where(x => x.VillageId == village && x.FinancialBatchId == db.FinancialBatchId).OrderBy(x => x.Id).ToListAsync(ct);
         var operations = MonetaryAudit.Reconcile(before, after, postings);
+        var issued = postings.Where(x => x.Operation == "treasury-issuance").ToArray();
+        if (issued.Length > 0)
+        {
+            var ids = issued.Select(x => x.OperationId).ToArray();
+            var receipts = await db.TreasuryIssues.AsNoTracking().Where(x => x.VillageId == village && ids.Contains(x.RequestId)).ToListAsync(ct);
+            if (receipts.Count != issued.Length || issued.Any(x => !receipts.Any(r => r.RequestId == x.OperationId
+                    && r.Amount == x.Delta && r.FinancialBatchId == db.FinancialBatchId))) throw MonetaryAudit.Invalid();
+        }
         if (postings.Count == 0) return; // Reads and non-monetary actions do not generate empty audit history.
         var batch = await db.MonetaryBatches.SingleAsync(x => x.VillageId == village && x.Id == db.FinancialBatchId, ct);
         if (batch.Finalized) throw MonetaryAudit.Invalid();
