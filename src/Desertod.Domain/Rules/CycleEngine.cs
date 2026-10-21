@@ -337,6 +337,7 @@ public static class CycleEngine
     /// <param name="village">Takes back the weapons the citizen took for the task; without it they keep them until the next task ends.</param>
     public static void Cancel(Citizen citizen, DateTimeOffset now, Village? village = null)
     {
+        if(citizen.DungeonRunId is not null)throw new GameRuleException("ambush.retreatRequired","Leave the fight before cancelling work.");
         SafeRest.RequireActive(citizen.RestState);
         HospitalRules.RequireReady(citizen, now);
         if (citizen.ExhaustedUntil > now)
@@ -391,7 +392,7 @@ public static class CycleEngine
     private static CycleReport? SettleCore(Citizen citizen, WorkContext context, DateTimeOffset now)
     {
         HospitalRules.Resume(citizen, now);
-        if (citizen.RecoveryPausedAt is not null || citizen.Trip?.Waiting(now)==true || HospitalRules.IsAdmitted(citizen, now)
+        if (citizen.DungeonRunId is not null || citizen.RecoveryPausedAt is not null || citizen.Trip?.Waiting(now)==true || HospitalRules.IsAdmitted(citizen, now)
             || citizen.CycleSettled || citizen.CurrentTaskId is null || citizen.CycleEndsAt is null
             || now < citizen.CycleEndsAt)
         {
@@ -509,9 +510,9 @@ public static class CycleEngine
             if (recipeOutput && citizen.CyclePrivateOutput) production.Add((kind, amount, kept));
         }
 
-        var fight = task.Danger is { } danger
+        var fight = context.ResolvedAmbush ?? (!context.SkipAmbush && task.Danger is { } danger
             ? CombatRules.Ambush(citizen, village, danger, context.Random, WorkedAt(citizen, now), now)
-            : null;
+            : null);
         foreach (var loot in fight?.Loot ?? [])
         {
             Produce(loot.Resource, loot.Amount);
@@ -1089,6 +1090,8 @@ public static class CycleEngine
         var walking = walkDuration ?? (task is null ? TimeSpan.Zero : Walk(citizen, village, task));
         citizen.CycleEndsAt = now + (citizen.CycleTired ? duration + (duration > walking ? duration - walking : TimeSpan.Zero) * 2 : duration) + walking * (1/citizen.MedicalWalk(now)-1);
         citizen.CycleSettled = false;
+        citizen.CycleEncounterVersion=0;citizen.CycleEncounterSeed=0;citizen.CycleAmbushChecked=false;
+        citizen.CycleEncounterRunId=null;citizen.CycleEncounterReportJson=null;
         citizen.CycleInputCostBasis = 0;
         citizen.CycleInputCostBasisKnown = true;
         citizen.CycleOwnership = citizen.CyclePrivateOutput

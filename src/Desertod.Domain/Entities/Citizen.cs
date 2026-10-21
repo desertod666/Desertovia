@@ -108,6 +108,11 @@ public sealed class Citizen
     public DateTimeOffset? CycleStartedAt { get; set; }
     public DateTimeOffset? CycleEndsAt { get; set; }
     public bool CycleSettled { get; set; } = true;
+    public int CycleEncounterVersion { get; set; }
+    public int CycleEncounterSeed { get; set; }
+    public bool CycleAmbushChecked { get; set; }
+    public Guid? CycleEncounterRunId { get; set; }
+    public string? CycleEncounterReportJson { get; set; }
     public bool CycleTired { get; set; }
     public long CycleInputCostBasis { get; set; }
     /// <summary>Legacy unfinished cycles have unknown input cost until explicitly reconciled.</summary>
@@ -303,7 +308,7 @@ public sealed class Citizen
         }
 
         if (ExhaustedUntil > now) throw new GameRuleException("citizen.exhausted", "You are unconscious and recovering.");
-        if (WorkState(now) == Entities.WorkState.Working || !CycleSettled&&Trip?.Waiting(now)==true)
+        if (WorkState(now) == Entities.WorkState.Working || !CycleSettled&&(Trip?.Waiting(now)==true||DungeonRunId is not null))
         {
             throw new GameRuleException("goto.working", "Finish the current task first.");
         }
@@ -377,7 +382,7 @@ public sealed class Citizen
 
     public WorkState WorkState(DateTimeOffset now)
     {
-        if (RecoveryPausedAt is not null||!CycleSettled&&Trip?.Waiting(now)==true) return Entities.WorkState.Paused;
+        if (RecoveryPausedAt is not null||!CycleSettled&&(Trip?.Waiting(now)==true||DungeonRunId is not null)) return Entities.WorkState.Paused;
 
         if (CurrentTaskId is null || CycleEndsAt is null)
         {

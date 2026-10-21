@@ -501,6 +501,8 @@ public sealed partial class GameService(
 
             var quests = await UpdateQuestsAsync(db, village, citizen, report, now, cancellationToken);
             start(citizen, context, now);
+            if(GameCatalog.FindTask(citizen.CurrentTaskId??"")?.Danger is not null)
+            {citizen.CycleEncounterVersion=1;citizen.CycleEncounterSeed=Random.Shared.Next();}
             await AcceptWorkOrderAsync(db, village, citizen, workOrderId, now, cancellationToken);
             if (requestId is {} commandId)
                 db.EconomyReceipts.Add(new EconomyReceipt{VillageId=village.Id,RequestId=commandId,AccountId=citizen.AccountId,Fingerprint=fingerprint!,At=now});
@@ -1133,7 +1135,9 @@ public sealed partial class GameService(
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
         var now = time.GetUtcNow();
         return await db.Citizens
-            .Where(c => c.RecoveryPausedAt == null && !c.CycleSettled && c.CycleEndsAt <= now && (c.Trip==null||c.Trip.BlockedAt==null||c.Trip.BlockedAt>now))
+            .Where(c => c.DungeonRunId==null && c.RecoveryPausedAt == null && !c.CycleSettled && c.CycleEndsAt <= now
+                &&(c.CycleEncounterVersion!=1||c.CycleAmbushChecked||c.InjuredUntil==null||c.InjuredUntil<=now)
+                && (c.Trip==null||c.Trip.BlockedAt==null||c.Trip.BlockedAt>now))
             .OrderBy(c => c.CycleEndsAt)
             .Select(c => new DueCitizen(c.VillageId, c.Id))
             .Take(batchSize)
@@ -1506,7 +1510,7 @@ public sealed partial class GameService(
         var trips = await LoadTripsAsync(db, village.Id, cancellationToken);
         var shownSince = now - DungeonRules.ShownAfterEnd;
         var dungeon = await db.DungeonRuns.AsNoTracking()
-            .Where(r => r.VillageId == village.Id && (r.Phase != DungeonPhase.Ended || r.EndedAt >= shownSince))
+            .Where(r => r.VillageId == village.Id && r.Kind==DungeonRunKind.Group && (r.Phase != DungeonPhase.Ended || r.EndedAt >= shownSince))
             .OrderByDescending(r => r.OpenedAt)
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -1631,7 +1635,7 @@ public sealed partial class GameService(
         var now = time.GetUtcNow();
         return await db.Citizens
             .Where(c => c.AccountId == accountId && db.Villages.Any(v => v.Id == c.VillageId && v.Slug == slug))
-            .Select(c => new CitizenKey(c.Id, c.VillageId, !c.CycleSettled && c.CycleEndsAt <= now))
+            .Select(c => new CitizenKey(c.Id, c.VillageId, c.DungeonRunId==null && !c.CycleSettled && c.CycleEndsAt <= now))
             .SingleOrDefaultAsync(cancellationToken);
     }
 

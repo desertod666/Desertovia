@@ -1631,7 +1631,7 @@
       "id": "PKG-T031",
       "milestone": "M3",
       "title": "Ручной одиночный микробой",
-      "status": "partial_shared_manual_scene_engine_domain_verified_workflow_pending",
+      "status": "partial_private_accepted_work_encounter_actual_restart_verified_full_ci_pending",
       "dependencies": [
         "PKG-T012",
         "PKG-T013"

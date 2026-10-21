@@ -43,8 +43,9 @@ public sealed partial class GameService
             return await BuildStateAsync(db, village, now, ct);
         }, ct);
 
-    private static async Task<CycleReport?> SettleWorkAsync(Desertod.Infrastructure.Data.DesertodDbContext db, Citizen citizen, WorkContext context, DateTimeOffset now, CancellationToken ct)
+    private async Task<CycleReport?> SettleWorkAsync(Desertod.Infrastructure.Data.DesertodDbContext db, Citizen citizen, WorkContext context, DateTimeOffset now, CancellationToken ct)
     {
+        if(!await PrepareWorkEncounterAsync(db,citizen,context,now,ct))return null;
         if (citizen.RestState == RestState.RestRequested)
         {
             // A raid may have reached the worker after the rest request. Work completion

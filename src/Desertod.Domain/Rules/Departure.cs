@@ -15,6 +15,7 @@ public static class Departure
     /// <param name="run">The run the citizen answered, if any.</param>
     public static void Leave(Citizen citizen, Village village, DungeonRun? run, DateTimeOffset now)
     {
+        if(run?.Kind==DungeonRunKind.Ambush&&run.IsActive)throw new GameRuleException("ambush.retreatRequired","Leave the fight before leaving the village.");
         if (citizen.WorkState(now) == WorkState.Working)
         {
             CycleEngine.Cancel(citizen, now, village);

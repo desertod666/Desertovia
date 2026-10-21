@@ -212,12 +212,12 @@ public static class CombatRules
     }
 
     /// <summary>A fight wears weapons down: each may break, and a bow shoots its arrows. Returns what broke.</summary>
-    public static IReadOnlyList<ResourceKind> Wear(Citizen citizen, Random random)
+    public static IReadOnlyList<ResourceKind> Wear(Citizen citizen, Random random,bool spendArrows=true)
     {
         var broken = new List<ResourceKind>();
         if (UsableWeapon(citizen) is { } weapon)
         {
-            citizen.SpendArrows(weapon.Arrows);
+            if(spendArrows)citizen.SpendArrows(weapon.Arrows);
             if (random.NextDouble() < weapon.BreakChance)
             {
                 broken.Add(weapon.Kind);

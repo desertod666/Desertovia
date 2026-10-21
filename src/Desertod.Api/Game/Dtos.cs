@@ -317,6 +317,7 @@ public sealed record CitizenSummaryDto(
     ExternalRecovery? Recovery = null)
 {
     public WalkJourneyDto? Journey { get; init; }
+    public Guid? EncounterRunId { get; init; }
     public IReadOnlyList<FarmWorkTarget> FarmTargets { get; init; } = [];
     public bool IsFarmer { get; init; }
     public bool CanManageFarm { get; init; }
@@ -412,6 +413,7 @@ public sealed record CitizenDto(
     ExternalRecovery? Recovery = null)
 {
     public WalkJourneyDto? Journey { get; init; }
+    public Guid? EncounterRunId { get; init; }
     public bool IsFarmer { get; init; }
     public bool CanManageFarm { get; init; }
     public RestState RestState { get; init; }
@@ -744,7 +746,7 @@ public static class DtoMapper
             citizen.CycleEndsAt,
             citizen.Load.Select(g => g.Kind).ToList(),
             CombatRules.IsInjured(citizen, now) ? citizen.InjuredUntil : null,
-            citizen.Weapon, citizen.Recovery) {Journey=WalkJourneyDto.FromTrip(citizen.Trip,now),FarmTargets=citizen.CycleSettled ? [] : citizen.CycleFarmTargets,IsFarmer=citizen.IsFarmer,CanManageFarm=citizen.CanManageFarm&&citizen.IsGovernor,RestState=citizen.RestState,WeaponSharpen=citizen.WeaponSharpen,HospitalizedAt=citizen.HospitalizedAt,RescueByCitizenId=citizen.RescueByCitizenId,RescuePatientId=citizen.RescuePatientId,RescueJourney=citizen.RescueJourney,RescueRequestedAt=citizen.RescueRequestedAt,DefenseSector=citizen.DefenseSector,DefenseReadyAt=citizen.DefenseReadyAt};
+            citizen.Weapon, citizen.Recovery) {Journey=WalkJourneyDto.FromTrip(citizen.Trip,now),EncounterRunId=citizen.DungeonRunId==citizen.CycleEncounterRunId?citizen.DungeonRunId:null,FarmTargets=citizen.CycleSettled ? [] : citizen.CycleFarmTargets,IsFarmer=citizen.IsFarmer,CanManageFarm=citizen.CanManageFarm&&citizen.IsGovernor,RestState=citizen.RestState,WeaponSharpen=citizen.WeaponSharpen,HospitalizedAt=citizen.HospitalizedAt,RescueByCitizenId=citizen.RescueByCitizenId,RescuePatientId=citizen.RescuePatientId,RescueJourney=citizen.RescueJourney,RescueRequestedAt=citizen.RescueRequestedAt,DefenseSector=citizen.DefenseSector,DefenseReadyAt=citizen.DefenseReadyAt};
     }
 
     public static CitizenDto ToDto(this Citizen citizen, Village village, DateTimeOffset now) => new(
@@ -803,7 +805,7 @@ public static class DtoMapper
         citizen.Armor,
         citizen.Arrows,
         Math.Round(CombatRules.Power(citizen), 1), citizen.Recovery)
-        { Journey=WalkJourneyDto.FromTrip(citizen.Trip,now),IsFarmer=citizen.IsFarmer, CanManageFarm=citizen.CanManageFarm&&citizen.IsGovernor, RestState=citizen.RestState, RestRequestedAt=citizen.RestRequestedAt, WeaponSharpen=citizen.WeaponSharpen, ArrowSharpen=citizen.ArrowSharpen, MealKind=citizen.MealKind,MealUntil=citizen.MealUntil,MealReadyAt=citizen.LastMealAt+PreparedMeals.Cooldown, VigorEnergy = village.VigorEnergy, VigorCooldownMinutes = village.VigorCooldownMinutes, AccountId = citizen.AccountId, CyclePrivateOutput = citizen.CyclePrivateOutput, CycleOwnership = citizen.CycleOwnership, CyclePaymentMode = citizen.CyclePaymentMode, PersonalGoods = citizen.PersonalGoods, ActionEnergyCosts = GameCatalog.Tasks.Select(task => new KeyValuePair<string, double>(task.Id, WorkEnergy.WithMedical(citizen, WorkEnergy.TaskCost(village, task, now), now)))
+        { Journey=WalkJourneyDto.FromTrip(citizen.Trip,now),EncounterRunId=citizen.DungeonRunId==citizen.CycleEncounterRunId?citizen.DungeonRunId:null,IsFarmer=citizen.IsFarmer, CanManageFarm=citizen.CanManageFarm&&citizen.IsGovernor, RestState=citizen.RestState, RestRequestedAt=citizen.RestRequestedAt, WeaponSharpen=citizen.WeaponSharpen, ArrowSharpen=citizen.ArrowSharpen, MealKind=citizen.MealKind,MealUntil=citizen.MealUntil,MealReadyAt=citizen.LastMealAt+PreparedMeals.Cooldown, VigorEnergy = village.VigorEnergy, VigorCooldownMinutes = village.VigorCooldownMinutes, AccountId = citizen.AccountId, CyclePrivateOutput = citizen.CyclePrivateOutput, CycleOwnership = citizen.CycleOwnership, CyclePaymentMode = citizen.CyclePaymentMode, PersonalGoods = citizen.PersonalGoods, ActionEnergyCosts = GameCatalog.Tasks.Select(task => new KeyValuePair<string, double>(task.Id, WorkEnergy.WithMedical(citizen, WorkEnergy.TaskCost(village, task, now), now)))
             .Concat(BuildingCatalog.Jobs.Select(job => new KeyValuePair<string, double>(job.Id, WorkEnergy.WithMedical(citizen, WorkEnergy.JobCost(village, job, now), now))))
             .GroupBy(pair => pair.Key).ToDictionary(group => group.Key, group => group.Last().Value),
             DefenseSector=citizen.DefenseSector,DefenseReadyAt=citizen.DefenseReadyAt,

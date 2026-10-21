@@ -21,6 +21,7 @@ export function NextAction({
 }) {
   const i18n = useI18n()
   const { t } = i18n
+  if(citizen.encounterRunId)return <div className={`next-action paused ${compact?'compact':''}`} role="status">{i18n.language==='ru'?'Задание ждёт исхода боя':'Work is waiting for the fight outcome'}</div>
   if (citizen.restState === 'Resting') return <div className={`next-action idle ${compact ? 'compact' : ''}`} role="status">☾ {i18n.language === 'ru' ? 'Безопасный отдых' : 'Safe rest'}</div>
   if (citizen.state === 'Paused') return <div className={`next-action paused ${compact ? 'compact' : ''}`} role="status">{citizen.journey?.blockedAt?(i18n.language==='ru'?'Дорога перекрыта · работа ждёт':'Route blocked · work is waiting'):<>✚ {t('hospital.pause')}</>}
     {citizen.journey?.blockedAt&&onCancel&&citizen.restState!=='RestRequested'&&<button disabled={pending} onClick={onCancel} title={t('next.cancelTitle')}>{t('next.cancel')}</button>}

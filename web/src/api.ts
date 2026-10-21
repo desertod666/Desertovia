@@ -331,6 +331,9 @@ export interface DungeonRunView {
   run: DungeonRun
   /** Null while the run has not started or once it has ended. */
   snapshot: DungeonSnapshot | null
+  kind?: 'Group' | 'Ambush'
+  encounterEnemy?: EnemyKind | null
+  workSettlementPending?: boolean
 }
 
 /** The page of a run; the village page sends each hero there once they reach the edge of the land. */
@@ -1201,6 +1204,7 @@ export interface CitizenSummary {
   injuredUntil: string | null
   /** Weapon taken from the armory for the current task. */
   weapon: string | null
+  encounterRunId?: string | null
 }
 
 export interface Village {
@@ -1341,6 +1345,7 @@ export interface Citizen {
   arrowSharpen?: number
   /** Fight power with the weapon in hand. */
   power: number
+  encounterRunId?: string | null
 }
 
 export interface CycleReport {

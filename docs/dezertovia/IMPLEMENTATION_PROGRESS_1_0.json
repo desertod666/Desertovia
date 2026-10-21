@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-21T00:57:46.312849+00:00",
-  "status": "main_plan_active_manual_encounter_engine_and_explicit_retreat_local_verified",
+  "recorded_at_utc": "2026-10-21T01:52:41.774278+00:00",
+  "status": "main_plan_active_accepted_work_encounter_actual_restart_verified_candidate_ci_pending",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-ambush",
+  "branch": "feat/desertovia-1-0-work-encounters",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "T031 shared manual encounter engine and T032 durable vulnerable retreat; accepted-work encounter integration remains unfinished",
+  "implemented_task": "T031 accepted-work private manual encounter with single existing work settlement; candidate working tree verified locally, full candidate CI pending; broader group/combat plan unfinished",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -42,7 +42,7 @@
     "bot_modified": false,
     "current_source_restarted": true,
     "tool_recipes_verified_http": 8,
-    "local_world_migrations": 50,
+    "local_world_migrations": 51,
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
@@ -1366,5 +1366,52 @@
     "visual_followups": [
       "T035: actual 320px dungeon map remains small with large vertical margins; evaluate camera/zoom and tap targets, not yet a full mobile-experience acceptance pass"
     ]
+  },
+  "owner_scope_check": {
+    "recorded_at_utc": "2026-10-21T01:52:41.774278+00:00",
+    "total_tasks": 53,
+    "not_started": 30,
+    "other_tasks_are_not_all_complete": true,
+    "priority": "Continue world/combat/party/supply, siege/recovery/director and remaining UI/monetization/music. No optional farm polish ahead of missing systems."
+  },
+  "work_encounter_candidate": {
+    "status": "working_tree_actual_320px_manual_victory_restart_once_pay_rest_verified_full_ci_pending",
+    "schema": 51,
+    "migration_preservation": "28 existing synthetic residents and compared old village/citizen/wallet/economy/dungeon rows unchanged by migration50→51; new columns excluded from comparison",
+    "runtime_backup": "/tmp/foundation-before-restart-20261021T015055Z.dump",
+    "actual_ui": {
+      "fixture_only": true,
+      "runId": "01a15c27-5919-72b8-920c-45161c244f4c",
+      "sameAcceptedCycle": true,
+      "restarted": true,
+      "manualCanvasTarget": true,
+      "outcome": "Victory",
+      "walletBefore": 110,
+      "walletAfter": 120,
+      "paidOnce": true,
+      "safeRestAfterSettlement": true,
+      "viewport": 320,
+      "errors": []
+    },
+    "candidate_commit": null,
+    "public_release": false,
+    "remaining": [
+      "Commit/review and exact candidate full CI",
+      "Group contract, loot choice and supplied journeys",
+      "Broader combat balance and physical phone acceptance"
+    ],
+    "legal_veteran_api": {
+      "passed": 7,
+      "failed": 0,
+      "scope": "all WorkEncounterApiTests with Strength10/Endurance10; before final director-only admission fix",
+      "results_directory": "TestResults/work-encounters-legal-veteran"
+    },
+    "director_admission_api": {
+      "passed": 1,
+      "failed": 0,
+      "scope": "fresh option catalog, stale owner approval and public dungeon open reject owners personal encounter",
+      "results_directory": "TestResults/work-encounters-director-admission"
+    },
+    "distinct_local_api_cases": 18
   }
 }
