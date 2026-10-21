@@ -102,6 +102,14 @@ public sealed partial class GameService
             .SumAsync(x=>(decimal)x.PromisedPay,ct);
         var balances=await db.GameWallets.Where(x=>x.VillageId==village.Id).Select(x=>(decimal)x.Coins).ToListAsync(ct);
         var wallets=balances.Sum();var wealth=EconomicDistribution(balances);
+        var auditQuery=db.MonetaryBatches.AsNoTracking().Where(x=>x.VillageId==village.Id&&x.Finalized&&x.At>=start&&x.At<=now);
+        var auditTotals=await auditQuery.GroupBy(x=>1).Select(g=>new{batches=g.Count(),postings=g.Sum(x=>x.PostingCount),
+            issued=g.Sum(x=>x.Issued),withdrawn=g.Sum(x=>x.Withdrawn),transferred=g.Sum(x=>x.Transferred)}).SingleOrDefaultAsync(ct);
+        var lastAudit=await db.MonetaryBatches.AsNoTracking().Where(x=>x.VillageId==village.Id&&x.Finalized&&x.At<=now)
+            .OrderByDescending(x=>x.At).ThenByDescending(x=>x.Id).Select(x=>new{x.At,x.AfterHash}).FirstOrDefaultAsync(ct);
+        var unvalidated=await ledger.CountAsync(x=>x.Asset=="DZK"&&x.FinancialBatchId==null,ct);
+        var liveHash=HoldingHash(await SnapshotMoneyAsync(db,village.Id,ct));
+        var anchors=await ObserveMonetaryAnchorsAsync(db,village.Id,start,now,ct);
         var history=new{
             columns=new[]{"day","residentsEligibleByDayEnd","observedFinancialActors","financialCohortPeople","withoutRecordedWages","withoutKnownPrivateProfit","wageRecipients","wageTotal","wageMedianAmongRecipients","wageP90AmongRecipients","wageMaximum",
                 "profitRecipients","knownPrivatePositiveProfit","profitMedianAmongRecipients","profitP90AmongRecipients","profitMaximum","knownPrivateLoss",
@@ -117,7 +125,12 @@ public sealed partial class GameService
                 walletBalances=new{holders=wealth.People,zeroBalances=wealth.WithoutRecordedIncome,
                     medianAmongNonzero=wealth.MedianAmongRecipients,p90AmongNonzero=wealth.P90AmongRecipients,maximum=wealth.Maximum}},
             new{recordedNetChange=flows.Sum(x=>x.recordedNetChange),categories=flows.Take(40),categoryCount=flows.Count,
-                categoriesTruncated=flows.Count>40,meaning="Net of all recorded locations; transfers are not issuance, wallet credits are not automatically profit."},
+                categoriesTruncated=flows.Count>40,meaning="Net of all recorded locations; transfers are not issuance, wallet credits are not automatically profit.",
+                validated=new{windowStart=start,through=now,totals=auditTotals,legacyPostingsWithoutValidation=unvalidated,
+                    anchorChanges=anchors.Changes,unexplainedAnchorNet=anchors.NetChange,anchorsAreNotIssuance=true,
+                    lastAuditAt=lastAudit?.At,currentActionNotYetFinalized=db.FinancialBatchStarted,
+                    currentHoldingsMatchLastAudit=lastAudit is null?(bool?)null:lastAudit.AfterHash==liveHash,
+                    meaning="Finalized server receipts reconcile every wallet, treasury and reserve. Unvalidated history and externally changed anchors are not proven issuance. A pending current action is finalized after this observation."}},
             new{newOfferPolicyVersion=policy?.Version,newOffersTaxEnabled=policy?.Enabled??false,
                 brackets=policy?.Brackets??[],settlement="Frozen offer terms: older enabled policies may still settle when new offers are tax-free.",
                 wagesExempt=true,unknownCostExempt=true,automaticEconomicExecutorAvailable=false},

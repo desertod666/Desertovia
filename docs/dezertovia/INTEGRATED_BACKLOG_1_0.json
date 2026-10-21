@@ -1507,7 +1507,7 @@
       "id": "PKG-T025",
       "milestone": "M2",
       "title": "Оборот казны, эмиссия и настоящие изъятия",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partially_implemented",
       "dependencies": [
         "PKG-T022",
         "PKG-T024"
@@ -1542,8 +1542,8 @@
       "source": "source-package/05_TASKS.json",
       "current_support": {
         "status": "partial",
-        "evidence": "Treasury и проводки существуют; единая новая политика эмиссии/изъятий/резервов ещё не внедрена.",
-        "runtime_verification": "not_run_this_assignment"
+        "evidence": "MONETARY_AUDIT_1_0.md / MONETARY_AUDIT_VERIFICATION_1_0.json: per-position reconciliation in existing world transaction, classified transfers/legacy issuance/withdrawals, atomic batch receipt and director aggregates. New monetary/obligation policy and A11 not complete.",
+        "runtime_verification": "709Domain and42distinct scoped API/boundary/migration scenarios passed across stages; initial own ID fixture failure corrected, final9validate current anchor observation. Isolated55to56 preserves23old tables; HTTP/restart retains4batches/7legs. New full CI required; policy/A11/T026/T054 remain open."
       }
     },
     {

@@ -49,6 +49,7 @@ public sealed class LedgerEntry
     public Guid Id { get; set; } = Guid.CreateVersion7();
     public Guid VillageId { get; set; }
     public Guid OperationId { get; set; }
+    public Guid? FinancialBatchId { get; set; }
     public Guid? AccountId { get; set; }
     public required string Operation { get; set; }
     public required string Asset { get; set; }

@@ -1,0 +1,39 @@
+{
+  "capturedAt": "2026-10-21T10:24:49.360534+00:00",
+  "worlds": 1,
+  "walletCoins": 77870,
+  "treasuryCoins": 8750,
+  "recordedLedgerNet": 86620,
+  "workFundsTableExists": false,
+  "supplyFundsTableExists": false,
+  "flows": [
+    {
+      "operation": "buy-stock",
+      "postings": 830,
+      "net": 0
+    },
+    {
+      "operation": "energy-drink",
+      "postings": 108,
+      "net": -32400
+    },
+    {
+      "operation": "exchange-burn",
+      "postings": 89,
+      "net": -8900
+    },
+    {
+      "operation": "trade",
+      "postings": 270,
+      "net": 0
+    },
+    {
+      "operation": "wage",
+      "postings": 9492,
+      "net": 127920
+    }
+  ],
+  "recordedHoldings": 86620,
+  "difference": 0,
+  "scope": "READ ONLY legacy deployed economy. Wallets/treasury only; no new funds/audit migration or calls. Aggregate equality does not prove per-person history or new1.0 policy."
+}
