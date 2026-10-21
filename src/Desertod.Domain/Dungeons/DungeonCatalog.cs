@@ -58,6 +58,9 @@ public sealed class DungeonDefinition
     /// <summary>Later floors of one expedition. Empty when this map is the whole run.</summary>
     public IReadOnlyList<DungeonDefinition> Floors { get; init; } = [];
 
+    /// <summary>Server-authored encounter enemies; older maps and checkpoints use the common catalog.</summary>
+    public IReadOnlyDictionary<EnemyKind,DungeonFoe> FoeDefinitions { get; init; } = new Dictionary<EnemyKind,DungeonFoe>();
+
     public int TotalFoes => Floors.Count > 0 ? Floors.Sum(floor => floor.Spawns.Count) : Spawns.Count;
 
     public DungeonTile TileAt(int x, int y) => Tiles[y * Width + x];

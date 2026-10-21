@@ -2,6 +2,7 @@ export type DungeonOrder =
   | { method: 'MoveTo'; args: [number, number] }
   | { method: 'Attack'; args: [number] }
   | { method: 'Heal'; args: [string] }
+  | { method: 'Retreat'; args: [] }
 
 /** One acknowledged order and at most one newer intent. Never replay old clicks after a reconnect. */
 export class DungeonOrders {

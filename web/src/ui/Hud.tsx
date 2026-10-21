@@ -107,6 +107,7 @@ export function BottomBar({
   remedies,
   onHeal,
   inCombat=false,
+  journeyBlocked=false,
 }: {
   citizen: Citizen | null | undefined
   catalog: Catalog
@@ -132,11 +133,12 @@ export function BottomBar({
   remedies: number
   onHeal: () => void
   inCombat?: boolean
+  journeyBlocked?: boolean
 }) {
   const { t } = useI18n()
   return (
     <div className="hud-bottom">
-      {!inCombat && <div className="hud-left">
+      {!inCombat&&!journeyBlocked && <div className="hud-left">
         {!tsar && citizen && !inCombat && (
           <CitizenNeeds
             citizen={citizen}

@@ -68,6 +68,7 @@ public sealed class SimulatedHero
     public bool Healed { get; set; }
     public EnemyKind? Killer { get; set; }
     public bool ExternallyWithdrawn { get; set; }
+    public bool RetreatRequested { get; set; }
 
     internal double Cooldown { get; set; }
     internal PathFollower Path { get; } = new();
@@ -160,7 +161,7 @@ public sealed partial class DungeonSimulation
     /// <summary>Walk to a spot; drops the target.</summary>
     public bool MoveTo(Guid heroId, double x, double y)
     {
-        if (Fighting(heroId) is not { } hero || !Dungeon.IsWalkable((int)Math.Floor(x), (int)Math.Floor(y)))
+        if (Fighting(heroId) is not { RetreatRequested:false } hero || !double.IsFinite(x)||!double.IsFinite(y)||!Dungeon.IsWalkable((int)Math.Floor(x), (int)Math.Floor(y)))
         {
             return false;
         }
@@ -175,7 +176,7 @@ public sealed partial class DungeonSimulation
     /// <summary>Pick a foe: the hero walks up to it and strikes until it falls.</summary>
     public bool Attack(Guid heroId, int foeId)
     {
-        if (Fighting(heroId) is not { } hero || foes.ElementAtOrDefault(foeId) is not { IsAlive: true })
+        if (Fighting(heroId) is not { RetreatRequested:false } hero || foes.ElementAtOrDefault(foeId) is not { IsAlive: true })
         {
             return false;
         }
@@ -190,7 +191,7 @@ public sealed partial class DungeonSimulation
     /// <summary>A healer tends an ally (or themselves) while the ally is hurt.</summary>
     public bool Heal(Guid healerId, Guid heroId)
     {
-        if (Fighting(healerId) is not { Fighter.CanHeal: true } healer || Fighting(heroId) is null)
+        if (Fighting(healerId) is not { Fighter.CanHeal: true,RetreatRequested:false } healer || Fighting(heroId) is null)
         {
             return false;
         }
@@ -210,6 +211,15 @@ public sealed partial class DungeonSimulation
         hero.Destination = null;
         hero.TargetFoe = null;
         hero.HealTarget = null;
+    }
+
+    /// <summary>A voluntary retreat walks to the entrance while the hero remains a valid enemy target.</summary>
+    public bool Retreat(Guid heroId)
+    {
+        if(IsOver||Fighting(heroId) is not {} hero)return false;
+        if(hero.RetreatRequested)return true;
+        hero.RetreatRequested=true;hero.Destination=null;hero.TargetFoe=null;hero.HealTarget=null;hero.Path.Clear();
+        return true;
     }
 
     /// <summary>Advances the fight; returns what happened, for the clients to show.</summary>
@@ -286,6 +296,17 @@ public sealed partial class DungeonSimulation
     private void ActHero(SimulatedHero hero, double seconds, Random random, List<DungeonEvent> events)
     {
         var speed = HeroClassCatalog.HeroSpeed * seconds;
+        if(hero.RetreatRequested)
+        {
+            var exit=Dungeon.Entrance;
+            Walk(hero.Path,exit.X,exit.Y,speed,p=>(hero.X,hero.Y)=p,(hero.X,hero.Y));
+            if(Distance(hero.X,hero.Y,exit.X,exit.Y)<=ExitReach)
+            {
+                hero.State=HeroState.Left;hero.ExternallyWithdrawn=true;
+                events.Add(new(DungeonEventKind.Left,hero.Id,null));
+            }
+            return;
+        }
         if (hero.HealTarget is { } allyId)
         {
             if (Fighting(allyId) is not { } ally)
@@ -554,7 +575,7 @@ public sealed partial class DungeonSimulation
         for (var spawnIndex = 0; spawnIndex < Dungeon.Spawns.Count; spawnIndex++)
         {
             var spawn = Dungeon.Spawns[spawnIndex];
-            var definition = DungeonCatalog.Foe(spawn.Kind);
+            var definition = Dungeon.FoeDefinitions.TryGetValue(spawn.Kind,out var local)?local:DungeonCatalog.Foe(spawn.Kind);
             foes.Add(new SimulatedFoe
             {
                 Id = spawnIndex,

@@ -275,6 +275,7 @@ export interface DungeonHeroSnapshot {
   y: number
   health: number
   state: HeroState
+  retreating?: boolean
   targetFoe: number | null
   healTarget: string | null
   arrows: number | null

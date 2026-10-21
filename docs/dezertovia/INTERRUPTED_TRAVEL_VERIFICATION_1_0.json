@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-21T00:57:46.312849+00:00",
+  "scope": "T033 geometry interruption and explicit resume; subsequent ambush/retreat code excluded",
+  "source_sha": "6b9c30b952f8f19e066f536c665103b492852efe",
+  "pull_request": "https://github.com/desertod666/Desertovia/pull/84",
+  "ci": {
+    "sha": "6b9c30b952f8f19e066f536c665103b492852efe",
+    "run": 39521895784,
+    "url": "https://github.com/desertod666/Desertovia/actions/runs/39521895784",
+    "conclusion": "success",
+    "jobs": {
+      "backend": {
+        "id": 118967443581,
+        "domain_passed": 628,
+        "api_passed": 355
+      },
+      "desktop": {
+        "id": 118967443546,
+        "passed": 190
+      },
+      "phone": {
+        "id": 118967443622,
+        "passed": 188,
+        "skipped": 2
+      },
+      "docker": {
+        "id": 118967443310,
+        "conclusion": "success"
+      },
+      "frontend": {
+        "id": 118967443630,
+        "conclusion": "success"
+      }
+    }
+  },
+  "migration": {
+    "before": {
+      "migrations": 49,
+      "citizens": 28,
+      "identities": "474d18dddbf469679512c4aac1eadbc8",
+      "wallets": "2e299df969545ba7d2c81a67e01da760",
+      "treasury": "ad951dbeb2306a11958141b44d14be29",
+      "lots": "d41d8cd98f00b204e9800998ecf8427e",
+      "work_orders": "d41d8cd98f00b204e9800998ecf8427e",
+      "fog_prefix": "c0cafb5dba9492f5db2919d677db6be8",
+      "trips": "c746cf057467c67883ba6c330b12fe74",
+      "fields": "1478838d9a4f16795521f030a06041d3"
+    },
+    "after": {
+      "migrations": 50,
+      "citizens": 28,
+      "identities": "474d18dddbf469679512c4aac1eadbc8",
+      "wallets": "2e299df969545ba7d2c81a67e01da760",
+      "treasury": "ad951dbeb2306a11958141b44d14be29",
+      "lots": "d41d8cd98f00b204e9800998ecf8427e",
+      "work_orders": "d41d8cd98f00b204e9800998ecf8427e",
+      "fog_prefix": "c0cafb5dba9492f5db2919d677db6be8",
+      "trips": "c746cf057467c67883ba6c330b12fe74",
+      "fields": "1478838d9a4f16795521f030a06041d3"
+    },
+    "same_compared_hashes": true,
+    "fog_scope": "1350-byte legacy prefix, not a claim that this helper compared all 2250 bytes",
+    "backup": "/tmp/foundation-before-restart-20261021T003315Z.dump"
+  },
+  "actual_ui": {
+    "phone_width": 320,
+    "desktop_width": 1280,
+    "stopped_position_survived_restart": true,
+    "same_trip_identity_and_waypoints": true,
+    "resumed_by_actual_ui": true,
+    "backup": "/tmp/foundation-before-restart-20261021T003611Z.dump",
+    "browser_errors": []
+  },
+  "public_release": false,
+  "whole_1_0_complete": false
+}

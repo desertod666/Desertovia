@@ -134,6 +134,13 @@ public static class CombatRules
     /// <param name="startedAt">When the cycle started: its daylight decides the danger.</param>
     public static FightReport? Ambush(Citizen citizen, Village village, DangerDefinition danger, Random random, DateTimeOffset startedAt, DateTimeOffset now)
     {
+        var enemy=SelectAmbush(village,danger,random,startedAt);
+        return enemy is null?null:Fight(citizen,enemy,random,now);
+    }
+
+    /// <summary>Selects a world encounter without resolving its fight, spending equipment or granting rewards.</summary>
+    public static EnemyDefinition? SelectAmbush(Village village,DangerDefinition danger,Random random,DateTimeOffset startedAt)
+    {
         if (IsPeaceful(village, startedAt) || danger.Enemies.Count == 0)
         {
             return null;
@@ -160,7 +167,7 @@ public static class CombatRules
             roll -= weight;
         }
 
-        return Fight(citizen, enemy, random, now);
+        return enemy;
     }
 
     /// <summary>One citizen against one enemy. Trains Guarding; the loot is for the caller to store.</summary>

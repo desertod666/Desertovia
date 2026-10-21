@@ -11,7 +11,7 @@ public sealed record DungeonHeroState(
     int? TargetFoe, Guid? HealTarget, TilePoint? Destination, int? Arrows,
     int Kills, int Experience, IReadOnlyDictionary<ResourceKind, int> Loot,
     IReadOnlyList<int> FoesHit, bool Healed, EnemyKind? Killer, bool ExternallyWithdrawn,
-    double Cooldown, DungeonPathState Path);
+    double Cooldown, DungeonPathState Path, bool RetreatRequested=false);
 public sealed record DungeonFoeState(
     int Id, DungeonFoe Definition, double X, double Y, double Health,
     Guid? Target, double Cooldown, DungeonPathState Path);
@@ -26,7 +26,7 @@ public sealed partial class DungeonSimulation
         heroes.Select(h => new DungeonHeroState(h.Fighter, h.X, h.Y, h.Health, h.State,
             h.TargetFoe, h.HealTarget, h.Destination, h.Arrows, h.Kills, h.Experience,
             new Dictionary<ResourceKind, int>(h.Loot), h.FoesHit.Order().ToArray(), h.Healed,
-            h.Killer, h.ExternallyWithdrawn, h.Cooldown, CapturePath(h.Path))).ToArray(),
+            h.Killer, h.ExternallyWithdrawn, h.Cooldown, CapturePath(h.Path),h.RetreatRequested)).ToArray(),
         foes.Select(f => new DungeonFoeState(f.Id, f.Definition, f.X, f.Y, f.Health,
             f.Target, f.Cooldown, CapturePath(f.Path))).ToArray());
 
@@ -60,7 +60,7 @@ public sealed partial class DungeonSimulation
                 Fighter = h.Fighter, X = h.X, Y = h.Y, Health = h.Health, State = h.State,
                 TargetFoe = h.TargetFoe, HealTarget = h.HealTarget, Destination = h.Destination,
                 Arrows = h.Arrows, Kills = h.Kills, Experience = h.Experience, Healed = h.Healed,
-                Killer = h.Killer, ExternallyWithdrawn = h.ExternallyWithdrawn, Cooldown = h.Cooldown,
+                Killer = h.Killer, ExternallyWithdrawn = h.ExternallyWithdrawn, Cooldown = h.Cooldown,RetreatRequested=h.RetreatRequested,
             };
             foreach (var pair in h.Loot) hero.Loot.Add(pair.Key, pair.Value);
             hero.FoesHit.UnionWith(h.FoesHit);

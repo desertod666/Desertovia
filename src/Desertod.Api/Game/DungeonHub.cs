@@ -17,9 +17,10 @@ public sealed class DungeonHub(DungeonRuntime runtime, GameService game) : Hub
     /// <summary>Starts sending snapshots of the run; returns its map and heroes, or null for an unknown run.</summary>
     public async Task<DungeonRunDto?> JoinRun(Guid runId)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, GroupName(runId));
         var accountId = Context.User?.GetAccountId();
         var stored = await game.GetDungeonRunAsync(runId, accountId, Context.ConnectionAborted);
+        if(stored is null)return null;
+        await Groups.AddToGroupAsync(Context.ConnectionId, GroupName(runId));
         if (stored is null || runtime.Find(runId) is not { } live)
         {
             return stored;
@@ -44,6 +45,8 @@ public sealed class DungeonHub(DungeonRuntime runtime, GameService game) : Hub
 
     public Task<bool> Heal(Guid runId, Guid heroId, Guid allyId) =>
         Act(runId, heroId, simulation => simulation.Heal(heroId, allyId));
+
+    public Task<bool> Retreat(Guid runId,Guid heroId)=>Act(runId,heroId,simulation=>simulation.Retreat(heroId));
 
     private async Task<bool> Act(Guid runId, Guid heroId, Func<DungeonSimulation, bool> intent)
     {

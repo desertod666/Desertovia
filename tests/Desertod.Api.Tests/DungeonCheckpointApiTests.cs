@@ -212,6 +212,49 @@ public sealed class DungeonCheckpointApiTests(DesertodApiFactory factory)
         Assert.Equal(0, s.Live.Save!.Revision);
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Voluntary_retreat_is_owned_durable_and_cannot_enter_safe_rest_before_reaching_the_exit(bool tsar)
+    {
+        var s=await Setup();var hero=s.Live.Simulation.Heroes.Single(h=>h.IsTsar==tsar);
+        var other=s.Live.Simulation.Heroes.Single(h=>h.IsTsar!=tsar);
+        var hub=new DungeonHub(s.Runtime,s.Game){Context=new Caller(hero.Fighter.AccountId)};
+        Assert.False(await hub.Retreat(s.Live.RunId,other.Id));
+        Assert.True(await hub.Retreat(s.Live.RunId,hero.Id));
+        Assert.Equal(1,s.Live.Save!.Revision);Assert.True(s.Live.Simulation.Hero(hero.Id)!.RetreatRequested);
+        Assert.True(DungeonMapper.Snapshot(s.Live.RunId,s.Live.Simulation,[]).Heroes.Single(h=>h.Id==hero.Id).Retreating);
+        var rejected=await Assert.ThrowsAsync<GameRuleException>(()=>s.Game.SetRestAsync(s.Live.Slug,hero.Fighter.AccountId,new(true),default));
+        Assert.Equal("rest.dungeonRequired",rejected.Code);
+        using var worker=Worker(s.Runtime);
+        for(var i=0;i<20&&s.Live.Simulation.Hero(hero.Id)!.State!=HeroState.Left;i++)await Tick(worker,s.Live);
+        Assert.Equal(HeroState.Left,s.Live.Simulation.Hero(hero.Id)!.State);
+        await using var db=await Contexts.CreateDbContextAsync();
+        var run=await db.DungeonRuns.AsNoTracking().SingleAsync(r=>r.Id==s.Live.RunId);
+        Assert.True(run.Heroes.Single(h=>h.AccountId==hero.Fighter.AccountId).Settled);
+        Assert.False(run.Heroes.Single(h=>h.AccountId==hero.Fighter.AccountId).KnockedOut);
+        await s.Game.SetRestAsync(s.Live.Slug,hero.Fighter.AccountId,new(true),default);
+        Assert.False(await hub.Retreat(s.Live.RunId,hero.Id));
+    }
+
+    [Fact]
+    public async Task A_failed_retreat_commit_does_not_change_the_live_hero_and_a_retry_survives_reload()
+    {
+        var s=await Setup();var hero=s.Live.Simulation.Heroes[1];
+        var hub=new DungeonHub(s.Runtime,s.Game){Context=new Caller(hero.Fighter.AccountId)};
+        var constraint=await RejectWrites(s.Live);
+        try
+        {
+            await Assert.ThrowsAsync<DbUpdateException>(()=>hub.Retreat(s.Live.RunId,hero.Id));
+            Assert.Equal(0,s.Live.Save!.Revision);Assert.False(s.Live.Simulation.Hero(hero.Id)!.RetreatRequested);
+        }
+        finally{await AllowWrites(constraint);}
+        Assert.True(await hub.Retreat(s.Live.RunId,hero.Id));
+        var restored=Assert.Single(await s.Game.RestoreDungeonsAsync(default),r=>r.RunId==s.Live.RunId);
+        Assert.True(DungeonSimulation.Restore(restored.Save!.Fight).Hero(hero.Id)!.RetreatRequested);
+        Assert.Equal(1,restored.Save.Revision);
+    }
+
     [Fact]
     public async Task Recovery_preserves_gathering_march_and_bad_save_but_returns_legacy_running_heroes_home()
     {
