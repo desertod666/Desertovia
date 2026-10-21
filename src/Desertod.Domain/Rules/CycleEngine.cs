@@ -237,6 +237,7 @@ public static class CycleEngine
         var walk = (repairYard ?? unloadYard) is { } yard ? WorldMap.Walk(WorldMap.Places[WorldMap.Camp], yard)
             : farmTargets.Count>0 ? FarmRules.Walk(village,task,now,citizen.CyclePrivateOutput ? citizen.AccountId : null,farmTargets)!.Value
             : Walk(citizen, village, task, spot, now);
+        if(citizen.Trip is {Waypoints.Count:>0} journey&&journey.ArrivesAt-now>walk)walk=journey.ArrivesAt-now;
         Begin(citizen, task.Id, work + walk, WorkEnergy.TaskCost(village, task, now), village, now, walk);
         citizen.CycleInputCostBasis = inputBasis;
         citizen.CycleFarmTargets=farmTargets;

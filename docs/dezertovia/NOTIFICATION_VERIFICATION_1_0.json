@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-20T23:39:39.539984+00:00",
+  "sha": "36a109272d3e61eda6e34b1ff88ce85289c52e53",
+  "run_id": 39513600818,
+  "url": "https://github.com/desertod666/Desertovia/actions/runs/39513600818",
+  "result": "success",
+  "jobs": {
+    "Backend tests": 118940312340,
+    "Frontend lint and build": 118940312658,
+    "Docker image": 118940312664,
+    "Browser tests (2/2)": 118940312671,
+    "Browser tests (1/2)": 118940312677
+  },
+  "test_summaries": {
+    "Backend tests": [
+      "Backend tests\tRun dotnet test Desertod.slnx -c Release --no-build --logger trx --results-directory TestResults\t2026-10-20T23:14:46.8804292Z Passed!  - Failed:     0, Passed:   608, Skipped:     0, Total:   608, Duration: 5 s - Desertod.Domain.Tests.dll (net10.0)",
+      "Backend tests\tRun dotnet test Desertod.slnx -c Release --no-build --logger trx --results-directory TestResults\t2026-10-20T23:16:53.0251530Z Passed!  - Failed:     0, Passed:   346, Skipped:     0, Total:   346, Duration: 2 m 11 s - Desertod.Api.Tests.dll (net10.0)"
+    ],
+    "Browser tests (2/2)": [
+      "Browser tests (2/2)\tUNKNOWN STEP\t2026-10-20T23:26:44.7607823Z   2 skipped",
+      "Browser tests (2/2)\tUNKNOWN STEP\t2026-10-20T23:26:44.7618252Z   179 passed (11.5m)"
+    ],
+    "Browser tests (1/2)": [
+      "Browser tests (1/2)\tUNKNOWN STEP\t2026-10-20T23:26:58.9656995Z   181 passed (11.6m)"
+    ]
+  },
+  "scope": "Account preferences and open-game browser notification delivery; closed-tab and group gate unfinished",
+  "public_release": false
+}

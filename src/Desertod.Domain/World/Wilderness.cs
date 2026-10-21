@@ -219,7 +219,7 @@ public static class Wilderness
         var seed = Seed(villageId.ToString());
         var random = new Random(unchecked((int)seed));
         var wilds = new Wilds();
-        var land = WorldMap.Land;
+        var land = WorldMap.LegacyLand;
 
         // The ravine cuts the land north of the camp from the west edge of the map to the river.
         var top = random.Next(-18, -13);

@@ -26,7 +26,8 @@ public sealed class WorldRouteApiTests(DesertodApiFactory factory)
         }
         foreach(var client in new[]{v.Tsar,a.Client}){
             var state=(await OkJsonAsync(await client.GetAsync(v.Path))).GetProperty("state");
-            var routes=state.GetProperty("worldRoutes");Assert.Equal(5,routes.GetArrayLength());
+            var routes=state.GetProperty("worldRoutes");Assert.Equal(7,routes.GetArrayLength());
+            Assert.Equal(2,state.GetProperty("mapVersion").GetInt32());Assert.Equal(150,state.GetProperty("mapArea").GetProperty("height").GetInt32());
             Assert.Equal(-19.5,routes.EnumerateArray().Single(r=>r.GetProperty("id").GetString()=="ridge-cave").GetProperty("destination").GetProperty("x").GetDouble());
             Assert.Equal(Convert.ToBase64String(fog),state.GetProperty("explored").GetString());
         }

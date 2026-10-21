@@ -54,7 +54,7 @@ public sealed class RaidNavigation
         this.village = village;
         this.pedestrian = pedestrian;
         seed = Wilderness.Seed(village.Id.ToString());
-        terrain=AuthoredTerrain.For(village.Id,village.Wilds);
+        terrain=RegionalTerrain.For(village.Id,village.Wilds);
         walls = village.Fortifications.ToDictionary(f => (f.X, f.Y));
         foreach (var plot in village.Structures.Where(s=>s.Kind!=BuildingKind.RopeBridge).Select(s => s.PlotId).Concat(village.Storages.Select(s => s.PlotId)).Concat(village.Sites.Select(s => s.PlotId)))
             if (WorldMap.PlotPosition(plot) is {} p)
@@ -67,7 +67,7 @@ public sealed class RaidNavigation
     {
         if (land.TryGetValue((x,y), out var valid)) return valid;
         // Raids use the kingdom's river bank. An enemy has no implicit swimming or closed-bridge permission.
-        valid = AuthoredTerrain.Inside(x,y) && (pedestrian || x + .5 < Wilderness.RiverWestBank(y,seed));
+        valid = RegionalTerrain.Inside(x,y) && (pedestrian || x + .5 < Wilderness.RiverWestBank(y,seed));
         if(valid)
         {
             var kind=terrain[AuthoredTerrain.Index(x,y)];

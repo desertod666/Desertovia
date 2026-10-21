@@ -1405,7 +1405,7 @@
       "id": "PKG-T023",
       "milestone": "M2",
       "title": "Рынок, заказы поставки и безопасный резерв",
-      "status": "implemented_supply_orders_and_sale_reserves_local_verified_full_acceptance_pending",
+      "status": "funded_supply_slice_full_ci_verified_broader_acceptance_pending",
       "dependencies": [
         "PKG-T020",
         "PKG-T021"
@@ -1721,7 +1721,7 @@
       "id": "PKG-T033",
       "milestone": "M3",
       "title": "Осмысленное расширение округи",
-      "status": "partial_district_atlas_locally_verified_territory_and_route_lifecycle_pending",
+      "status": "partial_extended_territories_saved_paths_local_verified_events_and_load_pending",
       "dependencies": [
         "PKG-T004",
         "PKG-T015"
@@ -1759,7 +1759,8 @@
       "source": "source-package/05_TASKS.json",
       "current_support": {
         "status": "partial",
-        "evidence": "WorldRoutes uses5 stable places/4 districts from existing terrain and shared seen bitmap; camera-only WorldAtlas integrated into Pixi map.595 Domain,2 API,4 UI+2 real-map cases. No area increase, expedition events, full navigation or load acceptance claimed."
+        "evidence": "TERRITORIES_1_0.md;120x150 world, preserved core/fog, two resource regions, server routes/JSON waypoints and mobile atlas. Dynamic events/gates and full group supply remain unfinished.",
+        "runtime_verification": "620 domain,8 focused API,18 client unit,16 browser checks; schema48→49 preserves25 citizens/economy/fields/old fog; real320px departure, API restart in transit,1280px arrival and saved return."
       }
     },
     {
@@ -2498,7 +2499,7 @@
       "id": "PKG-T064",
       "milestone": "M6",
       "title": "Настройки уведомлений и доступ по группе",
-      "status": "partial_browser_notifications_local_verified_closed_tab_and_group_pending",
+      "status": "partial_browser_notifications_full_ci_verified_closed_tab_and_group_pending",
       "dependencies": [
         "PKG-T014",
         "PKG-T015"
@@ -2535,7 +2536,7 @@
       "current_support": {
         "status": "partial",
         "evidence": "NOTIFICATIONS_1_0.md; account consent/categories/quiet hours, aggregation, stable event IDs and bounded device delivery. No closed-tab WebPush or group gate claimed.",
-        "runtime_verification": "10 focused API, 15 total client unit and 14 browser cases passed; schema47 to48 preserved25 citizens/economy/fields; real UI preferences survived process restart on another device context."
+        "runtime_verification": "10 focused API, 15 total client unit and 14 browser cases passed; schema47 to48 preserved25 citizens/economy/fields; real UI preferences survived process restart on another device context. Full CI on36a1092:608 domain,346 API,360 browser passed plus2 skipped; NOTIFICATION_VERIFICATION_1_0.json."
       },
       "farm_concept_integration": [
         "Созревший урожай только по согласию/настройкам, тихие часы, объединение грядок и отсутствие сообщения на каждый полив; нет обязательной серии заходов."

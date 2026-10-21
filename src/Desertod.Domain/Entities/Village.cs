@@ -225,7 +225,7 @@ public sealed class Village
 
         if (Explored.Length != Exploration.Size)
         {
-            Explored = Exploration.Camp();
+            Explored = Exploration.Upgrade(Explored);
             var plots = Storages.Select(s => s.PlotId).Concat(Structures.Select(s => s.PlotId)).Concat(Sites.Select(s => s.PlotId));
             foreach (var plotId in plots)
             {
@@ -259,7 +259,7 @@ public sealed class Village
         }
 
         BankAccess.Require(this, spot);
-        TsarTrip = Exploration.SetOut(Explored, TsarTrip, TsarSpot ?? WorldMap.Places[WorldMap.Camp], spot, now, Wilds?.Lookout);
+        TsarTrip = RegionalTravel.SetOut(this,TsarTrip,TsarSpot??WorldMap.Places[WorldMap.Camp],spot,now);
         TsarSpot = spot;
     }
 

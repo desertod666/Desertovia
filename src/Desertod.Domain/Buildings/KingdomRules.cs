@@ -30,9 +30,11 @@ public static class KingdomRules
     public static bool ClearGround(Village village, TileArea area)
     {
         var seed = Wilderness.Seed(village.Id.ToString());
+        var regional=area.Y+area.Height>WorldMap.LegacyLand.Y+WorldMap.LegacyLand.Height?RegionalTerrain.For(village.Id,village.Wilds):null;
         for (var x=area.X; x<area.X+area.Width; x++)
         for (var y=area.Y; y<area.Y+area.Height; y++)
         {
+            if(regional is not null&&RegionalTerrain.Inside(x,y)&&AuthoredTerrain.Blocked(regional[RegionalTerrain.Index(x,y)]))return false;
             if (Math.Abs(x+.5-Wilderness.RiverCenter(y,seed)) < 2) return false;
             if (village.Wilds?.Ravine.Any(r=>r.X==x && y>=r.Top && y<r.Top+r.Height)==true) return false;
             if (village.Wilds?.Obstacles.Any(o=>o.X==x && o.Y==y && Wilderness.Stands(o))==true) return false;

@@ -95,7 +95,9 @@ test('server collision fixtures still match the authored ponds, mountains and ma
   const cases=JSON.parse(readFileSync(new URL('./fixtures/authored-terrain.json',import.meta.url),'utf8')) as {seed:number;wilds:unknown;hash:string}[]
   for(const sample of cases){
     const mask=await page.evaluate(({seed,wilds})=>(window as unknown as {combatStand:Stand}).combatStand.terrain(seed,wilds),sample)
-    expect(createHash('sha256').update(Buffer.from(mask)).digest('hex')).toBe(sample.hash)
+    expect(mask).toHaveLength(18000)
+    // Historical golden hashes cover every original tile. The southern extension has independent full-tile vectors.
+    expect(createHash('sha256').update(Buffer.from(mask.slice(0,10800))).digest('hex')).toBe(sample.hash)
   }
 })
 
