@@ -42,6 +42,7 @@ public sealed partial class GameService
 
             var now = time.GetUtcNow();
             if(await HasPersonalEncounterAsync(db,village.Id,accountId,cancellationToken))throw new GameRuleException("dungeon.busy","Leave the current fight first.");
+            await RequireNoRaidActorAsync(db,village.Id,accountId,null,cancellationToken);
             var run = DungeonRules.Open(village, dungeonId, await TsarNameAsync(db, village, cancellationToken), Random.Shared.Next(), now);
             db.DungeonRuns.Add(run);
             await db.SaveChangesAsync(cancellationToken);
@@ -113,6 +114,7 @@ public sealed partial class GameService
             var village = await db.Villages.SingleAsync(v => v.Id == citizen.VillageId, cancellationToken);
             var run = await RequireGatheringAsync(db, village.Id, cancellationToken);
             var now = time.GetUtcNow();
+            await RequireNoRaidActorAsync(db,village.Id,accountId,citizen.Id,cancellationToken);
             DungeonRules.Join(run, village, citizen, heroClass, now);
             await db.SaveChangesAsync(cancellationToken);
             logger.CitizenActed(citizen.Id, slug, "joinDungeon", heroClass.ToString());
@@ -201,11 +203,12 @@ public sealed partial class GameService
             if (run.Phase == DungeonPhase.Gathering && run.GatheringEndsAt <= now)
             {
                 village.EnsureCamp(now);
-                DungeonRules.March(run, village, citizens, now);
                 var battles=await db.RaidBattles.Where(b=>b.VillageId==village.Id&&b.FinishedAt==null).ToListAsync(cancellationToken);
-                foreach(var battle in battles.Where(_=>run.Phase==DungeonPhase.Marching))
-                    foreach(var fighter in battle.Fighters.Where(f=>f.IsTsar&&f.AccountId==village.OwnerAccountId))
-                    {fighter.Active=false;fighter.TargetUnitId=null;fighter.DestinationX=null;fighter.DestinationY=null;battle.Revision++;}
+                var identities=await db.Citizens.Where(c=>c.VillageId==village.Id).Select(c=>new{c.Id,c.AccountId}).ToListAsync(cancellationToken);
+                var busy=battles.SelectMany(b=>b.Fighters).Where(f=>f.Active&&f.Health>0)
+                    .Select(f=>f.IsTsar?f.AccountId:identities.FirstOrDefault(c=>c.Id==f.CitizenId)?.AccountId)
+                    .Where(id=>id is not null).Select(id=>id!.Value).ToHashSet();
+                DungeonRules.March(run, village, citizens, now,busy);
 
             }
             else if (run.Phase == DungeonPhase.Marching && run.MarchEndsAt <= now)

@@ -78,12 +78,17 @@ public sealed partial class GameService
                 throw new GameRuleException("raid.queued","Wait for the current wave before issuing orders to the next one.");
             if(order.TargetUnitId is {} target && !battle.Units.Any(u=>u.Id==target&&u.Alive))
                 throw new GameRuleException("raid.targetGone","This enemy is no longer available.");
+            if(order.Mode is not ("heal" or "retreat")&&queue.Any(b=>b.Id!=battle.Id&&b.Fighters.Any(f=>f.Active&&f.Health>0&&IsActor(f,actor,citizen?.Id))))
+                throw new GameRuleException("raid.queued","Retreat from the current battle before joining another one.");
+            if(order.Mode!="retreat")await RequireNoDungeonActorAsync(db,villageId,actor,ct);
+            var ownFighter=battle.Fighters.Where(f=>IsActor(f,actor,citizen?.Id))
+                .OrderByDescending(f=>f.Active&&f.Health>0&&!f.Wounded&&f.Mode!="withdrawn").ThenByDescending(f=>f.IsTsar).FirstOrDefault();
             if(order.Mode is "heal" or "retreat")
             {
                 if(battle.Phase=="Warning")throw new GameRuleException("battle.notActive","The battle has not started.");
-                var own=battle.Fighters.SingleOrDefault(f=>tsar?f.IsTsar&&f.AccountId==actor:!f.IsTsar&&f.CitizenId==citizen!.Id)
+                var own=ownFighter
                     ??throw new GameRuleException("battle.notActive","You are not actively fighting.");
-                if(order.Mode=="heal") { if(BattleActions.Heal(village,tsar?null:citizen,own,order.RequestId??Guid.Empty,now))battle.RemediesUsed++; }
+                if(order.Mode=="heal") { if(BattleActions.Heal(village,own.IsTsar?null:citizen,own,order.RequestId??Guid.Empty,now))battle.RemediesUsed++; }
                 else BattleActions.Retreat(battle,own,new RaidNavigation(village));
                 battle.Revision++;db.AuditActor=actor;db.AuditOperation="battle-"+order.Mode;
                 await db.SaveChangesAsync(ct);changes.Mark(villageId);
@@ -100,12 +105,9 @@ public sealed partial class GameService
             {
                 if(village.TsarInjuredUntil>now)throw new GameRuleException("defense.wounded","The Tsar is recovering.");
                 if(citizen is not null && (citizen.DungeonRunId is not null || CombatRules.IsInjured(citizen,now)
-                    ||citizen.ExhaustedUntil>now || !citizen.CycleSettled))
+                    ||citizen.ExhaustedUntil>now || !citizen.CycleSettled&&ownFighter is null))
                     throw new GameRuleException("defense.busy","Finish the current work or recovery first.");
-                var runs=await db.DungeonRuns.Where(r=>r.VillageId==villageId&&r.Phase!=DungeonPhase.Ended).ToListAsync(ct);
-                if(runs.Any(r=>r.Heroes.Any(h=>h.AccountId==actor&&!h.Settled)))
-                    throw new GameRuleException("dungeon.busy","Return from the dungeon first.");
-                fighter=battle.Fighters.SingleOrDefault(f=>f.IsTsar&&f.AccountId==actor);
+                fighter=ownFighter;
                 if(fighter is null)
                 {
                     var p=nav.NearestFree(village.TsarTrip?.PositionAt(now)??village.TsarSpot??WorldMap.Places[WorldMap.Camp]);
@@ -113,7 +115,6 @@ public sealed partial class GameService
                         MaximumHealth=HeroClassCatalog.VoivodeHealth,Guard=false,Active=true,NextAttackAt=now.AddSeconds(1)};
                     battle.Fighters.Add(fighter);village.TsarTrip=null;village.TsarSpot=p;
                 }
-                if(citizen is not null)foreach(var duplicate in battle.Fighters.Where(f=>!f.IsTsar&&f.CitizenId==citizen.Id))duplicate.Active=false;
             }
             else
             {

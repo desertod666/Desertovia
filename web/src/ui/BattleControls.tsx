@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react'
 import { api, type Catalog, type Citizen, type RaidBattle, type RaidUnit, type VillageState } from '../api'
 import { useI18n } from '../i18n'
+import { actorFighter } from '../game/battleActor'
 
 export function BattleControls({ village, battle, unit, citizen, tsar=false, accountId, onClose, selectionToken=0, issuedOrder }: {
   village: VillageState; battle: RaidBattle; unit: RaidUnit; citizen: Citizen | null | undefined;
@@ -11,7 +12,7 @@ export function BattleControls({ village, battle, unit, citizen, tsar=false, acc
   const [busy,setBusy]=useState(false),[error,setError]=useState('')
   const [now,setNow]=useState(()=>Date.now())
   useEffect(()=>{const timer=window.setInterval(()=>setNow(Date.now()),1000);return()=>window.clearInterval(timer)},[])
-  const fighter=battle.fighters.find(f=>tsar?f.isTsar&&f.accountId===accountId:!f.isTsar&&f.citizenId===citizen?.id)
+  const fighter=actorFighter(battle.fighters,accountId,citizen?.id)
   const alive=unit.health>0&&!unit.exitedAt&&!battle.finishedAt
   const recovering=tsar&&!!village.tsar.injuredUntil&&Date.parse(village.tsar.injuredUntil)>now
   const canOrder=(tsar||!!citizen)&&alive&&!recovering&&(!fighter||fighter.health>0)

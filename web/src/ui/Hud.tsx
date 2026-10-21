@@ -13,6 +13,7 @@ import { resourceHint } from './resourceHint'
 import { HUD_RESOURCES } from './texts'
 import { WeatherChip } from './WeatherChip'
 import { NavIcon } from './NavIcon'
+import {actorFighter} from '../game/battleActor'
 
 export function TopBar({
   village,
@@ -23,6 +24,7 @@ export function TopBar({
   wallet,
   rest,
   accountId,
+  actorCitizenId,
 }: {
   village: VillageState
   catalog: Catalog
@@ -30,13 +32,14 @@ export function TopBar({
   citizens: Map<string, CitizenSummary>
   onForecast: (rain: boolean) => Promise<void>
   accountId?:string
+  actorCitizenId?:string
   wallet?: ReactNode
   rest?: ReactNode
 }) {
   const i18n = useI18n()
   const { t } = i18n
   const energy = useEnergy(citizen)
-  const fighter=village.battles?.filter(b=>!b.finishedAt&&b.phase!=='Warning').flatMap(b=>b.fighters).find(f=>f.isTsar?f.accountId===accountId:f.citizenId===citizen?.id)
+  const fighter=actorFighter(village.battles?.filter(b=>!b.finishedAt&&b.phase!=='Warning').flatMap(b=>b.fighters)??[],accountId,actorCitizenId??citizen?.id)
   const ru=i18n.language==='ru'
   return (
     <div className="hud-top">

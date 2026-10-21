@@ -24,7 +24,7 @@ public static class RaidSimulation
     private static double WallDamage(RaidBattle battle)=>battle.Damage.Where(d=>d.PlotId.StartsWith("wall:",StringComparison.Ordinal)).Sum(d=>d.Amount);
 
     public static bool Tick(Village village,Raid raid,RaidBattle battle,IReadOnlyList<Citizen> people,
-        IReadOnlySet<Guid> online,DateTimeOffset now,Action<RaidTickMetrics>? observe=null)
+        IReadOnlySet<Guid> online,DateTimeOffset now,Action<RaidTickMetrics>? observe=null,IReadOnlySet<Guid>? reservedAccounts=null)
     {
         if(battle.FinishedAt is not null || now < battle.StartsAt || now <= battle.LastTickAt)return false;
         var measuredAt=Stopwatch.GetTimestamp();
@@ -50,7 +50,7 @@ public static class RaidSimulation
         for(var step=0;step<steps;step++)
         {
             var at=battle.LastTickAt+Step;
-            Join(village,battle,people,online,at,nav);
+            Join(village,battle,people,online,at,nav,reservedAccounts);
             if(battle.Phase=="Warning")
             {battle.Phase="Approaching";battle.Event("arrived",battle.Sector,at);foreach(var u in battle.Units)u.State="Approaching";}
             var living=battle.Units.Count(u=>u.Alive);
@@ -92,14 +92,14 @@ public static class RaidSimulation
         && c.Recovery?.Available!=false && c.DungeonRunId is null;
 
     private static void Join(Village village,RaidBattle battle,IReadOnlyList<Citizen> people,IReadOnlySet<Guid> online,
-        DateTimeOffset at,RaidNavigation nav)
+        DateTimeOffset at,RaidNavigation nav,IReadOnlySet<Guid>? reservedAccounts)
     {
         foreach(var c in people)
         {
             if (battle.Fighters.Any(f => f.IsTsar && f.AccountId == c.AccountId)) continue;
             var position=c.RescueJourney is {CompletedAt:null} rescue?rescue.PositionAt(at)
                 :c.Trip?.PositionAt(at)??c.Spot??c.IdleSpot??WorldMap.Places[WorldMap.Camp];
-            var inDanger=online.Contains(c.Id)&&CanFight(c,at)&&battle.Units.Any(u=>u.Alive&&u.Position.DistanceTo(position)<4);
+            var inDanger=reservedAccounts?.Contains(c.AccountId)!=true&&online.Contains(c.Id)&&CanFight(c,at)&&battle.Units.Any(u=>u.Alive&&u.Position.DistanceTo(position)<4);
             var existing=battle.Fighters.SingleOrDefault(f=>f.CitizenId==c.Id);
             if(existing is not null)
             {
