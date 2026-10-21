@@ -1673,7 +1673,7 @@
       }
     }
   },
-  "next_independent_work": "First repair downgrade-test isolation found in PR90 CI; then common royal dungeon body/class/equipment, preserve old saves. Graphic redesign last.",
+  "next_independent_work": "Add common saved royal body, ordinary combat class/equipment and one settlement to NEW dungeon runs. Preserve old Voivode80/8, admitted source, checkpoint and reserved gear on cancellation/missing departure. Party/loot require pending owner choices; graphic redesign last per D109.",
   "combat_actor_admission": {
     "schema_version": 1,
     "recorded_at_utc": "2026-10-21T04:02:01.869805+00:00",
@@ -1796,7 +1796,7 @@
   },
   "mortal_royal_raid": {
     "schema_version": 1,
-    "recorded_at_utc": "2026-10-21T05:10:57.809402+00:00",
+    "recorded_at_utc": "2026-10-21T05:21:34.493903+00:00",
     "scope": "Common mortal royal/resident body in new raids; dungeon Voivode profile and full A14 unfinished",
     "source_base": "2999073440198d86e348d7acc5bca3c36dbee238",
     "domain": {
@@ -1936,18 +1936,23 @@
       "src/Desertod.Domain/Dungeons/DungeonRules.cs": "aa084ead6db34de7921beeab8826302002bb689e5fd2bf06b6a8208d43c2b6bd"
     },
     "candidate_ci": {
-      "sha": "d8df65d61677fb54a29021daf2e28692319bd92e",
+      "status": "pending",
       "pr": "https://github.com/desertod666/Desertovia/pull/90",
-      "run": 39548135422,
-      "status": "in_progress_with_backend_failure",
-      "domain_passed": 672,
-      "api_passed": 374,
-      "api_failed": 12,
-      "backend_job": 119050880272,
-      "reason": "Existing downgrade tests undo later migration52 before reaching an older expected guard. Work encounter test leaves shared fixture schema missing RoyalCombat; regional isolated test queries current model after old-schema rollback. Fix test isolation/reapply, do not weaken data guards.",
-      "frontend": "success",
-      "docker": "success",
-      "browser": "still running at observation; no success claim"
+      "previous_run": 39548135422,
+      "previous_sha": "d8df65d61677fb54a29021daf2e28692319bd92e",
+      "previous_backend": {
+        "job": 119050880272,
+        "domain_passed": 672,
+        "api_passed": 374,
+        "api_failed": 12,
+        "cause": "Old work-encounter downgrade used the shared API database and removed newer columns before its older guard. Subsequent requests failed500. Isolated regional downgrade queried a full current entity after partially undoing newer migrations."
+      },
+      "previous_frontend": "success",
+      "previous_docker": "success",
+      "previous_browser": "not complete when correction prepared",
+      "sha": "8a6871df54c6241470593fd3caf74982abbe03ef",
+      "run": 39549109973,
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39549109973"
     },
     "public_release": false,
     "remaining": [
@@ -1958,7 +1963,23 @@
     ],
     "rescue_boundary": "Remedy cancels the real carrier at its actual position, after medicine validation and before clearing the claim; no delivery renown. Failed remedy preserves the route/claim. Replayed HTTP request spends once.",
     "native_care_boundary": "Dungeon departure refreshes expired native hospital admission without requiring a preceding GET; role does not keep a healed body permanently down.",
-    "runtime_scope": "PR90/d8df65d source loaded on local API5180; no new migration (52 already current). Read-only actual320px profile check passed, unchanged profile/no page errors. New group checkpoint metadata correction is tested in isolated host and not loaded here yet."
+    "runtime_scope": "Product d8df65d loaded in shared synthetic API5180 after backup /tmp/foundation-before-restart-20261021T051137Z.dump; schema52 unchanged. Read-only actual320px profile check passed. This correction changes tests only. Public game untouched.",
+    "downgrade_fixture_correction": {
+      "scope": "tests only; data-loss guards and product migration unchanged",
+      "changes": [
+        "Work encounter rollback uses its own API database and always reapplies latest schema before disposal",
+        "Regional guard reads only the protected fog column on old schema, then always reapplies latest schema",
+        "Both check latest migration list restored; work encounter test also verifies shared API schema and query remain intact"
+      ],
+      "local_api_passed": 5,
+      "local_api_failed": 0,
+      "result": "TestResults/mortal-royal-ci-isolation/Admin_DESKTOP-FQ85FTD_2026-10-21_07_19_33_net10.0.trx",
+      "cases": "Both guard tests plus previously failing legacy-work, market-stock and renewal tests",
+      "source_sha256": {
+        "tests/Desertod.Api.Tests/WorkEncounterApiTests.cs": "5dadd45a9de7d392e0597db168456ae80198dae4d632dfbdd4692896cc19197a",
+        "tests/Desertod.Api.Tests/RegionalTravelApiTests.cs": "ee04faabc82b8e85f1f6c989cb4f039e5fb623341a5c79978548a0a9c9ef71b8"
+      }
+    }
   },
   "owner_visual_boundary": {
     "decision": "D-108",
@@ -2019,6 +2040,7 @@
       "Common royal dungeon body/class/equipment and legacy versioning",
       "Full exact candidate CI",
       "Broader1.0 DAG; graphic redesign last per D109"
-    ]
+    ],
+    "parent_test_fix": "Merged PR90/8a6871d:5 isolated downgrade/regression API PASS; no production-code change.10 checkpoint API result still applies to unchanged product files."
   }
 }
