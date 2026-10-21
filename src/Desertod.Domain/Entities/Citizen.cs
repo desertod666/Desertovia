@@ -328,9 +328,9 @@ public sealed class Citizen
     }
 
     /// <summary>Starts a walk from where the citizen stands: their idle spot, or the camp.</summary>
-    public void SetOut(TilePoint to, Village village, DateTimeOffset now)
+    public void SetOut(TilePoint to, Village village, DateTimeOffset now, bool approach = false, bool waitIfBlocked = false)
     {
-        Trip = RegionalTravel.SetOut(village,Trip,IdleSpot??WorldMap.Places[WorldMap.Camp],to,now);
+        Trip = RegionalTravel.SetOut(village,Trip,IdleSpot??WorldMap.Places[WorldMap.Camp],to,now,approach,waitIfBlocked);
         Trip.SpeedMultiplier = MedicalWalk(now);
         if(Trip.Waypoints.Count>0)Trip.RouteEndsAt=Trip.ArrivesAt;
     }

@@ -44,6 +44,7 @@ public static class DungeonRules
     {
         SafeRest.RequireActive(village.TsarRestState);
         var dungeon = DungeonCatalog.Get(dungeonId);
+        if(RegionalTravel.WesternExit(village) is null)throw new GameRuleException("spot.noPath","There is no open route to the dungeon departure.");
         return new DungeonRun
         {
             VillageId = village.Id,
@@ -171,6 +172,11 @@ public static class DungeonRules
     {
         var latest = now;
         var anyone = false;
+        if(RegionalTravel.WesternExit(village) is not {} destination)
+        {
+            Cancel(run,village,citizens,now);
+            return;
+        }
         foreach (var citizen in citizens)
         {
             if (run.Hero(citizen.Id) is not { } hero)
@@ -186,8 +192,13 @@ public static class DungeonRules
                 continue;
             }
 
-            citizen.SetOut(MarchSpot, village, now);
-            citizen.IdleSpot = MarchSpot;
+            try{citizen.SetOut(destination,village,now);}
+            catch(GameRuleException e) when(e.Code is "spot.noPath" or "bridge.closed")
+            {
+                ReturnGear(citizen,village,hero);run.Heroes.Remove(hero);citizen.DungeonRunId=null;
+                continue;
+            }
+            citizen.IdleSpot = destination;
             hero.ArrivesAt = citizen.Trip!.ArrivesAt;
             latest = Max(latest, hero.ArrivesAt.Value);
             anyone = true;
@@ -199,10 +210,13 @@ public static class DungeonRules
         }
         else
         {
-            village.TsarGoTo(MarchSpot, now);
-            run.Tsar.ArrivesAt = village.TsarTrip!.ArrivesAt;
-            latest = Max(latest, run.Tsar.ArrivesAt.Value);
-            anyone = true;
+            try
+            {
+                village.TsarGoTo(destination,now);
+                run.Tsar.ArrivesAt=village.TsarTrip!.ArrivesAt;
+                latest=Max(latest,run.Tsar.ArrivesAt.Value);anyone=true;
+            }
+            catch(GameRuleException e) when(e.Code is "spot.noPath" or "bridge.closed"){run.Tsar.Settled=true;}
         }
 
         if (!anyone)
@@ -223,6 +237,35 @@ public static class DungeonRules
         && !HospitalRules.IsAdmitted(citizen, now)
         && citizen.RecoveryPausedAt is null
         && !(citizen.ExhaustedUntil > now);
+
+    /// <summary>Only heroes who really reached the departure may enter the scene after the bounded march.</summary>
+    public static bool CompleteMarch(DungeonRun run,Village village,IEnumerable<Citizen> citizens,DateTimeOffset now)
+    {
+        static bool Arrived(Trip? trip,DateTimeOffset at)=>trip is null||!trip.Waiting(at)&&trip.ArrivesAt<=at;
+        var present=new HashSet<Guid>();
+        foreach(var citizen in citizens)
+        {
+            present.Add(citizen.Id);
+            if(run.Hero(citizen.Id) is not {Settled:false} hero)continue;
+            var ready=CanMarch(citizen,now);
+            if(ready&&Arrived(citizen.Trip,now))continue;
+            ReturnGear(citizen,village,hero);run.Heroes.Remove(hero);citizen.DungeonRunId=null;
+            if(ready){citizen.SetOut(WorldMap.Places[WorldMap.Camp],village,now,waitIfBlocked:true);citizen.IdleSpot=null;}
+            else
+            {
+                citizen.IdleSpot=citizen.Trip?.PositionAt(now)??citizen.IdleSpot;citizen.Spot=citizen.IdleSpot;citizen.Trip=null;
+            }
+        }
+        foreach(var missing in run.Heroes.Where(h=>!h.IsTsar&&h.CitizenId is {} id&&!present.Contains(id)))missing.Settled=true;
+        if(!run.Tsar.Settled&&(TsarIsDown(village,now)||!Arrived(village.TsarTrip,now)))
+        {
+            run.Tsar.Settled=true;
+            if(!TsarIsDown(village,now))village.TsarGoTo(WorldMap.Places[WorldMap.Camp],now,waitIfBlocked:true);
+            else{village.TsarSpot=village.TsarTrip?.PositionAt(now)??village.TsarSpot;village.TsarTrip=null;}
+        }
+        if(run.Heroes.Any(h=>!h.Settled))return true;
+        Finish(run,DungeonOutcome.Abandoned,0,now);return false;
+    }
 
     private static bool TsarIsDown(Village village, DateTimeOffset now) =>
         village.TsarInjuredUntil > now || village.TsarHospitalizedAt is not null;
@@ -262,7 +305,7 @@ public static class DungeonRules
             }
             else
             {
-                village.TsarGoTo(WorldMap.Places[WorldMap.Camp], now);
+                village.TsarGoTo(WorldMap.Places[WorldMap.Camp], now, waitIfBlocked:true);
             }
 
             return;
@@ -319,7 +362,7 @@ public static class DungeonRules
         }
         else
         {
-            citizen.SetOut(WorldMap.Places[WorldMap.Camp], village, now);
+            citizen.SetOut(WorldMap.Places[WorldMap.Camp], village, now, waitIfBlocked:true);
             citizen.IdleSpot = null;
         }
     }
@@ -386,7 +429,7 @@ public static class DungeonRules
             citizen.DungeonRunId = null;
             if (run.Phase != DungeonPhase.Gathering)
             {
-                citizen.SetOut(WorldMap.Places[WorldMap.Camp], village, now);
+                citizen.SetOut(WorldMap.Places[WorldMap.Camp], village, now, waitIfBlocked:true);
                 citizen.IdleSpot = null;
             }
 
@@ -395,7 +438,7 @@ public static class DungeonRules
 
         if (run.Phase != DungeonPhase.Gathering)
         {
-            village.TsarGoTo(WorldMap.Places[WorldMap.Camp], now);
+            village.TsarGoTo(WorldMap.Places[WorldMap.Camp], now, waitIfBlocked:true);
         }
 
         run.Tsar.Settled = true;

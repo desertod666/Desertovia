@@ -3,27 +3,82 @@ using Desertod.Domain.Entities;
 
 namespace Desertod.Domain.World;
 
-/// <summary>Authoritative paths for journeys involving the expanded land. Legacy accepted trips keep their timing.</summary>
+/// <summary>Authoritative paths for new journeys across the whole land. Legacy accepted trips keep their timing.</summary>
 public static class RegionalTravel
 {
-    public static Trip SetOut(Village village,Trip? previous,TilePoint resting,TilePoint to,DateTimeOffset now)
+    public static Trip SetOut(Village village,Trip? previous,TilePoint resting,TilePoint to,DateTimeOffset now,bool approach=false,bool waitIfBlocked=false)
     {
-        if(!double.IsFinite(to.X)||!double.IsFinite(to.Y))throw new GameRuleException("spot.outsideLand","This spot is beyond the land.");
         var from=previous?.PositionAt(now)??resting;
-        if(!RegionalTerrain.NewLand(from)&&!RegionalTerrain.NewLand(to)&&previous?.Waypoints.Count is not >0)
+        if(!double.IsFinite(to.X)||!double.IsFinite(to.Y)||!double.IsFinite(from.X)||!double.IsFinite(from.Y)
+            ||!WorldMap.Land.Contains(to.ToTile())||!WorldMap.Land.Contains(from.ToTile()))
+            throw new GameRuleException("spot.outsideLand","This spot is beyond the land.");
+        Trip trip;
+        try
         {
-            BankAccess.Require(village,to);
-            return Exploration.SetOut(village.Explored,previous,resting,to,now,village.Wilds?.Lookout);
+            var way=approach?FindApproach(village,from,to):Find(village,from,to);
+            trip=Trip.Start(from,way[^1].Point,now);trip.Waypoints=way;
         }
-        var way=Find(village,from,to);
-        var trip=Trip.Start(from,to,now);trip.Waypoints=way;trip.RouteEndsAt=trip.ArrivesAt;
+        catch(GameRuleException e) when(waitIfBlocked && (e.Code is "spot.noPath" or "bridge.closed"))
+        {
+            // An already earned dungeon outcome cannot be rolled back by a closed road.
+            // Keep only the occupied point: no imaginary walk through the barrier.
+            trip=Trip.Start(from,to,now);trip.Waypoints=[new(){X=from.X,Y=from.Y}];
+            trip.BlockedAt=now;trip.BlockReason=e.Code=="bridge.closed"?"bridge":"path";
+        }
+        trip.RouteEndsAt=trip.ArrivesAt;
         if(previous is not null)Exploration.Reveal(village.Explored,previous,now,village.Wilds?.Lookout);
         return trip;
     }
 
-    public static List<TripWaypoint> Find(Village village,TilePoint from,TilePoint to)
+    /// <summary>Nearest reachable west-edge departure, found in one bounded flood fill rather than repeated path searches.</summary>
+    public static TilePoint? WesternExit(Village village)
     {
-        if(!WorldMap.Land.Contains(from.ToTile())||!WorldMap.Land.Contains(to.ToTile()))throw new GameRuleException("spot.outsideLand","This spot is beyond the land.");
+        var nav=new RaidNavigation(village,true);var camp=WorldMap.Places[WorldMap.Camp];
+        var sx=(int)Math.Floor(camp.X);var sy=(int)Math.Floor(camp.Y);
+        if(!nav.Pass(sx,sy))return null;
+        var land=WorldMap.Land;var seen=new bool[land.Width*land.Height];var queue=new Queue<int>();
+        var start=RegionalTerrain.Index(sx,sy);seen[start]=true;queue.Enqueue(start);
+        while(queue.TryDequeue(out var node))
+        {
+            var x=node%land.Width+land.X;var y=node/land.Width+land.Y;
+            foreach(var (dx,dy) in new[]{(1,0),(-1,0),(0,1),(0,-1)})
+            {
+                var nx=x+dx;var ny=y+dy;if(!nav.Pass(nx,ny))continue;
+                var next=RegionalTerrain.Index(nx,ny);if(seen[next])continue;
+                seen[next]=true;queue.Enqueue(next);
+            }
+        }
+        for(var distance=0;distance<land.Height;distance++)
+            foreach(var y in new[]{sy-distance,sy+distance})
+                if(y>=land.Y&&y<land.Y+land.Height&&seen[RegionalTerrain.Index(land.X,y)])return new(land.X+.5,y+.5);
+        return null;
+    }
+
+    public static List<TripWaypoint> Find(Village village,TilePoint from,TilePoint to) =>
+        Find(village,from,to,new RaidNavigation(village,pedestrian:true),RegionalTerrain.For(village.Id,village.Wilds));
+
+    /// <summary>Obstacle clearing and pier work stop on reachable ground within arm's reach of their blocked work tile.</summary>
+    private static List<TripWaypoint> FindApproach(Village village,TilePoint from,TilePoint target)
+    {
+        var nav=new RaidNavigation(village,pedestrian:true);var terrain=RegionalTerrain.For(village.Id,village.Wilds);
+        if(nav.Pass((int)Math.Floor(target.X),(int)Math.Floor(target.Y)))return Find(village,from,target,nav,terrain);
+        var candidates=new List<TilePoint>();
+        for(var y=(int)Math.Floor(target.Y)-2;y<=(int)Math.Floor(target.Y)+2;y++)
+        for(var x=(int)Math.Floor(target.X)-2;x<=(int)Math.Floor(target.X)+2;x++)
+        {
+            var point=new TilePoint(x+.5,y+.5);
+            if(nav.Pass(x,y)&&point.DistanceTo(target)<=1.5)candidates.Add(point);
+        }
+        foreach(var point in candidates.OrderBy(p=>p.DistanceTo(target)).ThenBy(p=>p.DistanceTo(from)).ThenBy(p=>p.Y).ThenBy(p=>p.X))
+            try{return Find(village,from,point,nav,terrain);}
+            catch(GameRuleException e) when(e.Code is "spot.noPath" or "bridge.closed"){}
+        throw NoPath();
+    }
+
+    private static List<TripWaypoint> Find(Village village,TilePoint from,TilePoint to,RaidNavigation nav,byte[] terrain)
+    {
+        if(!double.IsFinite(from.X)||!double.IsFinite(from.Y)||!double.IsFinite(to.X)||!double.IsFinite(to.Y)
+            ||!WorldMap.Land.Contains(from.ToTile())||!WorldMap.Land.Contains(to.ToTile()))throw new GameRuleException("spot.outsideLand","This spot is beyond the land.");
         // Someone already on the far bank can still move there after a bridge loss.
         // Crossing the river is decided by the actual deck geometry, not destination-bank permission alone.
         if(!village.BridgeOpened||village.BridgeRuinedAt is not null)
@@ -32,7 +87,6 @@ public static class RegionalTravel
             if((from.X>Wilderness.RiverCenter((int)Math.Floor(from.Y),seed))!=(to.X>Wilderness.RiverCenter((int)Math.Floor(to.Y),seed)))
                 throw new GameRuleException("bridge.closed","Build the Tsar Bridge before crossing the river.");
         }
-        var nav=new RaidNavigation(village,pedestrian:true);var terrain=RegionalTerrain.For(village.Id,village.Wilds);
         var land=WorldMap.Land;
         var sx=(int)Math.Floor(from.X);var sy=(int)Math.Floor(from.Y);var tx=(int)Math.Floor(to.X);var ty=(int)Math.Floor(to.Y);
         if(!nav.Pass(tx,ty))throw NoPath();
