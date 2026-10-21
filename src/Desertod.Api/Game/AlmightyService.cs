@@ -49,7 +49,7 @@ public sealed class AlmightyBridge(IServiceScopeFactory scopes) : IAlmightyBridg
     public Task<SramoslavReply?> SpeakAsync(object request, CancellationToken ct) => Call<SramoslavReply>(request, ct);
 }
 
-/// <summary>One director, one persisted mind per world. World effects require the owner's decision.</summary>
+/// <summary>One persisted director per world; bounded economic delegation is separate from event approval.</summary>
 public sealed class AlmightyService(GameService game, IDbContextFactory<DesertodDbContext> factory,
     IAlmightyBridge bridge, IConfiguration config, TimeProvider time, ILogger<AlmightyService> logger)
 {
@@ -77,7 +77,9 @@ public sealed class AlmightyService(GameService game, IDbContextFactory<Desertod
             await db.AlmightyProposals.Where(p => p.VillageId == id && p.NoticeState == "Sending" && p.CreatedAt < now.AddMinutes(-2)).ExecuteUpdateAsync(s => s.SetProperty(p => p.NoticeState, "Unknown"), ct);
             await db.AlmightyProposals.Where(p => p.VillageId == id && p.Status == "Pending" && p.ExpiresAt <= now).ExecuteUpdateAsync(s => s.SetProperty(p => p.Status, "Expired"), ct);
             await db.AlmightyProposals.Where(p => p.VillageId == id && p.Status != "Pending" && p.CreatedAt < now.AddDays(-30)).ExecuteDeleteAsync(ct);
-            await db.AlmightyObservations.Where(o => o.VillageId == id && o.At < now.AddDays(-14)).ExecuteDeleteAsync(ct);
+            // Financial receipts retain their authoritative admission, rather than breaking cleanup after14days.
+            await db.AlmightyObservations.Where(o => o.VillageId == id && o.At < now.AddDays(-14)
+                && !db.DirectorFinanceActions.Any(a => a.VillageId == id && a.ReviewId == o.Id)).ExecuteDeleteAsync(ct);
         }
     }
     private async Task DeliverAsync(Guid villageId, CancellationToken ct)

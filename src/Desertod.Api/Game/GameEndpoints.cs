@@ -48,6 +48,10 @@ public static class GameEndpoints
             game.GetTreasuryFundingAsync(slug, user.RequireAccountId(), ct));
         player.MapPut("/villages/{slug}/economy/funding", (string slug, TreasuryFundingPolicyRequest request, ClaimsPrincipal user, GameService game, CancellationToken ct) =>
             game.PublishTreasuryFundingAsync(slug, user.RequireAccountId(), request, ct));
+        player.MapGet("/villages/{slug}/director/finance", (string slug, ClaimsPrincipal user, GameService game, CancellationToken ct) =>
+            game.GetDirectorFinanceAsync(slug, user.RequireAccountId(), ct));
+        player.MapPut("/villages/{slug}/director/finance", (string slug, DirectorFinancePolicyRequest request, ClaimsPrincipal user, GameService game, CancellationToken ct) =>
+            game.SetDirectorFinanceAsync(slug, user.RequireAccountId(), request, ct));
         player.MapPost("/villages/{slug}/economy/treasury-issue", (string slug, TreasuryIssueRequest request, ClaimsPrincipal user, GameService game, CancellationToken ct) =>
             game.IssueTreasuryAsync(slug, user.RequireAccountId(), request, ct));
         player.MapPost("/villages/{slug}/economy", (string slug, EconomyRequest request, ClaimsPrincipal user, GameService game, CancellationToken ct) =>

@@ -51,16 +51,19 @@ public sealed class MonetaryAuditMigrationTests
                 UNION ALL SELECT to_jsonb(e)::text FROM "KingdomEconomies" e
                 UNION ALL SELECT to_jsonb(p)::text FROM "TaxPolicies" p
                 UNION ALL SELECT to_jsonb(r)::text FROM "EconomyReceipts" r
-                UNION ALL SELECT (to_jsonb(l)-'FinancialBatchId')::text FROM "LedgerEntries" l ORDER BY "Value"
+                UNION ALL SELECT (to_jsonb(l)-'FinancialBatchId'-'DirectorReviewId')::text FROM "LedgerEntries" l ORDER BY "Value"
                 """).ToArrayAsync();
             var before = await Rows(); await db.Database.MigrateAsync(); Assert.Equal(before, await Rows());
             Assert.False(db.Database.HasPendingModelChanges()); Assert.Null((await db.LedgerEntries.SingleAsync()).FinancialBatchId);
+            Assert.Null((await db.LedgerEntries.SingleAsync()).DirectorReviewId);
             var batch = new MonetaryBatch { VillageId = world.Id, Id = Guid.NewGuid(), At = now, Finalized = true,
                 BeforeTotal = 202, AfterTotal = 212, Issued = 10, PostingCount = 1,
                 BeforeHash = "before", AfterHash = "after", PostingHash = "posting",
                 Operations = [new() { OperationId = entry.OperationId, Kind = "legacy-wage-issuance", Issued = 10 }] };
             db.MonetaryBatches.Add(batch); (await db.LedgerEntries.SingleAsync()).FinancialBatchId = batch.Id;
             await db.SaveChangesAsync(); await Assert.ThrowsAsync<PostgresException>(() => db.GetService<IMigrator>().MigrateAsync(previous));
+            // EF commits earlier empty downgrades before reaching this older history guard. Restore current ORM shape.
+            await db.Database.MigrateAsync();
             db.ChangeTracker.Clear(); Assert.Single(await db.MonetaryBatches.ToListAsync());
             // A world-owned receipt cannot be attached to another world's ledger, even with the same batch ID.
             var other = Village.Create("other-money", "Other money", owner.Id, now); db.Villages.Add(other); await db.SaveChangesAsync();

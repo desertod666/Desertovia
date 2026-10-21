@@ -81,7 +81,8 @@ public sealed class DirectorEconomyApiTests(DesertodApiFactory factory)
         Assert.Equal(123,(await db.GameWallets.AsNoTracking().SingleAsync(x=>x.VillageId==world.Id&&x.AccountId==actor)).Coins);
         Assert.DoesNotContain(actor.ToString(),analysis.GetRawText());Assert.DoesNotContain("Producer",analysis.GetRawText());
         Assert.DoesNotContain(review.Options,x=>x.Id.Contains("tax"));
-        Assert.False(analysis.GetProperty("taxPolicy").GetProperty("automaticEconomicExecutorAvailable").GetBoolean());
+        Assert.True(analysis.GetProperty("taxPolicy").GetProperty("automaticEconomicExecutorAvailable").GetBoolean());
+        Assert.True(analysis.GetProperty("taxPolicy").GetProperty("requiresExplicitDelegationAndAutoEconomy").GetBoolean());
     }
 
     [Fact]

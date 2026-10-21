@@ -2284,9 +2284,9 @@
       "original_task_id": "T054",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "partial",
-        "evidence": "DIRECTOR_ECONOMY_1_0.md / DIRECTOR_ECONOMY_VERIFICATION_1_0.json: D111 all-resident observation and partial immutable market policy/quote settlement. No default scale or automatic fiscal authority. T025/T026/T054 active.",
-        "runtime_verification": "696Domain/16final API+boundary+migration/4browser and frontend pass; isolated54to55 compared20old tables unchanged, fiscal defaults off. Full exact CI pending."
+        "status": "partial_implemented_scoped_verification_running",
+        "evidence": "DIRECTOR_FINANCE_1_0.md / DIRECTOR_FINANCE_VERIFICATION_1_0.json: delegated closed economic executors, fresh admission, system audit and comparative consequences; no default grant or chosen live tax scale. Full T054 remains open.",
+        "runtime_verification": "726Domain;39initial/20expanded/2finalAPI across stages;4browser and1122botCI PASS;57to58 preserved27old tables, actual grant/pause/restart/replay unchanged800/160. First gameCI had2legacy migration fixture failures, repaired locally; exact replacement CI required. No real model/Telegram."
       },
       "owner_economic_direction": {
         "decision": "D111",

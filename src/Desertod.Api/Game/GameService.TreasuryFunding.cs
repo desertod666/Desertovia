@@ -88,6 +88,13 @@ public sealed partial class GameService
         return await WithVillageAsync(await FindVillageIdAsync(slug, ct), async db =>
         {
             var village = await LoadVillageAsync(db, slug, ct); if (village.OwnerAccountId != actor) throw new UnauthorizedAccessException();
+            return await IssueTreasuryCoreAsync(db, village, actor, request, fingerprint, ct);
+        }, ct);
+    }
+
+    private async Task<TreasuryIssueDto> IssueTreasuryCoreAsync(DesertodDbContext db, Desertod.Domain.Entities.Village village,
+        Guid actor, TreasuryIssueRequest request, string fingerprint, CancellationToken ct)
+    {
             var prior = await db.TreasuryIssues.SingleOrDefaultAsync(x => x.VillageId == village.Id && x.RequestId == request.RequestId, ct);
             if (prior is not null)
             {
@@ -112,6 +119,5 @@ public sealed partial class GameService
             db.TreasuryIssues.Add(receipt);
             MoneyEntry(db, village.Id, request.RequestId, actor, "treasury-issuance", "DZK", "treasury", request.Amount, now);
             await db.SaveChangesAsync(ct); changes.Mark(village.Id); return FundingDto(receipt);
-        }, ct);
     }
 }

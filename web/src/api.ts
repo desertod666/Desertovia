@@ -1552,7 +1552,16 @@ export interface AlmightyView {
   proposals: AlmightyProposal[];
   observations: { id: string; at: string; option: string; reason: string; snapshot: string }[]
 }
-export type AlmightyCategory='advice'|'notice'|'rest'|'raid'|'dungeon'|'vigor'
+export type AlmightyCategory='advice'|'notice'|'rest'|'raid'|'dungeon'|'vigor'|'economy'
+export interface DirectorFinanceLimits {
+  enabled:boolean;workOrders:boolean;supplyOrders:boolean;taxChanges:boolean;treasuryIssues:boolean;
+  actionsPerDay:number;spendingPerDay:number;maximumUnitPay:number;maximumUnits:number;
+  maximumTaxBasisPoints:number;taxStepBasisPoints:number;taxNoticeMinutes:number;taxCooldownMinutes:number;maximumIssue:number
+}
+export interface DirectorFinanceView {
+  version:number;limits:DirectorFinanceLimits;day:string;actionsToday:number;reservedToday:number;
+  actions:{reviewId:string;author:string;option:string;reason:string;result:string;at:string}[]
+}
 export interface AlmightyPolicyChange {
   villageId:string;requestId:string;actorId:string;kind:AlmightyCategory;enabled:boolean;expectedPolicyVersion:number;
   policyVersion:number;changed:boolean;at:string;disabledKinds:AlmightyCategory[];supersededProposals:string[]
@@ -1618,6 +1627,9 @@ export const api = {
   defenseSector: (slug: string, sector: string) => request<void>('PUT', `/api/villages/${encodeURIComponent(slug)}/me/defense`, { mode: sector }),
   almighty: (slug: string) => request<AlmightyView>('GET', `/api/villages/${encodeURIComponent(slug)}/director`),
   almightyMode: (slug: string, mode: string) => request<void>('PUT', `/api/villages/${encodeURIComponent(slug)}/director/mode`, { mode }),
+  directorFinance: (slug:string) => request<DirectorFinanceView>('GET', `/api/villages/${encodeURIComponent(slug)}/director/finance`),
+  directorFinancePolicy: (slug:string,expectedVersion:number,limits:DirectorFinanceLimits,requestId:string) =>
+    request<number>('PUT', `/api/villages/${encodeURIComponent(slug)}/director/finance`, {requestId,expectedVersion,limits}),
   // Keep this explicit operation ID for retries; the receipt describes its original commit, not the latest policy.
   almightyCategory: (slug:string,kind:AlmightyCategory,enabled:boolean,expectedPolicyVersion:number,requestId:string) => request<AlmightyPolicyChange>('PUT', `/api/villages/${encodeURIComponent(slug)}/director/category/${kind}`,{requestId,enabled,expectedPolicyVersion}),
   almightyVote: (slug: string, id: string, accept: boolean) => request<{result:string}>('POST', `/api/villages/${encodeURIComponent(slug)}/director/${id}/vote`, { accept }),

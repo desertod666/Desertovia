@@ -50,19 +50,24 @@ public sealed class TreasuryFundingMigrationTests
                 UNION ALL SELECT to_jsonb(a)::text FROM "Accounts" a
                 UNION ALL SELECT to_jsonb(w)::text FROM "GameWallets" w
                 UNION ALL SELECT to_jsonb(e)::text FROM "KingdomEconomies" e
-                UNION ALL SELECT to_jsonb(l)::text FROM "LedgerEntries" l
+                UNION ALL SELECT (to_jsonb(l)-'DirectorReviewId')::text FROM "LedgerEntries" l
                 UNION ALL SELECT to_jsonb(b)::text FROM "MonetaryBatches" b ORDER BY "Value"
                 """).ToArrayAsync();
             var before = await Rows(); await db.Database.MigrateAsync(); Assert.Equal(before, await Rows()); Assert.False(db.Database.HasPendingModelChanges());
             Assert.Empty(await db.TreasuryFundingPolicies.ToListAsync()); Assert.Empty(await db.TreasuryIssueDays.ToListAsync());
+            Assert.All(await db.LedgerEntries.ToListAsync(), x => Assert.Null(x.DirectorReviewId));
             var policy = new TreasuryFundingPolicy { VillageId = world.Id, Version = 1, RequestId = Guid.NewGuid(), ActorId = owner.Id,
                 PublishedAt = now, EffectiveAt = now, Enabled = true, DailyIssueLimit = 100 };
             db.TreasuryFundingPolicies.Add(policy); await db.SaveChangesAsync();
             await Assert.ThrowsAsync<PostgresException>(() => db.GetService<IMigrator>().MigrateAsync(previous));
+            // EF commits earlier empty downgrades before reaching this older history guard. Restore current ORM shape.
+            await db.Database.MigrateAsync();
             var day = DateOnly.FromDateTime(now.UtcDateTime); db.TreasuryIssueDays.Add(new() { VillageId = world.Id, Day = day, Issued = 10, Revision = 1 });
             db.TreasuryIssues.Add(new() { VillageId = world.Id, RequestId = Guid.NewGuid(), ActorId = owner.Id, PolicyVersion = 1,
                 Day = day, FinancialBatchId = batch.Id, Amount = 10, IssuedTotalAfter = 10, RemainingAtIssue = 90, At = now });
             await db.SaveChangesAsync(); await Assert.ThrowsAsync<PostgresException>(() => db.GetService<IMigrator>().MigrateAsync(previous));
+            // EF commits earlier empty downgrades before reaching this older history guard. Restore current ORM shape.
+            await db.Database.MigrateAsync();
             var other = Village.Create("other-fund", "Other fund", owner.Id, now); db.Villages.Add(other); await db.SaveChangesAsync();
             db.TreasuryIssues.Add(new() { VillageId = other.Id, RequestId = Guid.NewGuid(), PolicyVersion = 1, Day = day, FinancialBatchId = batch.Id, Amount = 1, At = now });
             await Assert.ThrowsAsync<DbUpdateException>(() => db.SaveChangesAsync()); db.ChangeTracker.Clear();

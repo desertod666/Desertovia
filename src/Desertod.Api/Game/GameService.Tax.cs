@@ -41,19 +41,7 @@ public sealed partial class GameService
         var fingerprint=Convert.ToHexString(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(request)));
         return await WithVillageAsync(await FindVillageIdAsync(slug,ct),async db=>{
             var village=await LoadVillageAsync(db,slug,ct);if(village.OwnerAccountId!=actor)throw new UnauthorizedAccessException();
-            var previous=await db.TaxPolicies.SingleOrDefaultAsync(p=>p.VillageId==village.Id&&p.RequestId==request.RequestId,ct);
-            if(previous is not null)
-            {
-                if(previous.ActorId!=actor||previous.RequestFingerprint!=fingerprint)throw new GameRuleException("tax.request.reused","This request identifier already names another policy.");
-                return TaxDto(previous);
-            }
-            var state=await db.KingdomEconomies.SingleAsync(e=>e.VillageId==village.Id,ct);var now=time.GetUtcNow();
-            if(state.LatestTaxPolicyVersion!=request.ExpectedVersion)throw new GameRuleException("tax.policy.stale","Refresh the current policy version.");
-            if(request.EffectiveAt.Value<now)throw new GameRuleException("tax.policy.past","New rules cannot apply retroactively.");
-            if(state.LatestTaxPolicyVersion==long.MaxValue)throw new GameRuleException("tax.limit","The policy version limit has been reached.");
-            candidate.VillageId=village.Id;candidate.Version=++state.LatestTaxPolicyVersion;candidate.RequestId=request.RequestId;
-            candidate.ActorId=actor;candidate.RequestFingerprint=fingerprint;candidate.EffectiveAt=TaxInstant(request.EffectiveAt.Value);candidate.PublishedAt=TaxInstant(now);
-            db.TaxPolicies.Add(candidate);await db.SaveChangesAsync(ct);return TaxDto(candidate);
+            return await PublishTaxPolicyCoreAsync(db,village,actor,request,candidate,fingerprint,ct);
         },ct);
     }
 
@@ -119,5 +107,24 @@ public sealed partial class GameService
             RealizedProfit=quote.RealizedProfit,TaxableGain=quote.TaxableGain,TaxAmount=quote.TaxAmount,TaxableProfitBefore=before,
             TaxableProfitAfter=seller.TaxableProfitToday,RemainderAfter=seller.TaxRemainder,ExemptReason=quote.ExemptReason,At=TaxInstant(now)});
         return quote.TaxAmount;
+    }
+
+    private async Task<TaxPolicyDto> PublishTaxPolicyCoreAsync(DesertodDbContext db, Desertod.Domain.Entities.Village village,
+        Guid actor, TaxPolicyRequest request, TaxPolicy candidate, string fingerprint, CancellationToken ct)
+    {
+            var effectiveAt=request.EffectiveAt ?? throw new GameRuleException("tax.request","Supply a future effective time.");
+            var previous=await db.TaxPolicies.SingleOrDefaultAsync(p=>p.VillageId==village.Id&&p.RequestId==request.RequestId,ct);
+            if(previous is not null)
+            {
+                if(previous.ActorId!=actor||previous.RequestFingerprint!=fingerprint)throw new GameRuleException("tax.request.reused","This request identifier already names another policy.");
+                return TaxDto(previous);
+            }
+            var state=await db.KingdomEconomies.SingleAsync(e=>e.VillageId==village.Id,ct);var now=time.GetUtcNow();
+            if(state.LatestTaxPolicyVersion!=request.ExpectedVersion)throw new GameRuleException("tax.policy.stale","Refresh the current policy version.");
+            if(effectiveAt<now)throw new GameRuleException("tax.policy.past","New rules cannot apply retroactively.");
+            if(state.LatestTaxPolicyVersion==long.MaxValue)throw new GameRuleException("tax.limit","The policy version limit has been reached.");
+            candidate.VillageId=village.Id;candidate.Version=++state.LatestTaxPolicyVersion;candidate.RequestId=request.RequestId;
+            candidate.ActorId=actor;candidate.RequestFingerprint=fingerprint;candidate.EffectiveAt=TaxInstant(effectiveAt);candidate.PublishedAt=TaxInstant(now);
+            db.TaxPolicies.Add(candidate);await db.SaveChangesAsync(ct);return TaxDto(candidate);
     }
 }

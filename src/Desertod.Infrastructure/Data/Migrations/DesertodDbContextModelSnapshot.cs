@@ -417,6 +417,118 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.ToTable("AlmightyStates");
                 });
 
+            modelBuilder.Entity("Desertod.Domain.Director.DirectorFinanceAction", b =>
+                {
+                    b.Property<Guid>("VillageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ReviewId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("At")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Before")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateOnly>("Day")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("DelegatingOwnerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Intent")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Option")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("PolicyVersion")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Result")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Terms")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.HasKey("VillageId", "ReviewId");
+
+                    b.HasIndex("VillageId", "At");
+
+                    b.HasIndex("VillageId", "Day");
+
+                    b.HasIndex("VillageId", "PolicyVersion");
+
+                    b.ToTable("DirectorFinanceActions");
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Director.DirectorFinanceDay", b =>
+                {
+                    b.Property<Guid>("VillageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("Day")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Actions")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("Reserved")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("Revision")
+                        .IsConcurrencyToken()
+                        .HasColumnType("bigint");
+
+                    b.HasKey("VillageId", "Day");
+
+                    b.ToTable("DirectorFinanceDays");
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Director.DirectorFinancePolicy", b =>
+                {
+                    b.Property<Guid>("VillageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("At")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Fingerprint")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<Guid>("OwnerAccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RequestId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("VillageId", "Version");
+
+                    b.HasIndex("VillageId", "RequestId")
+                        .IsUnique();
+
+                    b.ToTable("DirectorFinancePolicies");
+                });
+
             modelBuilder.Entity("Desertod.Domain.Dungeons.DungeonRun", b =>
                 {
                     b.Property<Guid>("Id")
@@ -631,6 +743,9 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<long>("Delta")
                         .HasColumnType("bigint");
 
+                    b.Property<Guid?>("DirectorReviewId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("FinancialBatchId")
                         .HasColumnType("uuid");
 
@@ -651,6 +766,8 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("VillageId", "DirectorReviewId");
 
                     b.HasIndex("VillageId", "FinancialBatchId");
 
@@ -2607,6 +2724,101 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Desertod.Domain.Director.DirectorFinanceAction", b =>
+                {
+                    b.HasOne("Desertod.Domain.Entities.Village", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Desertod.Domain.Director.DirectorFinanceDay", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId", "Day")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Desertod.Domain.Director.DirectorFinancePolicy", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId", "PolicyVersion")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Desertod.Domain.Director.AlmightyObservation", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId", "ReviewId")
+                        .HasPrincipalKey("VillageId", "Id")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Director.DirectorFinanceDay", b =>
+                {
+                    b.HasOne("Desertod.Domain.Entities.Village", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Director.DirectorFinancePolicy", b =>
+                {
+                    b.HasOne("Desertod.Domain.Entities.Village", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("Desertod.Domain.Director.DirectorFinanceLimits", "Limits", b1 =>
+                        {
+                            b1.Property<Guid>("DirectorFinancePolicyVillageId");
+
+                            b1.Property<long>("DirectorFinancePolicyVersion");
+
+                            b1.Property<int>("ActionsPerDay");
+
+                            b1.Property<bool>("Enabled");
+
+                            b1.Property<long>("MaximumIssue");
+
+                            b1.Property<int>("MaximumTaxBasisPoints");
+
+                            b1.Property<long>("MaximumUnitPay");
+
+                            b1.Property<int>("MaximumUnits");
+
+                            b1.Property<long>("SpendingPerDay");
+
+                            b1.Property<bool>("SupplyOrders");
+
+                            b1.Property<bool>("TaxChanges");
+
+                            b1.Property<int>("TaxCooldownMinutes");
+
+                            b1.Property<int>("TaxNoticeMinutes");
+
+                            b1.Property<int>("TaxStepBasisPoints");
+
+                            b1.Property<bool>("TreasuryIssues");
+
+                            b1.Property<bool>("WorkOrders");
+
+                            b1.HasKey("DirectorFinancePolicyVillageId", "DirectorFinancePolicyVersion");
+
+                            b1.ToTable("DirectorFinancePolicies");
+
+                            b1
+                                .ToJson("Limits")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("DirectorFinancePolicyVillageId", "DirectorFinancePolicyVersion");
+                        });
+
+                    b.Navigation("Limits")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Desertod.Domain.Dungeons.DungeonRun", b =>
                 {
                     b.HasOne("Desertod.Domain.Entities.Village", null)
@@ -2760,6 +2972,11 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .HasForeignKey("VillageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Desertod.Domain.Director.DirectorFinanceAction", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId", "DirectorReviewId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Desertod.Domain.Economy.MonetaryBatch", null)
                         .WithMany()
