@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-21T06:10:15.946206+00:00",
-  "status": "main_plan_active_ordinary_dungeon_body_locally_checked_exact_candidate_ci_pending",
+  "recorded_at_utc": "2026-10-21T06:35:49.310681+00:00",
+  "status": "main_plan_active_director_contract_locally_verified_exact_ci_pending",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-dungeon-bodies",
+  "branch": "feat/desertovia-1-0-director-contracts",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "T015/T031 common mortal body/equipment/training and injury healing for new raids; dungeon/full A14 unfinished",
+  "implemented_task": "Partial T050: closed existing permission catalog, versioned observed evidence and persisted admission; not autonomy or full Director",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -46,7 +46,7 @@
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "Current ordinary dungeon body and previous checkpoint metadata source loaded in loopback API5180, schema53. DevTools explicitly false for ordinary combat QA. No public game changes.",
+    "loaded_scope": "Director contract/readiness source loaded in loopback API5180 after backup063731Z; schema53 unchanged. Existing22wallets/5economies preserved; Director tables empty. Model/Telegram disabled.",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
     "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
@@ -1257,11 +1257,11 @@
   "delivery_focus": {
     "reviewed_on": "2026-10-21",
     "dag_cards": 53,
-    "not_started_in_this_assignment": 30,
-    "current": "T031 accepted-work encounter integration after shared engine and explicit dungeon exit; independent adventure/world work continues",
+    "not_started_in_this_assignment": 28,
+    "current": "T050 observed contract and stored permission admission",
     "farm_not_first_in_queue": true,
     "overall_goal_complete": false,
-    "remaining_23_include_preparation_and_partial_slices": true
+    "remaining_25_include_preparation_and_partial_slices": true
   },
   "interrupted_travel": {
     "status": "interruption_slice_full_ci_and_local_restart_verified_broader_world_pending",
@@ -1404,9 +1404,9 @@
     ]
   },
   "owner_scope_check": {
-    "recorded_at_utc": "2026-10-21T02:20:41.913319+00:00",
+    "recorded_at_utc": "2026-10-21T06:35:49.310681+00:00",
     "total_tasks": 53,
-    "not_started": 29,
+    "not_started": 28,
     "other_tasks_are_not_all_complete": true,
     "priority": "Continue world/combat/party/supply, siege/recovery/director and remaining UI/monetization/music. No optional farm polish ahead of missing systems."
   },
@@ -1675,7 +1675,7 @@
       }
     }
   },
-  "next_independent_work": "Finish exact candidate ordinary dungeon proof/CI; then independent functional DAG (Director/world actions and recovery) while party/loot decisions remain pending. UI redesign last per D109/D110.",
+  "next_independent_work": "Continue functional DAG after exact Director candidate CI: richer evidence/execution receipts and recovery. Existing pending party/loot/economic policy choices block only dependent behavior. UI redesign last per D109/D110.",
   "combat_actor_admission": {
     "schema_version": 1,
     "recorded_at_utc": "2026-10-21T04:02:01.869805+00:00",
@@ -2168,7 +2168,7 @@
       }
     },
     "candidate_ci": {
-      "status": "correction_ready_new_exact_head_pending",
+      "status": "backend_frontend_docker_success_browsers_pending",
       "previous_sha": "113e5702d6d1277dadb61a048de20dc6560b9173",
       "pr": "https://github.com/desertod666/Desertovia/pull/91",
       "previous_run": 39554235611,
@@ -2181,7 +2181,17 @@
       },
       "previous_frontend": "success",
       "previous_docker": "success",
-      "previous_browsers": "not yet complete when correction prepared"
+      "previous_browsers": "not yet complete when correction prepared",
+      "sha": "fad14b7ee28cdf92b65d90d7d4f8e795b4b7ebcb",
+      "run": 39555352195,
+      "backend": {
+        "job": 119073896861,
+        "domain_passed": 682,
+        "api_passed": 392,
+        "failed": 0
+      },
+      "frontend": "success",
+      "docker": "success"
     },
     "public_release": false,
     "remaining": [
@@ -2246,5 +2256,102 @@
       "result": "TestResults/dungeon-royal-ci-fixtures/Admin_DESKTOP-FQ85FTD_2026-10-21_08_24_41_net10.0.trx",
       "local_api_guard": "pending, do not overwrite the still-running separate Director validation binary"
     }
+  },
+  "director_contract": {
+    "schema_version": 1,
+    "recorded_at_utc": "2026-10-21T06:46:33.958519+00:00",
+    "scope": "Partial T050 observed snapshot and closed persisted permission admission; no autonomous or economic execution",
+    "source_base": "fad14b7ee28cdf92b65d90d7d4f8e795b4b7ebcb",
+    "domain": {
+      "passed": 686,
+      "failed": 0,
+      "total": 686,
+      "result": "TestResults/director-readiness-domain-final/Admin_DESKTOP-FQ85FTD_2026-10-21_08_33_39_net10.0.trx"
+    },
+    "previous_api": {
+      "passed": 24,
+      "failed": 0,
+      "total": 24,
+      "result": "TestResults/director-contract-api-final/Admin_DESKTOP-FQ85FTD_2026-10-21_08_31_10_net10.0.trx"
+    },
+    "first_api": {
+      "passed": 22,
+      "failed": 1,
+      "total": 23,
+      "result": "TestResults/director-contract-api/Admin_DESKTOP-FQ85FTD_2026-10-21_08_22_58_net10.0.trx"
+    },
+    "final_source_api": {
+      "passed": 26,
+      "failed": 0,
+      "total": 26,
+      "result": "TestResults/director-final-source-api/Admin_DESKTOP-FQ85FTD_2026-10-21_08_39_32_net10.0.trx"
+    },
+    "bot": {
+      "recorded_at_utc": "2026-10-21T06:44:22.571995+00:00",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "python": "3.12.14",
+      "actual_snapshot_characters": 14936,
+      "options": 6,
+      "capability_kinds": 3,
+      "snapshot_sha256": "5d939505307f62c664383ba3efcd477c72bfef9cebb52809cfec1f94ad3b72ed",
+      "scope": "Existing bot HTTP/parser/cache tests plus exact exported synthetic C#v1 observation through existing bot handle; AI/Telegram mocked, no paid models or real messages",
+      "bot_changed": false,
+      "source_sha256": {
+        "sramoslav/almighty.py": "518b8a320e543c3787f10c2f94044cbce699d46ba3a11b9d93a0c96ab0d92eba",
+        "tests/test_almighty.py": "f4915d0d1e5b2dfdb224eef45af34809ce5b66415afcb9e5cadc9f2a863259f6"
+      }
+    },
+    "runtime": {
+      "loaded": true,
+      "api": "http://127.0.0.1:5180",
+      "schema": 53,
+      "migration_added": false,
+      "backup": "/tmp/foundation-before-restart-20261021T063731Z.dump",
+      "compared_rows_unchanged": {
+        "states": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "observations": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "proposals": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "wallets": {
+          "rows": 22,
+          "sha256": "3ec8b8f2af008d398461794a6f8daf46b7eed88e006c12a61e75195c14909d4b"
+        },
+        "economy": {
+          "rows": 5,
+          "sha256": "04c7d1fbadd9b1fce3d41ac39816c3b35c8d814dd9d72da1fb43efdced6505d9"
+        }
+      },
+      "limits": "All3Director tables have0rows here. NOT legacy-history preservation proof. Legacy in-flight records are exercised by isolated API tests. Other tables not compared.",
+      "model_enabled": false,
+      "DevTools": false
+    },
+    "candidate_ci": {
+      "status": "not_created"
+    },
+    "source_sha256": {
+      "src/Desertod.Domain/Director/AlmightyPermissions.cs": "8949fa9cad64e6f6f868f5ac27cbcea546d95898637a043365d2f190ea716a47",
+      "src/Desertod.Domain/Combat/RaidBalance.cs": "ae0484e9ea94b1a8350c541ccb83fcc4d9d8420ec26aac995c5ef0fc5b7659ad",
+      "src/Desertod.Api/Game/GameService.Almighty.cs": "27a4ed7feea266f82bc1a295608eae85b9d360d6871839d4d7ed73a4747a24a0",
+      "tests/Desertod.Domain.Tests/AlmightyPermissionTests.cs": "d9de1cd1a48f7cccb55e2b47038af7e244a63c668221e79173ea3b050a229d0f",
+      "tests/Desertod.Api.Tests/DirectorContractApiTests.cs": "e5f5547172a4cabbe54f4c69c5861433bff092596ded688853ccc5fb024a8d1c",
+      "tools/verify-director-bot.py": "35d7bb799fa2722b20df052e146175ff743a1b8dfccf19b701db12c8fe77e5a0"
+    },
+    "public_release": false,
+    "remaining": [
+      "Final-source API and full exact candidate CI",
+      "Full T050 global revision/economic/party evidence; T051-055 executors/receipts/category stops/shadow comparison/autonomy",
+      "Live model/Telegram integration, physical devices and wider1.0 DAG"
+    ]
   }
 }

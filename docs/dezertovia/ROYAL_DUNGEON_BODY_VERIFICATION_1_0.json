@@ -98,7 +98,7 @@
     }
   },
   "candidate_ci": {
-    "status": "correction_ready_new_exact_head_pending",
+    "status": "backend_frontend_docker_success_browsers_pending",
     "previous_sha": "113e5702d6d1277dadb61a048de20dc6560b9173",
     "pr": "https://github.com/desertod666/Desertovia/pull/91",
     "previous_run": 39554235611,
@@ -111,7 +111,17 @@
     },
     "previous_frontend": "success",
     "previous_docker": "success",
-    "previous_browsers": "not yet complete when correction prepared"
+    "previous_browsers": "not yet complete when correction prepared",
+    "sha": "fad14b7ee28cdf92b65d90d7d4f8e795b4b7ebcb",
+    "run": 39555352195,
+    "backend": {
+      "job": 119073896861,
+      "domain_passed": 682,
+      "api_passed": 392,
+      "failed": 0
+    },
+    "frontend": "success",
+    "docker": "success"
   },
   "public_release": false,
   "remaining": [

@@ -2057,7 +2057,7 @@
       "id": "PKG-T050",
       "milestone": "M5",
       "title": "Снимок мира и каталог полномочий",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partial_observed_contract_and_persisted_catalog_locally_verified_full_ci_pending",
       "dependencies": [
         "PKG-T015",
         "PKG-T025",
@@ -2094,9 +2094,10 @@
       "source": "source-package/05_TASKS.json",
       "current_support": {
         "status": "partial",
-        "evidence": "Almighty snapshots/observations/lease есть; целевой каталог автономных/economic actions новый.",
-        "runtime_verification": "not_run_this_assignment"
-      }
+        "evidence": "Existing lease/snapshot/options/owner-confirmed handlers reused; v1 envelope and compact closed kinds, stored observation authoritative; autonomous/economic/party contracts pending",
+        "runtime_verification": "Current source loaded in loopback API; schema53 unchanged,22wallets/5economies preserved; Director tables0rows. Old admitted reviews tested in isolated DB; no live model/Telegram."
+      },
+      "implementation_evidence": "DIRECTOR_CONTRACT_1_0.md / DIRECTOR_CONTRACT_VERIFICATION_1_0.json;686Domain/26API/13mockedBot PASS; actual local restart schema53 unchanged; full exactCI pending, fullT050/A20/A22 incomplete"
     },
     {
       "id": "PKG-T051",
