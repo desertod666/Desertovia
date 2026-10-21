@@ -2381,5 +2381,15 @@
       "below_reserve": "defer_personal_claim_keep_earned_share",
       "fractional_shares": "persist_no_rounding_up"
     }
+  },
+  "candidate_0_7_17": {
+    "status": "local_review",
+    "source_pr": 76,
+    "source_sha": "b617f8d9f38fcc700400dbf2e7239f931d8d2127",
+    "release_base": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
+    "live_previous": "4bb125f2dc05711ebaf4dac2723f3ee19eae3ea9",
+    "version": "0.7.17",
+    "includes_unfinished_1_0": false,
+    "installed": false
   }
 }

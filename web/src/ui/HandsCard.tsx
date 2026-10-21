@@ -48,8 +48,18 @@ export function HandsCard({
       <h3>{t('hands.title')}</h3>
       <ul className="done-results">
         {citizen.load.map((good) => (
-          <li key={`${good.resource}:${good.sharpen ?? 0}`}>
-            <ResourceIcon kind={good.resource} scale={1} sharpen={good.sharpen ?? 0} /> {i18n.held(good.resource, good.amount)}
+          <li key={`${good.resource}:${good.sharpen ?? 0}:${good.durability ?? 0}`}>
+            <ResourceIcon
+              kind={good.resource}
+              scale={1}
+              sharpen={good.sharpen ?? 0}
+              durability={good.durability ?? 0}
+              maxDurability={good.maxDurability ?? 0}
+            />{' '}
+            {i18n.held(good.resource, good.amount)}
+            {(good.maxDurability ?? 0) > 0 && (
+              <span className="muted"> {t('hands.durability', { left: good.durability ?? 0, max: good.maxDurability ?? 0 })}</span>
+            )}
           </li>
         ))}
       </ul>

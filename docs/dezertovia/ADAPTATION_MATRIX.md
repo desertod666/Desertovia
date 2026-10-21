@@ -1,3 +1,12 @@
+## 0.7.17 · PR76 · PREPARED
+
+ToolCatalog/CycleEngine → четыре уровня топоров/кирок, выход за цикл и износ;
+StorageRules/DTO/HandsCard/StorageCard → сохранение и показ износа;
+ToolDurability migration → совместимость старого JSON. Конечная жила списывает
+весь фактический результат, включая бонус кирки. Проверки: Domain, API/legacy
+migration, обе browser-части, lint/unit/build/Docker и сохранность live.
+Подробнее [RELEASE_0_7_17.md](RELEASE_0_7_17.md).
+
 ## D-102 · Ручное выращивание еды — PLAN / обсуждение, 20.10.2026
 
 | Область | Основа | Предлагаемое расширение | Будущая проверка |
