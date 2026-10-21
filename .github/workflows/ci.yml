@@ -137,6 +137,32 @@ jobs:
             web/test-results
           retention-days: 14
 
+  audio-webkit:
+    name: Audio WebKit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps webkit
+      - run: npx playwright test --config playwright.audio.config.ts
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: audio-webkit-results
+          path: |
+            web/test-results/audio-webkit-results.json
+            web/test-results/audio-webkit
+          retention-days: 14
+
   docker:
     name: Docker image
     runs-on: ubuntu-latest

@@ -1,4 +1,7 @@
-/** One HTML audio element. Calm melodies advance when each file ends; a village raid replaces the current one with battle.mp3. */
+import { MUSIC_SCENES, MusicSceneState, type MusicScene } from './musicScene'
+export { cityRaidPlaying } from './musicContext'
+
+/** One controller and one audio element across village/dungeon navigation. Existing files are fallback beds. */
 const CALM = ['part_001.mp3', 'part_002.mp3', 'part_003.mp3', 'part_004.mp3', 'part_005.mp3', 'part_006.mp3', 'part_007.mp3']
 const BATTLE = 'battle.mp3'
 
@@ -11,11 +14,11 @@ export interface MusicSnapshot {
   unlocked: boolean
   readyState: number
   error: number
-}
-
-/** A raid counts once fighters or enemies are in the village. The warning countdown stays on the calm melody. */
-export function cityRaidPlaying(battles: readonly { finishedAt: string | null; phase: string }[] | undefined) {
-  return !!battles?.some((battle) => !battle.finishedAt && battle.phase !== 'Warning' && battle.phase !== 'Cancelled')
+  scene: MusicScene
+  score: 'legacy-fallback'
+  outputVolume: number
+  volumeBackend: 'web-audio' | 'media-element'
+  contextState: AudioContextState | null
 }
 
 class BackgroundMusic {
@@ -32,6 +35,12 @@ class BackgroundMusic {
   private users = 0
   private misses = 0
   private token = 0
+  private readonly scenes = new MusicSceneState()
+  private scene: MusicScene = 'M02'
+  private transition: ReturnType<typeof setTimeout> | undefined
+  private context: AudioContext | null = null
+  private gain: GainNode | null = null
+  private volumeUnavailable = false
   private readonly listeners = new Set<() => void>()
 
   private notify() {
@@ -53,12 +62,17 @@ class BackgroundMusic {
 
   attach() {
     this.users += 1
+    this.updateScene()
     if (this.unlocked && !this.silent()) void this.follow()
   }
 
   detach() {
     this.users = Math.max(0, this.users - 1)
-    if (this.users === 0) this.audio.pause()
+    if (this.users === 0) {
+      clearTimeout(this.transition)
+      this.transition = undefined
+      this.audio.pause()
+    }
   }
 
   subscribe(listener: () => void) {
@@ -68,16 +82,19 @@ class BackgroundMusic {
 
   /** Must run inside a user gesture the first time, so the browser allows playback. */
   unlock() {
+    this.prepareVolume()
+    this.resumeContext()
     this.unlocked = true
     this.notify()
     if (!this.silent()) void this.follow()
   }
 
-  apply(options: { raid: boolean; muted: boolean; volume: number }) {
-    this.raid = options.raid
+  apply(options: { raid?: boolean; scene?: MusicScene; muted: boolean; volume: number }) {
     this.muted = options.muted
-    this.volume = options.volume
-    this.audio.volume = this.level()
+    this.volume = Number.isFinite(options.volume) ? Math.min(1, Math.max(0, options.volume)) : 0
+    this.scenes.request(options.scene ?? (options.raid ? 'M13' : 'M02'), performance.now())
+    this.updateScene()
+    this.applyVolume()
     if (!this.unlocked) return
     if (this.silent()) {
       this.audio.pause()
@@ -96,6 +113,11 @@ class BackgroundMusic {
       unlocked: this.unlocked,
       readyState: this.audio.readyState,
       error: this.audio.error?.code ?? 0,
+      scene: this.scene,
+      score: 'legacy-fallback',
+      outputVolume: this.gain?.gain.value ?? this.audio.volume,
+      volumeBackend: this.gain ? 'web-audio' : 'media-element',
+      contextState: this.context?.state ?? null,
     }
   }
 
@@ -107,6 +129,41 @@ class BackgroundMusic {
     return this.muted ? 0 : this.volume
   }
 
+  /** iOS does not reliably honor HTMLMediaElement.volume. One owned GainNode controls the actual output. */
+  private prepareVolume() {
+    if (this.context || this.volumeUnavailable) return
+    const Context = window.AudioContext ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+    if (!Context) { this.volumeUnavailable = true; return }
+    let context: AudioContext | null = null
+    try {
+      context = new Context()
+      const gain = context.createGain()
+      gain.gain.value = this.level()
+      gain.connect(context.destination)
+      context.createMediaElementSource(this.audio).connect(gain)
+      this.context = context
+      this.gain = gain
+      this.audio.volume = 1 // Do not multiply the chosen volume twice on desktop browsers.
+      context.addEventListener('statechange', () => this.notify())
+    } catch {
+      if (context) void context.close().catch(() => undefined)
+      this.volumeUnavailable = true
+    }
+  }
+
+  private resumeContext() {
+    if (this.context && this.context.state !== 'running' && this.context.state !== 'closed')
+      void this.context.resume().catch(() => this.notify())
+  }
+
+  private applyVolume() {
+    if (this.gain && this.context) {
+      const now = this.context.currentTime
+      this.gain.gain.cancelScheduledValues(now)
+      this.gain.gain.setTargetAtTime(this.level(), now, 0.015)
+    } else this.audio.volume = this.level()
+  }
+
   private silent() {
     return this.muted || this.volume <= 0 || this.users === 0 || document.hidden
   }
@@ -115,8 +172,22 @@ class BackgroundMusic {
     return this.calm[this.cursor] ?? this.calm[0]
   }
 
+  private updateScene() {
+    clearTimeout(this.transition)
+    const scene = this.scenes.tick(performance.now()) ?? this.scene
+    const changed = scene !== this.scene
+    this.scene = scene
+    this.raid = scene === 'M13' || scene === 'M15'
+    const due = this.scenes.nextChangeAt()
+    this.transition = due !== null && this.users > 0 ? setTimeout(() => {
+      this.updateScene()
+      if (this.unlocked && !this.silent()) void this.follow()
+    }, Math.max(1, due - performance.now())) : undefined
+    if (changed) this.notify()
+  }
+
   private onEnded = () => {
-    if (this.mode !== 'calm' || this.raid || this.silent()) return
+    if (this.mode !== 'calm' || MUSIC_SCENES[this.scene].bed === 'battle' || this.silent()) return
     this.calmTime = 0
     this.cursor = (this.cursor + 1) % this.calm.length
     void this.play(this.calmUrl(), false, 0)
@@ -141,24 +212,25 @@ class BackgroundMusic {
   }
 
   private async follow() {
-    const raid = this.raid
+    const battle = MUSIC_SCENES[this.scene].bed === 'battle'
     const playingRaid = this.mode === 'battle' && this.audio.src.includes(BATTLE)
     const playingCalm = this.mode === 'calm' && this.audio.src.includes('/assets/music/part_')
-    if ((raid && playingRaid) || (!raid && playingCalm)) {
-      this.audio.volume = this.level()
+    if ((battle && playingRaid) || (!battle && playingCalm)) {
+      this.applyVolume()
+      this.resumeContext()
       if (this.audio.paused) await this.audio.play().catch(() => undefined)
       return
     }
     if (this.mode === 'calm' && this.audio.currentSrc.includes('/assets/music/part_')) this.calmTime = this.audio.currentTime
-    this.mode = raid ? 'battle' : 'calm'
-    await this.play(raid ? this.battle : this.calmUrl(), raid, raid ? 0 : this.calmTime)
+    this.mode = battle ? 'battle' : 'calm'
+    await this.play(battle ? this.battle : this.calmUrl(), battle, battle ? 0 : this.calmTime)
   }
 
   private async play(url: string, loop: boolean, at: number) {
     const token = ++this.token
     const absolute = new URL(url, window.location.href).href
     this.audio.loop = loop
-    this.audio.volume = this.level()
+    this.applyVolume()
     if (this.audio.src !== absolute) this.audio.src = url
     if (at > 0.25) {
       const seek = () => {
@@ -169,6 +241,7 @@ class BackgroundMusic {
       else this.audio.addEventListener('loadedmetadata', seek, { once: true })
     }
     if (token !== this.token || this.silent()) return
+    this.resumeContext()
     await this.audio.play().catch(() => undefined)
   }
 }

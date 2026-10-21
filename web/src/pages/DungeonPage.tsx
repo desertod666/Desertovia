@@ -7,6 +7,8 @@ import { useDungeonRun } from '../hooks'
 import { useI18n } from '../i18n'
 import { LoginPanel } from '../ui/LoginPanel'
 import {Hint} from '../ui/Hint'
+import { BackgroundMusic } from '../ui/BackgroundMusic'
+import { dungeonMusicScene } from '../game/musicContext'
 
 const ZOOM_STEP = 1.25
 
@@ -103,7 +105,10 @@ function DungeonView() {
         ) : view ? (
           <DungeonHud view={view} snapshot={snapshot} backTo={backTo} onRetreat={retreat}/>
         ) : null}
-        <DungeonCameraControls world={world} hasHero={!!myHeroId} />
+        <div className="dungeon-map-controls">
+          <DungeonCameraControls world={world} hasHero={!!myHeroId} />
+          <BackgroundMusic inline scene={dungeonMusicScene(view, snapshot)} />
+        </div>
       </div>
       {view && view.run.phase === 'Ended' && <DungeonResult view={view} backTo={backTo} />}
     </div>

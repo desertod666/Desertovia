@@ -2,9 +2,14 @@ import { useEffect, useSyncExternalStore } from 'react'
 import { backgroundMusic, cityRaidPlaying } from '../game/backgroundMusic'
 import { setMusicMuted, setMusicVolume, useMusicMuted, useMusicVolume } from '../gamePreferences'
 import { useI18n } from '../i18n'
+import type { MusicScene } from '../game/musicScene'
 
 /** Map control plus the playback that follows the open village. */
-export function BackgroundMusic({ battles }: { battles: readonly { finishedAt: string | null; phase: string }[] | undefined }) {
+export function BackgroundMusic({ battles, scene, inline = false }: {
+  battles?: readonly { finishedAt: string | null; phase: string }[]
+  scene?: MusicScene
+  inline?: boolean
+}) {
   const { language } = useI18n()
   const muted = useMusicMuted()
   const volume = useMusicVolume()
@@ -13,7 +18,7 @@ export function BackgroundMusic({ battles }: { battles: readonly { finishedAt: s
   const off = muted || volume <= 0
   const started = useSyncExternalStore(
     (listener) => backgroundMusic().subscribe(listener),
-    () => { const snap = backgroundMusic().snapshot(); return snap.unlocked && !snap.paused },
+    () => { const snap = backgroundMusic().snapshot(); return snap.unlocked && !snap.paused && (snap.contextState === null || snap.contextState === 'running') },
     () => false,
   )
 
@@ -24,8 +29,8 @@ export function BackgroundMusic({ battles }: { battles: readonly { finishedAt: s
   }, [])
 
   useEffect(() => {
-    backgroundMusic().apply({ raid, muted, volume })
-  }, [raid, muted, volume])
+    backgroundMusic().apply({ raid, scene, muted, volume })
+  }, [raid, scene, muted, volume])
 
   useEffect(() => {
     if (off) return
@@ -41,7 +46,7 @@ export function BackgroundMusic({ battles }: { battles: readonly { finishedAt: s
   return (
     <button
       type="button"
-      className="music-toggle"
+      className={`music-toggle${inline ? ' music-inline' : ''}`}
       aria-pressed={!off}
       aria-label={off ? (ru ? 'Включить музыку деревни' : 'Turn village music on') : (ru ? 'Музыка деревни' : 'Village music')}
       title={off ? (ru ? 'Включить музыку' : 'Turn music on') : (ru ? 'Выключить музыку' : 'Turn music off')}
@@ -107,8 +112,8 @@ export function MusicSettings() {
       </label>
       <p className="small muted">
         {ru
-          ? 'Спокойные мелодии играют по одной. Когда набег доходит до деревни, звучит боевая.'
-          : 'Calm melodies play one at a time. When a raid reaches the village, the battle theme takes over.'}
+          ? 'В бою звучит боевая тема. После него продолжается спокойный плейлист.'
+          : 'Combat uses the battle theme. Afterwards, the calm playlist resumes.'}
       </p>
     </section>
   )
