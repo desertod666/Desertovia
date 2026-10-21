@@ -65,7 +65,12 @@ public sealed record DungeonRunDto(
     IReadOnlyList<DungeonRunHeroDto> Heroes,
     Guid? MyHeroId,
     DungeonDto Run,
-    DungeonSnapshotDto? Snapshot);
+    DungeonSnapshotDto? Snapshot)
+{
+    public DungeonRunKind Kind { get; init; }
+    public EnemyKind? EncounterEnemy { get; init; }
+    public bool WorkSettlementPending { get; init; }
+}
 
 public sealed record DungeonHeroSnapshotDto(
     Guid Id,

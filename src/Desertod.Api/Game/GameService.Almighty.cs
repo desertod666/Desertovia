@@ -98,7 +98,7 @@ public sealed partial class GameService
             Fortifications.Ensure(village,projects);
             var readiness=RaidBalance.Assess(village,guardCitizens,online: guardCitizens.Where(c=>presence.IsPresent(c.Id)).Select(c=>c.Id).ToHashSet(),now);
             var options = AlmightyPolicy.Options(facts, RaidBalance.Approaches(village),readiness.Budget).Concat(VigorTuning.Options(village)).ToList();
-            if (facts.Online >= 3 && facts.PendingRaids == 0 && facts.Patients == 0 && !await db.DungeonRuns.AnyAsync(r => r.VillageId == villageId && r.Phase != DungeonPhase.Ended, ct))
+            if (facts.Online >= 3 && facts.PendingRaids == 0 && facts.Patients == 0 && !await db.DungeonRuns.AnyAsync(r => r.VillageId == villageId && r.Kind==DungeonRunKind.Group && r.Phase != DungeonPhase.Ended, ct) && !await HasPersonalEncounterAsync(db,villageId,village.OwnerAccountId,ct))
                 options.Add(new("dungeon", "Общий поход", "Открыть сбор в существующий данж. Вход добровольный, обычные правила/награды/ранения."));
             // Любая недавняя заявка о набеге, включая отклонённую, даёт царю паузу.
             var raidOptionIds = AlmightyPolicy.RaidOptionIds();
@@ -258,7 +258,7 @@ public sealed partial class GameService
                 }
                 var allowed = AlmightyPolicy.Options(facts, paths,bossBudget).Concat(VigorTuning.Options(village)).FirstOrDefault(o => o.Id == p.Option);
                 var approach = allowed?.Sector is { } sector ? paths.FirstOrDefault(a => a.Sector == sector) : null;
-                var permitted = allowed is not null || p.Option == "dungeon" && facts.Online >= 3 && facts.Patients == 0 && facts.PendingRaids == 0 && !await db.DungeonRuns.AnyAsync(r => r.VillageId == villageId && r.Phase != DungeonPhase.Ended, ct);
+                var permitted = allowed is not null || p.Option == "dungeon" && facts.Online >= 3 && facts.Patients == 0 && facts.PendingRaids == 0 && !await db.DungeonRuns.AnyAsync(r => r.VillageId == villageId && r.Kind==DungeonRunKind.Group && r.Phase != DungeonPhase.Ended, ct) && !await HasPersonalEncounterAsync(db,villageId,village.OwnerAccountId,ct);
                 if (p.Option.StartsWith("vigor_", StringComparison.Ordinal))
                 {
                     using var snapshot = JsonDocument.Parse(p.Snapshot);

@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Desertod.Api.Game;
 using Desertod.Domain.Director;
+using Desertod.Domain.Dungeons;
 using Desertod.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -260,6 +261,39 @@ public sealed class AlmightyApiTests(DesertodApiFactory factory)
         await game.DecideAlmightyAsync(proposal.Id, city.OwnerAccountId, null, true, default);
         Assert.Equal("Superseded", (await db.AlmightyProposals.AsNoTracking().SingleAsync(x => x.Id == proposal.Id)).Status);
         Assert.Empty((await db.Villages.AsNoTracking().SingleAsync(x => x.Id == city.Id)).Raids);
+    }
+
+    [Fact]
+    public async Task Dungeon_proposal_rechecks_the_owners_personal_fight_and_public_open_has_the_same_admission()
+    {
+        var v=await players.FoundVillageAsync("Busy royal hunter");
+        for(var i=0;i<3;i++)
+        {
+            var resident=await players.JoinAsync(v,"Ready"+i);
+            factory.Services.GetRequiredService<CitizenPresence>().Touch(resident.Id,v.Slug);
+        }
+        await using var db=await factory.Services.GetRequiredService<IDbContextFactory<DesertodDbContext>>().CreateDbContextAsync();
+        var city=await db.Villages.SingleAsync(x=>x.Slug==v.Slug);
+        var game=factory.Services.GetRequiredService<GameService>();
+        var review=(await game.BeginAlmightyReviewAsync(city.Id,default))!;
+        Assert.Contains(review.Options,o=>o.Id=="dungeon");
+        Assert.True(await game.CompleteAlmightyReviewAsync(review,new("dungeon","Общий поход.","Подготовить сбор."),default));
+        var proposal=await db.AlmightyProposals.AsNoTracking().SingleAsync(x=>x.VillageId==city.Id);
+        // Another accepted activity can start after the proposal. Only the private admission fact is arranged.
+        var personal=new DungeonRun{VillageId=city.Id,Kind=DungeonRunKind.Ambush,DungeonId="ambush-wolf",Phase=DungeonPhase.Running,
+            OpenedAt=factory.Clock.GetUtcNow(),Heroes=[new(){AccountId=city.OwnerAccountId,Name="Tsar",Class=HeroClass.Brawler}]};
+        db.DungeonRuns.Add(personal);await db.SaveChangesAsync();
+        try
+        {
+            await Players.AssertRuleBrokenAsync(await v.Tsar.PostAsJsonAsync(v.Path+"/dungeon",new{dungeonId="dead-lands"}),"dungeon.busy");
+            await game.DecideAlmightyAsync(proposal.Id,city.OwnerAccountId,null,true,default);
+            Assert.Equal("Superseded",(await db.AlmightyProposals.AsNoTracking().SingleAsync(x=>x.Id==proposal.Id)).Status);
+            Assert.False(await db.DungeonRuns.AnyAsync(r=>r.VillageId==city.Id&&r.Kind==DungeonRunKind.Group));
+            await game.SetAlmightyModeAsync(v.Slug,city.OwnerAccountId,"Propose",default);
+            var fresh=(await game.BeginAlmightyReviewAsync(city.Id,default))!;
+            Assert.DoesNotContain(fresh.Options,o=>o.Id=="dungeon");
+        }
+        finally{db.DungeonRuns.Remove(personal);await db.SaveChangesAsync();}
     }
 
 }

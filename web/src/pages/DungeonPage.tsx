@@ -124,7 +124,7 @@ export function DungeonHud({ view, snapshot, backTo,onRetreat }: { view: Dungeon
   const foesLeft = snapshot ? snapshot.foes.filter((foe) => foe.health > 0).length : view.run.foes - view.run.slain
   const target = live?.targetFoe != null ? snapshot?.foes.find((foe) => foe.id === live.targetFoe) : undefined
   const running = view.run.phase === 'Running' && snapshot !== null
-  const floorName = !snapshot
+  const floorName = view.kind==='Ambush'?(i18n.language==='ru'?'Засада':'Ambush')+(view.encounterEnemy?` · ${i18n.enemy(view.encounterEnemy)}`:''):!snapshot
     ? t('dungeon.deadLands')
     : snapshot.floor === 2
       ? t('dungeon.floor.barrow')
@@ -137,7 +137,7 @@ export function DungeonHud({ view, snapshot, backTo,onRetreat }: { view: Dungeon
   if (!running) hint = view.run.phase === 'Ended' ? '' : t('dungeon.waiting')
   else if (!hero) hint = t('dungeon.hintWatcher')
   else if (live?.state === 'Fleeing') hint = t('dungeon.fled')
-  else if (live?.state === 'Left') hint = t('dungeon.out')
+  else if (live?.state === 'Left') hint = view.kind==='Ambush'?(i18n.language==='ru'?'Встреча закончилась. Можно вернуться в мир.':'The encounter has ended. Return to the world.'):t('dungeon.out')
   else if(live?.retreating)hint=i18n.language==='ru'?'Герой отходит к выходу.':'Your hero is withdrawing to the exit.'
   else hint = hero.class === 'Healer' ? t('dungeon.hintHealer') : t('dungeon.hintFighter')
 
@@ -181,10 +181,15 @@ export function DungeonHud({ view, snapshot, backTo,onRetreat }: { view: Dungeon
   )
 }
 
-function DungeonResult({ view, backTo }: { view: DungeonRunView; backTo: string }) {
+export function DungeonResult({ view, backTo }: { view: DungeonRunView; backTo: string }) {
   const i18n = useI18n()
   const { t } = i18n
   const run = view.run
+  if(view.kind==='Ambush')return <div className="modal-backdrop"><div className="modal dungeon-result" role="dialog" aria-label={i18n.language==='ru'?'Итог засады':'Encounter result'}>
+    <header className="modal-header"><h2>{i18n.language==='ru'?(run.outcome==='Victory'?'Противник повержен':'Встреча завершена'):(run.outcome==='Victory'?'Enemy defeated':'Encounter ended')}</h2></header>
+    <div className="modal-body"><p>{view.workSettlementPending?(i18n.language==='ru'?'Результат задания сохранён и ожидает завершения восстановления.':'The work result is saved and waiting for recovery to finish.'):(i18n.language==='ru'?'Исход учтён в результате задания.':'The outcome has been included in your work result.')}</p>
+    <Link className="button primary" to={backTo}>{i18n.language==='ru'?'Вернуться в мир':'Return to the world'}</Link></div>
+  </div></div>
   return (
     <div className="modal-backdrop">
       <div className="modal dungeon-result" role="dialog" aria-label={t(`dungeon.result.${run.outcome}`)}>

@@ -3,6 +3,8 @@ using Desertod.Domain.Combat;
 
 namespace Desertod.Domain.Dungeons;
 
+public enum DungeonRunKind { Group, Ambush }
+
 public enum DungeonPhase
 {
     /// <summary>The Tsar called; citizens answer until <see cref="DungeonRun.GatheringEndsAt"/>.</summary>
@@ -39,6 +41,11 @@ public sealed class DungeonRun
 {
     public Guid Id { get; set; } = Guid.CreateVersion7();
     public Guid VillageId { get; set; }
+    public DungeonRunKind Kind { get; set; }
+    public Guid? WorkCitizenId { get; set; }
+    public DateTimeOffset? WorkStartedAt { get; set; }
+    public string? WorkTaskId { get; set; }
+    public EnemyKind? AmbushEnemy { get; set; }
     public required string DungeonId { get; set; }
     public DungeonPhase Phase { get; set; }
     public DungeonOutcome Outcome { get; set; }

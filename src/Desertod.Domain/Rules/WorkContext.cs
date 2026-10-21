@@ -10,6 +10,8 @@ public sealed class WorkContext
     public Citizen? RescuePatient { get; init; }
     /// <summary>Fresh combat admission checked under the same world transaction before settlement.</summary>
     public bool RestBlockedByCombat { get; set; }
+    public bool SkipAmbush { get; set; }
+    public Desertod.Domain.Combat.FightReport? ResolvedAmbush { get; set; }
 
     /// <summary>Active project with materials and all contributions loaded.</summary>
     public VillageProject? Project { get; init; }

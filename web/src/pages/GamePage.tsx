@@ -423,6 +423,11 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
   const arrival = dungeon && (dungeon.phase === 'Marching' || dungeon.phase === 'Running') ? myArrival(dungeon, citizen?.id ?? null, tsar) : null
   const ownHero = dungeon ? myHero(dungeon, citizen?.id ?? null, tsar) : null
   const summary = citizen ? live.citizens.get(citizen.id) : undefined
+  const encounterRunId=summary?summary.encounterRunId??null:citizen?.encounterRunId??null
+  useEffect(()=>{
+    if(!encounterRunId||sessionStorage.getItem(sentToDungeonKey(encounterRunId)))return
+    sessionStorage.setItem(sentToDungeonKey(encounterRunId),'1');navigate(dungeonPath(slug,encounterRunId))
+  },[encounterRunId,slug,navigate])
   const woundedUntil = tsar ? live.state?.tsar.injuredUntil : summary ? summary.injuredUntil : citizen?.injuredUntil
   const lyingDown = !!woundedUntil && Date.parse(woundedUntil) > Date.now()
   const sendable = ownHero !== null && !ownHero.settled && !ownHero.knockedOut && !lyingDown
@@ -877,6 +882,10 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
       />
       {!inCombat&&!walletOpen&&!chatFull&&<ServerClock offsetMs={serverOffset}>{now=><JourneyControl journey={tsar?village.tsar.journey:citizen?.journey??summary?.journey} now={now} onAtlas={()=>setAtlasOpen(true)} onResume={async body=>{setVillageState(await api.resumeJourney(slug,body));if(!tsar)await loadCitizen()}} onCancel={citizen?.state==='Paused'&&citizen.restState!=='RestRequested'?cancelTask:undefined}/>}</ServerClock>}
 
+      {encounterRunId&&!walletOpen&&!chatFull&&<section className="journey-control card" aria-label={i18n.language==='ru'?'Работа и бой':'Work encounter'}>
+        <strong>{i18n.language==='ru'?'Засада · задание ждёт исхода':'Ambush · your work awaits the outcome'}</strong>
+        <Link className="button" to={dungeonPath(slug,encounterRunId)}>{i18n.language==='ru'?'Вернуться к бою':'Return to the fight'}</Link>
+      </section>}
       {!walletOpen&&!chatFull && <button
         className="ui-toggle"
         onClick={toggleUi}
@@ -1059,7 +1068,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
           {(now) => (
             <BottomBar
               inCombat={inCombat}
-              journeyBlocked={!!(tsar?village.tsar.journey:citizen?.journey??summary?.journey)?.blockedAt}
+              journeyBlocked={!!encounterRunId||!!(tsar?village.tsar.journey:citizen?.journey??summary?.journey)?.blockedAt}
               citizen={citizen}
               catalog={catalog}
               structures={village.structures}

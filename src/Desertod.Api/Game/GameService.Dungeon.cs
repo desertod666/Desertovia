@@ -35,12 +35,13 @@ public sealed partial class GameService
                 throw new UnauthorizedAccessException();
             }
 
-            if (await db.DungeonRuns.AnyAsync(r => r.VillageId == village.Id && r.Phase != DungeonPhase.Ended, cancellationToken))
+            if (await db.DungeonRuns.AnyAsync(r => r.VillageId == village.Id && r.Kind==DungeonRunKind.Group && r.Phase != DungeonPhase.Ended, cancellationToken))
             {
                 throw new GameRuleException("dungeon.alreadyOpen", "The tribe is already off to a dungeon.");
             }
 
             var now = time.GetUtcNow();
+            if(await HasPersonalEncounterAsync(db,village.Id,accountId,cancellationToken))throw new GameRuleException("dungeon.busy","Leave the current fight first.");
             var run = DungeonRules.Open(village, dungeonId, await TsarNameAsync(db, village, cancellationToken), Random.Shared.Next(), now);
             db.DungeonRuns.Add(run);
             await db.SaveChangesAsync(cancellationToken);
@@ -83,7 +84,7 @@ public sealed partial class GameService
         var citizen = await db.Citizens.AsNoTracking().SingleAsync(c => c.Id == key.Id, cancellationToken);
         var village = await db.Villages.AsNoTracking().SingleAsync(v => v.Id == key.VillageId, cancellationToken);
         var run = await db.DungeonRuns.AsNoTracking()
-            .Where(r => r.VillageId == village.Id && r.Phase == DungeonPhase.Gathering)
+            .Where(r => r.VillageId == village.Id && r.Kind==DungeonRunKind.Group && r.Phase == DungeonPhase.Gathering)
             .FirstOrDefaultAsync(cancellationToken);
         var hero = run?.Hero(citizen.Id);
         var leather = village.Stock(ResourceKind.LeatherArmor) + citizen.Carried(ResourceKind.LeatherArmor) > 0
@@ -181,6 +182,15 @@ public sealed partial class GameService
             var citizens = await db.Citizens.Where(c => c.DungeonRunId == run.Id).ToListAsync(cancellationToken);
             var now = time.GetUtcNow();
             DungeonStart? start = null;
+            if(run.Kind==DungeonRunKind.Ambush)
+            {
+                if(run.Phase!=DungeonPhase.Marching||run.MarchEndsAt>now)return null;
+                DungeonRules.Start(run,now);
+                var saved=DungeonSave.Read(run.CheckpointJson??throw new InvalidOperationException("Missing encounter checkpoint."));
+                start=saved.Resume(run,village.Slug);
+                await db.SaveChangesAsync(cancellationToken);changes.Mark(village.Id);
+                return start;
+            }
             foreach (var patient in citizens.Where(c => c.RecoveryPausedAt is not null).ToList())
             {
                 if (run.Phase == DungeonPhase.Gathering) DungeonRules.Leave(run, village, patient, now);
@@ -253,7 +263,7 @@ public sealed partial class GameService
             foreach (var exit in exits)
             {
                 var hero = run.Heroes.FirstOrDefault(h => h.CitizenId == exit.HeroId || (h.IsTsar && h.AccountId == exit.HeroId));
-                if (hero is null)
+                if (hero is null||hero.Settled)
                 {
                     continue;
                 }
@@ -261,7 +271,12 @@ public sealed partial class GameService
                 var citizen = citizens.FirstOrDefault(c => c.Id == hero.CitizenId);
                 // A retry after rollback must not reroll broken equipment.
                 var random = checkpoint is null ? Random.Shared : DungeonRandom.FromSeed(run.Seed ^ BitConverter.ToInt32(exit.HeroId.ToByteArray()));
-                DungeonRules.Settle(run, hero, citizen, village, exit.Outcome, random, now);
+                if(run.Kind==DungeonRunKind.Ambush)
+                {
+                    if(citizen is null)throw new InvalidOperationException("Missing encounter worker.");
+                    await SettleWorkEncounterAsync(db,village,run,hero,citizen,exit.Outcome,random,now,cancellationToken);
+                }
+                else DungeonRules.Settle(run, hero, citizen, village, exit.Outcome, random, now);
             }
 
             run.Slain = slain;
@@ -279,7 +294,7 @@ public sealed partial class GameService
             if (outcome is not null)
             {
                 logger.DungeonEnded(village.Slug, run.Id, run.Outcome.ToString(), run.Slain, run.Foes);
-                await notifier.DungeonEnded(village.Slug, run.ToDto());
+                if(run.Kind==DungeonRunKind.Group)await notifier.DungeonEnded(village.Slug, run.ToDto());
             }
 
             changes.Mark(village.Id);
@@ -321,7 +336,7 @@ public sealed partial class GameService
         await using (var db = await contextFactory.CreateDbContextAsync(cancellationToken))
         {
             unfinished = (await db.DungeonRuns
-                    .Where(r => r.Phase == DungeonPhase.Running && r.CheckpointJson == null)
+                    .Where(r => r.Kind==DungeonRunKind.Group && r.Phase == DungeonPhase.Running && r.CheckpointJson == null)
                     .Select(r => new { r.Id, r.VillageId })
                     .ToListAsync(cancellationToken))
                 .Select(r => (r.Id, r.VillageId))
@@ -374,11 +389,14 @@ public sealed partial class GameService
             return null;
         }
 
+        if(run.Kind==DungeonRunKind.Ambush&&!run.Heroes.Any(h=>h.AccountId==accountId))throw new UnauthorizedAccessException();
+
         var village = await db.Villages.AsNoTracking().SingleAsync(v => v.Id == run.VillageId, cancellationToken);
         var citizenIds = run.Heroes.Where(h => h.CitizenId is not null).Select(h => h.CitizenId!.Value).ToList();
         var citizens = await db.Citizens.AsNoTracking().Where(c => citizenIds.Contains(c.Id)).ToListAsync(cancellationToken);
-        var heroes = await RunHeroesAsync(db, run, village, citizens, cancellationToken);
-        var dungeon = DungeonCatalog.Get(run.DungeonId);
+        var saved=run.Kind==DungeonRunKind.Ambush?DungeonSave.Read(run.CheckpointJson??throw new InvalidOperationException("Missing encounter checkpoint.")):null;
+        var heroes = saved?.Heroes??await RunHeroesAsync(db, run, village, citizens, cancellationToken);
+        var dungeon = saved?.Fight.Definition??DungeonCatalog.Get(run.DungeonId);
         var mine = accountId is { } id ? run.Heroes.FirstOrDefault(h => h.AccountId == id) : null;
         return new DungeonRunDto(
             run.Id,
@@ -392,7 +410,7 @@ public sealed partial class GameService
             heroes,
             mine is null ? null : mine.CitizenId ?? mine.AccountId,
             run.ToDto(),
-            null);
+            null){Kind=run.Kind,EncounterEnemy=run.AmbushEnemy,WorkSettlementPending=run.Kind==DungeonRunKind.Ambush&&citizens.Any(c=>c.Id==run.WorkCitizenId&&!c.CycleSettled)};
     }
 
     private async Task<DungeonStart> BuildStartAsync(
@@ -500,7 +518,7 @@ public sealed partial class GameService
 
     private static async Task<DungeonRun> RequireGatheringAsync(DesertodDbContext db, Guid villageId, CancellationToken cancellationToken) =>
         await db.DungeonRuns
-            .Where(r => r.VillageId == villageId && r.Phase == DungeonPhase.Gathering)
+            .Where(r => r.VillageId == villageId && r.Kind==DungeonRunKind.Group && r.Phase == DungeonPhase.Gathering)
             .OrderByDescending(r => r.OpenedAt)
             .FirstOrDefaultAsync(cancellationToken)
         ?? throw new GameRuleException("dungeon.notGathering", "Nobody is gathering for a dungeon now.");

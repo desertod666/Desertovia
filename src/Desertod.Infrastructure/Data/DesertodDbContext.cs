@@ -319,6 +319,7 @@ public sealed partial class DesertodDbContext(DbContextOptions<DesertodDbContext
 
         modelBuilder.Entity<Citizen>(citizen =>
         {
+            citizen.Property(c=>c.CycleEncounterReportJson).HasColumnType("jsonb");
             citizen.HasKey(c => c.Id);
             citizen.Property(c => c.CurrentTargetPlotId).HasMaxLength(32);
             citizen.HasIndex(c => new { c.VillageId, c.AccountId }).IsUnique();
@@ -436,6 +437,10 @@ public sealed partial class DesertodDbContext(DbContextOptions<DesertodDbContext
             run.HasKey(r => r.Id);
             run.HasIndex(r => new { r.VillageId, r.Phase });
             run.Property(r => r.DungeonId).HasMaxLength(32);
+            run.Property(r=>r.Kind).HasConversion<string>().HasMaxLength(16).HasDefaultValue(DungeonRunKind.Group);
+            run.Property(r=>r.AmbushEnemy).HasConversion<string>().HasMaxLength(16);
+            run.Property(r=>r.WorkTaskId).HasMaxLength(64);
+            run.HasIndex(r=>new{r.WorkCitizenId,r.WorkStartedAt}).IsUnique().HasFilter("\"Kind\" = 'Ambush'");
             run.Property(r => r.Phase).HasConversion<string>().HasMaxLength(16);
             run.Property(r => r.Outcome).HasConversion<string>().HasMaxLength(16);
             run.Property(r => r.CheckpointJson).HasColumnType("jsonb");

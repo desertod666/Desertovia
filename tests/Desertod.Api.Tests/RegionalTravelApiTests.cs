@@ -47,17 +47,25 @@ public sealed class RegionalTravelApiTests(DesertodApiFactory factory)
     [Fact]
     public async Task Downgrade_refuses_to_erase_explored_southern_land_and_leaves_schema_and_fog_intact()
     {
-        var v=await players.FoundVillageAsync("Keep discovered land");byte[] fog;
-        await players.ArrangeVillageAsync(v.Slug,(world,_)=>Exploration.Reveal(world.Explored,RegionalTerrain.MarshTrail,2));
-        await using(var db=await Db())
+        // A destructive migration rehearsal owns its database; unrelated active encounters
+        // in the shared API fixture must neither mask this guard nor lose their schema.
+        var isolated=new DesertodApiFactory();await isolated.InitializeAsync();
+        try
         {
-            fog=(await db.Villages.SingleAsync(w=>w.Slug==v.Slug)).Explored;
-            var error=await Assert.ThrowsAnyAsync<Exception>(()=>db.Database.MigrateAsync("20261020225359_AccountNotificationPreferences"));
-            Assert.Contains("Southern land has been explored",error.ToString());
+            var localPlayers=new Players(isolated);var v=await localPlayers.FoundVillageAsync("Keep discovered land");byte[] fog;
+            await localPlayers.ArrangeVillageAsync(v.Slug,(world,_)=>Exploration.Reveal(world.Explored,RegionalTerrain.MarshTrail,2));
+            var contexts=isolated.Services.GetRequiredService<IDbContextFactory<DesertodDbContext>>();
+            await using(var db=await contexts.CreateDbContextAsync())
+            {
+                fog=(await db.Villages.SingleAsync(w=>w.Slug==v.Slug)).Explored;
+                var error=await Assert.ThrowsAnyAsync<Exception>(()=>db.Database.MigrateAsync("20261020225359_AccountNotificationPreferences"));
+                Assert.Contains("Southern land has been explored",error.ToString());
+            }
+            await using var check=await contexts.CreateDbContextAsync();
+            Assert.Contains("20261020232201_SouthernRegions",await check.Database.GetAppliedMigrationsAsync());
+            Assert.Equal(fog,(await check.Villages.SingleAsync(w=>w.Slug==v.Slug)).Explored);
         }
-        await using var check=await Db();
-        Assert.Contains("20261020232201_SouthernRegions",await check.Database.GetAppliedMigrationsAsync());
-        Assert.Equal(fog,(await check.Villages.SingleAsync(w=>w.Slug==v.Slug)).Explored);
+        finally{await ((IAsyncLifetime)isolated).DisposeAsync();}
     }
 
     [Fact]

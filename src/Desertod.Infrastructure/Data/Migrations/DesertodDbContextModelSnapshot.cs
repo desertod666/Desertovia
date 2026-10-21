@@ -363,6 +363,10 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("AmbushEnemy")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
                     b.Property<string>("CheckpointJson")
                         .HasColumnType("jsonb");
 
@@ -379,6 +383,13 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                     b.Property<DateTimeOffset>("GatheringEndsAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasDefaultValue("Group");
 
                     b.Property<DateTimeOffset?>("MarchEndsAt")
                         .HasColumnType("timestamp with time zone");
@@ -414,9 +425,23 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<Guid>("VillageId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("WorkCitizenId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("WorkStartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("WorkTaskId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("VillageId", "Phase");
+
+                    b.HasIndex("WorkCitizenId", "WorkStartedAt")
+                        .IsUnique()
+                        .HasFilter("\"Kind\" = 'Ambush'");
 
                     b.ToTable("DungeonRuns");
                 });
@@ -857,6 +882,21 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<string>("CurrentTechnologyId")
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
+
+                    b.Property<bool>("CycleAmbushChecked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("CycleEncounterReportJson")
+                        .HasColumnType("jsonb");
+
+                    b.Property<Guid?>("CycleEncounterRunId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("CycleEncounterSeed")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CycleEncounterVersion")
+                        .HasColumnType("integer");
 
                     b.Property<DateTimeOffset?>("CycleEndsAt")
                         .HasColumnType("timestamp with time zone");
