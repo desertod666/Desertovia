@@ -30,6 +30,8 @@ public sealed partial class DesertodDbContext
         model.Entity<AlmightyObservation>().HasAlternateKey(x => new { x.VillageId, x.Id });
         model.Entity<DirectorFinanceAction>(b =>
         {
+            // Existing receipts were executed; new shadow false must be explicitly written, never replaced by the SQL default.
+            b.Property(x => x.Applied).HasDefaultValue(true).ValueGeneratedNever();
             b.HasKey(x => new { x.VillageId, x.ReviewId }); b.HasIndex(x => new { x.VillageId, x.At });
             b.Property(x => x.Terms).HasColumnType("jsonb"); b.Property(x => x.Before).HasColumnType("jsonb");
             b.HasOne<Village>().WithMany().HasForeignKey(x => x.VillageId).OnDelete(DeleteBehavior.Cascade);

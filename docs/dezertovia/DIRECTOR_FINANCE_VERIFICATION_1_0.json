@@ -1,8 +1,8 @@
 {
-  "recorded_at_utc": "2026-10-21T13:58:42.367057+00:00",
+  "recorded_at_utc": "2026-10-21T14:43:36.149456+00:00",
   "branch": "feat/desertovia-1-0-director-finance",
   "source_parent": "c8cd2e6",
-  "status": "implemented_scoped_checks_passed_repaired_exact_ci_required",
+  "status": "delegated_execution_slice_full_ci_verified_broader_T054_open",
   "implemented": true,
   "verified": "scoped_not_full_T054",
   "released": false,
@@ -233,20 +233,21 @@
     "scope": "Own pre-existing synthetic QA world only.Grant v1 then pause v2, Off, original grant replay v1 and old funding receipt replay; zero money change. Current API product source loaded; model/Telegram/DevTools disabled."
   },
   "candidate_ci": {
-    "run_id": 39610526154,
-    "head_sha": "d2a9f61753a01dc9dffdd3bd75610eaab032ddc6",
-    "status": "backend_two_legacy_fixture_failures_browser_still_running",
+    "status": "verified_all_five_jobs_success",
+    "head_sha": "b0be7d94da790665e82a4b8cbca1ee71abbc61ea",
+    "run_id": 39612879313,
     "domain_passed": 726,
-    "api_passed": 480,
-    "api_failed": 2,
-    "failures": [
-      "TreasuryFundingMigrationTests old/all-column comparison and partial downgrade shape",
-      "MonetaryAuditMigrationTests old/all-column comparison and partial downgrade shape"
-    ],
-    "frontend": "success",
-    "docker": "success",
-    "repair": "Exclude only new nullable DirectorReviewId from old-column comparison, assert it separately; re-upgrade current schema after the older guard refuses. No game guard weakened.",
-    "replacement_status": "two corrected legacy migration tests passed locally; exact replacement CI required"
+    "api_passed": 482,
+    "browser_passed": 420,
+    "browser_skipped": 2,
+    "jobs": {
+      "backend": 119266613165,
+      "browser_1": 119266612812,
+      "browser_2": 119266613383,
+      "frontend": 119266613651,
+      "docker": 119266613371
+    },
+    "scope": "Exact parent delegated-execution slice only; not the new ShadowEconomy source or full T054."
   },
   "remaining": [
     "Exact final candidate API/browser/CI/restart evidence",
@@ -271,5 +272,21 @@
     "src/Desertod.Api/Game/GameService.DirectorFinance.cs": "e401fa3a920033398a3d96107bcf3a67b4b84cc996e52674da8b02a34d2f439f",
     "src/Desertod.Domain/Director/DirectorFinance.cs": "2d8b92db6a970c4e011f8622c356a25db4515cfc34eed693de6dadb668cb20e2",
     "src/Desertod.Infrastructure/Data/DesertodDbContext.DirectorFinance.cs": "d676af5d25e5f6c7a2504794718e5cdf78c5dd0dfe776173357913e416017283"
+  },
+  "initial_candidate_ci": {
+    "run_id": 39610526154,
+    "head_sha": "d2a9f61753a01dc9dffdd3bd75610eaab032ddc6",
+    "status": "backend_two_legacy_fixture_failures_browser_still_running",
+    "domain_passed": 726,
+    "api_passed": 480,
+    "api_failed": 2,
+    "failures": [
+      "TreasuryFundingMigrationTests old/all-column comparison and partial downgrade shape",
+      "MonetaryAuditMigrationTests old/all-column comparison and partial downgrade shape"
+    ],
+    "frontend": "success",
+    "docker": "success",
+    "repair": "Exclude only new nullable DirectorReviewId from old-column comparison, assert it separately; re-upgrade current schema after the older guard refuses. No game guard weakened.",
+    "replacement_status": "two corrected legacy migration tests passed locally; exact replacement CI required"
   }
 }

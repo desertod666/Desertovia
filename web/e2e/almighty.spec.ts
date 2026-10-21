@@ -38,3 +38,18 @@ test('economic delegation retries a lost acknowledgement and stop preserves spen
  const panel=page.locator('.almighty-panel')
  expect(await panel.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true)
 })
+
+test('shadow mode and executed versus hypothetical history remain distinct at320px',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('desertod.language','ru'))
+ await page.setViewportSize({width:320,height:760})
+ await page.goto('/e2e/almighty-harness.html')
+ await page.getByRole('button',{name:/Всевышний/}).click()
+ await page.getByRole('button',{name:'Теневая экономика',exact:true}).click()
+ await expect(page.getByRole('button',{name:'Теневая экономика',exact:true})).toHaveClass(/active/)
+ await page.getByText('Самостоятельная экономика',{exact:true}).click()
+ await page.getByText('Решения и результат',{exact:true}).click()
+ await expect(page.getByText('Ничего не исполнено.',{exact:false})).toBeVisible()
+ await expect(page.getByText('Выделено40 в фонд.',{exact:false})).toBeVisible()
+ await expect(page.getByText('За сутки: 1/3 · Выделено в фонды: 40/100',{exact:true})).toBeVisible()
+ expect(await page.locator('.almighty-panel').evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true)
+})

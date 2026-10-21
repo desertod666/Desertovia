@@ -1,0 +1,58 @@
+{
+  "scope": "scripted existing bridge, actual service/DB/work/payment/audit; no paid model or Telegram",
+  "passed": true,
+  "receipt": {
+    "path": "TestResults/director-shadow-loop/director-shadow-loop.trx",
+    "sha256": "d0720afcd0ef22c90104ed0879554953d4e39f19b10e4419112d3a584f78f23f",
+    "counters": {
+      "total": "1",
+      "executed": "1",
+      "passed": "1",
+      "failed": "0",
+      "error": "0",
+      "timeout": "0",
+      "aborted": "0",
+      "inconclusive": "0",
+      "passedButRunAborted": "0",
+      "notRunnable": "0",
+      "notExecuted": "0",
+      "disconnected": "0",
+      "warning": "0",
+      "completed": "0",
+      "inProgress": "0",
+      "pending": "0"
+    }
+  },
+  "initial_money": 0,
+  "shadow_issue": {
+    "proposed": 50,
+    "applied": false,
+    "money_change": 0,
+    "economic_actions_spent": 0
+  },
+  "actual_issuance": 50,
+  "work_fund": 50,
+  "cycles": 2,
+  "pay_each": 25,
+  "wallets": [
+    25,
+    25
+  ],
+  "final_treasury": 0,
+  "final_work_reserve": 0,
+  "equation": "50 = 25 + 25 + 0 + 0",
+  "legacy_wage_issuance": 0,
+  "accepted_work_paid_after_director_stop": true,
+  "repeat_reads_pay_again": false,
+  "actual_wood": 4,
+  "wood_target": 10,
+  "hungry_residents": 0,
+  "next_issue_proposed_only": 24,
+  "next_issue_purpose": "Wood",
+  "next_model_choice": "none",
+  "economic_actions_applied": 2,
+  "shadow_decisions": 1,
+  "model_reviews_counted": 4,
+  "causal_attribution_claimed": false,
+  "remaining": "Not a calibrated economy, actual-provider judgment or full T055/T026/A37."
+}

@@ -2286,7 +2286,7 @@
       "current_support": {
         "status": "partial_implemented_scoped_verification_running",
         "evidence": "DIRECTOR_FINANCE_1_0.md / DIRECTOR_FINANCE_VERIFICATION_1_0.json: delegated closed economic executors, fresh admission, system audit and comparative consequences; no default grant or chosen live tax scale. Full T054 remains open.",
-        "runtime_verification": "726Domain;39initial/20expanded/2finalAPI across stages;4browser and1122botCI PASS;57to58 preserved27old tables, actual grant/pause/restart/replay unchanged800/160. First gameCI had2legacy migration fixture failures, repaired locally; exact replacement CI required. No real model/Telegram."
+        "runtime_verification": "Exact parent b0be7d9 CI39612879313 all5 green:726Domain/482API/420browser+2skip, frontend/Docker. Scoped runtime/restart verified; broader T054/T026 remain open."
       },
       "owner_economic_direction": {
         "decision": "D111",
@@ -2338,9 +2338,9 @@
       "original_task_id": "T055",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "plan",
-        "evidence": "Текущие режимы Off/Observe/Propose; самостоятельное исполнение не включено и здесь не переключалось.",
-        "runtime_verification": "not_run_this_assignment"
+        "status": "partial_implemented_scoped_verified_full_ci_required",
+        "evidence": "DIRECTOR_SHADOW_1_0.md / VERIFICATION / CLOSED_LOOP_TRACE: separate hypothetical receipts, fresh mode fence, model budget retained; actual scripted service issue/order/work/pay/observe loop. Real-provider quality and whole T055 incomplete.",
+        "runtime_verification": "726Domain/6browser/14mockedBot and scoped API across stages pass; actual58to59 preserves30old tables, own HTTP restart replay unchanged800/160. Exact new CI required."
       }
     },
     {

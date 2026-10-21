@@ -1,0 +1,250 @@
+{
+  "recorded_at_utc": "2026-10-21T14:43:36.149456+00:00",
+  "branch": "feat/desertovia-1-0-director-shadow",
+  "source_parent": "b0be7d94da790665e82a4b8cbca1ee71abbc61ea",
+  "status": "implemented_scoped_checks_passed_full_ci_required",
+  "implemented": true,
+  "verified": "scoped_only",
+  "released": false,
+  "checks": {
+    "domain": {
+      "path": "TestResults/director-shadow-domain/director-shadow-domain.trx",
+      "sha256": "26f95ffecc8f0c79fb4ee4b063b680ba79840ff24797b9d16cbbecfc641c0df7",
+      "counters": {
+        "total": "726",
+        "executed": "726",
+        "passed": "726",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    "initial_api": {
+      "path": "TestResults/director-shadow-initial/director-shadow-initial.trx",
+      "sha256": "59013f512e9cf8b3ca0e94be50200fcff5553369fbfb553fdeae56dd36c788ca",
+      "counters": {
+        "total": "3",
+        "executed": "3",
+        "passed": "2",
+        "failed": "1",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    "expanded_api": {
+      "path": "TestResults/director-shadow-expanded/director-shadow-expanded.trx",
+      "sha256": "7c393c027c31df003b3327897a8ca184c7a918871c86358332072cdfe35a94da",
+      "counters": {
+        "total": "4",
+        "executed": "4",
+        "passed": "3",
+        "failed": "1",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    "final_batch": {
+      "path": "TestResults/director-shadow-final/director-shadow-final.trx",
+      "sha256": "141a741a2645c4b0f15d872d2c478dc97d74e9862af08384e1d833b27ba19b0f",
+      "counters": {
+        "total": "7",
+        "executed": "7",
+        "passed": "6",
+        "failed": "1",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    "corrected_loop": {
+      "path": "TestResults/director-shadow-loop/director-shadow-loop.trx",
+      "sha256": "d0720afcd0ef22c90104ed0879554953d4e39f19b10e4419112d3a584f78f23f",
+      "counters": {
+        "total": "1",
+        "executed": "1",
+        "passed": "1",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    "scenario_corrections": [
+      "Initial expectation confused catalogue5 with actual zero-stat yield2 per cycle. Actual stock4, target10.",
+      "A later hypothetical food need was disproved by stored snapshot: hungry0, next issue24 is Wood. Expected fixture corrected from source, no monetary guard weakened."
+    ],
+    "bot_mocked": {
+      "passed": 14,
+      "real_model_calls": false
+    },
+    "browser_mocked": {
+      "passed": 6,
+      "scope": "desktop/phone320px existing authority, uncertain acknowledgement retry, stop and shadow/executed display",
+      "path_outside_git": "qa/director-finance-browser-results.json"
+    },
+    "frontend": {
+      "typescript": "PASS",
+      "oxlint": "PASS with existing warnings"
+    }
+  },
+  "migration": {
+    "from": 58,
+    "to": 59,
+    "all_compared_old_columns_equal": true,
+    "tables": {
+      "Accounts": 287,
+      "Citizens": 28,
+      "Villages": 7,
+      "KingdomEconomies": 7,
+      "GameWallets": 23,
+      "LedgerEntries": 88,
+      "EconomyReceipts": 15,
+      "MarketLots": 0,
+      "TaxPolicies": 0,
+      "MarketTaxQuotes": 0,
+      "MarketTaxEvents": 0,
+      "WorkOrders": 2,
+      "WorkOrderClaims": 1,
+      "SupplyOrders": 1,
+      "SupplyDeliveries": 1,
+      "FarmCrops": 0,
+      "AlmightyStates": 2,
+      "AlmightyObservations": 0,
+      "AlmightyProposals": 0,
+      "AlmightyPolicyChanges": 2,
+      "DungeonRuns": 5,
+      "RaidBattles": 1,
+      "VillageProjects": 10,
+      "MonetaryBatches": 5,
+      "TreasuryFundingPolicies": 2,
+      "TreasuryIssueDays": 1,
+      "TreasuryIssues": 1,
+      "DirectorFinancePolicies": 2,
+      "DirectorFinanceDays": 0,
+      "DirectorFinanceActions": 0
+    },
+    "new_column_ignored_in_old_row_comparison": "DirectorFinanceActions.Applied only",
+    "shadow_defaults": {
+      "shadowActions": 0,
+      "shadowModes": 0
+    },
+    "pre_upgrade_backup": "/tmp/foundation-before-restart-20261021T142820Z.dump",
+    "raw_snapshots_committed": false
+  },
+  "private_http": {
+    "before_restart": {
+      "phase": "before",
+      "at": "2026-10-21T14:36:18.770273+00:00",
+      "syntheticOnly": true,
+      "shadowModeAccepted": true,
+      "finalMode": "Off",
+      "policyVersion": 4,
+      "enabled": false,
+      "oldGrantReplayVersion": 3,
+      "actions": 0,
+      "reserved": 0,
+      "oldFundingReplayIdentical": true,
+      "coins": 800,
+      "treasury": 160,
+      "coinChange": 0,
+      "treasuryChange": 0,
+      "modelCallsChange": 0,
+      "realModelAndTelegram": false
+    },
+    "after_restart": {
+      "phase": "after",
+      "at": "2026-10-21T14:40:06.413215+00:00",
+      "syntheticOnly": true,
+      "shadowModeAccepted": true,
+      "finalMode": "Off",
+      "policyVersion": 4,
+      "enabled": false,
+      "oldGrantReplayVersion": 3,
+      "actions": 0,
+      "reserved": 0,
+      "oldFundingReplayIdentical": true,
+      "coins": 800,
+      "treasury": 160,
+      "coinChange": 0,
+      "treasuryChange": 0,
+      "modelCallsChange": 0,
+      "realModelAndTelegram": false
+    },
+    "backup": "/tmp/foundation-before-restart-20261021T143850Z.dump",
+    "scope": "Own pre-existing QA world only; policy3 then pause4, Off; no actions/monetary/model-call delta. Other worlds untouched."
+  },
+  "parent_ci": {
+    "status": "verified_all_five_jobs_success",
+    "head_sha": "b0be7d94da790665e82a4b8cbca1ee71abbc61ea",
+    "run_id": 39612879313,
+    "domain_passed": 726,
+    "api_passed": 482,
+    "browser_passed": 420,
+    "browser_skipped": 2,
+    "jobs": {
+      "backend": 119266613165,
+      "browser_1": 119266612812,
+      "browser_2": 119266613383,
+      "frontend": 119266613651,
+      "docker": 119266613371
+    },
+    "scope": "Exact parent delegated-execution slice only; not the new ShadowEconomy source or full T054."
+  },
+  "candidate_ci": {
+    "status": "not_yet_started"
+  },
+  "remaining": [
+    "Exact final full CI and broader economic/regression checks",
+    "Actual provider judgment and wider shadow comparison quality",
+    "Empirical yield/food/demand calibration T026/A11; this tests raw engine results rather than choosing live balance",
+    "Remaining full1.0 DAG, final UI after functionality; no public release or payments"
+  ]
+}

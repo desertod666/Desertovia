@@ -60,12 +60,14 @@ public sealed class DirectorFinanceMigrationTests
             var policy = new DirectorFinancePolicy { VillageId = world.Id, Version = 1, RequestId = Guid.NewGuid(), OwnerAccountId = owner.Id, At = now };
             db.DirectorFinancePolicies.Add(policy); await db.SaveChangesAsync();
             await Assert.ThrowsAsync<PostgresException>(() => db.GetService<IMigrator>().MigrateAsync(previous));
+            await db.Database.MigrateAsync(); // Restore the latest shape if a preceding empty migration already rolled back.
             var day = DateOnly.FromDateTime(now.UtcDateTime); var review = Guid.NewGuid();
             db.DirectorFinanceDays.Add(new() { VillageId = world.Id, Day = day, Actions = 1, Revision = 1 });
             db.AlmightyObservations.Add(new() { VillageId = world.Id, Id = review, At = now });
             db.DirectorFinanceActions.Add(new() { VillageId = world.Id, ReviewId = review, PolicyVersion = 1, Day = day,
                 DelegatingOwnerId = owner.Id, Option = "finance_tax_down", At = now }); await db.SaveChangesAsync();
             await Assert.ThrowsAsync<PostgresException>(() => db.GetService<IMigrator>().MigrateAsync(previous));
+            await db.Database.MigrateAsync(); // Restore the latest shape if a preceding empty migration already rolled back.
             var other = Village.Create("director-other", "Other director", owner.Id, now); db.Villages.Add(other); await db.SaveChangesAsync();
             db.DirectorFinanceActions.Add(new() { VillageId = other.Id, ReviewId = review, PolicyVersion = 1, Day = day, At = now });
             await Assert.ThrowsAsync<DbUpdateException>(() => db.SaveChangesAsync()); db.ChangeTracker.Clear();

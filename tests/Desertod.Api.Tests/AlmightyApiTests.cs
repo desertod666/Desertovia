@@ -165,8 +165,8 @@ public sealed class AlmightyApiTests(DesertodApiFactory factory)
     }
 
     [Theory]
-    [InlineData(false)] [InlineData(true)]
-    public async Task Large_village_review_fits_the_bridge_limit_with_history_and_direction_options(bool delegatedFinance)
+    [InlineData(false,false)] [InlineData(true,false)] [InlineData(true,true)]
+    public async Task Large_village_review_fits_the_bridge_limit_with_history_and_direction_options(bool delegatedFinance,bool shadow)
     {
         var v=await players.FoundVillageAsync("Large director snapshot");
         await using var db=await factory.Services.GetRequiredService<IDbContextFactory<DesertodDbContext>>().CreateDbContextAsync();
@@ -180,7 +180,7 @@ public sealed class AlmightyApiTests(DesertodApiFactory factory)
             if(i==0){c.CurrentTaskId=Desertod.Domain.Catalog.GameCatalog.KeepWatch;c.CycleStartedAt=now;c.CycleEndsAt=now.AddHours(1);c.CycleSettled=false;}
             db.Citizens.Add(c);factory.Services.GetRequiredService<CitizenPresence>().Touch(c.Id,v.Slug);
         }
-        db.AlmightyStates.Add(new(){VillageId=city.Id,Mode=delegatedFinance?"AutoEconomy":"Propose",Intent=new string('я',1000),NextReviewAt=now});
+        db.AlmightyStates.Add(new(){VillageId=city.Id,Mode=shadow?"ShadowEconomy":delegatedFinance?"AutoEconomy":"Propose",Intent=new string('я',1000),NextReviewAt=now});
         if(delegatedFinance)db.DirectorFinancePolicies.Add(new(){VillageId=city.Id,Version=1,RequestId=Guid.NewGuid(),OwnerAccountId=city.OwnerAccountId,At=now,
             Limits=new(){Enabled=true,ActionsPerDay=5,TaxChanges=true,MaximumTaxBasisPoints=2000,TaxStepBasisPoints=100,TaxNoticeMinutes=60,TaxCooldownMinutes=120}});
         for(var i=0;i<4;i++)db.AlmightyProposals.Add(new(){VillageId=city.Id,ReviewId=Guid.CreateVersion7(),Reason=new string('я',1200),Result=new string('я',500),Status="Applied",CreatedAt=now.AddDays(-1).AddSeconds(i)});
