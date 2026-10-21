@@ -135,8 +135,13 @@ public sealed class LiveRaidApiTests(DesertodApiFactory factory)
         var announced=await OkJsonAsync(await v.Tsar.PostAsJsonAsync(v.Path+"/undead",new{enemy="Skeleton",size="Small"}));
         var raidId=announced.GetProperty("raids").EnumerateArray().Single(r=>r.GetProperty("outcome").GetString()=="Pending").GetProperty("id").GetGuid();
         Guid villageId;
+        villageId=(await players.LoadCitizenAsync(worker.Id)).VillageId;
         await using(var db=await Db())
         {
+            // Fixture preparation must not race the application's real raid worker.
+            await using var transaction=await db.Database.BeginTransactionAsync();
+            var lockKey=villageId.ToString();
+            await db.Database.ExecuteSqlInterpolatedAsync($"SELECT pg_advisory_xact_lock(hashtextextended({lockKey}, 0))");
             var city=await db.Villages.SingleAsync(x=>x.Slug==v.Slug);villageId=city.Id;
             var battle=await db.RaidBattles.SingleAsync(b=>b.Id==raidId);var now=factory.Clock.GetUtcNow();
             battle.StartsAt=now.AddSeconds(-1);battle.LastTickAt=battle.StartsAt;battle.EndsAt=now.AddMinutes(4);
@@ -147,6 +152,7 @@ public sealed class LiveRaidApiTests(DesertodApiFactory factory)
             // Every prepared variant needs one real guard hit, keeping the time bound stable.
             foreach(var unit in battle.Units){unit.X=14.5;unit.Y=13.5;unit.Health=unit.MaximumHealth=1;unit.Speed=0;unit.Attack=0;}
             await db.SaveChangesAsync();
+            await transaction.CommitAsync();
         }
         var service=factory.Services.GetRequiredService<GameService>();
         await service.RaidVillageAsync(villageId,default);
