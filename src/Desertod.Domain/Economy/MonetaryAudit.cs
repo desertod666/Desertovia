@@ -71,6 +71,8 @@ public static class MonetaryAudit
                 operations.Add(new() { OperationId = group.Key, Transferred = credits });
             else if (legs.Length == 1 && legs[0] is { Operation: "wage", Location: "wallet", AccountId: not null, Delta: >= 1 and <= 1000 })
                 operations.Add(new() { OperationId = group.Key, Kind = "legacy-wage-issuance", Issued = net });
+            else if (legs.Length == 1 && legs[0] is { Operation: "treasury-issuance", Location: "treasury", Delta: >= 1 and <= EconomyRules.MaximumBalance })
+                operations.Add(new() { OperationId = group.Key, Kind = "controlled-treasury-issuance", Issued = net });
             else if (legs.Length == 1 && legs[0] is { Location: "wallet", AccountId: not null, Delta: < 0 }
                 && (legs[0].Operation == "energy-drink" && legs[0].Delta == -300
                     || legs[0].Operation == "exchange-burn" && -((decimal)legs[0].Delta) <= 2_000_000))

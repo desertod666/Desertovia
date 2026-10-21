@@ -2488,10 +2488,10 @@
   "implementation_1_0": {
     "decision": "D104/D105/D107/D109/D110/D111",
     "status": "active_not_complete",
-    "branch": "feat/desertovia-1-0-money-conservation",
+    "branch": "feat/desertovia-1-0-treasury-funding",
     "details": "IMPLEMENTATION_PROGRESS_1_0.json",
-    "latest_full_ci": "DIRECTOR_ECONOMY_VERIFICATION_1_0.json:923bec6/39579662471 success696Domain/454API/418browser+2skip; not current monetary candidate",
-    "current_work": "Partial T025 monetary reconciliation/flow receipts and D111 director evidence;709Domain/42distinct scoped API-boundary-migration scenarios pass;23-table preservation55to56 and HTTP/restart verified. Exact new CI required; full monetary policy/T026/T054 remain open.",
+    "latest_full_ci": "PR96/c42cb11 backend709Domain/459API pass; full parent CI must be inspected separately from new funding source.",
+    "current_work": "Declared bounded treasury funding and partial T026 trace locally checked:721Domain/14scoped API-boundary-migration cases,56to57/24old tables, own QA HTTP/restart. New exact CI required; full1.0 active.",
     "farm_loss_owner_confirmed": "proportional actual loss across communal food and unclaimed reserve",
     "public_deployed": false,
     "planning_1_0_is_historical_completed_phase": true,

@@ -182,10 +182,18 @@ public sealed class AlmightyApiTests(DesertodApiFactory factory)
         db.AlmightyStates.Add(new(){VillageId=city.Id,Intent=new string('я',1000),NextReviewAt=now});
         for(var i=0;i<4;i++)db.AlmightyProposals.Add(new(){VillageId=city.Id,ReviewId=Guid.CreateVersion7(),Reason=new string('я',1200),Result=new string('я',500),Status="Applied",CreatedAt=now.AddDays(-1).AddSeconds(i)});
         for(var i=0;i<20;i++)db.ChatMessages.Add(Desertod.Domain.Chat.ChatMessage.Write(city.Id,city.OwnerAccountId,null,"Царь",new string('я',120),now.AddSeconds(-20+i)));
+        // Synthetic maximum returned funding schedule must fit alongside all other observed facts.
+        for(var i=0;i<30;i++)db.TreasuryFundingPolicies.Add(new(){VillageId=city.Id,Version=i+1,
+            RequestId=Guid.NewGuid(),ActorId=city.OwnerAccountId,Enabled=true,DailyIssueLimit=(i+1)*1000,
+            PublishedAt=now,EffectiveAt=now.AddMinutes(i+1)});
         await db.SaveChangesAsync();
         var review=await factory.Services.GetRequiredService<GameService>().BeginAlmightyReviewAsync(city.Id,default);
         Assert.NotNull(review);Assert.Contains(review.Options,o=>o.Composition=="elite");Assert.Contains(review.Options,o=>o.Composition=="boss");
         Assert.InRange(review.Snapshot.Length,1,36000);
+        using var fundingSnapshot=JsonDocument.Parse(review.Snapshot);
+        var funding=fundingSnapshot.RootElement.GetProperty("economy").GetProperty("analysis").GetProperty("funds").GetProperty("treasuryFunding");
+        Assert.Equal(30,funding.GetProperty("scheduled").GetProperty("rows").GetArrayLength());
+        Assert.Equal(0,funding.GetProperty("issuedToday").GetInt64());
     }
 
     [Fact]

@@ -75,6 +75,7 @@ public sealed partial class DesertodDbContext(DbContextOptions<DesertodDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         ConfigureMonetaryAudit(modelBuilder);
+        ConfigureTreasuryFunding(modelBuilder);
         modelBuilder.Entity<NotificationPreference>(b=>{
             b.HasKey(x=>x.AccountId);b.Property(x=>x.Revision).IsConcurrencyToken();b.Property(x=>x.TimeZoneId).HasMaxLength(64);
             b.HasOne<Account>().WithOne().HasForeignKey<NotificationPreference>(x=>x.AccountId).OnDelete(DeleteBehavior.Cascade);

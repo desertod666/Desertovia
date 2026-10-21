@@ -1050,6 +1050,117 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.ToTable("TaxPolicies");
                 });
 
+            modelBuilder.Entity("Desertod.Domain.Economy.TreasuryFundingPolicy", b =>
+                {
+                    b.Property<Guid>("VillageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("ActorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("DailyIssueLimit")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("EffectiveAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("PublishedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RequestFingerprint")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<Guid>("RequestId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("VillageId", "Version");
+
+                    b.HasIndex("VillageId", "RequestId")
+                        .IsUnique();
+
+                    b.HasIndex("VillageId", "EffectiveAt", "Version");
+
+                    b.ToTable("TreasuryFundingPolicies");
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.TreasuryIssue", b =>
+                {
+                    b.Property<Guid>("VillageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RequestId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ActorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("Amount")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("At")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateOnly>("Day")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("FinancialBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("IssuedTotalAfter")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("PolicyVersion")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("RemainingAtIssue")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("RequestFingerprint")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.HasKey("VillageId", "RequestId");
+
+                    b.HasIndex("VillageId", "At");
+
+                    b.HasIndex("VillageId", "Day");
+
+                    b.HasIndex("VillageId", "FinancialBatchId");
+
+                    b.HasIndex("VillageId", "PolicyVersion");
+
+                    b.ToTable("TreasuryIssues");
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.TreasuryIssueDay", b =>
+                {
+                    b.Property<Guid>("VillageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("Day")
+                        .HasColumnType("date");
+
+                    b.Property<long>("Issued")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("Revision")
+                        .IsConcurrencyToken()
+                        .HasColumnType("bigint");
+
+                    b.HasKey("VillageId", "Day");
+
+                    b.ToTable("TreasuryIssueDays");
+                });
+
             modelBuilder.Entity("Desertod.Domain.Economy.WorkOrder", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2802,6 +2913,51 @@ namespace Desertod.Infrastructure.Data.Migrations
                         });
 
                     b.Navigation("Brackets");
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.TreasuryFundingPolicy", b =>
+                {
+                    b.HasOne("Desertod.Domain.Entities.Village", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.TreasuryIssue", b =>
+                {
+                    b.HasOne("Desertod.Domain.Entities.Village", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Desertod.Domain.Economy.TreasuryIssueDay", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId", "Day")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Desertod.Domain.Economy.MonetaryBatch", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId", "FinancialBatchId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Desertod.Domain.Economy.TreasuryFundingPolicy", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId", "PolicyVersion")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.TreasuryIssueDay", b =>
+                {
+                    b.HasOne("Desertod.Domain.Entities.Village", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Desertod.Domain.Economy.WorkOrder", b =>

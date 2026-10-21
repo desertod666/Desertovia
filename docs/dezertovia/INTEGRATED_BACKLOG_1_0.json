@@ -1542,15 +1542,15 @@
       "source": "source-package/05_TASKS.json",
       "current_support": {
         "status": "partial",
-        "evidence": "MONETARY_AUDIT_1_0.md / MONETARY_AUDIT_VERIFICATION_1_0.json: per-position reconciliation in existing world transaction, classified transfers/legacy issuance/withdrawals, atomic batch receipt and director aggregates. New monetary/obligation policy and A11 not complete.",
-        "runtime_verification": "709Domain and42distinct scoped API/boundary/migration scenarios passed across stages; initial own ID fixture failure corrected, final9validate current anchor observation. Isolated55to56 preserves23old tables; HTTP/restart retains4batches/7legs. New full CI required; policy/A11/T026/T054 remain open."
+        "evidence": "TREASURY_FUNDING_1_0.md/VERIFICATION: explicit future versioned ceiling, UTC daily allowance shared across versions, fresh policy/day/revision, source-backed issuance receipt in monetary audit. Existing funded work must be enabled; no chosen balance or automatic issue authority.",
+        "runtime_verification": "721Domain and14distinct API/boundary/migration scenarios pass across scoped stages;56to57 preserves24old tables; real own-QA issue/pause/restart repeats pass. New full CI required; full A11/T026/T054 open."
       }
     },
     {
       "id": "PKG-T026",
       "milestone": "M2",
       "title": "Экономическая симуляция и первый хозяйственный срез",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partially_implemented",
       "dependencies": [
         "PKG-T022",
         "PKG-T023",
@@ -1588,9 +1588,9 @@
       "original_task_id": "T026",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "plan",
-        "evidence": "Нет результата новой хозяйственной симуляции; исходный фермерский расчёт проверен арифметически.",
-        "runtime_verification": "not_run_this_assignment"
+        "status": "partial",
+        "evidence": "FUNDED_ECONOMIC_TRACE_1_0.json: actual bounded fund->two public useful cycles->paid wallets->known-cost trade plus separate private extraction->sales/tax/retries, money300=136+58+106. All scenario values synthetic; broader calibration/private craft inputs/farm and A11 remain open.",
+        "runtime_verification": "Expanded real-service/PostgreSQL private production trace passed; not a live balance or full economic simulation."
       }
     },
     {
