@@ -57,13 +57,15 @@ public sealed class Trip
     {
         if(BlockedAt is {} blocked&&blocked<now)now=blocked;
         if(now<SetOutAt)yield break;
-        var remaining=(now-SetOutAt).TotalSeconds*Math.Max(.1,SpeedMultiplier)/Exploration.SecondsPerTile;
+        // Arrival is rounded to clock ticks; inverse floating-point arithmetic must not
+        // leave an already arrived hero a fraction short of the final waypoint.
+        var remaining=now>=ArrivesAt?double.PositiveInfinity:(now-SetOutAt).TotalSeconds*Math.Max(.1,SpeedMultiplier)/Exploration.SecondsPerTile;
         var from=From;
         foreach(var step in Steps())
         {
             var length=from.DistanceTo(step.Point)*step.Cost;
             var share=length<=0?1:Math.Clamp(remaining/length,0,1);
-            var to=new TilePoint(from.X+(step.X-from.X)*share,from.Y+(step.Y-from.Y)*share);
+            var to=share>=1?step.Point:new TilePoint(from.X+(step.X-from.X)*share,from.Y+(step.Y-from.Y)*share);
             yield return(from,to);
             if(remaining<length)yield break;
             remaining-=length;from=step.Point;
