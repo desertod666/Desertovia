@@ -3,6 +3,7 @@ import { WalletDialog, WalletHud } from '../ui/WalletHud'
 import { PersonalBattlePanel } from '../ui/PersonalBattlePanel'
 import { SafeRestControl } from '../ui/SafeRestControl'
 import {WorldAtlas} from '../ui/WorldAtlas'
+import {JourneyControl} from '../ui/JourneyControl'
 import { createOperationId,type FarmWorkTarget } from '../api'
 import { HospitalPanel } from '../ui/HospitalPanel'
 import { RescuePatientPanel } from '../ui/RescuePatientPanel'
@@ -874,6 +875,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
         worldPickable={worldPickable}
         selection={showPicked || showWatched ? picked.target.area : null}
       />
+      {!inCombat&&!walletOpen&&!chatFull&&<ServerClock offsetMs={serverOffset}>{now=><JourneyControl journey={tsar?village.tsar.journey:citizen?.journey??summary?.journey} now={now} onAtlas={()=>setAtlasOpen(true)} onResume={async body=>{setVillageState(await api.resumeJourney(slug,body));if(!tsar)await loadCitizen()}} onCancel={citizen?.state==='Paused'&&citizen.restState!=='RestRequested'?cancelTask:undefined}/>}</ServerClock>}
 
       {!walletOpen&&!chatFull && <button
         className="ui-toggle"

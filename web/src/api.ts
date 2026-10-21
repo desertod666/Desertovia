@@ -1098,7 +1098,8 @@ export interface Wilds {
 }
 
 export type RestState = 'Active' | 'RestRequested' | 'Resting'
-export interface WalkJourney {from:TilePoint;waypoints:{x:number;y:number;cost:number}[];setOutAt:string;arrivesAt:string;speedMultiplier:number;snapshotAt:string}
+export interface WalkJourney {id?:string;blockedAt?:string|null;blockReason?:'gate'|'bridge'|'path'|null;from:TilePoint;waypoints:{x:number;y:number;cost:number}[];setOutAt:string;arrivesAt:string;speedMultiplier:number;snapshotAt:string}
+export interface ResumeJourneyRequest{requestId:string;journeyId:string;blockedAt:string}
 export interface Tsar {
   journey?:WalkJourney|null
   restState?: RestState
@@ -1262,6 +1263,7 @@ export interface SkillValue {
 }
 
 export interface Citizen {
+  journey?:WalkJourney|null
   isFarmer?:boolean
   canManageFarm?:boolean
   restState?: RestState
@@ -1578,6 +1580,7 @@ export interface EconomyView {
 }
 export interface SupplyOrder {id:string;resource:string;requestedAmount:number;remainingAmount:number;deliveredAmount:number;unitPrice:number;reservedCoins:number;expiresAt:string;status:'Open'|'Cancelled'|'Expired'|'Completed'}
 export const api = {
+  resumeJourney:(slug:string,body:ResumeJourneyRequest)=>request<VillageState>('POST',`/api/villages/${encodeURIComponent(slug)}/me/journey/resume`,body),
   notificationPreferences:()=>request<import('./notificationPolicy').NotificationPreferences>('GET','/api/me/notification-preferences',undefined,AbortSignal.timeout(10000)),
   saveNotificationPreferences:(body:import('./notificationPolicy').NotificationPreferenceRequest)=>request<{settings:import('./notificationPolicy').NotificationPreferences;replayed:boolean}>('PUT','/api/me/notification-preferences',body,AbortSignal.timeout(10000)),
   submitReport: (body: {id:string;kind:string;text:string;slug:string|null;capturedAt:string;screen:unknown;screenshot:string|null}) =>

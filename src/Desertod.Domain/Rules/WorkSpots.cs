@@ -37,7 +37,9 @@ public static class WorkSpots
                 new Dictionary<string, object> { ["taskId"] = task.Id });
         }
 
-        BankAccess.Require(village, spot);
+        // Regional work still validates the full physical path in Citizen.SetOut.
+        // A resident already east of a broken bridge can work there without an implicit river crossing.
+        if(!RegionalTerrain.NewLand(spot))BankAccess.Require(village, spot);
         if(RegionalTerrain.NewLand(spot))
         {
             var kind=RegionalTerrain.For(village.Id,village.Wilds)[RegionalTerrain.Index((int)Math.Floor(spot.X),(int)Math.Floor(spot.Y))];

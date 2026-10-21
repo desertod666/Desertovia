@@ -244,8 +244,11 @@ public sealed record HousingDto(string PlotId, int Beds, int Occupied, int Level
 public sealed record WalkJourneyDto(TilePoint From,IReadOnlyList<TripWaypoint> Waypoints,DateTimeOffset SetOutAt,
     DateTimeOffset ArrivesAt,double SpeedMultiplier,DateTimeOffset SnapshotAt)
 {
+    public Guid Id { get; init; }
+    public DateTimeOffset? BlockedAt { get; init; }
+    public string? BlockReason { get; init; }
     public static WalkJourneyDto? FromTrip(Trip? trip,DateTimeOffset now)=>trip?.Waypoints.Count>0
-        ?new(trip.From,trip.Waypoints,trip.SetOutAt,trip.ArrivesAt,trip.SpeedMultiplier,now):null;
+        ?new(trip.From,trip.Waypoints,trip.SetOutAt,trip.ArrivesAt,trip.SpeedMultiplier,now){Id=trip.Id,BlockedAt=trip.BlockedAt,BlockReason=trip.BlockReason}:null;
 }
 
 public sealed record TsarDto(string Name, Appearance? Appearance, TilePoint? Spot, DateTimeOffset? InjuredUntil = null)
@@ -408,6 +411,7 @@ public sealed record CitizenDto(
     double Power,
     ExternalRecovery? Recovery = null)
 {
+    public WalkJourneyDto? Journey { get; init; }
     public bool IsFarmer { get; init; }
     public bool CanManageFarm { get; init; }
     public RestState RestState { get; init; }
@@ -547,7 +551,7 @@ public static class DtoMapper
     {
         var labels=BuildingLabels.Visible(village);
         var seen=Exploration.Seen(village.Explored,
-            (village.TsarTrip is null?citizenTrips:citizenTrips.Append(village.TsarTrip)).Where(t=>BankAccess.CanReach(village,t.To)),now,village.Wilds?.Lookout);
+            (village.TsarTrip is null?citizenTrips:citizenTrips.Append(village.TsarTrip)).Where(t=>t.Waypoints.Count>0||BankAccess.CanReach(village,t.To)),now,village.Wilds?.Lookout);
         return new(
         village.Id,
         village.Slug,
@@ -799,7 +803,7 @@ public static class DtoMapper
         citizen.Armor,
         citizen.Arrows,
         Math.Round(CombatRules.Power(citizen), 1), citizen.Recovery)
-        { IsFarmer=citizen.IsFarmer, CanManageFarm=citizen.CanManageFarm&&citizen.IsGovernor, RestState=citizen.RestState, RestRequestedAt=citizen.RestRequestedAt, WeaponSharpen=citizen.WeaponSharpen, ArrowSharpen=citizen.ArrowSharpen, MealKind=citizen.MealKind,MealUntil=citizen.MealUntil,MealReadyAt=citizen.LastMealAt+PreparedMeals.Cooldown, VigorEnergy = village.VigorEnergy, VigorCooldownMinutes = village.VigorCooldownMinutes, AccountId = citizen.AccountId, CyclePrivateOutput = citizen.CyclePrivateOutput, CycleOwnership = citizen.CycleOwnership, CyclePaymentMode = citizen.CyclePaymentMode, PersonalGoods = citizen.PersonalGoods, ActionEnergyCosts = GameCatalog.Tasks.Select(task => new KeyValuePair<string, double>(task.Id, WorkEnergy.WithMedical(citizen, WorkEnergy.TaskCost(village, task, now), now)))
+        { Journey=WalkJourneyDto.FromTrip(citizen.Trip,now),IsFarmer=citizen.IsFarmer, CanManageFarm=citizen.CanManageFarm&&citizen.IsGovernor, RestState=citizen.RestState, RestRequestedAt=citizen.RestRequestedAt, WeaponSharpen=citizen.WeaponSharpen, ArrowSharpen=citizen.ArrowSharpen, MealKind=citizen.MealKind,MealUntil=citizen.MealUntil,MealReadyAt=citizen.LastMealAt+PreparedMeals.Cooldown, VigorEnergy = village.VigorEnergy, VigorCooldownMinutes = village.VigorCooldownMinutes, AccountId = citizen.AccountId, CyclePrivateOutput = citizen.CyclePrivateOutput, CycleOwnership = citizen.CycleOwnership, CyclePaymentMode = citizen.CyclePaymentMode, PersonalGoods = citizen.PersonalGoods, ActionEnergyCosts = GameCatalog.Tasks.Select(task => new KeyValuePair<string, double>(task.Id, WorkEnergy.WithMedical(citizen, WorkEnergy.TaskCost(village, task, now), now)))
             .Concat(BuildingCatalog.Jobs.Select(job => new KeyValuePair<string, double>(job.Id, WorkEnergy.WithMedical(citizen, WorkEnergy.JobCost(village, job, now), now))))
             .GroupBy(pair => pair.Key).ToDictionary(group => group.Key, group => group.Last().Value),
             DefenseSector=citizen.DefenseSector,DefenseReadyAt=citizen.DefenseReadyAt,
