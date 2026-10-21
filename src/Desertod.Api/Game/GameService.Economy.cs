@@ -103,8 +103,18 @@ public sealed partial class GameService
         string asset, string location, long amount, DateTimeOffset now)
     {
         if (amount == 0) return;
+        Guid? batch = null;
+        if (asset == "DZK")
+        {
+            batch = db.FinancialBatchId ?? throw MonetaryAudit.Invalid();
+            if (!db.FinancialBatchStarted)
+            {
+                db.MonetaryBatches.Add(new MonetaryBatch { VillageId = village, Id = batch.Value, At = now });
+                db.FinancialBatchStarted = true;
+            }
+        }
         db.LedgerEntries.Add(new LedgerEntry { VillageId = village, OperationId = operation, AccountId = account,
-            Operation = action, Asset = asset, Location = location, Delta = amount, At = now });
+            FinancialBatchId = batch, Operation = action, Asset = asset, Location = location, Delta = amount, At = now });
     }
 
     private async Task PayUsefulWorkAsync(DesertodDbContext db, Village village, CycleReport? report, DateTimeOffset now, CancellationToken ct)

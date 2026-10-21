@@ -2486,15 +2486,15 @@
     }
   },
   "implementation_1_0": {
-    "decision": "D-104/D-105",
+    "decision": "D104/D105/D107/D109/D110/D111",
     "status": "active_not_complete",
-    "branch": "feat/desertovia-1-0-farm",
+    "branch": "feat/desertovia-1-0-money-conservation",
     "details": "IMPLEMENTATION_PROGRESS_1_0.json",
-    "latest_full_ci": "FARM_INSPECTION_VERIFICATION_1_0.json",
-    "current_work": "Adventure/world sequence resumed after owner asked about farm focus; first district atlas locally verified, next party/combat/dungeon",
+    "latest_full_ci": "DIRECTOR_ECONOMY_VERIFICATION_1_0.json:923bec6/39579662471 success696Domain/454API/418browser+2skip; not current monetary candidate",
+    "current_work": "Partial T025 monetary reconciliation/flow receipts and D111 director evidence;709Domain/42distinct scoped API-boundary-migration scenarios pass;23-table preservation55to56 and HTTP/restart verified. Exact new CI required; full monetary policy/T026/T054 remain open.",
     "farm_loss_owner_confirmed": "proportional actual loss across communal food and unclaimed reserve",
     "public_deployed": false,
     "planning_1_0_is_historical_completed_phase": true,
-    "current_assignment": "D107 implementation resumed; whole goal active"
+    "current_assignment": "Continue the whole functional1.0 DAG; final graphic UI after functionality, preserve world art and player progress."
   }
 }

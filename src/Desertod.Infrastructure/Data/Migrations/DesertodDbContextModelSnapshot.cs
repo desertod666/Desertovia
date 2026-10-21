@@ -631,6 +631,9 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<long>("Delta")
                         .HasColumnType("bigint");
 
+                    b.Property<Guid?>("FinancialBatchId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -648,6 +651,8 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("VillageId", "FinancialBatchId");
 
                     b.HasIndex("VillageId", "OperationId");
 
@@ -851,6 +856,65 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.HasIndex("VillageId", "LotId", "CreatedAt");
 
                     b.ToTable("MarketTaxQuotes");
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.MonetaryBatch", b =>
+                {
+                    b.Property<Guid>("VillageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AfterHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<decimal>("AfterTotal")
+                        .HasPrecision(28)
+                        .HasColumnType("numeric(28,0)");
+
+                    b.Property<DateTimeOffset>("At")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("BeforeHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<decimal>("BeforeTotal")
+                        .HasPrecision(28)
+                        .HasColumnType("numeric(28,0)");
+
+                    b.Property<bool>("Finalized")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("Issued")
+                        .HasPrecision(28)
+                        .HasColumnType("numeric(28,0)");
+
+                    b.Property<int>("PostingCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PostingHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<decimal>("Transferred")
+                        .HasPrecision(28)
+                        .HasColumnType("numeric(28,0)");
+
+                    b.Property<decimal>("Withdrawn")
+                        .HasPrecision(28)
+                        .HasColumnType("numeric(28,0)");
+
+                    b.HasKey("VillageId", "Id");
+
+                    b.HasIndex("VillageId", "At");
+
+                    b.ToTable("MonetaryBatches");
                 });
 
             modelBuilder.Entity("Desertod.Domain.Economy.SupplyDelivery", b =>
@@ -2585,6 +2649,11 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .HasForeignKey("VillageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Desertod.Domain.Economy.MonetaryBatch", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId", "FinancialBatchId")
+                        .OnDelete(DeleteBehavior.NoAction);
                 });
 
             modelBuilder.Entity("Desertod.Domain.Economy.MarketLot", b =>
@@ -2635,6 +2704,49 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .WithMany()
                         .HasForeignKey("VillageId", "PolicyVersion")
                         .OnDelete(DeleteBehavior.NoAction);
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.MonetaryBatch", b =>
+                {
+                    b.HasOne("Desertod.Domain.Entities.Village", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsMany("Desertod.Domain.Economy.MonetaryOperation", "Operations", b1 =>
+                        {
+                            b1.Property<Guid>("MonetaryBatchVillageId");
+
+                            b1.Property<Guid>("MonetaryBatchId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd();
+
+                            b1.Property<decimal>("Issued");
+
+                            b1.Property<string>("Kind")
+                                .IsRequired();
+
+                            b1.Property<Guid>("OperationId");
+
+                            b1.Property<decimal>("Transferred");
+
+                            b1.Property<decimal>("Withdrawn");
+
+                            b1.HasKey("MonetaryBatchVillageId", "MonetaryBatchId", "__synthesizedOrdinal");
+
+                            b1.ToTable("MonetaryBatches");
+
+                            b1
+                                .ToJson("Operations")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MonetaryBatchVillageId", "MonetaryBatchId");
+                        });
+
+                    b.Navigation("Operations");
                 });
 
             modelBuilder.Entity("Desertod.Domain.Economy.SupplyDelivery", b =>

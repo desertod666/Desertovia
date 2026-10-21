@@ -201,6 +201,26 @@
     "tests/Desertod.Api.Tests/RoyalDungeonApiTests.cs": "68b7b78693bdca13003b9469f3c01b22785d02edd960752f1e20e643b61242ae"
   },
   "candidate_ci": {
+    "status": "success",
+    "run": 39579662471,
+    "sha": "923bec6d7449f97e1218c90aa7a9e94fad0363c2",
+    "url": "https://github.com/desertod666/Desertovia/actions/runs/39579662471",
+    "domain": 696,
+    "api": 454,
+    "browser": 418,
+    "browser_skipped": 2,
+    "frontend": "success",
+    "docker": "success",
+    "scope": "Exact parent fiscal candidate, not new T025 monetary audit source."
+  },
+  "remaining": [
+    "Director economic executor T054, quantitative bounds, fresh admission and consequence loop",
+    "Full fiscal issuance/withdrawal/budget T025 and integrated T026",
+    "Supply-delivery tax, farm cash/natural entitlements and unresolved product rules",
+    "Full1.0 DAG; final visual redesign after functionality. No public deployment or real payments authorized."
+  ],
+  "pull_request": "https://github.com/desertod666/Desertovia/pull/95",
+  "initial_ci_and_fixture_fix": {
     "status": "replacement_candidate_pending",
     "previous_run": {
       "run_id": 39577534873,
@@ -237,13 +257,5 @@
       },
       "scope": "Cancellation/royal classes/shared wound/legacy80HP. Legacy body fixture starts at a valid departure to isolate health/cancellation from procedural bounded marches; explicit phase diagnostic added. Product source unchanged."
     }
-  },
-  "remaining": [
-    "Full exact-candidate CI",
-    "Director economic executor T054, quantitative bounds, fresh admission and consequence loop",
-    "Full fiscal issuance/withdrawal/budget T025 and integrated T026",
-    "Supply-delivery tax, farm cash/natural entitlements and unresolved product rules",
-    "Full1.0 DAG; final visual redesign after functionality. No public deployment or real payments authorized."
-  ],
-  "pull_request": "https://github.com/desertod666/Desertovia/pull/95"
+  }
 }

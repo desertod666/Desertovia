@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-21T09:27:46.085855+00:00",
-  "status": "main_plan_active_director_economy_and_partial_fiscal_executor_locally_verified_exact_ci_pending",
+  "recorded_at_utc": "2026-10-21T10:29:21.536013+00:00",
+  "status": "main_plan_active_partial_monetary_audit_locally_verified_exact_ci_pending",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-tax-quotes",
+  "branch": "feat/desertovia-1-0-money-conservation",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "D111 all-resident economic observation; partial T024 versioned offer/quote settlement. T025/T026/T054 full autonomous economic cycle not complete.",
+  "implemented_task": "D111 economic observation / partial T024 and T025. Full T025/T026/T054 and1.0 remain active.",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -42,11 +42,11 @@
     "bot_modified": false,
     "current_source_restarted": true,
     "tool_recipes_verified_http": 8,
-    "local_world_migrations": 55,
+    "local_world_migrations": 56,
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "D111 economic observation/partial fiscal source loaded in API5180/schema55;20compared old tables preserved. No tax policies/quotes/events or nonzero wallet defaults. Model/Telegram/DevTools false.",
+    "loaded_scope": "Current monetary audit/anchor observation source loaded in API5180/schema56.23old compared tables preserved; real HTTP repeats retain4receipts/7postings through final source restart. Model/Telegram/DevTools false.",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
     "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
@@ -65,7 +65,8 @@
     "pre_vulnerable_royal_qa_backup": "/tmp/foundation-before-restart-20261021T060913Z.dump",
     "pre_director_policy_backup": "/tmp/foundation-before-restart-20261021T072555Z.dump",
     "pre_director_resilience_backup": "/tmp/foundation-before-restart-20261021T075247Z.dump",
-    "pre_director_economy_backup": "/tmp/foundation-before-restart-20261021T092237Z.dump"
+    "pre_director_economy_backup": "/tmp/foundation-before-restart-20261021T092237Z.dump",
+    "pre_monetary_audit_backup": "/tmp/foundation-before-restart-20261021T100726Z.dump"
   },
   "checks": {
     "baseline_ci": {
@@ -2955,6 +2956,373 @@
         },
         "scope": "Cancellation/royal classes/shared wound/legacy80HP. Legacy body fixture starts at a valid departure to isolate health/cancellation from procedural bounded marches; explicit phase diagnostic added. Product source unchanged."
       }
+    }
+  },
+  "director_economy_exact_ci": {
+    "status": "success",
+    "run": 39579662471,
+    "sha": "923bec6d7449f97e1218c90aa7a9e94fad0363c2",
+    "url": "https://github.com/desertod666/Desertovia/actions/runs/39579662471",
+    "domain": 696,
+    "api": 454,
+    "browser": 418,
+    "browser_skipped": 2,
+    "frontend": "success",
+    "docker": "success",
+    "scope": "Exact parent fiscal candidate, not new T025 monetary audit source."
+  },
+  "monetary_audit_1_0": {
+    "schema_version": 1,
+    "recorded_at_utc": "2026-10-21T10:29:21.536013+00:00",
+    "scope": "Partial T025 / A10 monetary reconciliation and D111 observation; full1.0 active",
+    "source_parent": "923bec6d7449f97e1218c90aa7a9e94fad0363c2",
+    "implemented": true,
+    "verified": "Scoped local checks passed; full exact-candidate CI still required",
+    "released": false,
+    "source_hashes": {
+      "src/Desertod.Domain/Economy/MonetaryAudit.cs": "9e8f3f5e91bcd4e9eaa6f9284e04f6f490f8df535a5d918e2538d7c507fffa08",
+      "src/Desertod.Domain/Economy/Economy.cs": "3c3b4ceaaa5f8cb2d2e3dadc6e9f1452cd0899874b4014ea634b5c9baa87de58",
+      "src/Desertod.Api/Game/GameService.Accounting.cs": "485c9ae095ec0114199377ff90fc9fb8c74435f9990ef045a6ee43565b115434",
+      "src/Desertod.Api/Game/GameService.MonetaryAudit.cs": "d3c8222886237a114c55ca6c1c329daf2c1fc57248f278e5be0bd805f03d749f",
+      "src/Desertod.Api/Game/GameService.Economy.cs": "e9e038a6c2da6f2422f823e0d99811e0dd75b4a585d973ba6b520a483dcd61f0",
+      "src/Desertod.Api/Game/GameService.DirectorEconomy.cs": "2619092633482e5b1d6e0b6430ace013b478da9165b8c90d590b0cf91c5a8901",
+      "src/Desertod.Infrastructure/Data/DesertodDbContext.Monetary.cs": "5ef1b2eb575227a7f2965d678a3d9cdea18638081872dc99027539ebfab654f4",
+      "src/Desertod.Infrastructure/Data/DesertodDbContext.cs": "392c3a867438440cd565f31a57eeeb99e630ca05699fd5554fa915eef5e6f750",
+      "src/Desertod.Infrastructure/Data/Migrations/20261021095643_MonetaryConservation.cs": "39c0aafbdac6be4093e11ed078fa15d7a771588957bbb12888a38906255056bf",
+      "tests/Desertod.Domain.Tests/MonetaryAuditTests.cs": "f7bfe15f753e93311aaab27cff1164c9717b5fb2bd873f2bb5e241468f0d3225",
+      "tests/Desertod.Api.Tests/MonetaryAuditApiTests.cs": "715a01aca3bfc21042fb75fd08b2790341dc31944e91b70f279afd5273160fbc",
+      "tests/Desertod.Api.Tests/MonetaryAuditMigrationTests.cs": "56357b9af7381d6d10c0d406d89e3d3604a9ad79b8331d1d129a1ab8997b71ed"
+    },
+    "domain": {
+      "path": "TestResults/monetary-domain-full/monetary-domain-full.trx",
+      "sha256": "161e57cfa7db841279257d97a15c396ae053d9881ad7e3b71ad1cbc58c2a7537",
+      "counters": {
+        "total": "709",
+        "executed": "709",
+        "passed": "709",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    "api": {
+      "status": "scoped_pass",
+      "initial_session": 65153,
+      "known_initial_fixture_failure": "cancel-work-order used request ID rather than generated order ID; fixture corrected, final run required",
+      "first_round": {
+        "path": "TestResults/monetary-api/monetary-api.trx",
+        "sha256": "6329d7d544ac64e70268ebe08b3f3e1964be3820149f7fc19b664540f839e466",
+        "counters": {
+          "total": "33",
+          "executed": "33",
+          "passed": "32",
+          "failed": "1",
+          "error": "0",
+          "timeout": "0",
+          "aborted": "0",
+          "inconclusive": "0",
+          "passedButRunAborted": "0",
+          "notRunnable": "0",
+          "notExecuted": "0",
+          "disconnected": "0",
+          "warning": "0",
+          "completed": "0",
+          "inProgress": "0",
+          "pending": "0"
+        },
+        "failure": "Own new cancellation fixture used requestId instead of generated WorkOrder.Id; addressed returned ID in corrected final source. No production change required.",
+        "passed_test_names": [
+          "Desertod.Api.Tests.WorkOrderApiTests.Earned_pay_waits_in_reserve_when_wallet_full_and_can_be_collected_after_spending",
+          "Desertod.Api.Tests.SupplyOrderApiTests.Two_market_buyers_can_retry_after_actual_commit_failure_without_duplicate_goods",
+          "Desertod.Api.Tests.SupplyOrderApiTests.Failed_storage_or_wallet_credit_rolls_back_goods_order_and_payment",
+          "Desertod.Api.Tests.MarketTaxApiTests.Unaffordable_purchase_rolls_back_quote_tax_treasury_and_receipt_together",
+          "Desertod.Api.Tests.SupplyOrderApiTests.Partial_delivery_transfers_actual_goods_cost_and_reserved_money_once(known: False)",
+          "Desertod.Api.Tests.WorkOrderApiTests.Leaving_world_returns_the_unfinished_cycle_instead_of_stranding_its_reserve",
+          "Desertod.Api.Tests.SupplyOrderApiTests.Expiry_and_repeated_close_refund_only_the_undelivered_fund",
+          "Desertod.Api.Tests.MarketTaxApiTests.Changed_settlement_state_requires_fresh_quote_without_spending(reason: \"midnight\")",
+          "Desertod.Api.Tests.SupplyOrderApiTests.Simultaneous_cancellation_and_delivery_conserve_treasury_wallets_and_stock",
+          "Desertod.Api.Tests.MarketTaxApiTests.Changed_settlement_state_requires_fresh_quote_without_spending(reason: \"profit_changed\")",
+          "Desertod.Api.Tests.WorkOrderApiTests.Last_slot_is_atomic_and_finished_work_pays_once_after_cancellation_and_expiry",
+          "Desertod.Api.Tests.DirectorEconomyApiTests.Observation_limits_history_to_fourteen_UTC_days_and_never_reads_another_world_or_future_receipts",
+          "Desertod.Api.Tests.DirectorEconomyApiTests.New_economy_does_not_fabricate_fourteen_complete_days_or_income_from_wallet_balances",
+          "Desertod.Api.Tests.WorkOrderApiTests.Enrolling_does_not_rewrite_accepted_legacy_pay_but_new_uncontracted_work_is_voluntary",
+          "Desertod.Api.Tests.DirectorEconomyApiTests.Director_sees_every_resident_but_never_treats_wages_unknown_cost_or_transfers_as_private_profit",
+          "Desertod.Api.Tests.MarketTaxApiTests.Unknown_cost_and_loss_never_create_tax_or_reduce_the_existing_daily_base(known: True, cost: 400, exemption: \"no_profit\")",
+          "Desertod.Api.Tests.WorkOrderApiTests.Receipt_from_before_work_order_fields_can_still_be_retried_without_repeating_the_purchase",
+          "Desertod.Api.Tests.SupplyOrderApiTests.Partial_delivery_transfers_actual_goods_cost_and_reserved_money_once(known: True)",
+          "Desertod.Api.Tests.MarketTaxApiTests.Changed_settlement_state_requires_fresh_quote_without_spending(reason: \"expired\")",
+          "Desertod.Api.Tests.MonetaryAuditApiTests.Unjournaled_balance_change_even_with_equal_global_total_rolls_back_the_entire_request(preserveTotal: True)",
+          "Desertod.Api.Tests.MonetaryAuditMigrationTests.Existing_balances_fiscal_history_and_ledger_are_preserved_and_audit_cannot_be_erased",
+          "Desertod.Api.Tests.MarketTaxApiTests.Owner_policy_receipts_are_replayable_but_not_reusable_or_stale_and_future_rules_do_not_apply_early",
+          "Desertod.Api.Tests.SupplyOrderApiTests.Failure_at_final_commit_leaves_supply_goods_fund_receipt_and_profit_retryable",
+          "Desertod.Api.Tests.WorkOrderApiTests.Two_workers_cannot_reserve_the_same_final_cycle_and_cancel_reopens_it",
+          "Desertod.Api.Tests.WorkOrderApiTests.No_fund_or_wrong_actor_or_other_kingdom_cannot_create_or_accept_a_promise",
+          "Desertod.Api.Tests.MarketTaxApiTests.Unknown_cost_and_loss_never_create_tax_or_reduce_the_existing_daily_base(known: False, cost: 0, exemption: \"unknown_cost\")",
+          "Desertod.Api.Tests.SupplyOrderApiTests.Expired_work_and_supply_funds_can_fund_each_other_without_a_menu_refresh",
+          "Desertod.Api.Tests.MonetaryAuditApiTests.Unjournaled_balance_change_even_with_equal_global_total_rolls_back_the_entire_request(preserveTotal: False)",
+          "Desertod.Api.Tests.SupplyOrderApiTests.Public_sales_honor_selected_reserve_and_do_not_feed_active_purchase_orders",
+          "Desertod.Api.Tests.MarketTaxApiTests.Accepted_offer_keeps_old_policy_and_purchase_transfers_one_tax_once_without_minting_or_changing_buyer_cost",
+          "Desertod.Api.Tests.SupplyOrderApiTests.Last_quantity_is_atomic_between_two_suppliers",
+          "Desertod.Api.Tests.SupplyOrderApiTests.Authority_and_world_boundaries_reject_unfunded_or_forged_orders"
+        ]
+      },
+      "final_session": 26305,
+      "corrected_round": {
+        "path": "TestResults/monetary-api-final/monetary-api-final.trx",
+        "sha256": "d4fa901aff1cd1047db13001b4800595280b6f3d6075a9facfc23a1e5f88ad6e",
+        "counters": {
+          "total": "12",
+          "executed": "12",
+          "passed": "12",
+          "failed": "0",
+          "error": "0",
+          "timeout": "0",
+          "aborted": "0",
+          "inconclusive": "0",
+          "passedButRunAborted": "0",
+          "notRunnable": "0",
+          "notExecuted": "0",
+          "disconnected": "0",
+          "warning": "0",
+          "completed": "0",
+          "inProgress": "0",
+          "pending": "0"
+        },
+        "scope": "Corrected generated order ID;4monetary API/3budget/1large snapshot/4legacy wage-energy-independent-instance cases. Before durable anchor-gap observation extension."
+      },
+      "final_anchor_round": {
+        "path": "TestResults/monetary-anchors/monetary-anchors.trx",
+        "sha256": "115d7b9dbe417ec7090fc550ed885b0c7778170a3073ceb922eb31a61b57c52c",
+        "counters": {
+          "total": "9",
+          "executed": "9",
+          "passed": "9",
+          "failed": "0",
+          "error": "0",
+          "timeout": "0",
+          "aborted": "0",
+          "inconclusive": "0",
+          "passedButRunAborted": "0",
+          "notRunnable": "0",
+          "notExecuted": "0",
+          "disconnected": "0",
+          "warning": "0",
+          "completed": "0",
+          "inProgress": "0",
+          "pending": "0"
+        },
+        "scope": "Current source: monetary happy path/retry/director, durable external zero-net anchor gap,3economic observations,3budget checks,1large-world snapshot."
+      },
+      "unique_passed_scenarios_across_scoped_stages": 42
+    },
+    "migration": {
+      "from": 55,
+      "to": 56,
+      "backup": "/tmp/foundation-before-restart-20261021T100726Z.dump",
+      "compared_tables": {
+        "Accounts": {
+          "rows": 286,
+          "sha256": "8953ac3f31b1ae69a1ff53679b1234c4b54e67d572eb759efc5d128c18cb7101"
+        },
+        "Citizens": {
+          "rows": 28,
+          "sha256": "c6a96eff1fe3a758d0d3ce3a9485aa2d0a9623bf48720fc9063f5f9bd0de768b"
+        },
+        "Villages": {
+          "rows": 6,
+          "sha256": "33b243eec6100d4e23eceea98dd0c3cc9a6da7ee4514fcdbeb2513c17e6747f5"
+        },
+        "KingdomEconomies": {
+          "rows": 6,
+          "sha256": "ed3bed895a63f6b0664f1d7d6ba67d0cfa1e55c87c02ed0444144115961c7244"
+        },
+        "GameWallets": {
+          "rows": 22,
+          "sha256": "9f118e2a13a364479eaa8600ddbbc8d7c9abb52d60831f2f6100594b1349dab5"
+        },
+        "LedgerEntries": {
+          "rows": 79,
+          "sha256": "0efc7a3477705abfa488e09c86d2598570ed135c46c9b0f3b749de37c884c361"
+        },
+        "EconomyReceipts": {
+          "rows": 10,
+          "sha256": "7dfa5ac6bfa5bf6722d86e16d971d52c2092fefdafe5b2e51d1f0a1f57d8e4b4"
+        },
+        "MarketLots": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "TaxPolicies": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "MarketTaxQuotes": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "MarketTaxEvents": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "WorkOrders": {
+          "rows": 1,
+          "sha256": "8af9465aeab271a2801725f42392b73842f7ba0b877cb018db759db645aa6bf9"
+        },
+        "WorkOrderClaims": {
+          "rows": 1,
+          "sha256": "2da0fe2c943c37f3473da5e988cc13b10e79e263193d5b44b0585bbbf435881b"
+        },
+        "SupplyOrders": {
+          "rows": 1,
+          "sha256": "acca3843886390b9be3119751b11c2b87e8209f42069ecea020f9e0b5f853668"
+        },
+        "SupplyDeliveries": {
+          "rows": 1,
+          "sha256": "814dfce9780fed73b4a3596620e159a716a0f58d4b1449cffd2bbc9d4841c1f6"
+        },
+        "FarmCrops": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "AlmightyStates": {
+          "rows": 1,
+          "sha256": "b873fe9a4bcc654818bc0e43ceda26238ac2720d99632ffa9baa9ff1f80d3af9"
+        },
+        "AlmightyObservations": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "AlmightyProposals": {
+          "rows": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "AlmightyPolicyChanges": {
+          "rows": 2,
+          "sha256": "33c68e574b1d2a27698a577810fa5342c97ed341c9095572cb910f7f0f3037f9"
+        },
+        "DungeonRuns": {
+          "rows": 5,
+          "sha256": "58822ec9801172152139efa57d0061593b0a591d9c36440aaebba78afe5a9b80"
+        },
+        "RaidBattles": {
+          "rows": 1,
+          "sha256": "dc7e0680ac864efa250e3bc45ad8e453b5084bc492d7912612728cb2bb93ee89"
+        },
+        "VillageProjects": {
+          "rows": 10,
+          "sha256": "a0f144366532b2f1b3d23912a96cffca40cf83542721c401dba12be310ab1a9f"
+        }
+      },
+      "old_rows_equal": true,
+      "new_state": {
+        "batches": 0,
+        "linked_postings": 0
+      },
+      "source_snapshots_committed": false
+    },
+    "real_http": {
+      "before_restart": {
+        "batches": 4,
+        "unfinalized": 0,
+        "issued": 0,
+        "withdrawn": 100,
+        "transferred": 140,
+        "linkedPostings": 7,
+        "phase": "before",
+        "wallet": 800,
+        "treasury": 100,
+        "testCandles": 1,
+        "syntheticOnly": true
+      },
+      "after_restart": {
+        "batches": 4,
+        "unfinalized": 0,
+        "issued": 0,
+        "withdrawn": 100,
+        "transferred": 140,
+        "linkedPostings": 7,
+        "phase": "after",
+        "wallet": 800,
+        "treasury": 100,
+        "testCandles": 1,
+        "syntheticOnly": true
+      },
+      "pre_restart_backup": "/tmp/foundation-before-restart-20261021T101318Z.dump",
+      "opening_money": "1000 invented fixture coins in a new isolated QA world, not observed earnings",
+      "fixture_correction": "Generated WorkOrder.Id is distinct from requestId; QA addressed the returned order ID. No production ID rule change.",
+      "after_final_source_restart": {
+        "batches": 4,
+        "unfinalized": 0,
+        "issued": 0,
+        "withdrawn": 100,
+        "transferred": 140,
+        "linkedPostings": 7,
+        "phase": "after-anchor",
+        "wallet": 800,
+        "treasury": 100,
+        "testCandles": 1,
+        "syntheticOnly": true
+      },
+      "final_restart_backup": "/tmp/foundation-before-restart-20261021T102709Z.dump"
+    },
+    "candidate_ci": {
+      "status": "replacement_required",
+      "initial": {
+        "run": 39585054998,
+        "sha": "fa00aa197cf1e4d41df4c857e7e480d1b5dece20",
+        "domain_passed": 709,
+        "api_passed": 458,
+        "api_failed": 1,
+        "failed_test": "WorkEncounterApiTests.Migration_refuses_to_drop_an_accepted_encounter_and_keeps_its_fund_and_checkpoint",
+        "cause": "New monetary-history guard correctly stops the full downgrade before the old encounter guard; test must isolate its migration."
+      },
+      "local_fixture_fix": {
+        "path": "TestResults/encounter-guard-ci-fix/encounter-guard-ci-fix.trx",
+        "sha256": "aa9c8a764f4d0df72ac36fee845340ed1d96cbbde371d15f0fce8d8df663096c",
+        "counters": {
+          "total": "1",
+          "executed": "1",
+          "passed": "1",
+          "failed": "0",
+          "error": "0",
+          "timeout": "0",
+          "aborted": "0",
+          "inconclusive": "0",
+          "passedButRunAborted": "0",
+          "notRunnable": "0",
+          "notExecuted": "0",
+          "disconnected": "0",
+          "warning": "0",
+          "completed": "0",
+          "inProgress": "0",
+          "pending": "0"
+        },
+        "scope": "Execute EF-generated v51-to-v50 Down script in a rollback-only transaction in owned database. Encounter guard/checkpoint/fund/history remain checked. No guard relaxed or receipts removed. Local fixture run includes uncommitted funding foundation; new exact parent CI required."
+      }
+    },
+    "remaining": [
+      "New exact candidate CI",
+      "Explicit money supply/obligation policy and end-to-end economic simulation T025/T026",
+      "Autonomous fiscal executor, bounds, fresh admission and consequence loop T054",
+      "Full1.0 DAG including final UI, subscriptions, Dcoin and music; no public deployment or real payments"
+    ],
+    "legacy_deployed_aggregate": {
+      "path": "LIVE_MONEY_CONSERVATION_2026_10_21.json",
+      "captured_at_utc": "2026-10-21T10:24:49.360534+00:00",
+      "wallet_and_treasury_total": 86620,
+      "ledger_net": 86620,
+      "difference": 0,
+      "scope": "Anonymous READ ONLY legacy aggregate; no claim of individual history or public1.0 guard."
     }
   }
 }

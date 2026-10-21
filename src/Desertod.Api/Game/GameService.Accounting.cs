@@ -8,7 +8,10 @@ namespace Desertod.Api.Game;
 public sealed partial class GameService
 {
     private sealed record StockKey(string Asset, string Location, Guid? Owner);
-    private sealed record StockSnapshot(bool Exists, Dictionary<StockKey, long> Goods);
+    private sealed record StockSnapshot(bool Exists, Dictionary<StockKey, long> Goods)
+    {
+        public Dictionary<MonetaryPosition, long> Money { get; init; } = [];
+    }
 
     private static async Task<StockSnapshot> SnapshotStockAsync(DesertodDbContext db, Guid villageId, CancellationToken ct)
     {
@@ -49,7 +52,8 @@ public sealed partial class GameService
 
     private async Task<StockSnapshot> BeginAccountingAsync(DesertodDbContext db, Guid villageId, CancellationToken ct)
     {
-        var before = await SnapshotStockAsync(db, villageId, ct);
+        db.FinancialBatchId = Guid.CreateVersion7(); db.FinancialBatchStarted = false;
+        var before = (await SnapshotStockAsync(db, villageId, ct)) with { Money = await SnapshotMoneyAsync(db, villageId, ct) };
         if (!before.Exists || await db.KingdomEconomies.AnyAsync(x => x.VillageId == villageId, ct)) return before;
         var now = time.GetUtcNow();
         db.KingdomEconomies.Add(new KingdomEconomy { VillageId = villageId, StartedAt = now, FundDay = EconomyDay(now) });
@@ -72,6 +76,7 @@ public sealed partial class GameService
         db.ChangeTracker.Clear();
         var after = await SnapshotStockAsync(db, villageId, ct);
         if (!after.Exists) return; // Legacy multi-world deletion cascades its journal, by design.
+        await FinishMonetaryAuditAsync(db, villageId, before.Money, ct);
         var opId = Guid.CreateVersion7(); var now = time.GetUtcNow();
         foreach (var key in before.Goods.Keys.Union(after.Goods.Keys))
             MoneyEntry(db, villageId, opId, key.Owner ?? db.AuditActor, db.AuditOperation ?? operation,
