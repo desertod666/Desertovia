@@ -146,6 +146,8 @@ public static class GameEndpoints
 
         player.MapPost("/villages/{slug}/me/heal", (string slug, ClaimsPrincipal user, GameService game, CancellationToken cancellationToken) =>
             game.HealAsync(slug, user.RequireAccountId(), cancellationToken));
+        player.MapPost("/villages/{slug}/tsar/heal", (string slug,RoyalHealRequest request,ClaimsPrincipal user,GameService game,CancellationToken ct)=>
+            game.HealRoyalAsync(slug,user.RequireAccountId(),request,ct));
 
         player.MapPost("/villages/{slug}/fortifications/upgrade", (string slug, ClaimsPrincipal user, GameService game, CancellationToken ct) =>
             game.UpgradeFortificationsAsync(slug,user.RequireAccountId(),ct));

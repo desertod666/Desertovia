@@ -313,6 +313,14 @@ public sealed partial class DesertodDbContext(DbContextOptions<DesertodDbContext
                 value=>value.Aggregate(0,(hash,part)=>HashCode.Combine(hash,part)),
                 value=>value.ToArray()));
             village.Ignore(v => v.TsarSpot);
+            village.OwnsOne(v=>v.RoyalCombat, body=>
+            {
+                body.ToJson();
+                body.Property(b=>b.Weapon).HasConversion<string>();body.Property(b=>b.Armor).HasConversion<string>();
+                body.OwnsOne(b=>b.Stats,stats=>stats.Ignore(s=>s.Total));
+                body.OwnsMany(b=>b.Skills,skills=>skills.Property(s=>s.Kind).HasConversion<string>());
+                body.OwnsMany(b=>b.Load,load=>load.Property(g=>g.Kind).HasConversion<string>());
+            });
             village.OwnsOne(v => v.TsarTrip, MapTrip);
             village.Property<uint>("Version").IsRowVersion();
         });

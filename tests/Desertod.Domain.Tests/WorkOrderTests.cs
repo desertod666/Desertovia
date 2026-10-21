@@ -77,7 +77,10 @@ public sealed class WorkOrderTests
     [Fact]
     public void Personal_craft_uses_only_own_materials_and_workshop_and_public_mode_cannot_take_it()
     {
-        var village=NewVillage();var c=NewCitizen(village,(Stat.Dexterity,4),(Stat.Strength,2));
+        var village=NewVillage();
+        village.Id=Guid.Parse("11111111-1111-4111-8111-111111111111");
+        village.Wilds=Desertod.Domain.World.Wilderness.Generate(village.Id);
+        var c=NewCitizen(village,(Stat.Dexterity,4),(Stat.Strength,2));
         village.Structures.Add(new(){Kind=BuildingKind.Workshop,PlotId="-4,10",OwnerAccountId=c.AccountId,BuiltAt=Now});
         village.Research.Add(new(){TechnologyId=TechnologyCatalog.Carpentry,ResearchedAt=Now});
         PersonalInventory.Add(c,ResourceKind.Wood,7,101);

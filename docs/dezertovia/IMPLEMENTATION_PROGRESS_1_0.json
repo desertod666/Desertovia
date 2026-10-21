@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-21T04:02:01.869805+00:00",
-  "status": "main_plan_active_combat_actor_admission_locally_tested_candidate_ci_pending",
+  "recorded_at_utc": "2026-10-21T05:10:57.809402+00:00",
+  "status": "main_plan_active_common_mortal_raid_body_locally_verified_full_ci_pending",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-combat-actors",
+  "branch": "feat/desertovia-1-0-mortal-heroes",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "T015/T031 shared physical combat admission; common HP/damage and wider1.0 unfinished",
+  "implemented_task": "T015/T031 common mortal body/equipment/training and injury healing for new raids; dungeon/full A14 unfinished",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -40,13 +40,13 @@
     "hospital_bridge_enabled": false,
     "original_game_container_replaced": false,
     "bot_modified": false,
-    "current_source_restarted": false,
+    "current_source_restarted": true,
     "tool_recipes_verified_http": 8,
-    "local_world_migrations": 51,
+    "local_world_migrations": 52,
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "Shared dev API5180 still runs the earlier ground-route Debug source/schema51. Current combat-actor source verified in isolated real API test factories; frontend5190 uses current HMR source. No public deployment.",
+    "loaded_scope": "Shared dev API schema52 currently runs the earlier raid slice. Final carrier/departure corrections are verified by domain/API test hosts and pending shared-runtime reload; public game untouched.",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
     "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
@@ -58,7 +58,8 @@
     "pre_territories_backup": "/tmp/foundation-before-restart-20261020T233102Z.dump",
     "pre_camera_restart_backup": "/tmp/foundation-before-restart-20261021T021850Z.dump",
     "pre_ground_route_restart_backup": "/tmp/foundation-before-restart-20261021T025302Z.dump",
-    "active_core_route_restart_backup": "/tmp/foundation-before-restart-20261021T030628Z.dump"
+    "active_core_route_restart_backup": "/tmp/foundation-before-restart-20261021T030628Z.dump",
+    "pre_mortal_royal_backup": "/tmp/foundation-before-restart-20261021T043127Z.dump"
   },
   "checks": {
     "baseline_ci": {
@@ -1671,7 +1672,7 @@
       }
     }
   },
-  "next_independent_work": "Common ruler/resident combat HP/damage/gear and finite injuries, preserving accepted battles; party/death/baggage OPEN rules not silently chosen.",
+  "next_independent_work": "Common saved royal body and ordinary combat class/equipment in new dungeon runs; preserve legacy80/8 and frozen checkpoints. UI redesign last per D-109.",
   "combat_actor_admission": {
     "schema_version": 1,
     "recorded_at_utc": "2026-10-21T04:02:01.869805+00:00",
@@ -1739,7 +1740,51 @@
       "web/src/ui/Hud.tsx": "67ece52d59681f9a30b8d88135c86a82f64fed29651e4b0af1b90e798b386c8f",
       "web/src/ui/BattleControls.tsx": "6818c502e0f3cac9d0e882e465fca3890929f066460d42072d62f3e84d312844"
     },
-    "candidate_ci": "pending candidate commit",
+    "candidate_ci": {
+      "sha": "2999073440198d86e348d7acc5bca3c36dbee238",
+      "pr": "https://github.com/desertod666/Desertovia/pull/89",
+      "run": 39541848951,
+      "result": "success",
+      "domain": 659,
+      "api": 379,
+      "browser": {
+        "desktop_passed": 204,
+        "phone_passed": 202,
+        "phone_skipped": 2
+      },
+      "jobs": [
+        {
+          "name": "Docker image",
+          "databaseId": 119031293932,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Browser tests (2/2)",
+          "databaseId": 119031294145,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Backend tests",
+          "databaseId": 119031294151,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Frontend lint and build",
+          "databaseId": 119031294170,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Browser tests (1/2)",
+          "databaseId": 119031294182,
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
     "public_release": false,
     "schema_migrations": 0,
     "remaining": [
@@ -1747,5 +1792,184 @@
       "common HP/damage/gear profile preserving accepted battles",
       "party/loot decisions and rest of full DAG"
     ]
+  },
+  "mortal_royal_raid": {
+    "schema_version": 1,
+    "recorded_at_utc": "2026-10-21T05:10:57.809402+00:00",
+    "scope": "Common mortal royal/resident body in new raids; dungeon Voivode profile and full A14 unfinished",
+    "source_base": "2999073440198d86e348d7acc5bca3c36dbee238",
+    "domain": {
+      "passed": 672,
+      "failed": 0,
+      "total": 672,
+      "result": "TestResults/mortal-royal-final-domain/Admin_DESKTOP-FQ85FTD_2026-10-21_07_05_20_net10.0.trx"
+    },
+    "api_stages": {
+      "first": {
+        "passed": 1,
+        "failed": 3,
+        "total": 4,
+        "result": "TestResults/mortal-royal-api/Admin_DESKTOP-FQ85FTD_2026-10-21_06_23_10_net10.0.trx"
+      },
+      "corrected13": {
+        "passed": 13,
+        "failed": 0,
+        "total": 13,
+        "result": "TestResults/mortal-royal-api-final/Admin_DESKTOP-FQ85FTD_2026-10-21_06_26_50_net10.0.trx"
+      },
+      "latest5": {
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "result": "TestResults/mortal-royal-api-latest/Admin_DESKTOP-FQ85FTD_2026-10-21_06_35_56_net10.0.trx"
+      },
+      "boundaries": {
+        "passed": 2,
+        "failed": 0,
+        "total": 2,
+        "result": "TestResults/mortal-royal-boundaries/Admin_DESKTOP-FQ85FTD_2026-10-21_06_40_16_net10.0.trx"
+      },
+      "distinct_passed": 15,
+      "cases": [
+        "Desertod.Api.Tests.CombatActorApiTests.A_legacy_fighter_present_when_gathering_ends_is_not_removed_or_teleported_by_the_march",
+        "Desertod.Api.Tests.CombatActorApiTests.A_raid_fighter_cannot_join_a_dungeon_or_discard_equipment_and_a_fighting_ruler_cannot_open_one",
+        "Desertod.Api.Tests.CombatActorApiTests.A_retry_of_work_accepted_before_combat_keeps_the_cycle_and_does_not_charge_again",
+        "Desertod.Api.Tests.CombatActorApiTests.A_ruler_with_a_legacy_resident_fighter_cannot_swap_bodies_heal_by_order_or_escape_into_rest_or_travel",
+        "Desertod.Api.Tests.CombatActorApiTests.Concurrent_orders_to_different_live_raids_cannot_create_two_royal_fighters",
+        "Desertod.Api.Tests.CombatActorApiTests.Concurrent_royal_raid_order_and_dungeon_open_admit_exactly_one_body",
+        "Desertod.Api.Tests.CombatActorApiTests.Dungeon_reservations_block_new_raid_orders_for_both_roles_and_allow_class_switching(marching: False)",
+        "Desertod.Api.Tests.CombatActorApiTests.Dungeon_reservations_block_new_raid_orders_for_both_roles_and_allow_class_switching(marching: True)",
+        "Desertod.Api.Tests.MortalRoyalCombatApiTests.A_legacy_announced_raid_keeps_80_health_and_does_not_borrow_new_equipment",
+        "Desertod.Api.Tests.MortalRoyalCombatApiTests.A_new_royal_body_reserves_finite_equipment_shoots_its_last_arrow_once_and_reloads_without_a_health_bonus",
+        "Desertod.Api.Tests.MortalRoyalCombatApiTests.Concurrent_injury_healing_and_replay_spend_one_real_remedy_and_cannot_resurrect_a_fallen_fighter",
+        "Desertod.Api.Tests.MortalRoyalCombatApiTests.Existing_resident_stats_are_the_rulers_actual_body_and_one_treatment_clears_the_shared_wound",
+        "Desertod.Api.Tests.MortalRoyalCombatApiTests.Finite_native_hospital_care_blocks_movement_only_until_recovery_and_keeps_political_actions_available",
+        "Desertod.Api.Tests.MortalRoyalCombatApiTests.Remedy_while_carried_saves_both_positions_and_stops_the_helper_once_after_reload",
+        "Desertod.Api.Tests.MortalRoyalMigrationTests.Migration_preserves_old_rows_health_and_json_then_retains_new_body_progress_and_refuses_lossy_rollback"
+      ],
+      "scope": "Final combined run14 PASS/1 fixture assertion failure: PostgreSQL microsecond timestamp rounding caused2.7e-7 tile difference. Carrier assertion now tolerates1e-5 tile and still requires identical carrier/patient positions; corrected focused1 PASS.15 distinct API cases passed over these runs; no production change between runs and no repeated counts.",
+      "final15": {
+        "passed": 14,
+        "failed": 1,
+        "total": 15,
+        "result": "TestResults/mortal-royal-final-boundaries/Admin_DESKTOP-FQ85FTD_2026-10-21_07_06_11_net10.0.trx"
+      },
+      "carrier_corrected": {
+        "passed": 1,
+        "failed": 0,
+        "total": 1,
+        "result": "TestResults/mortal-royal-carrier-corrected/Admin_DESKTOP-FQ85FTD_2026-10-21_07_10_36_net10.0.trx"
+      }
+    },
+    "frontend": "TypeScript/Vite/oxlint passed",
+    "browser": {
+      "passed": 14,
+      "failed": 0,
+      "scope": "4 new RU/EN320px component cases,10 adjacent controls/HUD; not physical phones"
+    },
+    "actual_menu": {
+      "fixture_only": true,
+      "scope": "actual game menu/royal profile, read only; not a real raid or physical phone test",
+      "width": 320,
+      "raidHealth": 32,
+      "unarmed": true,
+      "collapsedInitially": true,
+      "profileUnchanged": true,
+      "errors": []
+    },
+    "migration": {
+      "id": "20261021041138_MortalRoyalCombat",
+      "before": 51,
+      "after": 52,
+      "rollback_guard": "new profile or new-version announcement refuses Down; legacy-only rollback/reapply tested",
+      "old_rows": {
+        "migrations": 52,
+        "citizens": {
+          "rows": 28,
+          "sha256": "c6a96eff1fe3a758d0d3ce3a9485aa2d0a9623bf48720fc9063f5f9bd0de768b"
+        },
+        "worlds": {
+          "rows": 4,
+          "sha256": "d39537d946ffb5985f8bf5df5229bcdc02f8be7724cc5c58ce31510ab6a30160"
+        },
+        "wallets": {
+          "rows": 21,
+          "sha256": "f4bc1fe90e977111ea0a69cd6324f35862adbef9d5e904cf1de4e22ab1940d92"
+        },
+        "economy": {
+          "rows": 4,
+          "sha256": "97a9428091daa9e3d4a881f4b5ba972d8b25463aa82c79d23332ca7534f74565"
+        },
+        "dungeons": {
+          "rows": 3,
+          "sha256": "7563c8b94d2081ff3b812bb72a258f1daa8aa59c4f24e57eb2f98259a21bd9d2"
+        },
+        "battles": {
+          "rows": 1,
+          "sha256": "6e74c9098b4da55f4b6728de55a30b182e6180a8e11df7a2fa9c98ffe2e7fa7f"
+        },
+        "new_royal_profiles": 0
+      },
+      "projection": "Only newly added RoyalCombat and CombatRulesVersion columns excluded; all old compared fields identical. Other tables not compared.",
+      "backup": "/tmp/foundation-before-restart-20261021T043127Z.dump"
+    },
+    "product_file_sha256": {
+      "src/Desertod.Domain/Combat/RoyalCombatState.cs": "12e4d0ef727ae30562f16134354df015b2286a79c0cb891a4adea0df53872232",
+      "src/Desertod.Domain/Combat/CombatRules.cs": "48600cef0553a187792bfdb6c1b044a0ef647229d59159ca393cebd68564a525",
+      "src/Desertod.Domain/Combat/RaidSimulation.cs": "2bd4ad61eedb8db4be79db97534ec9a22d3025d1102adefcc68ec15077f16b9d",
+      "src/Desertod.Domain/Combat/RaidBattle.cs": "31cc491434bd316bbd33b97841956ba5db505784f56d48fcfb816d013a506a44",
+      "src/Desertod.Domain/Combat/RaidBalance.cs": "acb0c1b187edb4f8aa032d5f99fc0194796bbe8dcc54209919ea5422279fc558",
+      "src/Desertod.Domain/Entities/Village.cs": "5cb37f95678dfc06270026a61fb3fe7633736295f05d7a455479e6f4294df1ae",
+      "src/Desertod.Api/Game/GameService.RoyalCombat.cs": "e6236b5bde3506c119853bdb4ec64337f2d3b62e4e6d1cd19a3d0abe0b2cf816",
+      "src/Desertod.Api/Game/GameService.Battles.cs": "a6cb38d18ddc29b61e620aa5b35f3a70ea15f17428d68087362fe04ef37eb480",
+      "src/Desertod.Api/Game/GameService.Travel.cs": "6e7e96a9cda5d20e4b21ddf2283039d4df821d6778abec23b317da7ee4f30fc4",
+      "src/Desertod.Api/Game/GameService.cs": "6907feae17e24cd07dc77dbffcafeef47265ff23fb81ca85867339df0b264071",
+      "src/Desertod.Api/Game/Dtos.cs": "802c440238aebdef49e4dbb92c8dcc6f1e96fbe11701b9438b6d1bd0e977240c",
+      "src/Desertod.Api/Game/GameEndpoints.cs": "123e9f17b904f0d208a3b5fb31c2b35b133c0c9f0a761d059d83ed84eaa07549",
+      "src/Desertod.Infrastructure/Data/DesertodDbContext.cs": "ab7a3f4a065fedc32eb2a0a83ee9903b3d727cf354976838fccb8d56e6497b85",
+      "src/Desertod.Infrastructure/Data/Migrations/20261021041138_MortalRoyalCombat.cs": "02062ac9275757e9ab957273f5e9bb924ef14f31c39f039b8bccbfd0d72539fe",
+      "web/src/api.ts": "df7978ed6e8e6301098ccc8dbdf8e5dd6c4d8917f2dca6710dfc2f0b78bf74d3",
+      "web/src/ui/RoyalCombatSheet.tsx": "5592a0c3385e5737c6985871fd60c1a3fec111f1ae1b1c37c08fd42c7afd0eb2",
+      "web/src/ui/GameMenu.tsx": "5ea32246ececb29a22a298db8654bd1e1ac58e73c08d60ba81acfe77d699d11a",
+      "web/src/index.css": "2bf11dc420ea0cc05965b149132d034403418a82983814e5aacdd12050a6f341",
+      "src/Desertod.Domain/Dungeons/DungeonRules.cs": "aa084ead6db34de7921beeab8826302002bb689e5fd2bf06b6a8208d43c2b6bd"
+    },
+    "candidate_ci": "pending candidate commit",
+    "public_release": false,
+    "remaining": [
+      "exact candidate full CI",
+      "new dungeon body/class/equipment binding, settlement and legacy compatibility",
+      "full alias rescue scenario, supplies, balance/load and physical phones",
+      "remaining full1.0 DAG; no new death/baggage policy chosen"
+    ],
+    "rescue_boundary": "Remedy cancels the real carrier at its actual position, after medicine validation and before clearing the claim; no delivery renown. Failed remedy preserves the route/claim. Replayed HTTP request spends once.",
+    "native_care_boundary": "Dungeon departure refreshes expired native hospital admission without requiring a preceding GET; role does not keep a healed body permanently down.",
+    "runtime_scope": "Shared dev API schema52 currently runs the earlier raid slice. Final carrier/departure corrections are verified by domain/API test hosts and pending shared-runtime reload; public game untouched."
+  },
+  "owner_visual_boundary": {
+    "decision": "D-108",
+    "preserve": [
+      "character art",
+      "map art",
+      "building art",
+      "existing game sprites"
+    ],
+    "redraw": "deferred until all functionality is ready",
+    "gameplay_scope_question": "resolved by D-109: all functionality first",
+    "dependent_gameplay_changes": "continue within accepted1.0 decisions",
+    "independent_work": "functional DAG; graphic redesign deferred",
+    "prior_tested_slice": "local checkpoint on feat/desertovia-1-0-mortal-heroes; not released",
+    "status": "clarified_by_D109_functionality_first_interface_last"
+  },
+  "pending_work_after_scope_answer": "Apply common saved body/class/equipment to new dungeon runs, preserving old Voivode80/8 and frozen checkpoints; no unchosen party/death/baggage rules.",
+  "owner_work_order": {
+    "decision": "D-109",
+    "statement": "Нет, интерфейс надо делать в самом конце когда вся функциональная часть будет готова",
+    "functional_work": "continue",
+    "visual_redesign": "deferred until all functionality is ready",
+    "world_and_character_art": "preserve",
+    "mortal_raid_checkpoint": "7784be8",
+    "ui_draft": "separate local stash and qa/living-menu-deferred; not product",
+    "deferred_ui_asset": "../qa/living-menu-deferred/menu-frame-oak-v1.png and generation.json (built-in image_gen); draft code in separate named Git stash, not product"
   }
 }

@@ -9,6 +9,8 @@ public sealed class RaidBattle
     public Guid Id { get; set; }
     public Guid VillageId { get; set; }
     public int EngineVersion { get; set; } = 2;
+    /// <summary>0 for announced legacy raids; new battles use the common mortal body rules.</summary>
+    public int CombatRulesVersion { get; set; }
     public string Phase { get; set; } = "Warning";
     public required string Sector { get; set; }
     public string Tactic { get; set; } = "entry";
@@ -81,6 +83,8 @@ public sealed class RaidUnit
 
 public sealed class RaidFighter
 {
+    /// <summary>Frozen when admitted and carried with the body; missing legacy JSON retains its original rules.</summary>
+    public int? CombatRulesVersion { get; set; }
     public Guid CitizenId { get; set; }
     public Guid? AccountId { get; set; }
     public bool IsTsar { get; set; }

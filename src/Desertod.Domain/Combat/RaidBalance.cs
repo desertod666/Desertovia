@@ -92,7 +92,7 @@ public static class RaidBalance
         var plan=RaidSettingsPlanner.Preview(config,budget,ownerManualAllowed:settings is not null,legacyFallback:settings is null);
         var chosen=sector is null?choices[seed%choices.Count]:choices.FirstOrDefault(s=>s.Sector==sector)
             ??throw new GameRuleException("raid.noApproach","The selected approach is no longer reachable.");
-        var battle=new RaidBattle{Id=raid.Id,VillageId=village.Id,Sector=chosen.Sector,Seed=seed,
+        var battle=new RaidBattle{Id=raid.Id,VillageId=village.Id,Sector=chosen.Sector,Seed=seed,CombatRulesVersion=CombatantRules.CurrentVersion,
             ScheduledAt=raid.StrikesAt,StartsAt=raid.StrikesAt,LastTickAt=raid.StrikesAt,EndsAt=raid.StrikesAt.AddSeconds(config.DurationSeconds),
             ThreatBudget=config.Mode=="manual"?plan.ActualCost:budget*config.BudgetMultiplier,ReadyDefenders=readiness.Guards,AvailableReserves=readiness.Reserves,
             Composition=config.Preset,Tactic=config.Tactic=="mixed"?(seed%2==0?"entry":"breach"):config.Tactic,Settings=config,

@@ -2912,3 +2912,8 @@ button, input, select, textarea, .modal-header, .target-popup-header { font-fami
 
 .dungeon-root .zoom-controls { position:static; align-self:flex-end; flex-direction:row; transform:none; }
 .dungeon-root .zoom-controls button { min-width:44px; min-height:44px; }
+.royal-combat-sheet { margin-top:.6rem; }
+.royal-combat-sheet summary { min-height:44px; padding:.5rem 0; cursor:pointer; }
+.royal-combat-sheet .character-facts { display:grid; grid-template-columns:minmax(0,1fr) max-content; gap:.3rem .7rem; }
+.royal-combat-sheet dd { margin:0; text-align:right; }
+.royal-combat-sheet button { min-height:44px; max-width:100%; }

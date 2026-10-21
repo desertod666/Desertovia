@@ -62,7 +62,7 @@ public static class RaidSimulation
             }
             foreach(var f in battle.Fighters.Where(f=>f.Active&&f.Health>0))
                 if(f.Mode=="retreating") { BattleActions.StepRetreat(f,nav); if(f.IsTsar)village.TsarSpot=f.Position; else if(citizens.TryGetValue(f.CitizenId,out var withdrawing)){withdrawing.Spot=f.Position;withdrawing.IdleSpot=f.Position;withdrawing.Trip=null;} }
-                else if(f.IsTsar) ActTsar(village,battle,f,nav,at);
+                else if(f.IsTsar) ActTsar(village,raid,battle,f,nav,at,citizens);
                 else if(citizens.TryGetValue(f.CitizenId,out var c))FightCitizen(village,raid,battle,f,c,citizens,nav,at);
             nav.BeginCrowd(battle,EnemyCatalog.Get(raid.Enemy));
             foreach(var unit in battle.Units.Where(u=>u.Alive))
@@ -112,10 +112,11 @@ public static class RaidSimulation
                 continue;
             }
             if(!inDanger)continue;
-            if(c.Weapon is null)CombatRules.Arm(c,village);
+            if(c.Weapon is null)CombatRules.Arm(c,village,liveCombat:battle.CombatRulesVersion==CombatantRules.CurrentVersion);
             var p=nav.NearestFree(position);
             battle.Fighters.Add(new(){CitizenId=c.Id,X=p.X,Y=p.Y,Guard=false,Active=true,
-                Health=32+c.Stats.Endurance*4,MaximumHealth=32+c.Stats.Endurance*4,Weapon=c.Weapon,Armor=c.Armor,Arrows=c.Arrows,NextAttackAt=at.AddSeconds(1)});
+                Health=CombatantRules.RaidHealth(c),MaximumHealth=CombatantRules.RaidHealth(c),CombatRulesVersion=battle.CombatRulesVersion,
+                Weapon=c.Weapon,Armor=c.Armor,Arrows=c.Arrows,NextAttackAt=at.AddSeconds(1)});
         }
     }
 
@@ -124,7 +125,8 @@ public static class RaidSimulation
     {
         var carrying=citizen.RescueJourney is {CompletedAt:null};
         if (!carrying && MoveOrder(fighter, nav)) return;
-        var weapon=CombatRules.UsableWeapon(citizen);
+        var common=fighter.CombatRulesVersion==CombatantRules.CurrentVersion;
+        var weapon=common?CombatantRules.LiveWeapon(citizen):CombatRules.UsableWeapon(citizen);
         var range=weapon?.Kind==ResourceKind.Bow?5:1.45;
         var target=battle.Units.FirstOrDefault(u=>u.Id==fighter.TargetUnitId&&u.Alive);
         var selected=target is not null;
@@ -141,7 +143,7 @@ public static class RaidSimulation
         }
         if(fighter.NextAttackAt>at)return;
         fighter.NextAttackAt=at.AddSeconds(weapon?.Kind==ResourceKind.Bow?2.5:2);
-        var power=CombatRules.Power(citizen);
+        var power=common?CombatRules.Power(citizen,weapon):CombatRules.Power(citizen);
         if(weapon?.Arrows>0){citizen.SpendArrows(1);fighter.ArrowsSpent++;}
         fighter.Arrows=citizen.Arrows;
         var multiplier=village.Has(BuildingKind.Barracks)?RaidRules.BarracksMultiplier:1;
@@ -165,10 +167,18 @@ public static class RaidSimulation
         return true;
     }
 
-    private static void ActTsar(Village village, RaidBattle battle, RaidFighter fighter, RaidNavigation nav, DateTimeOffset at)
+    private static void ActTsar(Village village,Raid raid,RaidBattle battle,RaidFighter fighter,RaidNavigation nav,DateTimeOffset at,IReadOnlyDictionary<Guid,Citizen> people)
     {
         if (fighter.AccountId != village.OwnerAccountId || village.TsarInjuredUntil > at)
         { fighter.Active=false; return; }
+        if(fighter.CombatRulesVersion==CombatantRules.CurrentVersion)
+        {
+            var body=RoyalCombatBody.ForFighter(village,fighter,people.Values,at);
+            if(body is null||!CanFight(body.Citizen,at)){fighter.Active=false;return;}
+            fighter.Weapon=body.Citizen.Weapon;fighter.Armor=body.Citizen.Armor;fighter.Arrows=body.Citizen.Arrows;
+            FightCitizen(village,raid,battle,fighter,body.Citizen,people,nav,at);
+            village.TsarSpot=fighter.Position;body.Commit();return;
+        }
         if (MoveOrder(fighter,nav)) { village.TsarSpot=fighter.Position; return; }
         var target=battle.Units.FirstOrDefault(u=>u.Id==fighter.TargetUnitId&&u.Alive);
         target ??= battle.Units.Where(u=>u.Alive&&u.Position.DistanceTo(fighter.Position)<=1.0)
@@ -329,8 +339,12 @@ public static class RaidSimulation
     {
         if (victim.IsTsar)
         {
+            var commonRoyal=victim.CombatRulesVersion==CombatantRules.CurrentVersion;
+            var body=commonRoyal?RoyalCombatBody.ForFighter(village,victim,people.Values,at):null;
+            if(commonRoyal&&body is null){victim.Active=false;return;}
+            var royalProtection=body is null?0:ArmoryCatalog.Armor(body.Citizen.Armor)?.Protection??0;
             var before=victim.Health;
-            victim.Health=Math.Max(0,victim.Health-attack);
+            victim.Health=Math.Max(0,victim.Health-attack*(1-royalProtection));
             victim.DamageTaken+=before-victim.Health;
             battle.PlayerHealthLost+=before-victim.Health;Contact(battle,at);
             if(victim.Health<=0)
@@ -340,8 +354,10 @@ public static class RaidSimulation
                 village.TsarWoundedAt=at;village.TsarHospitalizedAt=null;village.TsarRescueByCitizenId=null;village.TsarRescueRewardEligible=true;
                 village.TsarRescueRequestedAt=null;
                 village.TsarSpot=victim.Position;village.TsarTrip=null;
+                if(body is not null)CombatRules.Injure(body.Citizen,TimeSpan.FromMinutes(enemy.InjuryMinutes),at,rewardEligible:false);
                 battle.Event("wounded",victim.ActorId.ToString(),at);
             }
+            body?.Commit();
             return;
         }
         if(!people.TryGetValue(victim.CitizenId,out var c))return;
@@ -442,7 +458,9 @@ public static class RaidSimulation
         var remaining=raid.Killed*RaidRules.RenownPerKill;
         for(var i=0;i<contributors.Count;i++)
         {
-            var f=contributors[i];if(!people.TryGetValue(f.CitizenId,out var c))continue;
+            var f=contributors[i];
+            var royal=f.IsTsar&&f.CombatRulesVersion==CombatantRules.CurrentVersion?RoyalCombatBody.ForFighter(village,f,people.Values,at):null;
+            var c=royal?.Citizen??people.GetValueOrDefault(f.CitizenId);if(c is null)continue;
             var reward=i==contributors.Count-1?remaining:(int)Math.Floor(raid.Killed*RaidRules.RenownPerKill*f.DamageDealt/Math.Max(1,total));
             remaining-=reward;c.Renown+=reward;f.RenownEarned=reward;
             if (!cancelled || raid.Killed > 0) SkillRules.AddExperience(c,Skill.Guarding,CombatRules.FightExperience);
@@ -452,6 +470,7 @@ public static class RaidSimulation
             if(c.Weapon is {} w && random.NextDouble()<(ArmoryCatalog.Weapon(w)?.BreakChance??0)){c.ClearWeapon();broken++;}
             if(c.Armor is {} a && random.NextDouble()<(ArmoryCatalog.Armor(a)?.BreakChance??0)){c.Armor=null;broken++;}
             f.RewardsGranted=true;
+            royal?.Commit();
         }
         // An idle player's chosen final position survives the transition out of combat.
         // Keep paid work/travel intact; their ordinary settlement owns those destinations.

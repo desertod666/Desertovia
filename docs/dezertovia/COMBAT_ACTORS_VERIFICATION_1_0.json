@@ -65,7 +65,51 @@
     "web/src/ui/Hud.tsx": "67ece52d59681f9a30b8d88135c86a82f64fed29651e4b0af1b90e798b386c8f",
     "web/src/ui/BattleControls.tsx": "6818c502e0f3cac9d0e882e465fca3890929f066460d42072d62f3e84d312844"
   },
-  "candidate_ci": "pending candidate commit",
+  "candidate_ci": {
+    "sha": "2999073440198d86e348d7acc5bca3c36dbee238",
+    "pr": "https://github.com/desertod666/Desertovia/pull/89",
+    "run": 39541848951,
+    "result": "success",
+    "domain": 659,
+    "api": 379,
+    "browser": {
+      "desktop_passed": 204,
+      "phone_passed": 202,
+      "phone_skipped": 2
+    },
+    "jobs": [
+      {
+        "name": "Docker image",
+        "databaseId": 119031293932,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Browser tests (2/2)",
+        "databaseId": 119031294145,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Backend tests",
+        "databaseId": 119031294151,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Frontend lint and build",
+        "databaseId": 119031294170,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Browser tests (1/2)",
+        "databaseId": 119031294182,
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
   "public_release": false,
   "schema_migrations": 0,
   "remaining": [

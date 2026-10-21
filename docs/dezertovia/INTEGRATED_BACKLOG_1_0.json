@@ -1264,7 +1264,8 @@
         "runtime_verification": "not_run_this_assignment"
       },
       "implementation_evidence": "RECONNECT_REST_AUTHORITY_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json",
-      "combat_actor_admission": "COMBAT_ACTORS_1_0.md / COMBAT_ACTORS_VERIFICATION_1_0.json; partial A14, common HP/damage unfinished"
+      "combat_actor_admission": "COMBAT_ACTORS_1_0.md / COMBAT_ACTORS_VERIFICATION_1_0.json; partial A14, common HP/damage unfinished",
+      "mortal_raid_body": "MORTAL_HEROES_RAID_1_0.md / MORTAL_HEROES_RAID_VERIFICATION_1_0.json; local pass, exact CI pending, dungeon/full A14 unfinished"
     },
     {
       "id": "PKG-T020",
@@ -1674,7 +1675,8 @@
       },
       "implementation_evidence": "DUNGEON_IMPLEMENTATION_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json",
       "verification_scope": "Shared manual scene, accepted-work private encounter and individual settlement verified in earlier receipts; current actor admission locally tested. Full A13/A14/A17 and group/supply/balance unfinished.",
-      "combat_actor_admission": "COMBAT_ACTORS_1_0.md / COMBAT_ACTORS_VERIFICATION_1_0.json; partial A14, common HP/damage unfinished"
+      "combat_actor_admission": "COMBAT_ACTORS_1_0.md / COMBAT_ACTORS_VERIFICATION_1_0.json; partial A14, common HP/damage unfinished",
+      "mortal_raid_body": "MORTAL_HEROES_RAID_1_0.md / MORTAL_HEROES_RAID_VERIFICATION_1_0.json; local pass, exact CI pending, dungeon/full A14 unfinished"
     },
     {
       "id": "PKG-T032",
@@ -3449,7 +3451,7 @@
     },
     {
       "id": "PKG-A14",
-      "status": "partial_actor_admission_hp_damage_unfinished",
+      "status": "partial_common_raid_body_dungeon_and_full_case_pending",
       "title": "Смертный царь",
       "setup": "Царь и житель в одинаковом боевом состоянии.",
       "action": "Валидные атаки/лечение/выбывание и отдельно действие казны.",
@@ -3457,7 +3459,7 @@
       "invariants": [
         "INV09"
       ],
-      "implementation_evidence": "COMBAT_ACTORS_1_0.md / COMBAT_ACTORS_VERIFICATION_1_0.json; not full-case PASS"
+      "implementation_evidence": "MORTAL_HEROES_RAID_1_0.md / MORTAL_HEROES_RAID_VERIFICATION_1_0.json; not full-case PASS"
     },
     {
       "id": "PKG-A15",

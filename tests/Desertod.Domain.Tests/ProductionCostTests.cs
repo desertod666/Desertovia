@@ -28,7 +28,11 @@ public sealed class ProductionCostTests
     [InlineData(true)][InlineData(false)]
     public void Private_craft_moves_consumed_cost_into_output_and_preserves_unknown_history(bool known)
     {
-        var v = NewVillage(); var c = NewCitizen(v, (Stat.Dexterity, 4), (Stat.Strength, 2));
+        var v = NewVillage();
+        // The accounting fixture must not randomly put the workshop yard in a pond.
+        v.Id=Guid.Parse("11111111-1111-4111-8111-111111111111");
+        v.Wilds=Desertod.Domain.World.Wilderness.Generate(v.Id);
+        var c = NewCitizen(v, (Stat.Dexterity, 4), (Stat.Strength, 2));
         v.Structures.Add(new() {Kind = BuildingKind.Workshop, PlotId = "-4,10", OwnerAccountId = c.AccountId, BuiltAt = Now});
         v.Research.Add(new() {TechnologyId = TechnologyCatalog.Carpentry, ResearchedAt = Now});
         PersonalInventory.Add(c, ResourceKind.Wood, 7, 101, known);
