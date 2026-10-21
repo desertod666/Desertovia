@@ -6,6 +6,7 @@ import { DungeonWorld } from '../game/DungeonWorld'
 import { useDungeonRun } from '../hooks'
 import { useI18n } from '../i18n'
 import { LoginPanel } from '../ui/LoginPanel'
+import {Hint} from '../ui/Hint'
 
 const ZOOM_STEP = 1.25
 
@@ -39,7 +40,7 @@ function DungeonView() {
   const { slug = '', runId = '' } = useParams()
   const i18n = useI18n()
   const { t } = i18n
-  const { view, snapshot, error, moveTo, attack, heal } = useDungeonRun(runId)
+  const { view, snapshot, error, moveTo, attack, heal,retreat } = useDungeonRun(runId)
   const hostRef = useRef<HTMLDivElement>(null)
   const [world, setWorld] = useState<DungeonWorld | null>(null)
   useReportContext(() => ({ slug, page: 'dungeon', dungeonId: runId }))
@@ -99,7 +100,7 @@ function DungeonView() {
             </Link>
           </div>
         ) : view ? (
-          <DungeonHud view={view} snapshot={snapshot} backTo={backTo} />
+          <DungeonHud view={view} snapshot={snapshot} backTo={backTo} onRetreat={retreat}/>
         ) : null}
         <div className="zoom-controls">
           <button onClick={() => world?.zoomBy(ZOOM_STEP)} aria-label={t('hud.zoomIn')}>
@@ -115,7 +116,7 @@ function DungeonView() {
   )
 }
 
-function DungeonHud({ view, snapshot, backTo }: { view: DungeonRunView; snapshot: DungeonSnapshot | null; backTo: string }) {
+export function DungeonHud({ view, snapshot, backTo,onRetreat }: { view: DungeonRunView; snapshot: DungeonSnapshot | null; backTo: string;onRetreat:()=>void }) {
   const i18n = useI18n()
   const { t } = i18n
   const hero = view.heroes.find((candidate) => candidate.id === view.myHeroId) ?? null
@@ -137,6 +138,7 @@ function DungeonHud({ view, snapshot, backTo }: { view: DungeonRunView; snapshot
   else if (!hero) hint = t('dungeon.hintWatcher')
   else if (live?.state === 'Fleeing') hint = t('dungeon.fled')
   else if (live?.state === 'Left') hint = t('dungeon.out')
+  else if(live?.retreating)hint=i18n.language==='ru'?'Герой отходит к выходу.':'Your hero is withdrawing to the exit.'
   else hint = hero.class === 'Healer' ? t('dungeon.hintHealer') : t('dungeon.hintFighter')
 
   return (
@@ -155,6 +157,7 @@ function DungeonHud({ view, snapshot, backTo }: { view: DungeonRunView; snapshot
       {hint && <div className="dungeon-hint small">{hint}</div>}
       {hero && live && (
         <div className="card dungeon-hero">
+          {running&&live.state==='Fighting'&&<div className="row dungeon-retreat"><button disabled={!!live.retreating} onClick={onRetreat}>{i18n.language==='ru'?(live.retreating?'Отступаю…':'Отступить'):(live.retreating?'Withdrawing…':'Retreat')}</button><Hint label={i18n.language==='ru'?'Об отступлении':'About retreat'} text={i18n.language==='ru'?'Герой идёт к входу и остаётся уязвимым до выхода. Закрытие страницы не завершает бой.':'Your hero walks to the entrance and remains vulnerable until leaving. Closing this page does not end the fight.'}>ⓘ</Hint></div>}
           <div>
             <strong>{hero.name}</strong> · {i18n.heroClass(hero.class)}
           </div>

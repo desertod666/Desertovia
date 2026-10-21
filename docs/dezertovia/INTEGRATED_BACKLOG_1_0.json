@@ -1631,7 +1631,7 @@
       "id": "PKG-T031",
       "milestone": "M3",
       "title": "Ручной одиночный микробой",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partial_shared_manual_scene_engine_domain_verified_workflow_pending",
       "dependencies": [
         "PKG-T012",
         "PKG-T013"
@@ -1670,13 +1670,15 @@
         "status": "partial",
         "evidence": "Ambush и ручной RaidBattle есть; целевая отдельная микросцена и последствия требуют интеграции.",
         "runtime_verification": "not_run_this_assignment"
-      }
+      },
+      "implementation_evidence": "DUNGEON_IMPLEMENTATION_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json",
+      "verification_scope": "Shared manual 1v1 engine and vulnerable retreat verified; accepted-work interception/private run/reward settlement not integrated yet. A13/A14/A17 not complete."
     },
     {
       "id": "PKG-T032",
       "milestone": "M3",
       "title": "Связанный групповой данж",
-      "status": "partially_implemented_durable_fight_checkpoint_full_ci_verified",
+      "status": "partial_checkpoint_full_ci_verified_explicit_retreat_locally_verified_group_contract_pending",
       "dependencies": [
         "PKG-T030",
         "PKG-T013"

@@ -78,7 +78,8 @@ public sealed record DungeonHeroSnapshotDto(
     int? Arrows,
     int Kills,
     int Experience,
-    IReadOnlyList<ResourceAmount> Loot);
+    IReadOnlyList<ResourceAmount> Loot,
+    bool Retreating=false);
 
 public sealed record DungeonFoeSnapshotDto(int Id, EnemyKind Kind, double X, double Y, double Health, double MaximumHealth, Guid? Target);
 
@@ -143,7 +144,7 @@ public static class DungeonMapper
                 h.Arrows,
                 h.Kills,
                 h.Experience,
-                h.Loot.Select(l => new ResourceAmount(l.Key, l.Value)).ToList()))
+                h.Loot.Select(l => new ResourceAmount(l.Key, l.Value)).ToList(),h.RetreatRequested))
             .ToList(),
         simulation.Foes
             .Select(f => new DungeonFoeSnapshotDto(f.Id, f.Kind, Math.Round(f.X, 2), Math.Round(f.Y, 2), Math.Round(Math.Max(0, f.Health), 1), f.Definition.Health, f.Target))

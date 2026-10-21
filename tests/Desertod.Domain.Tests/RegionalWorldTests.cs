@@ -92,6 +92,19 @@ public sealed class RegionalWorldTests
     }
 
     [Fact]
+    public void Rounded_arrival_reaches_the_exact_endpoint_but_an_earlier_obstruction_still_freezes_the_route()
+    {
+        for(var n=1;n<=128;n++)
+        {
+            var trip=Trip.Start(new(1d/n,1d/(n+1)),new(15.5,13.5),Now);
+            trip.Waypoints=[new(){X=7.5,Y=1d/(n+2),Cost=2.5},new(){X=15.5,Y=13.5}];
+            Assert.Equal(trip.To,trip.PositionAt(trip.ArrivesAt));
+            trip.BlockedAt=trip.SetOutAt+(trip.ArrivesAt-trip.SetOutAt)/2;
+            Assert.NotEqual(trip.To,trip.PositionAt(trip.ArrivesAt));
+        }
+    }
+
+    [Fact]
     public void Blocked_destination_and_outside_coordinates_leave_the_old_trip_and_fog_unchanged()
     {
         var v=NewVillage();var fog=(byte[])v.Explored.Clone();

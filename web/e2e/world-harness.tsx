@@ -3,6 +3,9 @@ import {useState} from 'react'
 import {WorldAtlas} from '../src/ui/WorldAtlas'
 import type {WorldRoute,TilePoint,WalkJourney} from '../src/api'
 import {JourneyControl} from '../src/ui/JourneyControl'
+import {DungeonHud} from '../src/pages/DungeonPage'
+import {BrowserRouter} from 'react-router'
+import type {DungeonRunView,DungeonSnapshot} from '../src/api'
 import {I18nProvider} from '../src/i18n'
 import '../src/index.css'
 import {buildLayout,buildLegacyLayout,findWay,MAP_WIDTH,MAP_HEIGHT,LEGACY_MAP_HEIGHT,Terrain} from '../src/game/worldMap'
@@ -37,4 +40,12 @@ function JourneyStand(){
   setJourney(null)
  }}/></>
 }
-createRoot(document.getElementById('app')!).render(<I18nProvider>{new URLSearchParams(location.search).has('journey')?<JourneyStand/>:<Stand/>}</I18nProvider>)
+function RetreatStand(){
+ const left=new URLSearchParams(location.search).has('left')
+ const[retreating,setRetreating]=useState(left),[sent,setSent]=useState(0)
+ const watching=new URLSearchParams(location.search).has('watching')
+ const view={slug:'test',runId:'run',timeLimitSeconds:60,myHeroId:watching?null:'hero',heroes:[{id:'hero',name:'Traveller',class:'Brawler',maximumHealth:40}],run:{phase:'Running',foes:1,slain:0}} as DungeonRunView
+ const snapshot={elapsed:5,floor:0,floorCount:1,heroes:[{id:'hero',state:left?'Left':'Fighting',health:30,targetFoe:null,arrows:null,kills:0,experience:0,loot:[],retreating}],foes:[{id:0,kind:'Wolf',health:18}]} as unknown as DungeonSnapshot
+ return <BrowserRouter><div className="game-root"><output id="retreat-count">{sent}</output><div className="hud"><DungeonHud view={view} snapshot={snapshot} backTo="/v/test" onRetreat={()=>{setSent(v=>v+1);setRetreating(true)}}/></div></div></BrowserRouter>
+}
+createRoot(document.getElementById('app')!).render(<I18nProvider>{new URLSearchParams(location.search).has('journey')?<JourneyStand/>:new URLSearchParams(location.search).has('retreat')?<RetreatStand/>:<Stand/>}</I18nProvider>)

@@ -1059,6 +1059,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
           {(now) => (
             <BottomBar
               inCombat={inCombat}
+              journeyBlocked={!!(tsar?village.tsar.journey:citizen?.journey??summary?.journey)?.blockedAt}
               citizen={citizen}
               catalog={catalog}
               structures={village.structures}

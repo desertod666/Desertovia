@@ -51,6 +51,13 @@ test('disconnect clears pending commands and never retries a lost order', async 
   s.replies[1].resolve(true)
 })
 
+test('a retreat replaces queued movement and is never replayed into a reconnected fight',async()=>{
+ const s=stand();s.orders.offer({method:'Attack',args:[1]});s.orders.offer({method:'MoveTo',args:[4,5]});s.orders.offer({method:'Retreat',args:[]})
+ s.replies[0].resolve(true);await flush();assert.deepEqual(s.sent[1],{method:'Retreat',args:[]})
+ s.orders.suspend();s.replies[1].reject(Error('disconnected'));await flush();s.orders.resume()
+ assert.equal(s.sent.length,2)
+})
+
 test('leaving a run disposes the queue even when an old acknowledgement arrives later', async () => {
   const s = stand()
   s.orders.offer({ method: 'Attack', args: [1] })

@@ -17,7 +17,7 @@ export function JourneyControl({journey,now,onResume,onAtlas,onCancel}:{journey:
    const key=`${journey.id??''}:${journey.blockedAt}`
    if(request.current?.key!==key)request.current={key,body:{requestId:createOperationId(),journeyId:journey.id??'00000000-0000-0000-0000-000000000000',blockedAt:journey.blockedAt!}}
    setBusy(true);setError('');try{await onResume(request.current.body);request.current=null}catch(e){setError(i18n.error(e))}finally{setBusy(false)}
-  }}>{ru?'Продолжить':'Continue journey'}</button><button disabled={busy} onClick={onAtlas}>{ru?'Округа':'District atlas'}</button>
+  }}>{ru?'Продолжить':'Continue journey'}</button><button disabled={busy} aria-label={ru?'Округа':'District atlas'} onClick={onAtlas}>{ru?'Округа':'Atlas'}</button>
   {onCancel&&waiting&&<button disabled={busy} title={i18n.t('next.cancelTitle')} onClick={async()=>{setBusy(true);setError('');try{await onCancel()}catch(e){setError(i18n.error(e))}finally{setBusy(false)}}}>{ru?'Отменить работу':'Cancel work'}</button>}</div>
   {error&&<p role="alert" className="error">{error}</p>}
  </section>

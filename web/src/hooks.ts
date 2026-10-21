@@ -433,8 +433,9 @@ export function useDungeonRun(runId: string) {
   const moveTo = useCallback((x: number, y: number) => send({ method: 'MoveTo', args: [x, y] }), [send])
   const attack = useCallback((foeId: number) => send({ method: 'Attack', args: [foeId] }), [send])
   const heal = useCallback((allyId: string) => send({ method: 'Heal', args: [allyId] }), [send])
+  const retreat = useCallback(() => send({ method: 'Retreat', args: [] }), [send])
 
-  return { view, snapshot, error, moveTo, attack, heal }
+  return { view, snapshot, error, moveTo, attack, heal,retreat }
 }
 
 /** Current time in milliseconds, adjusted to the server clock, refreshed every `intervalMs`. */

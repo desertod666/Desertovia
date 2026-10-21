@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-21T00:29:10.896634+00:00",
-  "status": "main_plan_active_interrupted_travel_under_verification",
+  "recorded_at_utc": "2026-10-21T00:57:46.312849+00:00",
+  "status": "main_plan_active_manual_encounter_engine_and_explicit_retreat_local_verified",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-travel-blocks",
+  "branch": "feat/desertovia-1-0-ambush",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "T033 world version2, southern regions, durable authoritative paths and compact mobile atlas",
+  "implemented_task": "T031 shared manual encounter engine and T032 durable vulnerable retreat; accepted-work encounter integration remains unfinished",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -42,11 +42,11 @@
     "bot_modified": false,
     "current_source_restarted": true,
     "tool_recipes_verified_http": 8,
-    "local_world_migrations": 49,
+    "local_world_migrations": 50,
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "Final regional source loaded on schema49; MapVersion2/MapArea120x150 and seven routes verified over actual authenticated HTTP. Existing QA journey preserved.",
+    "loaded_scope": "Current ambush engine/retreat working-tree source loaded in local Debug after backup 20261021T005226Z; candidate commit CI to follow. No public deployment.",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
     "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
@@ -1250,16 +1250,16 @@
   "delivery_focus": {
     "reviewed_on": "2026-10-21",
     "dag_cards": 53,
-    "not_started_in_this_assignment": 31,
-    "remaining_22_include_preparation_and_partial_slices": true,
-    "current": "T033 saved-route interruption and safe continuation; then T031 and independent adventure systems",
+    "not_started_in_this_assignment": 30,
+    "current": "T031 accepted-work encounter integration after shared engine and explicit dungeon exit; independent adventure/world work continues",
     "farm_not_first_in_queue": true,
-    "overall_goal_complete": false
+    "overall_goal_complete": false,
+    "remaining_23_include_preparation_and_partial_slices": true
   },
   "interrupted_travel": {
-    "status": "implemented_domain_api_and_component_ui_verified_runtime_and_full_ci_pending",
+    "status": "interruption_slice_full_ci_and_local_restart_verified_broader_world_pending",
     "migration": 50,
-    "local_runtime_migration_applied": false,
+    "local_runtime_migration_applied": true,
     "scope": [
       "geometry reconciliation at persisted world changes",
       "frozen position/fog and no work settlement while waiting",
@@ -1279,13 +1279,92 @@
       },
       "browser": "6 passed: RU/EN desktop/320px phone; explicit resume, same request on uncertain reply, tooltip, atlas and ordinary cancel",
       "domain_full_pass": 628,
-      "domain_results_directory": "TestResults/interrupted-travel-domain-final"
+      "domain_results_directory": "TestResults/interrupted-travel-domain-final",
+      "full_ci": {
+        "sha": "6b9c30b952f8f19e066f536c665103b492852efe",
+        "run": 39521895784,
+        "url": "https://github.com/desertod666/Desertovia/actions/runs/39521895784",
+        "conclusion": "success",
+        "jobs": {
+          "backend": {
+            "id": 118967443581,
+            "domain_passed": 628,
+            "api_passed": 355
+          },
+          "desktop": {
+            "id": 118967443546,
+            "passed": 190
+          },
+          "phone": {
+            "id": 118967443622,
+            "passed": 188,
+            "skipped": 2
+          },
+          "docker": {
+            "id": 118967443310,
+            "conclusion": "success"
+          },
+          "frontend": {
+            "id": 118967443630,
+            "conclusion": "success"
+          }
+        }
+      }
     },
     "public_release": false,
     "remaining": [
-      "local schema50 preservation and real blocked journey across restart",
-      "full candidate CI",
       "T033 road events/NPC, group and supply links, target load and physical phones"
+    ],
+    "receipt": "INTERRUPTED_TRAVEL_VERIFICATION_1_0.json"
+  },
+  "ambush_and_retreat": {
+    "status": "scene_engine_and_explicit_exit_locally_verified_work_encounter_workflow_pending",
+    "checks": {
+      "domain_passed": 637,
+      "domain_directory": "TestResults/ambush-engine-final",
+      "api_passed": 15,
+      "api_directory": "TestResults/ambush-retreat-api",
+      "api_scope": "existing dungeon API/checkpoints plus owned vulnerable retreat, rest before/after exit, rollback and reload for resident/Tsar",
+      "earlier_api_regression_passed": 9,
+      "client_unit_passed": 21,
+      "browser_passed": 12,
+      "browser_scope": "6 retreat UI cases +6 interrupted-journey controls, desktop/320px and RU/EN",
+      "frontend": "TypeScript/Vite/oxlint passed",
+      "browser": "12 desktop/320px RU/EN cases; after visual inspection, Left takes precedence over the saved retreat flag so an exited hero is not shown as still withdrawing"
+    },
+    "runtime_backup": "/tmp/foundation-before-restart-20261021T005226Z.dump",
+    "actual_worker_exit": {
+      "fixture_only": true,
+      "runId": "01a15bf2-c947-7b62-bd1f-debe357ee498",
+      "phoneWidth": 320,
+      "retreatViaActualSignalRUi": true,
+      "persistedCheckpoint": {
+        "dungeonRunId": null,
+        "retreatRequested": true,
+        "externallyWithdrawn": true,
+        "state": 2
+      },
+      "restDeniedBeforeExit": true,
+      "restAllowedAfterExit": true,
+      "workerSettled": true,
+      "walletCoins": 110,
+      "walletPreserved": true,
+      "runPhase": "Ended",
+      "tsarKnockedOut": false,
+      "scope": "Worker retreat clicked in the original live page and verified against the persisted checkpoint after correcting the helper DTO assertion; safe-rest and wallet checked through the API. Royal cleanup exit used the actual UI when still active.",
+      "royalUiExit": true
+    },
+    "remaining": [
+      "persist one selected encounter per accepted work cycle and preserve pre-version cycles",
+      "private encounter admission/projection and accepted-work pause",
+      "single existing ownership/fund settlement from manual outcome, no second loot table",
+      "actual work-to-encounter UI including scene name, return and failure explanations",
+      "full flow restart/rollback/concurrency/reconnect and balance acceptance"
+    ],
+    "full_ci": "pending candidate commit",
+    "public_release": false,
+    "visual_followups": [
+      "T035: actual 320px dungeon map remains small with large vertical margins; evaluate camera/zoom and tap targets, not yet a full mobile-experience acceptance pass"
     ]
   }
 }

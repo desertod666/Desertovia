@@ -2732,6 +2732,8 @@ button, input, select, textarea, .modal-header, .target-popup-header { font-fami
 .journey-control { position:absolute; z-index:72; bottom:calc(100px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); width:min(420px,calc(100% - 16px)); pointer-events:auto; margin:0; }
 .journey-control p { margin:.4rem 0; }
 .journey-control button { min-height:44px; }
+.dungeon-retreat { margin-bottom:.4rem; }
+.dungeon-retreat button { min-height:44px; }
 .notification-settings fieldset.notification-options { border: 0; margin: 0; padding: 0; }
 .notification-settings .notification-choice { display: flex; align-items: center; gap: .5rem; min-height: 44px; }
 .notification-choice input { flex: 0 0 auto; }
