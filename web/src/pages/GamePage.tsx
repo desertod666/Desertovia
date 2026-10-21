@@ -1,6 +1,7 @@
 import { MonasteryPanel } from '../ui/MonasteryPanel'
 import { WalletDialog, WalletHud } from '../ui/WalletHud'
 import { PersonalBattlePanel } from '../ui/PersonalBattlePanel'
+import {actorFighter} from '../game/battleActor'
 import { SafeRestControl } from '../ui/SafeRestControl'
 import {WorldAtlas} from '../ui/WorldAtlas'
 import {JourneyControl} from '../ui/JourneyControl'
@@ -854,7 +855,8 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
 
   if (!live.state || !catalog) return <div className="splash">{i18n.t('loading')}</div>
   const village = live.state
-  const inCombat=!!village.battles?.some(b=>!b.finishedAt&&b.phase!=='Warning'&&b.fighters.some(f=>(tsar?f.isTsar&&f.accountId===me.id:!f.isTsar&&f.citizenId===citizen?.id)&&f.active&&f.health>0&&!f.wounded&&f.mode!=='withdrawn'))
+  const ownBattleFighter=(battle:NonNullable<typeof village.battles>[number])=>actorFighter(battle.fighters,me.id,ownCitizen?.id)
+  const inCombat=!!village.battles?.some(b=>{const f=ownBattleFighter(b);return !b.finishedAt&&b.phase!=='Warning'&&f?.active&&f.health>0&&!f.wounded&&f.mode!=='withdrawn'})
   const shownNight = nightOverride ?? village.weather.night
   // Switching back to what the sky shows hands the light back to the clock.
   const dayNight = catalog.devTools
@@ -863,7 +865,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
 
   return (
     <div className={`game-root${uiHidden ? ' ui-hidden' : ''}${chatFull ? ' chat-full-active' : ''}`}>
-      {atlasOpen&&<WorldAtlas routes={village.worldRoutes??[]} onFocus={point=>canvas.current?.focus(point)} onClose={()=>setAtlasOpen(false)} canTravel={(tsar||canWork&&!working)&&!village.battles?.some(b=>!b.finishedAt&&b.fighters.some(f=>f.active&&f.health>0&&(tsar?f.isTsar:f.citizenId===ownId)))} onTravel={async point=>{if(tsar)setVillageState(await api.tsarGoTo(slug,point));else applyCitizen(await api.goTo(slug,point))}}/>}
+      {atlasOpen&&<WorldAtlas routes={village.worldRoutes??[]} onFocus={point=>canvas.current?.focus(point)} onClose={()=>setAtlasOpen(false)} canTravel={(tsar||canWork&&!working)&&!village.battles?.some(b=>{const f=ownBattleFighter(b);return !b.finishedAt&&f?.active&&f.health>0})} onTravel={async point=>{if(tsar)setVillageState(await api.tsarGoTo(slug,point));else applyCitizen(await api.goTo(slug,point))}}/>}
       <GameCanvas
         ref={canvas}
         village={live.state}
@@ -960,6 +962,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
           village={live.state}
           catalog={catalog}
           accountId={tsar?me.id:undefined}
+          actorCitizenId={ownCitizen?.id}
           citizen={citizen}
           citizens={live.citizens}
           onForecast={async (rain) => setVillageState(await api.forecast(slug, rain))}
@@ -1012,9 +1015,10 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
         </div>
         <ChatPanel
           actions={!walletOpen&&!chatFull&&panel==='none'&&!hospitalOpen&&!chaplainOpen&&!patientFor&&!pollSetup&&!pollShown&&(()=>{
-            const battle=village.battles?.find(b=>!b.finishedAt&&b.phase!=='Warning'&&b.fighters.some(f=>tsar?f.isTsar&&f.accountId===me.id:!f.isTsar&&f.citizenId===citizen?.id))
-            const fighter=battle?.fighters.find(f=>tsar?f.isTsar&&f.accountId===me.id:!f.isTsar&&f.citizenId===citizen?.id)
-            const remedies=(village.resources.find(r=>r.kind==='Remedy')?.amount??0)+(tsar?0:(citizen?.load.find(g=>g.resource==='Remedy')?.amount??0)+(citizen?.personalGoods?.find(g=>g.kind==='Remedy')?.amount??0))
+            const current=village.battles?.filter(b=>!b.finishedAt&&b.phase!=='Warning')??[]
+            const battle=current.find(b=>{const f=ownBattleFighter(b);return f?.active&&f.health>0&&!f.wounded&&f.mode!=='withdrawn'})??current.find(b=>!!ownBattleFighter(b))
+            const fighter=battle?ownBattleFighter(battle):undefined
+            const remedies=(village.resources.find(r=>r.kind==='Remedy')?.amount??0)+(fighter?.isTsar?0:(ownCitizen?.load.find(g=>g.resource==='Remedy')?.amount??0)+(ownCitizen?.personalGoods?.find(g=>g.kind==='Remedy')?.amount??0))
             return battle&&fighter?<ServerClock offsetMs={serverOffset}>{now=><PersonalBattlePanel slug={slug} battle={battle} fighter={fighter} remedies={remedies} now={now} onError={setNotice}/>}</ServerClock>:null
           })()}
           key={slug}

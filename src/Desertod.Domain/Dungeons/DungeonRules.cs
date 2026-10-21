@@ -87,6 +87,8 @@ public static class DungeonRules
         {
             throw new GameRuleException("dungeon.busy", "You are away in the dungeon.");
         }
+        if(run.Heroes.Any(h=>h.AccountId==citizen.AccountId&&h.CitizenId!=citizen.Id&&!h.Settled))
+            throw new GameRuleException("dungeon.busy","This account already has a hero in the dungeon.");
 
         var definition = HeroClassCatalog.Get(heroClass);
         var hero = run.Hero(citizen.Id);
@@ -168,7 +170,7 @@ public static class DungeonRules
     /// The gathering is over: heroes who can still walk go to the edge of the land. Someone already down stays where
     /// they fell, with their gear put back, and does not enter the dungeon.
     /// </summary>
-    public static void March(DungeonRun run, Village village, IEnumerable<Citizen> citizens, DateTimeOffset now)
+    public static void March(DungeonRun run, Village village, IEnumerable<Citizen> citizens, DateTimeOffset now,IReadOnlySet<Guid>? busyAccounts=null)
     {
         var latest = now;
         var anyone = false;
@@ -184,7 +186,7 @@ public static class DungeonRules
                 continue;
             }
 
-            if (!CanMarch(citizen, now))
+            if (!CanMarch(citizen, now)||busyAccounts?.Contains(citizen.AccountId)==true)
             {
                 ReturnGear(citizen, village, hero);
                 run.Heroes.Remove(hero);
@@ -204,7 +206,7 @@ public static class DungeonRules
             anyone = true;
         }
 
-        if (TsarIsDown(village, now))
+        if (TsarIsDown(village, now)||busyAccounts?.Contains(village.OwnerAccountId)==true)
         {
             run.Tsar.Settled = true;
         }

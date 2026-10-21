@@ -80,5 +80,61 @@
   },
   "full_candidate_ci": "pending candidate commit",
   "public_release": false,
-  "whole_1_0_complete": false
+  "whole_1_0_complete": false,
+  "ci": {
+    "sha": "e47bf1b1f151d287052554124afe59e5b12b7777",
+    "pr": "https://github.com/desertod666/Desertovia/pull/88",
+    "run": 39540049322,
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "Browser tests (2/2)",
+        "databaseId": 119025551283,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Backend tests",
+        "databaseId": 119025551521,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Browser tests (1/2)",
+        "databaseId": 119025551558,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Frontend lint and build",
+        "databaseId": 119025551574,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Docker image",
+        "databaseId": 119025551596,
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "backend": {
+      "domain": 656,
+      "api": 371,
+      "failed": 0
+    },
+    "previous_candidate": {
+      "sha": "2d8370154e0f7aac16de9ec85e0bf1565f2e9c93",
+      "run": 39539087484,
+      "result": "backend1 old scout fixture failed; browser jobs cancelled by next push",
+      "fix": "reachable scouting destinations and deterministic underlying hand-authored wilderness terrain"
+    },
+    "browser": {
+      "desktop_passed": 202,
+      "phone_passed": 200,
+      "phone_skipped": 2,
+      "failed": 0
+    }
+  }
 }

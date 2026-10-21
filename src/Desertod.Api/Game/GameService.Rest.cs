@@ -20,8 +20,7 @@ public sealed partial class GameService
             var now = time.GetUtcNow();
             if (request.Resting)
             {
-                var battles = await db.RaidBattles.Where(b => b.VillageId == village.Id && b.FinishedAt == null).ToListAsync(ct);
-                if (battles.Any(b => b.Fighters.Any(f => (tsar ? f.IsTsar && f.AccountId == actor : !f.IsTsar && f.CitizenId == citizen!.Id) && f.Active && f.Health > 0)))
+                if (await HasActiveRaidActorAsync(db,village.Id,actor,citizen?.Id,ct))
                     throw new GameRuleException("rest.retreatRequired", "Retreat from combat before entering safe rest.");
                 var runs = await db.DungeonRuns.Where(r => r.VillageId == village.Id && r.Phase != DungeonPhase.Ended).ToListAsync(ct);
                 if (runs.Any(r => r.Heroes.Any(h => h.AccountId == actor && !h.Settled)) || citizen?.DungeonRunId is not null)
@@ -50,8 +49,7 @@ public sealed partial class GameService
         {
             // A raid may have reached the worker after the rest request. Work completion
             // cannot remove an admitted fighter or grant immunity before retreat.
-            var battles = await db.RaidBattles.Where(b => b.VillageId == citizen.VillageId && b.FinishedAt == null).ToListAsync(ct);
-            context.RestBlockedByCombat = battles.Any(b => b.Fighters.Any(f => !f.IsTsar && f.CitizenId == citizen.Id && f.Active && f.Health > 0));
+            context.RestBlockedByCombat = await HasActiveRaidActorAsync(db,citizen.VillageId,citizen.AccountId,citizen.Id,ct);
         }
         return CycleEngine.Settle(citizen, context, now);
     }

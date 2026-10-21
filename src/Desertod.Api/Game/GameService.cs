@@ -491,6 +491,7 @@ public sealed partial class GameService(
             var context = (await LoadContextAsync(db, village, citizen.Id, now, cancellationToken)).Work;
             var raids = await FightDueRaidsAsync(db, village, context.CompletedProjects, now, cancellationToken);
 
+            await RequireMovementReadyAsync(db,village.Id,citizen.AccountId,citizen.Id,cancellationToken);
             var report = await SettleWorkAsync(db, citizen, context, now, cancellationToken);
             await AfterSettleAsync(db, village, report, now, cancellationToken);
             var completion = await CompleteProjectIfDoneAsync(db, context, now, cancellationToken);
@@ -954,6 +955,8 @@ public sealed partial class GameService(
         var updated = new List<RaidBattle>();
         var liveIds=due.Where(r=>r.EngineVersion>=2).Select(r=>r.Id).ToArray();
         var battles=await db.RaidBattles.Where(b=>liveIds.Contains(b.Id)).ToDictionaryAsync(b=>b.Id,cancellationToken);
+        var reservedRuns=await db.DungeonRuns.Where(r=>r.VillageId==village.Id&&r.Phase!=Desertod.Domain.Dungeons.DungeonPhase.Ended).ToListAsync(cancellationToken);
+        var reservedAccounts=reservedRuns.SelectMany(r=>r.Heroes).Where(h=>!h.Settled).Select(h=>h.AccountId).ToHashSet();
         // Active combat always keeps its turn. Waiting waves retain their original schedule,
         // even after a previous wave pushes their actual start past the next wave's deadline.
         var allowed=battles.Values.Where(b=>b.FinishedAt is null&&b.Phase!="Cancelled")
@@ -1002,7 +1005,7 @@ public sealed partial class GameService(
                 foreach(var royal in battle.Fighters.Where(f=>f.IsTsar))royal.Active=false;
             var advanced = RaidSimulation.Tick(village,raid,battle,citizens,
                 citizens.Where(c=>presence.IsPresent(c.Id)).Select(c=>c.Id).ToHashSet(),now,
-                sample=>CombatDiagnostics.Record(logger,village.Id,battle.Id,now,battle.Units.Count(u=>u.Alive),battle.Fighters.Count(f=>f.Active&&f.Health>0),sample));
+                sample=>CombatDiagnostics.Record(logger,village.Id,battle.Id,now,battle.Units.Count(u=>u.Alive),battle.Fighters.Count(f=>f.Active&&f.Health>0),sample),reservedAccounts);
             changed |= advanced;
             if(advanced&&!updated.Contains(battle))updated.Add(battle);
             if(battle.FinishedAt is not null)

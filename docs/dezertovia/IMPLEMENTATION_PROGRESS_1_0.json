@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-21T03:25:50.121267+00:00",
-  "status": "main_plan_active_all_land_ground_route_slice_locally_verified_candidate_ci_pending",
+  "recorded_at_utc": "2026-10-21T04:02:01.869805+00:00",
+  "status": "main_plan_active_combat_actor_admission_locally_tested_candidate_ci_pending",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-ground-routes",
+  "branch": "feat/desertovia-1-0-combat-actors",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "T033 new SetOut trips use saved ground routes, reachable activity/departure/arrival and blocked return integration; broader world/party/supply work unfinished",
+  "implemented_task": "T015/T031 shared physical combat admission; common HP/damage and wider1.0 unfinished",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -40,13 +40,13 @@
     "hospital_bridge_enabled": false,
     "original_game_container_replaced": false,
     "bot_modified": false,
-    "current_source_restarted": true,
+    "current_source_restarted": false,
     "tool_recipes_verified_http": 8,
     "local_world_migrations": 51,
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "Current ground-route backend working tree loaded in Debug after backup025302Z; same core waiting route survived restart030628Z. Current frontend includes the verified journey clock fix. Schema51; no public deployment.",
+    "loaded_scope": "Shared dev API5180 still runs the earlier ground-route Debug source/schema51. Current combat-actor source verified in isolated real API test factories; frontend5190 uses current HMR source. No public deployment.",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
     "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
@@ -1614,7 +1614,138 @@
       "scope": "same authoritative data repeatedly reapplied in actual local320px scene; not a global FPS/network benchmark"
     },
     "active_route_restart_backup": "/tmp/foundation-before-restart-20261021T030628Z.dump",
-    "candidate_ci": "pending candidate commit"
+    "candidate_ci": {
+      "sha": "e47bf1b1f151d287052554124afe59e5b12b7777",
+      "pr": "https://github.com/desertod666/Desertovia/pull/88",
+      "run": 39540049322,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "Browser tests (2/2)",
+          "databaseId": 119025551283,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Backend tests",
+          "databaseId": 119025551521,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Browser tests (1/2)",
+          "databaseId": 119025551558,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Frontend lint and build",
+          "databaseId": 119025551574,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Docker image",
+          "databaseId": 119025551596,
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ],
+      "backend": {
+        "domain": 656,
+        "api": 371,
+        "failed": 0
+      },
+      "previous_candidate": {
+        "sha": "2d8370154e0f7aac16de9ec85e0bf1565f2e9c93",
+        "run": 39539087484,
+        "result": "backend1 old scout fixture failed; browser jobs cancelled by next push",
+        "fix": "reachable scouting destinations and deterministic underlying hand-authored wilderness terrain"
+      },
+      "browser": {
+        "desktop_passed": 202,
+        "phone_passed": 200,
+        "phone_skipped": 2,
+        "failed": 0
+      }
+    }
   },
-  "next_independent_work": "Shared ruler/resident combat admission and health/damage rules A14, preserving accepted battles; new death/baggage policy remains pending."
+  "next_independent_work": "Common ruler/resident combat HP/damage/gear and finite injuries, preserving accepted battles; party/death/baggage OPEN rules not silently chosen.",
+  "combat_actor_admission": {
+    "schema_version": 1,
+    "recorded_at_utc": "2026-10-21T04:02:01.869805+00:00",
+    "scope": "T015/T031 single physical combat actor and shared admission; full A14 common HP/damage unfinished",
+    "source_base": "e47bf1b1f151d287052554124afe59e5b12b7777",
+    "local": {
+      "domain": {
+        "passed": 659,
+        "failed": 0,
+        "total": 659,
+        "result": "TestResults/combat-actors-domain-latest/Admin_DESKTOP-FQ85FTD_2026-10-21_05_59_43_net10.0.trx"
+      },
+      "api_initial": {
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "result": "TestResults/combat-actors-api/Admin_DESKTOP-FQ85FTD_2026-10-21_05_38_53_net10.0.trx"
+      },
+      "api_regression": {
+        "passed": 37,
+        "failed": 1,
+        "total": 38,
+        "result": "TestResults/combat-actors-api-regression/Admin_DESKTOP-FQ85FTD_2026-10-21_05_44_00_net10.0.trx"
+      },
+      "api_final": {
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "result": "TestResults/combat-actors-api-final/Admin_DESKTOP-FQ85FTD_2026-10-21_05_57_47_net10.0.trx"
+      },
+      "client_unit": {
+        "passed": 27,
+        "failed": 0,
+        "final_identity_priority_subset_passed": 3
+      },
+      "frontend": "TypeScript/Vite/oxlint passed",
+      "browser": {
+        "passed": 14,
+        "failed": 0,
+        "scope": "component harness:4 RU/EN ruler-resident cases at320px plus10 adjacent HUD/control cases, before final duplicate-priority refinement covered by3 client unit; not physical phone/full world proof"
+      },
+      "api_royal_alias_latest": {
+        "passed": 1,
+        "failed": 0,
+        "total": 1,
+        "result": "TestResults/combat-actors-alias-latest/Admin_DESKTOP-FQ85FTD_2026-10-21_06_01_20_net10.0.trx"
+      },
+      "api_regression_note": "37 PASS/1 new test failed by asserting a global worker result empty despite other fixture worlds. Assertion now excludes only this world; corrected final8 API rerun passed. Final additional same-account dungeon alias guard has659 Domain PASS and a targeted API run. Earlier broad run predates final new-work/cross-raid guards.",
+      "api_final_build_attempt": "A parallel test rebuild hit Windows DLL file locks, no tests ran; owning earlier run completed normally, final retry runs sequentially.",
+      "api_final_scope": "Final8 cases PASS, then1 extended ruler-alias case PASS after the last same-account dungeon guard. Full candidate CI must also cover all existing APIs after the final guards."
+    },
+    "product_file_sha256": {
+      "src/Desertod.Api/Game/GameService.CombatActors.cs": "1795a2f0694fe32cb57e3d421a8ac4c719efb8e49ba170a7476d5fdf0048a2a9",
+      "src/Desertod.Api/Game/GameService.Battles.cs": "a937437f0d4cf0ef6ea8864e270e79d2ad8450e2273d4f01acde4be3c620893d",
+      "src/Desertod.Api/Game/GameService.Dungeon.cs": "c04f7c192c6802e9f8505325b79f4a6da6b5edabeb69c1f92e45a3d27740fc16",
+      "src/Desertod.Api/Game/GameService.Travel.cs": "61f90c396ad63d992218d0a374ddf4afbc6a6634ba4e07009cc4505fab18dbd3",
+      "src/Desertod.Api/Game/GameService.Rest.cs": "c528e9c66cdb472af07b2a72887a0052604505036ef62ac9c9a4ad5e136bfc8b",
+      "src/Desertod.Api/Game/GameService.Encounters.cs": "f012851f8a126a28617f032b8f1f4fae1927b610c42e2f629265fd27b1774b9e",
+      "src/Desertod.Api/Game/GameService.Almighty.cs": "1b00f7175b6f58e28475d65b3cff910e5fd417e04aa9c0c7625ac4bf94a31dee",
+      "src/Desertod.Api/Game/GameService.cs": "4b93a02dc1e36a877638baeccadc2f22021c235dcf65b11f664f202c3766048f",
+      "src/Desertod.Domain/Combat/RaidSimulation.cs": "5d991915b08e2ef102f438d9666b1ef75c33c9ad9c96ac249d3e14ac4fdff7f0",
+      "src/Desertod.Domain/Dungeons/DungeonRules.cs": "1c67147723b1bf490e26ad2b0ed0d066c6ba4d3e15fb65101ae426140220ae54",
+      "web/src/game/battleActor.ts": "302d8cc47e26286d5d0c3887967ecdc3e126c3a983628ae6d2f2259889e6e2a2",
+      "web/src/pages/GamePage.tsx": "9d8a9933d2c195a48d059378131608efbda1f7052f827d14d09361a0ab1cc028",
+      "web/src/ui/Hud.tsx": "67ece52d59681f9a30b8d88135c86a82f64fed29651e4b0af1b90e798b386c8f",
+      "web/src/ui/BattleControls.tsx": "6818c502e0f3cac9d0e882e465fca3890929f066460d42072d62f3e84d312844"
+    },
+    "candidate_ci": "pending candidate commit",
+    "public_release": false,
+    "schema_migrations": 0,
+    "remaining": [
+      "candidate full CI",
+      "common HP/damage/gear profile preserving accepted battles",
+      "party/loot decisions and rest of full DAG"
+    ]
+  }
 }

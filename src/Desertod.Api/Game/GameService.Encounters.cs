@@ -32,8 +32,7 @@ public sealed partial class GameService
             ||citizen.Trip?.Waiting(now)==true||HospitalRules.IsAdmitted(citizen,now))return true;
         if(CombatRules.IsInjured(citizen,now))return false;
         if(GameCatalog.FindTask(citizen.CurrentTaskId??"")?.Danger is not {} danger)return true;
-        var raids=await db.RaidBattles.Where(b=>b.VillageId==citizen.VillageId&&b.FinishedAt==null).ToListAsync(ct);
-        if(raids.Any(b=>b.Fighters.Any(f=>f.Active&&f.Health>0&&(!f.IsTsar&&f.CitizenId==citizen.Id||f.IsTsar&&f.AccountId==citizen.AccountId))))return false;
+        if(await HasActiveRaidActorAsync(db,citizen.VillageId,citizen.AccountId,citizen.Id,ct))return false;
         var random=DungeonRandom.FromSeed(citizen.CycleEncounterSeed);
         var enemy=CombatRules.SelectAmbush(context.Village,danger,random,citizen.CycleStartedAt??now);
         citizen.CycleAmbushChecked=true;

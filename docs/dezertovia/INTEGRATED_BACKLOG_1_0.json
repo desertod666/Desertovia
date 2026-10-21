@@ -1263,7 +1263,8 @@
         "evidence": "Политические роли/civic requests и уязвимый герой есть; новые права договора/сервиса требуют явной матрицы.",
         "runtime_verification": "not_run_this_assignment"
       },
-      "implementation_evidence": "RECONNECT_REST_AUTHORITY_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json"
+      "implementation_evidence": "RECONNECT_REST_AUTHORITY_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json",
+      "combat_actor_admission": "COMBAT_ACTORS_1_0.md / COMBAT_ACTORS_VERIFICATION_1_0.json; partial A14, common HP/damage unfinished"
     },
     {
       "id": "PKG-T020",
@@ -1672,7 +1673,8 @@
         "runtime_verification": "not_run_this_assignment"
       },
       "implementation_evidence": "DUNGEON_IMPLEMENTATION_1_0.md / IMPLEMENTATION_PROGRESS_1_0.json",
-      "verification_scope": "Shared manual 1v1 engine and vulnerable retreat verified; accepted-work interception/private run/reward settlement not integrated yet. A13/A14/A17 not complete."
+      "verification_scope": "Shared manual scene, accepted-work private encounter and individual settlement verified in earlier receipts; current actor admission locally tested. Full A13/A14/A17 and group/supply/balance unfinished.",
+      "combat_actor_admission": "COMBAT_ACTORS_1_0.md / COMBAT_ACTORS_VERIFICATION_1_0.json; partial A14, common HP/damage unfinished"
     },
     {
       "id": "PKG-T032",
@@ -3447,14 +3449,15 @@
     },
     {
       "id": "PKG-A14",
-      "status": "planned_not_executed",
+      "status": "partial_actor_admission_hp_damage_unfinished",
       "title": "Смертный царь",
       "setup": "Царь и житель в одинаковом боевом состоянии.",
       "action": "Валидные атаки/лечение/выбывание и отдельно действие казны.",
       "expected": "Общие правила HP; права управления отдельно от боевой силы.",
       "invariants": [
         "INV09"
-      ]
+      ],
+      "implementation_evidence": "COMBAT_ACTORS_1_0.md / COMBAT_ACTORS_VERIFICATION_1_0.json; not full-case PASS"
     },
     {
       "id": "PKG-A15",
