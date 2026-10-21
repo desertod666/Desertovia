@@ -37,7 +37,7 @@ export function AlmightyPanel({ slug }: { slug: string }) {
       {!view && !error && <p>{ru ? 'Смотрю за городом…' : 'Watching the village…'}</p>}
       {view && <>
         <p>{view.enabled ? ru ? 'Анализ включён. События требуют твоего согласия.' : 'Analysis is enabled. Events need your approval.' : ru ? 'Серверный анализ пока выключен.' : 'Server analysis is disabled.'}</p>
-        <div className="row">{['Propose','Observe','AutoEconomy','Off'].map((mode, i) => <button key={mode} type="button" disabled={busy} className={view.state.mode === mode ? 'active' : ''} onClick={() => void act(() => api.almightyMode(slug, mode))}>{(ru ? ['Предложения','Наблюдение','Автоэкономика','Выключить'] : ['Proposals','Observe','Auto economy','Off'])[i]}</button>)}</div>
+        <div className="row">{['Propose','Observe','ShadowEconomy','AutoEconomy','Off'].map((mode, i) => <button key={mode} type="button" disabled={busy} className={view.state.mode === mode ? 'active' : ''} onClick={() => void act(() => api.almightyMode(slug, mode))}>{(ru ? ['Предложения','Наблюдение','Теневая экономика','Автоэкономика','Выключить'] : ['Proposals','Observe','Shadow economy','Auto economy','Off'])[i]}</button>)}</div>
         <DirectorFinanceControls slug={slug} ru={ru}/>
         <p><strong>{ru ? 'Замысел:' : 'Intent:'}</strong> {view.state.intent}</p>
         <p className="small">{ru ? 'Показатели раз в минуту. ИИ раз в 15 минут; важные изменения — от 5 минут, максимум 4 анализа в час. Предложения — не чаще раза в 30 минут.' : 'Metrics every minute. AI every 15 minutes; important changes after 5 minutes, at most 4 reviews/hour. Proposals at most every 30 minutes.'}</p>

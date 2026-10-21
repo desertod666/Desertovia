@@ -7,7 +7,9 @@ const view: AlmightyView = { enabled:true, state:{mode:'Propose',policyVersion:0
  proposals:[{id:'one',option:'economy_report',reason:'Я вижу что городу нужны доски и ремонт. Предлагаю согласовать работы, сохранив медленный темп игры.',intent:'Наблюдать',status:'Pending',createdAt:new Date().toISOString(),expiresAt:new Date(Date.now()+1800000).toISOString(),noticeState:'Sent',result:''}], observations:[] }
 api.almighty=async()=>structuredClone(view)
 api.almightyMode=async(_slug,mode)=>{view.state.mode=mode}
-const finance:DirectorFinanceView={version:1,day:'2026-10-21',actionsToday:1,reservedToday:40,actions:[],limits:{
+const finance:DirectorFinanceView={version:1,day:'2026-10-21',actionsToday:1,reservedToday:40,
+ actions:[{reviewId:'live',author:'director',option:'finance_work_low',reason:'Я вижу нужду в запасах.',result:'Выделено40 в фонд.',at:new Date().toISOString(),applied:true},
+ {reviewId:'shadow',author:'director',option:'finance_issue',reason:'Сравниваю нехватку фонда.',result:'Ничего не исполнено.',at:new Date().toISOString(),applied:false}],limits:{
  enabled:false,workOrders:true,supplyOrders:false,taxChanges:false,treasuryIssues:false,actionsPerDay:3,spendingPerDay:100,
  maximumUnitPay:20,maximumUnits:10,maximumIssue:0,maximumTaxBasisPoints:0,taxStepBasisPoints:0,taxNoticeMinutes:0,taxCooldownMinutes:0}}
 api.directorFinance=async()=>structuredClone(finance)

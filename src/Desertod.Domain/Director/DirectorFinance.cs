@@ -49,6 +49,7 @@ public sealed class DirectorFinanceAction
     public DateOnly Day { get; set; }
     public Guid DelegatingOwnerId { get; set; }
     public string Author { get; set; } = "director";
+    public bool Applied { get; set; } = true;
     public string Option { get; set; } = "";
     public string Terms { get; set; } = "{}";
     public string Reason { get; set; } = "";

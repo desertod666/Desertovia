@@ -19,7 +19,7 @@ internal sealed record FinanceCommand(string Option, string Kind, long Cost = 0,
 internal sealed record FinanceFunding(long? PolicyVersion, DateOnly BudgetDay, long BudgetRevision, long RemainingAllowance);
 internal sealed record FinanceEnvelope(DateTimeOffset CapturedAt, string Revision, long PolicyVersion,
     DateOnly Day, long BudgetRevision, long TaxVersion, FinanceFunding Funding,
-    IReadOnlyList<FinanceCommand> Commands, object Evidence, object Consequences);
+    IReadOnlyList<FinanceCommand> Commands, object Evidence, object Consequences, string ExecutionMode = "AutoEconomy");
 
 public sealed partial class GameService
 {
@@ -67,7 +67,7 @@ public sealed partial class GameService
     private async Task<FinanceEnvelope?> FinanceEnvelopeAsync(DesertodDbContext db, Village village, AlmightyState state,
         DateTimeOffset capturedAt, DateTimeOffset now, CancellationToken ct)
     {
-        if (state.Mode != "AutoEconomy" || state.DisabledKinds.Contains("economy")) return null;
+        if (state.Mode is not ("AutoEconomy" or "ShadowEconomy") || state.DisabledKinds.Contains("economy")) return null;
         var policy = await FinancePolicyAsync(db, village.Id, ct);
         if (policy is null || !policy.Limits.Enabled || policy.OwnerAccountId != village.OwnerAccountId) return null;
         var limits = policy.Limits; DirectorFinanceRules.Validate(limits);
@@ -89,7 +89,7 @@ public sealed partial class GameService
                 kind == ResourceKind.Food ? residents.Count(x => x.IsHungry) : 0) }).OrderBy(x => x.resource).ToArray();
         var priorActions = await db.DirectorFinanceActions.AsNoTracking().Where(x => x.VillageId == village.Id)
             .OrderByDescending(x => x.At).ThenByDescending(x => x.ReviewId).Take(3).ToArrayAsync(ct);
-        var lastTax = await db.DirectorFinanceActions.Where(x => x.VillageId == village.Id && x.Option.StartsWith("finance_tax_"))
+        var lastTax = await db.DirectorFinanceActions.Where(x => x.VillageId == village.Id && x.Applied && x.Option.StartsWith("finance_tax_"))
             .MaxAsync(x => (DateTimeOffset?)x.At, ct);
         var start = new DateTimeOffset(now.UtcDateTime.Date, TimeSpan.Zero).AddDays(-14);
         // Use complete actor-days with known costs; opening wealth and unknown historical basis never become profit.
@@ -124,9 +124,14 @@ public sealed partial class GameService
         var revision = FundingFingerprint(new{input,lastPosting,moneyHash=HoldingHash(await SnapshotMoneyAsync(db,village.Id,ct))});
         var commands = new List<FinanceCommand>();
         var room = Math.Max(0, limits.SpendingPerDay - (budget?.Reserved ?? 0));
+        // A proposal must be fundable now or after one admitted issue, leaving an action to publish the order.
+        // This is a planning ceiling, never a credit to the treasury or an accepted promise.
+        var issueRoom = limits.TreasuryIssues && economy.WorkContractsEnabled
+            && limits.ActionsPerDay - (budget?.Actions ?? 0) >= 2 ? Math.Min(limits.MaximumIssue, funding.RemainingAllowance) : 0;
+        var orderRoom = (long)Math.Min(room, (decimal)economy.TreasuryCoins + issueRoom);
         if ((budget?.Actions ?? 0) < limits.ActionsPerDay)
         {
-            // Subtract already ordered output so repeated reviews do not fund the same shortage again.
+            // Catalogue estimates avoid duplicate orders while work is pending; actual stock is re-evaluated after completion.
             var shortages = stocks.Select(s => new { s.resource, s.capacity, deficit = Math.Max(0, s.target - s.stock
                 - supplies.Where(x => x.Resource == s.resource).Sum(x => x.RemainingAmount)
                 - works.Sum(w => (GameCatalog.FindTask(w.TaskId)?.Outputs.Where(o => o.Resource == s.resource).Sum(o => o.Amount) ?? 0)
@@ -154,14 +159,15 @@ public sealed partial class GameService
                 {
                     var pay = Math.Clamp(values[i], 1, limits.MaximumUnitPay);
                     if (!used.Add(pay) || units < 1) continue;
-                    var affordableUnits = (int)Math.Min(units, room / pay); if (affordableUnits < 1) continue;
+                    var affordableUnits = (int)Math.Min(units, orderRoom / pay); if (affordableUnits < 1) continue;
                     offers.Add(new("finance_" + kind + "_" + names[i], kind, affordableUnits * pay, task, resource, affordableUnits, pay));
                 }
             }
             commands.AddRange(offers.Where(x => x.Cost <= economy.TreasuryCoins));
             var missing = offers.Count == 0 ? 0 : Math.Max(0, offers.Min(x => x.Cost) - economy.TreasuryCoins);
             if (limits.TreasuryIssues && economy.WorkContractsEnabled && missing > 0 && funding.RemainingAllowance > 0)
-                commands.Add(new("finance_issue", "issue", Issue: Math.Min(missing, Math.Min(limits.MaximumIssue, funding.RemainingAllowance))));
+                commands.Add(new("finance_issue", "issue", Resource: offers.OrderBy(x => x.Cost).First().Resource,
+                    Issue: Math.Min(missing, Math.Min(limits.MaximumIssue, funding.RemainingAllowance))));
             if (limits.TaxChanges && futureTaxes.Length == 0 && (lastTax is null || lastTax <= now.AddMinutes(-limits.TaxCooldownMinutes)))
             {
                 if (tax is { Enabled: true } && tax.Brackets.Any(x => x.RateBasisPoints > 0))
@@ -183,22 +189,25 @@ public sealed partial class GameService
             }
         }
         var consequences = new { causalAttributionProven = false, current = sample,
-            previous = priorActions.Select(x => new { x.At, x.Option, x.Result, before = JsonSerializer.Deserialize<JsonElement>(x.Before),
+            previous = priorActions.Select(x => new { x.At, x.Option, x.Applied, x.Result, before = JsonSerializer.Deserialize<JsonElement>(x.Before),
                 reason = x.Reason.Length <= 200 ? x.Reason : x.Reason[..200] }),
             interpretation = "Compare before/current income, hunger and commitments in economy.analysis. Changes after a decision alone do not prove causation; do not infer labor hours from wages." };
         return new(capturedAt, revision, policy.Version, day, budget?.Revision ?? 0, economy.LatestTaxPolicyVersion,
             new(funding.Current?.Version, funding.BudgetDay, funding.BudgetRevision, funding.RemainingAllowance), commands,
-            new { limits, sample, completeProfitMedianIsNotWage = true, noCompletedWageEvidence = observedPay == 0,
+            new { limits, sample, maximumBackableOrderBudget=orderRoom, plannedAllowanceIsNotMoney=true,
+                completeProfitMedianIsNotWage = true, noCompletedWageEvidence = observedPay == 0,
+                pendingWorkOutputIsCatalogEstimate=true, actualYieldDependsOnStatsSkillsMoraleAndStorage=true,
                 freeProfitThresholdSource = "median positive known-profit actor-day over covered complete UTC days; unknown costs and zero profits excluded; known zero monetary cost retained",
-                targets = stocks.Where(x => x.target > 0).Take(8), targetCount = stocks.Count(x => x.target > 0),
-                shortagesUseOwnerReservesAndHungryResidents = true }, consequences);
+                targets = stocks.Where(x => x.target > 0).Take(8).Select(x => new { resource=x.resource.ToString(), name=ResourceNames.Of(x.resource), x.stock, x.target, x.capacity }),
+                targetCount = stocks.Count(x => x.target > 0),
+                shortagesUseOwnerReservesAndHungryResidents = true }, consequences, state.Mode);
     }
 
     private static AlmightyOption FinanceOption(FinanceCommand command) => new(command.Option, command.Kind switch
     {
         "work" => $"Заказ: {command.Task}, {command.Units} циклов по {command.UnitPay}",
         "supply" => $"Закупка: {ResourceNames.Of(command.Resource)}, {command.Units} по {command.UnitPay}",
-        "issue" => $"Подкрепить казну: {command.Issue}",
+        "issue" => $"Подкрепить казну для {ResourceNames.Of(command.Resource)}: {command.Issue}",
         _ => command.Option == "finance_tax_up" ? "Изменить будущую дань: шаг вверх" : "Изменить будущую дань: шаг вниз"
     }, command.Kind == "tax" ? "Новая объявленная версия после срока уведомления; старые сделки сохраняют условия."
         : command.Kind == "issue" ? "Выпуск только из объявленного суточного лимита под наблюдаемую нехватку фонда."
@@ -208,7 +217,7 @@ public sealed partial class GameService
         JsonElement snapshot, IReadOnlyList<AlmightyOption> options, DateTimeOffset now, CancellationToken ct)
     {
         // Economic duties cannot starve the existing threat rhythm. This is still an explicit owner proposal.
-        if (state.LastNoticeAt > now.AddMinutes(-30) || !snapshot.TryGetProperty("raidPressure", out var pressure)
+        if (state.Mode != "AutoEconomy" || state.LastNoticeAt > now.AddMinutes(-30) || !snapshot.TryGetProperty("raidPressure", out var pressure)
             || !pressure.GetProperty("proposalDue").GetBoolean()
             || !pressure.TryGetProperty("fallbackOption", out var fallback) || fallback.ValueKind != JsonValueKind.String
             || options.FirstOrDefault(x => x.Id == fallback.GetString() && x.Enemy is not null) is not { } raid) return;
@@ -234,15 +243,24 @@ public sealed partial class GameService
         var command = fresh?.Commands.SingleOrDefault(x => x.Option == option);
         // The stored payload and fresh payload must both match; a stale model answer is never silently resized.
         if (fresh is null || command is null || fresh.Revision != admitted.Revision || fresh.PolicyVersion != admitted.PolicyVersion
+            || fresh.ExecutionMode != admitted.ExecutionMode
             || FundingFingerprint(fresh.Commands) != FundingFingerprint(admitted.Commands)) return false;
         var policy = (await FinancePolicyAsync(db, village.Id, ct))!;
         var day = await db.DirectorFinanceDays.SingleOrDefaultAsync(x => x.VillageId == village.Id && x.Day == fresh.Day, ct);
         if (day is null) { day = new() { VillageId = village.Id, Day = fresh.Day }; db.DirectorFinanceDays.Add(day); }
-        DirectorFinanceRules.Reserve(policy.Limits, day, command.Cost);
+        var applied = state.Mode == "AutoEconomy";
+        if(applied) DirectorFinanceRules.Reserve(policy.Limits, day, command.Cost);
         var action = new DirectorFinanceAction { VillageId = village.Id, ReviewId = observation.Id, PolicyVersion = policy.Version,
             Day = fresh.Day, DelegatingOwnerId = village.OwnerAccountId, Option = option, Terms = JsonSerializer.Serialize(command, AlmightyJson),
-            Reason = reason, Intent = state.Intent, Before = JsonSerializer.Serialize(fresh.Evidence, AlmightyJson), At = TaxInstant(now) };
-        db.DirectorFinanceActions.Add(action); db.DirectorReviewId = observation.Id;
+            Applied = applied, Reason = reason, Intent = state.Intent, Before = JsonSerializer.Serialize(fresh.Evidence, AlmightyJson), At = TaxInstant(now) };
+        db.DirectorFinanceActions.Add(action);
+        if(!applied)
+        {
+            action.Result = "Теневой выбор: " + FinanceOption(command).Title + ". Не исполнено; деньги, заказы и суточные расходы не изменены.";
+            observation.Reason = reason + " · " + action.Result;
+            await db.SaveChangesAsync(ct); changes.Mark(village.Id); return true;
+        }
+        db.DirectorReviewId = observation.Id;
         var economy = await db.KingdomEconomies.SingleAsync(x => x.VillageId == village.Id, ct);
         var request = new EconomyRequest(observation.Id, command.Kind == "work" ? "publish-work-order" : "publish-supply-order",
             command.Resource, command.Units, command.UnitPay, TaskId: command.Task, Cycles: command.Units, Pay: command.UnitPay,

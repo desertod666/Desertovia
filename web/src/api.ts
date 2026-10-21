@@ -1560,7 +1560,7 @@ export interface DirectorFinanceLimits {
 }
 export interface DirectorFinanceView {
   version:number;limits:DirectorFinanceLimits;day:string;actionsToday:number;reservedToday:number;
-  actions:{reviewId:string;author:string;option:string;reason:string;result:string;at:string}[]
+  actions:{reviewId:string;author:string;option:string;reason:string;result:string;at:string;applied:boolean}[]
 }
 export interface AlmightyPolicyChange {
   villageId:string;requestId:string;actorId:string;kind:AlmightyCategory;enabled:boolean;expectedPolicyVersion:number;

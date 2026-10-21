@@ -32,7 +32,7 @@ export function DirectorFinanceControls({ slug, ru }: { slug:string;ru:boolean }
   return <details><summary>{ru?'Самостоятельная экономика':'Autonomous economy'}</summary>
     {error&&<p role="alert">{error}</p>}
     {view&&limits&&<>
-      <p>{ru?'Настройки действуют в режиме «Автоэкономика». События мира по-прежнему требуют согласия.':'These limits apply in Auto economy mode. World events still require approval.'}</p>
+      <p>{ru?'В «Теневой экономике» выбор только записывается. В «Автоэкономике» он исполняется в этих пределах. События мира требуют согласия.':'Shadow economy records choices without executing them. Auto economy executes within these limits. World events require approval.'}</p>
       <p>{ru?'За сутки':'Today'}: {view.actionsToday}/{limits.actionsPerDay} · {ru?'Выделено в фонды':'Reserved for orders'}: {view.reservedToday}/{limits.spendingPerDay}</p>
       <form onSubmit={e=>{e.preventDefault();void save()}}>
         <label><input type="checkbox" checked={limits.enabled} disabled={busy} onChange={e=>change('enabled',e.target.checked)}/>{ru?'Разрешить экономические действия':'Delegate economic actions'}</label>
@@ -58,7 +58,7 @@ export function DirectorFinanceControls({ slug, ru }: { slug:string;ru:boolean }
       </form>
       {view.limits.enabled&&<button type="button" disabled={busy} onClick={()=>{pending.current=null;void save(true)}}>{ru?'Остановить экономические действия':'Stop economic actions'}</button>}
       <details><summary>{ru?'Решения и результат':'Decisions and results'}</summary>{view.actions.map(action=><p key={action.reviewId}>
-        <time>{new Date(action.at).toLocaleString()}</time> · {ru?'Всевышний':'Director'}<br/>{action.reason}<br/>{action.result}
+        <time>{new Date(action.at).toLocaleString()}</time> · {ru?'Всевышний':'Director'} · {action.applied?(ru?'Исполнено':'Executed'):(ru?'Теневой выбор':'Shadow choice')}<br/>{action.reason}<br/>{action.result}
       </p>)}</details>
       <button type="button" disabled={busy} onClick={()=>{void refresh().catch(()=>setError(ru?'Не удалось обновить.':'Could not refresh.'))}}>{ru?'Обновить экономику':'Refresh economy'}</button>
     </>}

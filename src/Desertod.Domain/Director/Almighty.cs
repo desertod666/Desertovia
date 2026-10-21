@@ -158,5 +158,5 @@ public static class AlmightyPolicy
         }
         return result;
     }
-    public static bool IsMode(string mode) => mode is "Off" or "Observe" or "Propose" or "AutoEconomy";
+    public static bool IsMode(string mode) => mode is "Off" or "Observe" or "Propose" or "AutoEconomy" or "ShadowEconomy";
 }

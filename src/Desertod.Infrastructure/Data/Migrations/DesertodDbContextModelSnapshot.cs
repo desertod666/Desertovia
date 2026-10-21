@@ -425,6 +425,10 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<Guid>("ReviewId")
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("Applied")
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
                     b.Property<DateTimeOffset>("At")
                         .HasColumnType("timestamp with time zone");
 
