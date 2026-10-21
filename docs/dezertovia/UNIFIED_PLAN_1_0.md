@@ -1,3 +1,11 @@
+> T070/T072: текущие музыкальные состояния деревни/данжа, один контроллер и
+> GainNode исправляют ползунок, включая игнорируемый audio.volume.33client unit,
+> scoped desktop/320px signal/mute/reload/remount PASS. Windows WebKit без Web Audio;
+> Linux Audio WebKit и полный CI нового кода ещё нужны. Новых музыкальных мастеров нет.
+> Родитель3551b0d: CI39622145133 все5 зелёные,726Domain/490API/422browser+2skip;
+> бот b4f12d6: CI39620873141 success,1121tests. Это проверки родителя.
+> MUSIC_SCENES_1_0.md / VERIFICATION; вся1.0 активна, UI в конце, выпуска нет.
+
 > T055: ShadowEconomy записывает выбор с Applied=false без денег/заказов/дани;
 > экономический лимит не расходуется, обычный модельный бюджет сохраняется.
 > Сквозной реальный service/work/payment цикл: источник50=кошельки25+25,

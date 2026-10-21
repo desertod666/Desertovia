@@ -39,6 +39,7 @@ import { TargetPopup } from '../ui/TargetPopup'
 import { watchable, WatchPopup } from '../ui/WatchPopup'
 import { flagTitle, NotificationProvider, useGameNotifications, useTitleReset } from '../notifications'
 import { BackgroundMusic } from '../ui/BackgroundMusic'
+import { villageMusicScene } from '../game/musicContext'
 import { GameCanvas, type GameCanvasHandle, type Placement } from '../game/GameCanvas'
 import { HandsCard } from '../ui/HandsCard'
 import { PRIEST_ID, TSAR_ID } from '../game/VillageWorld'
@@ -898,7 +899,7 @@ function VillageView({ me, onAccountChanged, primarySlug }: { me: Me; onAccountC
         <EyeIcon closed={uiHidden} />
       </button>}
 
-      <BackgroundMusic battles={village.battles} />
+      <BackgroundMusic scene={villageMusicScene(village, tsar ? village.tsar : citizen, raidClock)} />
 
       {dayNight && (
         <button

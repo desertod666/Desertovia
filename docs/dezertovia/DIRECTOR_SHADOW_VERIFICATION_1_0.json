@@ -239,12 +239,34 @@
     "scope": "Exact parent delegated-execution slice only; not the new ShadowEconomy source or full T054."
   },
   "candidate_ci": {
-    "status": "not_yet_started"
+    "status": "verified_all_five_jobs_success",
+    "head_sha": "3551b0d305b2ab8d9bba1a5e6facb740b1d3d209",
+    "run_id": 39622145133,
+    "domain_passed": 726,
+    "api_passed": 490,
+    "browser_passed": 422,
+    "browser_skipped": 2,
+    "jobs": {
+      "backend": 119298748332,
+      "browser_1": 119298748709,
+      "browser_2": 119298748376,
+      "frontend": 119298748550,
+      "docker": 119298748244
+    },
+    "scope": "Exact ShadowEconomy parent. Does not verify the new music source or the full1.0 goal."
   },
   "remaining": [
     "Exact final full CI and broader economic/regression checks",
     "Actual provider judgment and wider shadow comparison quality",
     "Empirical yield/food/demand calibration T026/A11; this tests raw engine results rather than choosing live balance",
     "Remaining full1.0 DAG, final UI after functionality; no public release or payments"
-  ]
+  ],
+  "candidate_bot_ci": {
+    "status": "success",
+    "head_sha": "b4f12d674444e6c23490508db6affad2c6b7e852",
+    "run_id": 39620873141,
+    "job_id": 119293577837,
+    "unit_tests_ran": 1121,
+    "scope": "Full bot CI on existing model bridge; no actual model/provider probe."
+  }
 }

@@ -2299,7 +2299,7 @@
       "id": "PKG-T055",
       "milestone": "M5",
       "title": "Самостоятельность после теневого сравнения",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partially_implemented",
       "dependencies": [
         "PKG-T051",
         "PKG-T052",
@@ -2338,9 +2338,9 @@
       "original_task_id": "T055",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "partial_implemented_scoped_verified_full_ci_required",
+        "status": "partial_exact_full_ci_verified",
         "evidence": "DIRECTOR_SHADOW_1_0.md / VERIFICATION / CLOSED_LOOP_TRACE: separate hypothetical receipts, fresh mode fence, model budget retained; actual scripted service issue/order/work/pay/observe loop. Real-provider quality and whole T055 incomplete.",
-        "runtime_verification": "726Domain/6browser/14mockedBot and scoped API across stages pass; actual58to59 preserves30old tables, own HTTP restart replay unchanged800/160. Exact new CI required."
+        "runtime_verification": "3551b0d exact CI39622145133 all5 green:726Domain/490API/422browser+2skip, frontend/Docker. Bot b4f12d6 CI39620873141 success1121tests. Broader T055 and provider judgment remain open."
       }
     },
     {
@@ -2622,7 +2622,7 @@
       "id": "PKG-T070",
       "milestone": "M7",
       "title": "Музыкальные состояния и события",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partially_implemented",
       "dependencies": [
         "PKG-T013",
         "PKG-T030",
@@ -2655,9 +2655,9 @@
       "original_task_id": "T070",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "partial",
-        "evidence": "Один backgroundMusic и calm/battle переключение есть; полный фазовый каталог отсутствует.",
-        "runtime_verification": "not_run_this_assignment"
+        "status": "partial_scoped_local_verified_linux_webkit_and_full_ci_required",
+        "evidence": "MUSIC_SCENES_1_0.md / MUSIC_SCENES_VERIFICATION_1_0.json: current world/dungeon phase adapters, stable priority/timer, actual GainNode volume and native fallback. New scene IDs use legacy files; original score/future siege/miracle/mix still incomplete.",
+        "runtime_verification": "33client unit, 8desktop/phone browser in cross-engine stage; Windows WebKit3fail due absent Web Audio, native fallback pass. Later6volume/fallback and4strict PCM ratio scenarios pass. Linux Audio WebKit and exact full CI pending; no physical phone proof."
       },
       "farm_concept_integration": [
         "Фазы дневной/ночной фермы, мягкая вода/земля/сбор; без отдельного проигрывателя фермы."
@@ -2708,7 +2708,7 @@
       "id": "PKG-T072",
       "milestone": "M7",
       "title": "Телефонный звук и баланс стрима",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partially_implemented",
       "dependencies": [
         "PKG-T070",
         "PKG-T071",
@@ -2741,9 +2741,9 @@
       "original_task_id": "T072",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "partial",
-        "evidence": "Mute/volume/gesture/visibility уже есть; общий phase mix/crossfade/stream acceptance предстоит.",
-        "runtime_verification": "not_run_this_assignment"
+        "status": "partial_scoped_local_verified_linux_webkit_and_full_ci_required",
+        "evidence": "MUSIC_SCENES_1_0.md / MUSIC_SCENES_VERIFICATION_1_0.json: current world/dungeon phase adapters, stable priority/timer, actual GainNode volume and native fallback. New scene IDs use legacy files; original score/future siege/miracle/mix still incomplete.",
+        "runtime_verification": "33client unit, 8desktop/phone browser in cross-engine stage; Windows WebKit3fail due absent Web Audio, native fallback pass. Later6volume/fallback and4strict PCM ratio scenarios pass. Linux Audio WebKit and exact full CI pending; no physical phone proof."
       },
       "farm_concept_integration": [
         "Проверить короткие звуки/петлю фермы и мягкий ночной вариант, отключение и разговор/телефон без навязчивости."

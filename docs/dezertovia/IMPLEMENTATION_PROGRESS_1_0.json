@@ -2,14 +2,14 @@
   "schema_version": 1,
   "decision": "D-104",
   "recorded_at_utc": "2026-10-21T14:43:36.149456+00:00",
-  "status": "main_plan_active_shadow_economy_and_closed_loop_scoped_verified_full_ci_required",
+  "status": "main_plan_active_music_states_and_volume_scoped_verified_full_ci_required",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-director-shadow",
+  "branch": "feat/desertovia-1-0-music-states",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "T025 explicit bounded treasury issuance with per-day/version/retry/audit protection; partial T026/A37 real public/private goods and tax trace. T054 autonomy and full1.0 remain active.",
+  "implemented_task": "T070 existing world/dungeon music scene controller and T072 actual GainNode volume; partial scoped checks. Entire1.0 remains active.",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -1790,7 +1790,7 @@
       }
     }
   },
-  "next_independent_work": "Continue functional DAG after exact Director candidate CI: richer evidence/execution receipts and recovery. Existing pending party/loot/economic policy choices block only dependent behavior. UI redesign last per D109/D110.",
+  "next_independent_work": "Continue functional DAG after exact music/signal CI; final UI stays last per D109/D110. Pending group/loot/farm input policy decisions block only their dependent behavior.",
   "combat_actor_admission": {
     "schema_version": 1,
     "recorded_at_utc": "2026-10-21T04:02:01.869805+00:00",
@@ -4158,13 +4158,310 @@
       "scope": "Exact parent delegated-execution slice only; not the new ShadowEconomy source or full T054."
     },
     "candidate_ci": {
-      "status": "not_yet_started"
+      "status": "verified_all_five_jobs_success",
+      "head_sha": "3551b0d305b2ab8d9bba1a5e6facb740b1d3d209",
+      "run_id": 39622145133,
+      "domain_passed": 726,
+      "api_passed": 490,
+      "browser_passed": 422,
+      "browser_skipped": 2,
+      "jobs": {
+        "backend": 119298748332,
+        "browser_1": 119298748709,
+        "browser_2": 119298748376,
+        "frontend": 119298748550,
+        "docker": 119298748244
+      },
+      "scope": "Exact ShadowEconomy parent. Does not verify the new music source or the full1.0 goal."
     },
     "remaining": [
       "Exact final full CI and broader economic/regression checks",
       "Actual provider judgment and wider shadow comparison quality",
       "Empirical yield/food/demand calibration T026/A11; this tests raw engine results rather than choosing live balance",
       "Remaining full1.0 DAG, final UI after functionality; no public release or payments"
+    ],
+    "candidate_bot_ci": {
+      "status": "success",
+      "head_sha": "b4f12d674444e6c23490508db6affad2c6b7e852",
+      "run_id": 39620873141,
+      "job_id": 119293577837,
+      "unit_tests_ran": 1121,
+      "scope": "Full bot CI on existing model bridge; no actual model/provider probe."
+    }
+  },
+  "music_scenes_1_0": {
+    "recorded_at_utc": "2026-10-21T15:28:06.755287+00:00",
+    "branch": "feat/desertovia-1-0-music-states",
+    "source_parent": "3551b0d305b2ab8d9bba1a5e6facb740b1d3d209",
+    "status": "implemented_scoped_local_verified_linux_webkit_and_full_ci_required",
+    "implemented": true,
+    "verified": "scoped_only",
+    "released": false,
+    "scope": [
+      "One scene controller across existing village/dungeon pages",
+      "GainNode-based actual volume with native fallback",
+      "Current real world/farm/rest/road/raid and live-target dungeon adapters",
+      "21 scene IDs plus two farm variants; original score and future phase bindings remain open"
+    ],
+    "checks": {
+      "client_unit": {
+        "passed": 33,
+        "new_music_tests": 6,
+        "command": "node --test tests/dungeonOrders.test.ts tests/notificationPolicy.test.ts tests/journeyPosition.test.ts tests/battleActor.test.ts tests/musicScene.test.ts",
+        "evidence": "Successful local command output, no stored standalone unit log"
+      },
+      "typescript": "tsc -b PASS",
+      "lint": "targeted changed sources/config/spec PASS; pre-existing GamePage/harness warnings retained",
+      "production_build": {
+        "result": "Vite/PWA PASS",
+        "output": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\music-build",
+        "note": "Built runtime code before final caption shortening; exact full CI required"
+      },
+      "cross_engine_stage": {
+        "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\music-states-browser-results.json",
+        "sha256": "bf7c3da25660a5b8d1097e40c126d49852840509b53aaac2350bc6df80af6009",
+        "stats": {
+          "startTime": "2026-10-21T15:16:03.647Z",
+          "duration": 137612.616,
+          "expected": 9,
+          "skipped": 0,
+          "unexpected": 3,
+          "flaky": 0
+        },
+        "measurements": [],
+        "failures": [
+          {
+            "project": "webkit",
+            "test": "village music loads one calm track and switches to the battle theme during a raid",
+            "status": "failed"
+          },
+          {
+            "project": "webkit",
+            "test": "volume slider changes decoded audio output, 0% stops it, and one graph survives scene changes and remount",
+            "status": "failed"
+          },
+          {
+            "project": "webkit",
+            "test": "touch or mouse slider still controls the signal when media-element volume setters are ignored",
+            "status": "failed"
+          }
+        ]
+      },
+      "volume_and_native_fallback_stage": {
+        "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\music-volume-before-tightening-results.json",
+        "sha256": "723e1a2988d9b41dcdb3d342c46a710d37e61a07a59a79b43337f377c4e10c43",
+        "stats": {
+          "startTime": "2026-10-21T15:21:20.688Z",
+          "duration": 79603.527,
+          "expected": 6,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "measurements": [
+          {
+            "project": "desktop",
+            "sample": "decoded-audio-at-25-percent",
+            "values": {
+              "elements": 1,
+              "contexts": 1,
+              "volume": 0.25,
+              "input": 0.04611735791776484,
+              "ratio": 0.25
+            }
+          },
+          {
+            "project": "desktop",
+            "sample": "decoded-audio-at-75-percent",
+            "values": {
+              "elements": 1,
+              "contexts": 1,
+              "volume": 0.7883744239807129,
+              "input": 0.03488447140518343,
+              "ratio": 0.7876309864168021
+            }
+          },
+          {
+            "project": "desktop",
+            "sample": "decoded-audio-at-zero-percent",
+            "values": {
+              "elements": 1,
+              "contexts": 1,
+              "volume": 0,
+              "input": 0,
+              "ratio": -1,
+              "paused": true
+            }
+          },
+          {
+            "project": "phone",
+            "sample": "decoded-audio-at-25-percent",
+            "values": {
+              "elements": 1,
+              "contexts": 1,
+              "volume": 0.25,
+              "input": 0.0014470137711055876,
+              "ratio": 0.24997593207862734
+            }
+          },
+          {
+            "project": "phone",
+            "sample": "decoded-audio-at-75-percent",
+            "values": {
+              "elements": 1,
+              "contexts": 1,
+              "volume": 0.75,
+              "input": 0.0012590079911941532,
+              "ratio": 0.7500967265019246
+            }
+          },
+          {
+            "project": "phone",
+            "sample": "decoded-audio-at-zero-percent",
+            "values": {
+              "elements": 1,
+              "contexts": 1,
+              "volume": 0.0002519465342629701,
+              "input": 0,
+              "ratio": -1,
+              "paused": true
+            }
+          }
+        ],
+        "failures": []
+      },
+      "strict_signal_stage": {
+        "path": "C:\\Users\\Admin\\Documents\\ChatGPT\\Дезертовия 1.0\\qa\\music-volume-final-results.json",
+        "sha256": "6a1959beb608b1d1d68ebc1cd2e899e477247f5e977cf7a54f78d72cc1b65706",
+        "stats": {
+          "startTime": "2026-10-21T15:23:39.164Z",
+          "duration": 67836.319,
+          "expected": 4,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "measurements": [
+          {
+            "project": "desktop",
+            "sample": "decoded-audio-at-25-percent",
+            "values": {
+              "elements": 1,
+              "contexts": 1,
+              "volume": 0.25,
+              "input": 0.001406595991324562,
+              "ratio": 0.25
+            }
+          },
+          {
+            "project": "desktop",
+            "sample": "decoded-audio-at-75-percent",
+            "values": {
+              "elements": 1,
+              "contexts": 1,
+              "volume": 0.75,
+              "input": 0.09644694374584908,
+              "ratio": 0.7500000036526935
+            }
+          },
+          {
+            "project": "desktop",
+            "sample": "decoded-audio-at-zero-percent",
+            "values": {
+              "elements": 1,
+              "contexts": 1,
+              "volume": 0.00012373046774882823,
+              "input": 0,
+              "ratio": -1,
+              "paused": true
+            }
+          },
+          {
+            "project": "phone",
+            "sample": "decoded-audio-at-25-percent",
+            "values": {
+              "elements": 1,
+              "contexts": 1,
+              "volume": 0.24999003112316132,
+              "input": 0.0010388588944258497,
+              "ratio": 0.24994751661166317
+            }
+          },
+          {
+            "project": "phone",
+            "sample": "decoded-audio-at-75-percent",
+            "values": {
+              "elements": 1,
+              "contexts": 1,
+              "volume": 0.75,
+              "input": 0.0015622718085575994,
+              "ratio": 0.7500511316688089
+            }
+          },
+          {
+            "project": "phone",
+            "sample": "decoded-audio-at-zero-percent",
+            "values": {
+              "elements": 1,
+              "contexts": 1,
+              "volume": 0,
+              "input": 0,
+              "ratio": -1,
+              "paused": true
+            }
+          }
+        ],
+        "failures": []
+      }
+    },
+    "local_webkit_windows": {
+      "version": "webkit-2370",
+      "AudioContext": "undefined",
+      "webkitAudioContext": "undefined",
+      "mp3CanPlayType": "probably",
+      "native_creation_error": "ReferenceError: Cannot find AudioContext",
+      "interpretation": "Unsupported local audio graph capability. Three WebKit tests failed; they are not claimed as verified or silently skipped. Linux CI added for real signal testing."
+    },
+    "actual_phone_or_speaker_tested": false,
+    "candidate_ci": {
+      "status": "not_yet_started"
+    },
+    "parent_ci": {
+      "status": "verified_all_five_jobs_success",
+      "head_sha": "3551b0d305b2ab8d9bba1a5e6facb740b1d3d209",
+      "run_id": 39622145133,
+      "domain_passed": 726,
+      "api_passed": 490,
+      "browser_passed": 422,
+      "browser_skipped": 2,
+      "jobs": {
+        "backend": 119298748332,
+        "browser_1": 119298748709,
+        "browser_2": 119298748376,
+        "frontend": 119298748550,
+        "docker": 119298748244
+      },
+      "scope": "Exact ShadowEconomy parent. Does not verify the new music source or the full1.0 goal."
+    },
+    "bot_parent_ci": {
+      "status": "success",
+      "head_sha": "b4f12d674444e6c23490508db6affad2c6b7e852",
+      "run_id": 39620873141,
+      "job_id": 119293577837,
+      "unit_tests_ran": 1121,
+      "scope": "Full bot CI on existing model bridge; no actual model/provider probe."
+    },
+    "backend_and_schema_changed": false,
+    "runtime_schema": 59,
+    "no_model_calls": true,
+    "no_public_deployment": true,
+    "remaining": [
+      "Exact new full CI including Linux Audio WebKit",
+      "Current Windows WebKit failures require Linux supported-engine evidence; physical iPhone still separate",
+      "Original master/provenance/rights/loops and all21 actual scored scenes",
+      "Durable confirmed siege/miracle stingers after actual gameplay phases",
+      "Crossfade and separate effects/notifications/speech mix; physical-device background/resume and stream acceptance",
+      "Whole functional DAG and final UI redesign remain active"
     ]
   }
 }
