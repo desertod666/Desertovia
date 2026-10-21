@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-21T11:06:37.498142+00:00",
-  "status": "main_plan_active_declared_funding_and_partial_economic_trace_locally_verified_new_ci_pending",
+  "recorded_at_utc": "2026-10-21T13:06:35.555867+00:00",
+  "status": "main_plan_active_declared_funding_and_partial_economic_trace_full_ci_verified_director_finance_next",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-treasury-funding",
+  "branch": "feat/desertovia-1-0-director-finance",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -3581,14 +3581,48 @@
       "scope": "Own pre-existing synthetic QA world only; one60coin issue under an explicit100ceiling, then policy paused. Old issue acknowledgement survives pause/restart; cap excess rejected. Other worlds receive no policy/issue; model/Telegram/DevTools false."
     },
     "candidate_ci": {
-      "status": "not_yet_verified",
-      "scope": "New funding source requires its own exact PR checks. Parent PR96 backend709Domain/459API passed; full parent CI observed separately."
+      "status": "verified_all_five_jobs_success",
+      "head_sha": "b27f128aeb062eb4eee5e56564ae4b5339318e46",
+      "run_id": 39589892714,
+      "url": "https://github.com/desertod666/Desertovia/actions/runs/39589892714",
+      "observed_at_utc": "2026-10-21T13:06:35.555867+00:00",
+      "backend": {
+        "job_id": 119187937831,
+        "domain_passed": 721,
+        "api_passed": 466,
+        "failed": 0
+      },
+      "browser": {
+        "passed": 418,
+        "skipped": 2,
+        "shards": [
+          {
+            "job_id": 119187938331,
+            "passed": 210,
+            "skipped": 0
+          },
+          {
+            "job_id": 119187938118,
+            "passed": 208,
+            "skipped": 2
+          }
+        ]
+      },
+      "frontend_lint_unit_build": {
+        "job_id": 119187938190,
+        "conclusion": "success"
+      },
+      "docker_build": {
+        "job_id": 119187938278,
+        "conclusion": "success"
+      },
+      "scope": "Exact funding source b27f128 only; no public release or real payments. T026/A11 and T054 remain incomplete."
     },
     "remaining": [
       "Director T054 authority/mode/category, fresh economic admission, system actor and automatic decision/consequence loop",
       "Quantitative T026/A11 labor/time/food/distribution/demand scenarios and private craft inputs; this cash trace is not a chosen balance",
       "Farm funds/natural entitlements and other full1.0 DAG tasks",
-      "Full exact candidate CI and later T081/T082/final UI. No public deployment or real payments."
+      "Later T081/T082/final UI. No public deployment or real payments."
     ]
   }
 }
