@@ -561,6 +561,18 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<long>("ProfitToday")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("TaxPaidToday")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("TaxRemainder")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("TaxRevision")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TaxableProfitToday")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("TestCandles")
                         .HasColumnType("bigint");
 
@@ -581,6 +593,9 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                     b.Property<DateOnly>("FundDay")
                         .HasColumnType("date");
+
+                    b.Property<long>("LatestTaxPolicyVersion")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset>("StartedAt")
                         .HasColumnType("timestamp with time zone");
@@ -680,14 +695,162 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .HasMaxLength(16)
                         .HasColumnType("character varying(16)");
 
+                    b.Property<long?>("TaxPolicyVersion")
+                        .HasColumnType("bigint");
+
                     b.Property<Guid>("VillageId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("VillageId", "TaxPolicyVersion");
+
                     b.HasIndex("VillageId", "Status", "CreatedAt");
 
                     b.ToTable("MarketLots");
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.MarketTaxEvent", b =>
+                {
+                    b.Property<Guid>("VillageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("At")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("CostBasis")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("CostBasisKnown")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateOnly>("Day")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ExemptReason")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<Guid>("LotId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long?>("PolicyVersion")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("Price")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("QuoteId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long?>("RealizedProfit")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("RemainderAfter")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("SellerAccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("TaxAmount")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TaxableGain")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TaxableProfitAfter")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TaxableProfitBefore")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("VillageId", "Id");
+
+                    b.HasIndex("VillageId", "LotId")
+                        .IsUnique();
+
+                    b.HasIndex("VillageId", "QuoteId");
+
+                    b.HasIndex("VillageId", "SellerAccountId", "At");
+
+                    b.ToTable("MarketTaxEvents");
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.MarketTaxQuote", b =>
+                {
+                    b.Property<Guid>("VillageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BuyerAccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("ConsumedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("CostBasis")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("CostBasisKnown")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateOnly>("Day")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ExemptReason")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<long>("ExpectedSellerTaxRevision")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("LotId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long?>("PolicyVersion")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("Price")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("RealizedProfit")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("RemainderAfter")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("SellerAccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("TaxAmount")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TaxableGain")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid?>("TradeRequestId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("VillageId", "Id");
+
+                    b.HasIndex("VillageId", "PolicyVersion");
+
+                    b.HasIndex("VillageId", "LotId", "CreatedAt");
+
+                    b.ToTable("MarketTaxQuotes");
                 });
 
             modelBuilder.Entity("Desertod.Domain.Economy.SupplyDelivery", b =>
@@ -783,6 +946,44 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.HasIndex("VillageId", "Status", "ExpiresAt");
 
                     b.ToTable("SupplyOrders");
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.TaxPolicy", b =>
+                {
+                    b.Property<Guid>("VillageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("ActorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("EffectiveAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("PublishedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RequestFingerprint")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<Guid>("RequestId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("VillageId", "Version");
+
+                    b.HasIndex("VillageId", "RequestId")
+                        .IsUnique();
+
+                    b.HasIndex("VillageId", "EffectiveAt", "Version");
+
+                    b.ToTable("TaxPolicies");
                 });
 
             modelBuilder.Entity("Desertod.Domain.Economy.WorkOrder", b =>
@@ -2393,6 +2594,47 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .HasForeignKey("VillageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Desertod.Domain.Economy.TaxPolicy", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId", "TaxPolicyVersion")
+                        .OnDelete(DeleteBehavior.NoAction);
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.MarketTaxEvent", b =>
+                {
+                    b.HasOne("Desertod.Domain.Entities.Village", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Desertod.Domain.Economy.MarketTaxQuote", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId", "QuoteId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.MarketTaxQuote", b =>
+                {
+                    b.HasOne("Desertod.Domain.Entities.Village", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Desertod.Domain.Economy.MarketLot", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId", "LotId")
+                        .HasPrincipalKey("VillageId", "Id")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Desertod.Domain.Economy.TaxPolicy", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId", "PolicyVersion")
+                        .OnDelete(DeleteBehavior.NoAction);
                 });
 
             modelBuilder.Entity("Desertod.Domain.Economy.SupplyDelivery", b =>
@@ -2412,6 +2654,42 @@ namespace Desertod.Infrastructure.Data.Migrations
                         .HasForeignKey("VillageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Economy.TaxPolicy", b =>
+                {
+                    b.HasOne("Desertod.Domain.Entities.Village", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsMany("Desertod.Domain.Economy.TaxBracket", "Brackets", b1 =>
+                        {
+                            b1.Property<Guid>("TaxPolicyVillageId");
+
+                            b1.Property<long>("TaxPolicyVersion");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd();
+
+                            b1.Property<long>("FromProfit");
+
+                            b1.Property<int>("RateBasisPoints");
+
+                            b1.HasKey("TaxPolicyVillageId", "TaxPolicyVersion", "__synthesizedOrdinal");
+
+                            b1.ToTable("TaxPolicies");
+
+                            b1
+                                .ToJson("Brackets")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TaxPolicyVillageId", "TaxPolicyVersion");
+                        });
+
+                    b.Navigation("Brackets");
                 });
 
             modelBuilder.Entity("Desertod.Domain.Economy.WorkOrder", b =>

@@ -38,6 +38,12 @@ public static class GameEndpoints
         player.MapPost("/villages/{slug}/monastery", (string slug, MonasteryRequest request, ClaimsPrincipal user, GameService game, CancellationToken ct) => game.TradeMonasteryAsync(slug,user.RequireAccountId(),request,ct));
         player.MapGet("/villages/{slug}/economy", (string slug, Guid? before, string? asset, ClaimsPrincipal user, GameService game, CancellationToken ct) =>
             game.GetEconomyAsync(slug, user.RequireAccountId(), before, asset, ct));
+        player.MapGet("/villages/{slug}/economy/tax-policy",(string slug,ClaimsPrincipal user,GameService game,CancellationToken ct)=>
+            game.GetTaxPolicyAsync(slug,user.RequireAccountId(),ct));
+        player.MapPut("/villages/{slug}/economy/tax-policy",(string slug,TaxPolicyRequest request,ClaimsPrincipal user,GameService game,CancellationToken ct)=>
+            game.PublishTaxPolicyAsync(slug,user.RequireAccountId(),request,ct));
+        player.MapPost("/villages/{slug}/economy/market-quote",(string slug,MarketTaxQuoteRequest request,ClaimsPrincipal user,GameService game,CancellationToken ct)=>
+            game.QuoteMarketTaxAsync(slug,user.RequireAccountId(),request,ct));
         player.MapPost("/villages/{slug}/economy", (string slug, EconomyRequest request, ClaimsPrincipal user, GameService game, CancellationToken ct) =>
             game.ChangeEconomyAsync(slug, user.RequireAccountId(), request, ct));
         player.MapPut("/villages/{slug}/me/defense", async (string slug, AlmightyMode request, ClaimsPrincipal user, GameService game, CancellationToken ct) => {

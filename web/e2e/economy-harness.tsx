@@ -1,6 +1,6 @@
 import { canBuildAt } from '../src/game/worldMap'
 import { createRoot } from 'react-dom/client'
-import { api, type Catalog, type Citizen, type EconomyRequest, type EconomyView, type VillageState } from '../src/api'
+import { api, ApiError, type Catalog, type Citizen, type EconomyRequest, type EconomyView, type VillageState } from '../src/api'
 import { I18nProvider } from '../src/i18n'
 import { EconomyPanel } from '../src/ui/EconomyPanel'
 import { ActionEnergy } from '../src/ui/ActionEnergy'
@@ -9,10 +9,18 @@ import { HandsCard } from '../src/ui/HandsCard'
 import { useState } from 'react'
 import '../src/index.css'
 
-declare global { interface Window { economyCalls: EconomyRequest[]; workCalls:unknown[]; failEconomyOnce: boolean; kingdomCanBuild: (personal:boolean,x:number,y:number)=>boolean } }
+declare global { interface Window { economyCalls: EconomyRequest[]; workCalls:unknown[]; failEconomyOnce: boolean; kingdomCanBuild: (personal:boolean,x:number,y:number)=>boolean;taxQuoteCalls:{requestId:string;lotId:string}[];failAfterMarketCommitOnce:boolean;staleMarketQuoteOnce:boolean } }
 window.workCalls=[]
 window.economyCalls=[];window.failEconomyOnce=false
 const view: EconomyView={energyDrinkReadyAt:null,coins:1000,testCandles:0,earnedToday:100,profitToday:0,taxPreview:0,taxEnabled:false,exchangeRate:100,dailyExchangeLimit:5,exchangedToday:0,kingdomCandleRoom:50,dayResetsAt:new Date(Date.now()+3600000).toISOString(),treasury:0,inventory:[],lots:[],journal:[],nextJournalBefore:null,startedAt:new Date().toISOString(),workPay:10,constructionPay:20,residents:[{accountId:'me',name:'Игрок'},{accountId:'other',name:'Очень длинное имя другого игрока'}],privateStorages:[],stockPrices:{Wood:2,Stone:3,Planks:8},privateProperty:[]}
+const taxFixture=new URLSearchParams(location.search).has('tax')
+const settledMarketRequests=new Set<string>()
+window.taxQuoteCalls=[];window.failAfterMarketCommitOnce=false;window.staleMarketQuoteOnce=false
+if(taxFixture){
+  view.latestTaxPolicyVersion=1;view.taxPaidToday=0
+  view.lots=[{id:'33333333-3333-4333-8333-333333333333',sellerAccountId:'other',seller:'Продавец',resource:'Wood',amount:1,price:100,status:'open'}]
+  api.marketTaxQuote=async(_slug,requestId,lotId)=>{window.taxQuoteCalls.push({requestId,lotId});return{id:requestId,lotId,buyerPays:100,policyVersion:1,expiresAt:new Date(Date.now()+120000).toISOString()}}
+}
 const costFixture = new URLSearchParams(location.search).get('cost')
 const orderFixture = new URLSearchParams(location.search).get('orders')
 if(orderFixture){view.workContractsEnabled=orderFixture!=='legacy';view.canManageWorkOrders=orderFixture!=='worker';view.treasury=100;view.workOrders=orderFixture==='worker'?[{id:'11111111-1111-4111-8111-111111111111',taskId:'chop-wood',policyVersion:1,payPerCycle:10,availableCycles:1,acceptedCycles:0,completedCycles:0,reservedCoins:10,expiresAt:new Date(Date.now()+3600000).toISOString(),status:'Open'}]:[]}
@@ -22,6 +30,12 @@ if(supplyFixture){view.canManageWorkOrders=supplyFixture==='owner';view.treasury
 api.economy=async()=>structuredClone(view)
 api.economyAction=async(_slug,request)=>{
   window.economyCalls.push(structuredClone(request))
+  if(taxFixture&&request.action==='buy-lot'){
+    if(window.staleMarketQuoteOnce){window.staleMarketQuoteOnce=false;throw new ApiError(400,'Расчёт устарел. Повтори покупку.','tax.quote.stale')}
+    if(!settledMarketRequests.has(request.requestId)){view.coins-=100;view.lots[0]!.status='sold';settledMarketRequests.add(request.requestId)}
+    if(window.failAfterMarketCommitOnce){window.failAfterMarketCommitOnce=false;throw new Error('Обрыв связи после покупки. Повтори запрос.')}
+    return structuredClone(view)
+  }
   if(window.failEconomyOnce){window.failEconomyOnce=false;throw new Error('Обрыв связи. Повтори запрос.')}
   if(request.action==='buy-stock'){const amount=request.amount??1;view.coins-=amount*2;view.treasury+=amount*2;view.inventory=[{kind:'Wood',amount,costBasis:amount*2}]}
   if(request.action==='publish-work-order'){const cycles=request.cycles!,pay=request.pay!;view.treasury-=cycles*pay;view.workOrders=[...(view.workOrders??[]),{id:request.requestId,taskId:request.taskId!,policyVersion:1,payPerCycle:pay,availableCycles:cycles,acceptedCycles:0,completedCycles:0,reservedCoins:cycles*pay,expiresAt:request.expiresAt!,status:'Open'}]}

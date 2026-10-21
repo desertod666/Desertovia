@@ -7,6 +7,7 @@ using Desertod.Domain.Entities;
 using Desertod.Domain.Rules;
 using Desertod.Domain.Skills;
 using Desertod.Domain.Storage;
+using Desertod.Domain.World;
 using Desertod.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,6 +41,8 @@ public sealed class RoyalDungeonApiTests(DesertodApiFactory factory)
             await Game.AdvanceDungeonsAsync(default);
             var runtime=factory.Services.GetRequiredService<DungeonRuntime>();
             if(runtime.Find(id) is {} live){await live.Operation.WaitAsync();try{runtime.Remove(id);}finally{live.Operation.Release();}}
+            var saved=await Load(id);
+            Assert.True(saved.Phase==DungeonPhase.Running,$"Expected a resumable fight; phase={saved.Phase}, outcome={saved.Outcome}, marchEndsAt={saved.MarchEndsAt}, royalArrival={saved.Tsar.ArrivesAt}, settled={saved.Tsar.Settled}.");
             var restored=Assert.Single(await Game.RestoreDungeonsAsync(default),r=>r.RunId==id);
             Assert.All(restored.Fighters,f=>Assert.False(f.Invulnerable));
             return restored;
@@ -142,6 +145,10 @@ public sealed class RoyalDungeonApiTests(DesertodApiFactory factory)
             await using(var db=await Db())
             {
                 var w=await db.Villages.SingleAsync(w=>w.Slug==v.Slug);Assert.Equal(1,w.Stock(ResourceKind.Spear));Assert.Equal(1,w.Stock(ResourceKind.LeatherArmor));Assert.Null(w.RoyalCombat!.Weapon);Assert.Null(w.RoyalCombat.Armor);
+                // This fixture checks cancellation/legacy body terms. A random detour may exceed
+                // the real bounded march and legitimately abandon the call before any fight exists.
+                var departure=RegionalTravel.WesternExit(w);Assert.True(departure.HasValue);
+                w.TsarTrip=null;w.TsarSpot=departure;
                 var now=factory.Clock.GetUtcNow();var old=new DungeonRun{VillageId=w.Id,DungeonId=DungeonCatalog.DeadLands,Phase=DungeonPhase.Gathering,OpenedAt=now,GatheringEndsAt=now.AddMinutes(1),
                     Heroes=[new(){AccountId=w.OwnerAccountId,Name="Legacy ruler",Class=HeroClass.Voivode}]};db.DungeonRuns.Add(old);await db.SaveChangesAsync();id=old.Id;
             }

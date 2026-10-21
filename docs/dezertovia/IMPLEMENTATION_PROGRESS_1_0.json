@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-21T07:57:17.009206+00:00",
-  "status": "main_plan_active_director_resilience_locally_verified_exact_ci_pending",
+  "recorded_at_utc": "2026-10-21T09:27:46.085855+00:00",
+  "status": "main_plan_active_director_economy_and_partial_fiscal_executor_locally_verified_exact_ci_pending",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
     "test_environment": true,
     "previous_analysis_only_scope_superseded": true
   },
-  "branch": "feat/desertovia-1-0-director-resilience",
+  "branch": "feat/desertovia-1-0-tax-quotes",
   "source_baseline": {
     "game": "b9b4b32ef1a3a8c7821a72126ea84ab64fc41b09",
     "documentation": "462f450",
@@ -22,7 +22,7 @@
     "T002": "private local runtime, dedicated PostgreSQL/SSH, fake fixture database and backup/restore, external integrations disabled",
     "T003": "baseline CI exact b9b4b32 plus fresh 537 domain/4 client and frontend build; fresh focused API/browser checks"
   },
-  "implemented_task": "Partial T053: existing signed bridge/chain with bounded response and independent analysis deadline, safe failure codes and late-result isolation",
+  "implemented_task": "D111 all-resident economic observation; partial T024 versioned offer/quote settlement. T025/T026/T054 full autonomous economic cycle not complete.",
   "runtime": {
     "local_api": "http://127.0.0.1:5180",
     "local_frontend": "http://127.0.0.1:5190",
@@ -42,11 +42,11 @@
     "bot_modified": false,
     "current_source_restarted": true,
     "tool_recipes_verified_http": 8,
-    "local_world_migrations": 54,
+    "local_world_migrations": 55,
     "pre_tools_backup": "/tmp/foundation-before-tools-20261020.dump in isolated PostgreSQL container",
     "pre_rest_backup": "/tmp/foundation-before-restart-20261020T175228Z.dump in isolated development PostgreSQL",
     "pre_work_orders_backup": "/tmp/foundation-before-restart-20261020T183742Z.dump in isolated development PostgreSQL",
-    "loaded_scope": "Director resilience loaded in local API5180 after backup075247Z, schema54 unchanged; compared state/two policy receipts/wallets/economies/work/dungeons/battle preserved, actual old replay HTTP check passed. AI/Telegram/DevTools false.",
+    "loaded_scope": "D111 economic observation/partial fiscal source loaded in API5180/schema55;20compared old tables preserved. No tax policies/quotes/events or nonzero wallet defaults. Model/Telegram/DevTools false.",
     "pre_addressed_farm_backup": "/tmp/foundation-before-restart-20261020T192714Z.dump in isolated development PostgreSQL",
     "pre_farm_admission_backup": "/tmp/foundation-before-restart-20261020T200118Z.dump",
     "pre_persistent_dev_restart_backup": "/tmp/foundation-before-restart-20261020T200345Z.dump",
@@ -64,7 +64,8 @@
     "pre_dungeon_royal_backup": "/tmp/foundation-before-restart-20261021T055255Z.dump",
     "pre_vulnerable_royal_qa_backup": "/tmp/foundation-before-restart-20261021T060913Z.dump",
     "pre_director_policy_backup": "/tmp/foundation-before-restart-20261021T072555Z.dump",
-    "pre_director_resilience_backup": "/tmp/foundation-before-restart-20261021T075247Z.dump"
+    "pre_director_resilience_backup": "/tmp/foundation-before-restart-20261021T075247Z.dump",
+    "pre_director_economy_backup": "/tmp/foundation-before-restart-20261021T092237Z.dump"
   },
   "checks": {
     "baseline_ci": {
@@ -814,6 +815,116 @@
         "personalWood": 3
       },
       "backup": "/tmp/foundation-before-restart-20261020T221643Z.dump"
+    },
+    "director_economy": {
+      "domain_final": {
+        "path": "TestResults/economy-domain-stable/Admin_DESKTOP-FQ85FTD_2026-10-21_11_14_02_net10.0.trx",
+        "sha256": "8c559f3cd630b70ce7323ff7bd1c7e649007d226789a8b4e823be42c73029736",
+        "counters": {
+          "total": "696",
+          "executed": "696",
+          "passed": "696",
+          "failed": "0",
+          "error": "0",
+          "timeout": "0",
+          "aborted": "0",
+          "inconclusive": "0",
+          "passedButRunAborted": "0",
+          "notRunnable": "0",
+          "notExecuted": "0",
+          "disconnected": "0",
+          "warning": "0",
+          "completed": "0",
+          "inProgress": "0",
+          "pending": "0"
+        }
+      },
+      "api_final": {
+        "path": "TestResults/director-economy-final2/Admin_DESKTOP-FQ85FTD_2026-10-21_11_11_15_net10.0.trx",
+        "sha256": "636f1f409a1840654beb1ef2221aebf176a99b401e7caca88ded27139c5ed6d4",
+        "counters": {
+          "total": "16",
+          "executed": "16",
+          "passed": "16",
+          "failed": "0",
+          "error": "0",
+          "timeout": "0",
+          "aborted": "0",
+          "inconclusive": "0",
+          "passedButRunAborted": "0",
+          "notRunnable": "0",
+          "notExecuted": "0",
+          "disconnected": "0",
+          "warning": "0",
+          "completed": "0",
+          "inProgress": "0",
+          "pending": "0"
+        }
+      },
+      "api_intermediate": {
+        "path": "TestResults/director-economy-tax/Admin_DESKTOP-FQ85FTD_2026-10-21_10_56_20_net10.0.trx",
+        "sha256": "e9d67feaddb0c34a089669479c962f7be41859b97526ec95afa55c9561a707d8",
+        "counters": {
+          "total": "35",
+          "executed": "35",
+          "passed": "34",
+          "failed": "1",
+          "error": "0",
+          "timeout": "0",
+          "aborted": "0",
+          "inconclusive": "0",
+          "passedButRunAborted": "0",
+          "notRunnable": "0",
+          "notExecuted": "0",
+          "disconnected": "0",
+          "warning": "0",
+          "completed": "0",
+          "inProgress": "0",
+          "pending": "0"
+        }
+      },
+      "browser": {
+        "passed": 4,
+        "projects": [
+          "desktop",
+          "phone"
+        ],
+        "scope": "Two client purchase scenarios: uncertain commit identity retained; explicit stale quote renewed on next click. Synthetic harness, not real-server browser settlement.",
+        "report_outside_git": "../qa/market-tax-browser/.last-run.json",
+        "typescript_only_casts_added_after_runtime_pass": true
+      },
+      "frontend": {
+        "typescript": "pass",
+        "vite_build": "pass",
+        "oxlint": "pass",
+        "command": "python ../run_validation.py build",
+        "exit_code": 0
+      },
+      "initial_domain_failure": "Existing hunting-level fixture used a random deer-woods route. Only fixture seed fixed; no game/nav change. Full696 passed afterward.",
+      "intermediate_api_failure": "34/35 passed; old large snapshot39361 exceeded unchanged36000botlimit. Compact full-day table and context-only budget fixed; final16 includes large snapshot and3budget preservation tests.",
+      "royal_legacy_ci_regression": {
+        "path": "TestResults/royal-dungeon-fiscal-ci/Admin_DESKTOP-FQ85FTD_2026-10-21_11_39_00_net10.0.trx",
+        "sha256": "512e21d85c10bdc4ee961b9a4a7bb6039fdd500957b1b481d0ae28402cded134",
+        "counters": {
+          "total": "4",
+          "executed": "4",
+          "passed": "4",
+          "failed": "0",
+          "error": "0",
+          "timeout": "0",
+          "aborted": "0",
+          "inconclusive": "0",
+          "passedButRunAborted": "0",
+          "notRunnable": "0",
+          "notExecuted": "0",
+          "disconnected": "0",
+          "warning": "0",
+          "completed": "0",
+          "inProgress": "0",
+          "pending": "0"
+        },
+        "scope": "Cancellation/royal classes/shared wound/legacy80HP. Legacy body fixture starts at a valid departure to isolate health/cancellation from procedural bounded marches; explicit phase diagnostic added. Product source unchanged."
+      }
     }
   },
   "open_questions": [
@@ -2708,5 +2819,142 @@
       "Full director economic executor, scheduling/shadow/autonomy and remaining1.0 DAG"
     ],
     "existing_dependency_warning": "Pre-existing NU1903 SignalR.Common10.0.12 remains; review before final release. No dependency change in this slice."
+  },
+  "owner_economic_analysis_2026_10_21": {
+    "decision": "D-111",
+    "statement": "Думаю что экономику более точную надо оставить на всевышнего. Заложить в него анализ экономики и налогов всех",
+    "exact_balance_owner": "existing Almighty director, informed by all-resident economic analysis",
+    "previous_numeric_scale_approved": false,
+    "live_baseline": "LIVE_INCOME_ANALYSIS_2026_10_21.json",
+    "captured_at": "2026-10-21T08:30:36.810753+00:00",
+    "live_mutations": false,
+    "wage_median_per_recipient_day": 260,
+    "trade_recorded_margin_median_per_seller_day": 34,
+    "legacy_cost_warning": "95/111 old sales have zero recorded basis; no reliable CostBasisKnown, no retrospective bills",
+    "implementation": "14 complete UTC days plus separate current partial day, all-resident/financial-actor aggregates, known gain/loss/unknown cost, tax/funds/flows/food observation being integrated in existing director",
+    "verification": "696Domain/16final API+boundary+migration/4browser +TypeScript/Vite/oxlint PASS; exact CI pending",
+    "tax_migration": 55,
+    "tax_migration_applied_to_shared_world": true,
+    "runtime_still": "Current source in isolated synthetic API5180/schema55; defaults off, real game untouched",
+    "full_autonomous_fiscal_policy": "not_complete; T024/T025/T026/T054 remain active",
+    "evidence": "DIRECTOR_ECONOMY_VERIFICATION_1_0.json"
+  },
+  "prior_director_resilience_ci": {
+    "status": "success",
+    "sha": "2a8ca905c9205b9dc16ca51313d623a4f6d94594",
+    "run_id": 39566032798,
+    "url": "https://github.com/desertod666/Desertovia/actions/runs/39566032798",
+    "jobs": 5,
+    "domain_passed": 687,
+    "api_passed": 439,
+    "browser_passed": 414,
+    "browser_skipped": 2,
+    "frontend_lint_build": "success",
+    "docker": "success",
+    "evidence": "Fresh gh run view and job logs119108409421/119108409790/119108409838; parent resilience only, not new economic source."
+  },
+  "director_economy": {
+    "evidence": "DIRECTOR_ECONOMY_VERIFICATION_1_0.json",
+    "scope": "all-resident facts and partial versioned market settlement; not autonomous fiscal control",
+    "shared_runtime": {
+      "api": "http://127.0.0.1:5180",
+      "database_container": "desertovia-foundation-dev-postgres",
+      "database": "desertovia_foundation",
+      "migrations_before": 54,
+      "migrations_after": 55,
+      "backup": "/tmp/foundation-before-restart-20261021T092237Z.dump",
+      "old_columns_equal": {
+        "Accounts": true,
+        "Citizens": true,
+        "Villages": true,
+        "KingdomEconomies": true,
+        "GameWallets": true,
+        "LedgerEntries": true,
+        "EconomyReceipts": true,
+        "MarketLots": true,
+        "WorkOrders": true,
+        "WorkOrderClaims": true,
+        "SupplyOrders": true,
+        "SupplyDeliveries": true,
+        "FarmCrops": true,
+        "AlmightyStates": true,
+        "AlmightyObservations": true,
+        "AlmightyProposals": true,
+        "AlmightyPolicyChanges": true,
+        "DungeonRuns": true,
+        "RaidBattles": true,
+        "VillageProjects": true
+      },
+      "row_counts": {
+        "Accounts": 286,
+        "Citizens": 28,
+        "Villages": 6,
+        "KingdomEconomies": 6,
+        "GameWallets": 22,
+        "LedgerEntries": 79,
+        "EconomyReceipts": 10,
+        "MarketLots": 0,
+        "WorkOrders": 1,
+        "WorkOrderClaims": 1,
+        "SupplyOrders": 1,
+        "SupplyDeliveries": 1,
+        "FarmCrops": 0,
+        "AlmightyStates": 1,
+        "AlmightyObservations": 0,
+        "AlmightyProposals": 0,
+        "AlmightyPolicyChanges": 2,
+        "DungeonRuns": 5,
+        "RaidBattles": 1,
+        "VillageProjects": 10
+      },
+      "new_fiscal_state": {
+        "policies": 0,
+        "quotes": 0,
+        "events": 0,
+        "nonzero_defaults": 0
+      },
+      "model_enabled": false,
+      "telegram_enabled": false,
+      "DevTools": false,
+      "scope": "Compared20old tables. Lots/FarmCrops/observations/proposals empty here; populated quote/settlement and old-lot upgrade proven in isolated API/migration fixtures. No production migration."
+    },
+    "candidate_ci": {
+      "status": "replacement_candidate_pending",
+      "previous_run": {
+        "run_id": 39577534873,
+        "sha": "b53d2dcec8bf59b4d94e0100eafd2630e7113664",
+        "url": "https://github.com/desertod666/Desertovia/actions/runs/39577534873",
+        "domain_passed": 696,
+        "api_passed": 453,
+        "api_failed": 1,
+        "failed_test": "RoyalDungeonApiTests.Cancelling_returns_all_reserved_royal_gear_and_a_legacy_call_keeps_its_80_health_contract",
+        "frontend": "success",
+        "docker": "success",
+        "browser": "still running at replacement; not claimed passed"
+      },
+      "local_fix": {
+        "path": "TestResults/royal-dungeon-fiscal-ci/Admin_DESKTOP-FQ85FTD_2026-10-21_11_39_00_net10.0.trx",
+        "sha256": "512e21d85c10bdc4ee961b9a4a7bb6039fdd500957b1b481d0ae28402cded134",
+        "counters": {
+          "total": "4",
+          "executed": "4",
+          "passed": "4",
+          "failed": "0",
+          "error": "0",
+          "timeout": "0",
+          "aborted": "0",
+          "inconclusive": "0",
+          "passedButRunAborted": "0",
+          "notRunnable": "0",
+          "notExecuted": "0",
+          "disconnected": "0",
+          "warning": "0",
+          "completed": "0",
+          "inProgress": "0",
+          "pending": "0"
+        },
+        "scope": "Cancellation/royal classes/shared wound/legacy80HP. Legacy body fixture starts at a valid departure to isolate health/cancellation from procedural bounded marches; explicit phase diagnostic added. Product source unchanged."
+      }
+    }
   }
 }

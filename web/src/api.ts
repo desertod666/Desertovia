@@ -1565,12 +1565,15 @@ export function createOperationId() {
 }
 export interface EconomyRequest {
   requestId: string; action: string; resource?: string; amount?: number; price?: number; target?: string; x?: number; y?: number; building?: string
-  taskId?: string; cycles?: number; pay?: number; expiresAt?: string
+  taskId?: string; cycles?: number; pay?: number; expiresAt?: string; taxQuoteId?: string
 }
 export interface WorkOrder { id:string;taskId:string;policyVersion:number;payPerCycle:number;availableCycles:number;acceptedCycles:number;completedCycles:number;reservedCoins:number;expiresAt:string;status:'Open'|'Cancelled'|'Expired'|'Completed' }
 export interface EconomyCurrencyIdentity { id: string; ledgerAsset: string }
 
 export interface EconomyView {
+  taxPolicy?:{version:number;requestId:string;enabled:boolean;effectiveAt:string;publishedAt:string;brackets:{fromProfit:number;rateBasisPoints:number}[]}|null
+  latestTaxPolicyVersion?:number;taxableProfitToday?:number;taxPaidToday?:number
+  mySaleTaxes?:{tradeId:string;lotId:string;policyVersion:number|null;price:number;costBasis:number|null;realizedProfit:number|null;taxAmount:number;exemptReason:string;at:string}[]
   supplyOrders?:SupplyOrder[]
   mySupplyDeliveries?:{id:string;supplyOrderId:string;resource:string;amount:number;paidCoins:number;costBasis:number;costBasisKnown:boolean;at:string}[]
   tradeReserves?:{resource:string;minimumAmount:number}[]
@@ -1605,6 +1608,7 @@ export const api = {
   economyAction: (slug: string, body: EconomyRequest) => request<EconomyView>('POST', `/api/villages/${encodeURIComponent(slug)}/economy`, body).then(result=>{
     window.dispatchEvent(new CustomEvent('desertovia-wallet-changed',{detail:{slug,coins:result.coins,testCandles:result.testCandles}}));return result
   }),
+  marketTaxQuote:(slug:string,requestId:string,lotId:string)=>request<{id:string;lotId:string;buyerPays:number;policyVersion:number|null;expiresAt:string}>('POST',`/api/villages/${encodeURIComponent(slug)}/economy/market-quote`,{requestId,lotId}),
   combatDiagnostics:(slug:string)=>request<unknown>('GET',`/api/villages/${encodeURIComponent(slug)}/combat-diagnostics`),
   monastery:(slug:string)=>request<MonasteryView>('GET',`/api/villages/${encodeURIComponent(slug)}/monastery`),
   monasteryTrade:(slug:string,requestId:string)=>request<MonasteryView>('POST',`/api/villages/${encodeURIComponent(slug)}/monastery`,{requestId}),

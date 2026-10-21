@@ -16,7 +16,8 @@ namespace Desertod.Api.Game;
 
 public sealed record EconomyRequest(Guid RequestId, string Action, ResourceKind Resource = ResourceKind.Wood,
     int Amount = 1, long Price = 0, Guid? Target = null, int X = 0, int Y = 0, BuildingKind Building = BuildingKind.Hut,
-    string? TaskId = null, int Cycles = 1, long Pay = 0, DateTimeOffset? ExpiresAt = null);
+    string? TaskId = null, int Cycles = 1, long Pay = 0, DateTimeOffset? ExpiresAt = null,
+    [property:System.Text.Json.Serialization.JsonIgnore(Condition=System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)] Guid? TaxQuoteId=null);
 public sealed record MarketLotDto(Guid Id, Guid SellerAccountId, ResourceKind Resource, int Amount, long Price, string Status, string Seller);
 public sealed record PersonalGoodDto(ResourceKind Kind, int Amount, long CostBasis)
 {
@@ -35,6 +36,11 @@ public sealed record EconomyView(long Coins, long TestCandles, long EarnedToday,
     IReadOnlyList<LedgerDto> Journal, Guid? NextJournalBefore, DateTimeOffset StartedAt,
     int WorkPay, int ConstructionPay, IReadOnlyList<EconomyResident> Residents, IReadOnlyList<PrivateStorageDto> PrivateStorages, IReadOnlyDictionary<ResourceKind, int> StockPrices, IReadOnlyList<PrivatePropertyDto> PrivateProperty, DateTimeOffset? EnergyDrinkReadyAt)
 {
+    public TaxPolicyDto? TaxPolicy { get; init; }
+    public long LatestTaxPolicyVersion { get; init; }
+    public long TaxableProfitToday { get; init; }
+    public long TaxPaidToday { get; init; }
+    public IReadOnlyList<MySaleTaxDto> MySaleTaxes { get; init; } = [];
     public IReadOnlyList<SiteRecoveryDto> SiteRecoveries { get; init; } = [];
     public EconomyCurrenciesDto Currencies { get; init; } = EconomyCurrenciesDto.Current;
     public bool WorkContractsEnabled { get; init; }
@@ -46,6 +52,8 @@ public sealed record EconomyView(long Coins, long TestCandles, long EarnedToday,
     public IReadOnlyList<TradeReserveDto> TradeReserves { get; init; } = [];
     public IReadOnlyDictionary<ResourceKind, int> StockForSale { get; init; } = new Dictionary<ResourceKind, int>();
 }
+public sealed record MySaleTaxDto(Guid TradeId,Guid LotId,long? PolicyVersion,long Price,long? CostBasis,long? RealizedProfit,
+    long TaxAmount,string ExemptReason,DateTimeOffset At);
 public sealed record SupplyOrderDto(Guid Id, ResourceKind Resource, int RequestedAmount, int RemainingAmount,
     int DeliveredAmount, long UnitPrice, long ReservedCoins, DateTimeOffset ExpiresAt, SupplyOrderStatus Status);
 public sealed record SupplyDeliveryDto(Guid Id, Guid SupplyOrderId, ResourceKind Resource, int Amount,
@@ -67,6 +75,9 @@ public sealed partial class GameService
     private static Guid StableOperation(string value) => new(SHA256.HashData(Encoding.UTF8.GetBytes(value)).AsSpan(0, 16));
     private static string EconomyFingerprint(EconomyRequest request)
     {
+        if(request.TaxQuoteId is not null)
+            return Convert.ToHexString(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(new {request.RequestId,request.Action,request.Resource,
+                request.Amount,request.Price,request.Target,request.X,request.Y,request.Building,request.TaxQuoteId})));
         // Keep receipts written before work-order fields were added retryable byte-for-byte.
         object body=request.Action is "enable-work-contracts" or "fund-treasury" or "publish-work-order" or "cancel-work-order" or "claim-work-pay"
             or "publish-supply-order" or "cancel-supply-order" or "fulfill-supply-order" or "set-trade-reserve"
@@ -80,7 +91,10 @@ public sealed partial class GameService
         var wallet = await db.GameWallets.SingleOrDefaultAsync(w => w.VillageId == village && w.AccountId == account, ct);
         if (wallet is null) { wallet = new GameWallet { VillageId = village, AccountId = account }; db.GameWallets.Add(wallet); }
         var day = EconomyDay(now);
-        if (wallet.IncomeDay != day) { wallet.IncomeDay = day; wallet.EarnedToday = 0; wallet.ProfitToday = 0; }
+        if (wallet.IncomeDay != day) {
+            wallet.IncomeDay = day; wallet.EarnedToday = 0; wallet.ProfitToday = 0;
+            wallet.TaxableProfitToday=0;wallet.TaxPaidToday=0;wallet.TaxRemainder=0;wallet.TaxRevision++;
+        }
         if (wallet.ExchangeDay != day) { wallet.ExchangeDay = day; wallet.ExchangedToday = 0; }
         return wallet;
     }
@@ -142,6 +156,8 @@ public sealed partial class GameService
             await RequireEconomyMemberAsync(db, village, account, ct);
             if (request.RequestId == Guid.Empty || !Enum.IsDefined(request.Resource))
                 throw new GameRuleException("economy.request", "Refresh the operation and try again.");
+            if(request.TaxQuoteId is not null && request.Action!="buy-lot")
+                throw new GameRuleException("tax.quote.action","A tax quote can only confirm a market purchase.");
             var fingerprint = EconomyFingerprint(request);
             var prior = await db.EconomyReceipts.SingleOrDefaultAsync(x => x.VillageId == village.Id && x.RequestId == request.RequestId, ct);
             if (prior is not null)
@@ -299,7 +315,8 @@ public sealed partial class GameService
                         throw new GameRuleException("market.limit", "You already have ten open lots.");
                     var cost = PersonalInventory.RemoveWithCost(Own(), request.Resource, request.Amount);
                     db.MarketLots.Add(new MarketLot { Id = request.RequestId, VillageId = village.Id, SellerAccountId = account,
-                        Resource = request.Resource, Amount = request.Amount, Price = request.Price, CostBasis = cost.Basis, CostBasisKnown = cost.Known, Status = "open", CreatedAt = now });
+                        Resource = request.Resource, Amount = request.Amount, Price = request.Price, CostBasis = cost.Basis, CostBasisKnown = cost.Known,
+                        TaxPolicyVersion=(await ActiveTaxPolicyAsync(db,village.Id,now,ct))?.Version,Status = "open", CreatedAt = now });
                     break;
                 }
                 case "buy-lot":
@@ -321,11 +338,13 @@ public sealed partial class GameService
                         if (lot.SellerAccountId == account) throw new GameRuleException("market.own", "You cannot buy your own lot.");
                         if (PersonalInventory.Room(Own(), lot.Resource) < lot.Amount) throw new GameRuleException("inventory.full", "Your personal inventory is full.");
                         var sellerWallet = await WalletAsync(db, village.Id, lot.SellerAccountId, now, ct);
-                        EconomyRules.Spend(wallet, lot.Price); EconomyRules.Credit(sellerWallet, lot.Price);
+                        var tax=await SettleMarketTaxAsync(db,lot,account,sellerWallet,state,request,now,ct);
+                        EconomyRules.Spend(wallet, lot.Price); EconomyRules.Credit(sellerWallet, lot.Price-tax);
                         if (lot.CostBasisKnown) sellerWallet.ProfitToday = checked(sellerWallet.ProfitToday + lot.Price - lot.CostBasis);
                         PersonalInventory.Add(Own(), lot.Resource, lot.Amount, lot.Price);
                         lot.Status = "sold"; lot.BuyerAccountId = account;
-                        WalletChange(account, -lot.Price, "trade"); WalletChange(lot.SellerAccountId, lot.Price, "trade");
+                        WalletChange(account, -lot.Price, "trade"); WalletChange(lot.SellerAccountId, lot.Price-tax, "trade");
+                        MoneyEntry(db,village.Id,request.RequestId,lot.SellerAccountId,"sale-tax","DZK","treasury",tax,now);
                     }
                     lot.ClosedAt = now;
                     break;
@@ -418,9 +437,10 @@ public sealed partial class GameService
         var sellerNames = await db.Accounts.Where(a=>sellers.Contains(a.Id)).Select(a=>new{a.Id,a.DisplayName}).ToDictionaryAsync(a=>a.Id,a=>a.DisplayName,ct);
         var supplyKinds=await db.SupplyOrders.Where(o=>o.VillageId==village.Id && o.Status==SupplyOrderStatus.Open && o.ExpiresAt>now)
             .Select(o=>o.Resource).Distinct().ToArrayAsync(ct);
+        var taxPolicy=await ActiveTaxPolicyAsync(db,village.Id,now,ct);
         await db.SaveChangesAsync(ct);
         return new(wallet.Coins, wallet.TestCandles, wallet.EarnedToday, wallet.ProfitToday,
-            EconomyRules.TaxPreview(checked(wallet.EarnedToday + wallet.ProfitToday)), false,
+            wallet.TaxPaidToday,taxPolicy?.Enabled==true,
             EconomyNumber("ExchangeRate", 100, 1, 100_000), EconomyNumber("DailyExchangeLimit", 5, 1, 20), wallet.ExchangedToday,
             Math.Max(0, EconomyNumber("KingdomDailyCandles", 50, 1, 1000) - (state.FundDay == EconomyDay(now) ? state.CandlesIssuedToday : 0)),
             new DateTimeOffset(now.UtcDateTime.Date.AddDays(1), TimeSpan.Zero), state.TreasuryCoins,
@@ -435,6 +455,10 @@ public sealed partial class GameService
                 .Concat(village.Storages.Where(s=>s.OwnerAccountId==account).Select(s=>new PrivatePropertyDto(s.PlotId,BuildingCatalog.ForStorage(s.Kind)??BuildingKind.Heap,1,false,false)))
                 .Concat(village.Sites.Where(s=>s.OwnerAccountId==account).Select(s=>new PrivatePropertyDto(s.PlotId,s.Kind,s.TargetLevel,true,s.HasWork||s.Operation!=null))).ToArray(), citizen is null ? null : VigorDrinks.EnergyDrinkReadyAt(citizen))
         { WorkContractsEnabled=state.WorkContractsEnabled, CanManageWorkOrders=village.OwnerAccountId==account,
+            TaxPolicy=taxPolicy is null?null:TaxDto(taxPolicy),LatestTaxPolicyVersion=state.LatestTaxPolicyVersion,
+            TaxableProfitToday=wallet.TaxableProfitToday,TaxPaidToday=wallet.TaxPaidToday,
+            MySaleTaxes=await db.MarketTaxEvents.Where(e=>e.VillageId==village.Id&&e.SellerAccountId==account).OrderByDescending(e=>e.At).ThenByDescending(e=>e.Id).Take(30)
+                .Select(e=>new MySaleTaxDto(e.Id,e.LotId,e.PolicyVersion,e.Price,e.CostBasisKnown?e.CostBasis:null,e.RealizedProfit,e.TaxAmount,e.ExemptReason,e.At)).ToArrayAsync(ct),
             TradeReserves=state.TradeReserves.Select(r=>new TradeReserveDto(r.Resource,r.MinimumAmount)).ToArray(),
             StockForSale=Enum.GetValues<ResourceKind>().Where(StorageCatalog.IsGood).ToDictionary(r=>r,r=>supplyKinds.Contains(r)?0:TradeReserveRules.ForSale(village,state,r)),
             SupplyOrders=await db.SupplyOrders.Where(o=>o.VillageId==village.Id && (o.Status==SupplyOrderStatus.Open || o.CreatedAt>now.AddDays(-1)))

@@ -1,7 +1,7 @@
 import {canUpgradeBuilding} from '../buildingLabels'
 import { buildingNumber } from './buildingLabel'
 import { useEffect, useRef, useState } from 'react'
-import { api, createOperationId, plotPosition, type BuildingDefinition, type Catalog, type Citizen, type EconomyRequest, type EconomyView, type VillageState } from '../api'
+import { api, ApiError, createOperationId, plotPosition, type BuildingDefinition, type Catalog, type Citizen, type EconomyRequest, type EconomyView, type VillageState } from '../api'
 import { useI18n } from '../i18n'
 import { EnergyDrinkCard } from './EnergyDrinkShop'
 import { EconomicGoldIcon } from './EconomicGoldIcon'
@@ -48,8 +48,21 @@ export function EconomyPanel({ village, catalog, citizen, accountId, onPrivatePl
       requests.current.set(key, request)
     }
     locked.current = true; setBusy(true); setError(''); setNotice('')
-    try { setView(await api.economyAction(village.slug, request)); setHistoryCursor(undefined); requests.current.delete(key); setNotice(text('Готово', 'Done')); return true }
-    catch (e) { setError(i18n.error(e)); return false }
+    try {
+      // New servers settle against a durable quote. Keep it and the trade ID after an uncertain network result.
+      if(request.action==='buy-lot' && request.target && !request.taxQuoteId && view?.latestTaxPolicyVersion!==undefined){
+        const quote=await api.marketTaxQuote(village.slug,request.requestId,request.target)
+        const offer=view.lots.find(l=>l.id===request.target)
+        if(!offer || quote.buyerPays!==offer.price)throw new ApiError(400,text('Цена покупки изменилась. Обнови рынок.','The purchase price changed. Refresh the market.'),'economy.priceChanged')
+        request.taxQuoteId=quote.id
+      }
+      setView(await api.economyAction(village.slug, request)); setHistoryCursor(undefined); requests.current.delete(key); setNotice(text('Готово', 'Done')); return true
+    }
+    catch (e) {
+      // These explicit server rejections prove no trade committed; next click may request fresh terms.
+      if(e instanceof ApiError && e.status===400 && ['tax.quote.stale','tax.quote.missing','tax.quote.required','economy.priceChanged'].includes(e.code??''))requests.current.delete(key)
+      setError(i18n.error(e)); return false
+    }
     finally { locked.current = false; setBusy(false) }
   }
   const units = Number(amount), validAmount = /^\d+$/.test(amount) && units >= 1 && units <= 100
@@ -110,7 +123,7 @@ export function EconomyPanel({ village, catalog, citizen, accountId, onPrivatePl
           <button disabled={busy||view.coins<view.exchangeRate||view.exchangedToday>=view.dailyExchangeLimit||view.kingdomCandleRoom<1} onClick={()=>void act({action:'exchange',amount:1})}>{text('Обменять на 1 тестовую свечу','Exchange for 1 test candle')}</button>
           <p className="small">{text('Сброс лимита','Limit resets')}: {new Date(view.dayResetsAt).toLocaleString(i18n.language)}. {text('Свечи аккаунта батюшки не начисляются.','No chaplain account candles are credited.')}</p>
           <p>{text('Заработок за сутки','Work income today')}: {view.earnedToday} · {text('Торговая прибыль','Trading profit')}: {view.profitToday}.</p>
-          <p>{text('Расчёт прогрессивного налога','Progressive tax preview')}: {view.taxPreview} {i18n.t('economy.goldTaxPreview')}. {text('Первые 200 не облагаются, затем 10%, 20%, 30% только на превышение порогов 200/500/1000.','First 200 exempt; marginal 10%, 20%, 30% above 200/500/1000.')}</p>
+          <p>{text('Удержано дани сегодня','Tax paid today')}: {view.taxPaidToday ?? 0} {i18n.t('currency.goldUnit')}. {text('Условия определяет опубликованная политика; зарплата и неподтверждённая себестоимость освобождены. Условия ранее выставленных лотов сохраняются.','Published policy determines settlement; wages and unverified costs are exempt. Existing offers retain their terms.')}</p>
         </details>
         {citizen && <details><summary>{text('Личная стройка за царством','Private construction outside the kingdom')}</summary>
           <p className="small">{text('Только твои материалы, без общего склада и казённой зарплаты. Участок должен быть разведан и доступен.','Your own materials only, with no communal supplies or wages. The plot must be explored and reachable.')}</p>
