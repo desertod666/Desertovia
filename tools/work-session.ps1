@@ -1,7 +1,7 @@
 param(
     [ValidateSet('Start','Renew','Stop','Worker')][string]$Mode = 'Renew',
     [string]$StateDirectory = (Join-Path (Split-Path $PSScriptRoot -Parent) '../qa/work-session'),
-    [ValidateRange(2,60)][int]$LeaseMinutes = 15
+    [ValidateRange(2,60)][int]$LeaseMinutes = 30
 )
 
 $ErrorActionPreference = 'Stop'
