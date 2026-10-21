@@ -58,6 +58,9 @@ public sealed partial class DesertodDbContext(DbContextOptions<DesertodDbContext
     public DbSet<EconomyReceipt> EconomyReceipts => Set<EconomyReceipt>();
     public DbSet<LedgerEntry> LedgerEntries => Set<LedgerEntry>();
     public DbSet<MarketLot> MarketLots => Set<MarketLot>();
+    public DbSet<TaxPolicy> TaxPolicies => Set<TaxPolicy>();
+    public DbSet<MarketTaxQuote> MarketTaxQuotes => Set<MarketTaxQuote>();
+    public DbSet<MarketTaxEvent> MarketTaxEvents => Set<MarketTaxEvent>();
     public DbSet<SupplyOrder> SupplyOrders => Set<SupplyOrder>();
     public DbSet<SupplyDelivery> SupplyDeliveries => Set<SupplyDelivery>();
     public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();
@@ -151,7 +154,30 @@ public sealed partial class DesertodDbContext(DbContextOptions<DesertodDbContext
         });
         modelBuilder.Entity<EconomyReceipt>(b => { b.HasKey(x=>new{x.VillageId,x.RequestId}); b.Property(x=>x.Fingerprint).HasMaxLength(128); b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade); });
         modelBuilder.Entity<LedgerEntry>(b => { b.HasKey(x=>x.Id); b.HasIndex(x=>new{x.VillageId,x.At,x.Id}); b.HasIndex(x=>new{x.VillageId,x.OperationId}); b.Property(x=>x.Operation).HasMaxLength(80); b.Property(x=>x.Asset).HasMaxLength(40); b.Property(x=>x.Location).HasMaxLength(100); b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade); });
-        modelBuilder.Entity<MarketLot>(b => { b.HasKey(x=>x.Id); b.HasIndex(x=>new{x.VillageId,x.Status,x.CreatedAt}); b.Property(x=>x.Resource).HasConversion<string>(); b.Property(x=>x.Status).HasMaxLength(16); b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade); });
+        modelBuilder.Entity<MarketLot>(b => {
+            b.HasKey(x=>x.Id); b.HasIndex(x=>new{x.VillageId,x.Status,x.CreatedAt}); b.Property(x=>x.Resource).HasConversion<string>(); b.Property(x=>x.Status).HasMaxLength(16);
+            b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade);
+            b.HasOne<TaxPolicy>().WithMany().HasForeignKey(x=>new{x.VillageId,x.TaxPolicyVersion}).OnDelete(DeleteBehavior.NoAction);
+        });
+        modelBuilder.Entity<TaxPolicy>(b=>{
+            b.HasKey(x=>new{x.VillageId,x.Version});b.HasIndex(x=>new{x.VillageId,x.RequestId}).IsUnique();
+            b.HasIndex(x=>new{x.VillageId,x.EffectiveAt,x.Version});b.Property(x=>x.RequestFingerprint).HasMaxLength(128);
+            b.OwnsMany(x=>x.Brackets,brackets=>brackets.ToJson());
+            b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade);
+        });
+        modelBuilder.Entity<MarketTaxQuote>(b=>{
+            b.HasKey(x=>new{x.VillageId,x.Id});b.HasIndex(x=>new{x.VillageId,x.LotId,x.CreatedAt});
+            b.Property(x=>x.ExemptReason).HasMaxLength(32);
+            b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade);
+            b.HasOne<TaxPolicy>().WithMany().HasForeignKey(x=>new{x.VillageId,x.PolicyVersion}).OnDelete(DeleteBehavior.NoAction);
+            b.HasOne<MarketLot>().WithMany().HasForeignKey(x=>new{x.VillageId,x.LotId}).HasPrincipalKey(x=>new{x.VillageId,x.Id}).OnDelete(DeleteBehavior.NoAction);
+        });
+        modelBuilder.Entity<MarketTaxEvent>(b=>{
+            b.HasKey(x=>new{x.VillageId,x.Id});b.HasIndex(x=>new{x.VillageId,x.LotId}).IsUnique();
+            b.HasIndex(x=>new{x.VillageId,x.SellerAccountId,x.At});b.Property(x=>x.ExemptReason).HasMaxLength(32);
+            b.HasOne<Village>().WithMany().HasForeignKey(x=>x.VillageId).OnDelete(DeleteBehavior.Cascade);
+            b.HasOne<MarketTaxQuote>().WithMany().HasForeignKey(x=>new{x.VillageId,x.QuoteId}).OnDelete(DeleteBehavior.NoAction);
+        });
         modelBuilder.Entity<AlmightyState>(b => {
             b.HasKey(x => x.VillageId);
             b.Property(x => x.PolicyVersion).HasDefaultValue(0L);

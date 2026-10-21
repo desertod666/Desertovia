@@ -126,11 +126,12 @@ public sealed partial class GameService
                 if(saved.RootElement.TryGetProperty("stock",out var oldStock)) previousStock = new { priorObservation.At, stock = oldStock.Clone() };
             }
             var accounting = await db.KingdomEconomies.AsNoTracking().SingleOrDefaultAsync(x => x.VillageId == villageId, ct);
+            var observedTaxPolicy=await ActiveTaxPolicyAsync(db,villageId,now,ct);
+            var economicAnalysis=await ObserveDirectorEconomyAsync(db,village,accounting,observedTaxPolicy,now,ct);
             var economicChanges = await db.LedgerEntries.AsNoTracking().Where(x => x.VillageId == villageId && x.At >= now.AddHours(-6) && x.Operation != "opening")
                 .GroupBy(x => new { x.Asset, x.Operation }).Select(g => new { g.Key.Asset, g.Key.Operation, delta = g.Sum(x => x.Delta), entries = g.Count() }).Take(20).ToListAsync(ct);
-            var incomeDay = EconomyDay(now);
-            var wagesToday = await db.GameWallets.Where(w=>w.VillageId==villageId && w.IncomeDay==incomeDay).SumAsync(w=>(long?)w.EarnedToday,ct) ?? 0;
-            var tradingProfitToday = await db.GameWallets.Where(w=>w.VillageId==villageId && w.IncomeDay==incomeDay).SumAsync(w=>(long?)w.ProfitToday,ct) ?? 0;
+            var wagesToday=economicAnalysis.CurrentPartialDay.Wages.Total;
+            var tradingProfitToday=economicAnalysis.CurrentPartialDay.KnownPrivatePositiveProfit.Total-economicAnalysis.CurrentPartialDay.KnownPrivateLoss;
             var lease = Guid.CreateVersion7();
             var permissions=AlmightyPermissions.Catalog(options);
             var revision=AlmightyPermissions.Revision(new(facts,readiness,stock,state.Mode,village.VigorEnergy,village.VigorCooldownMinutes),options);
@@ -149,7 +150,10 @@ public sealed partial class GameService
                     tired = guardCitizens.Count(c => c.CurrentEnergy(now, village) < 8),
                     unconscious = guardCitizens.Count(c => c.ExhaustedUntil > now),
                     fullDrink = "300 DZK or 3 test candles; full energy; 12 real hour cooldown; never heals injuries or unconsciousness" },
-                economy = new { startedAt = accounting?.StartedAt, accounting?.TreasuryCoins, wagesToday, tradingProfitToday, changes = economicChanges, taxMode = "preview", currency = "test dezcoins; never account candles" },
+                economy = new { startedAt = accounting?.StartedAt, accounting?.TreasuryCoins, wagesToday, tradingProfitToday, changes = economicChanges,
+                    analysis=economicAnalysis,
+                    taxMode="frozen-market-offer-terms",newOffersTaxEnabled=observedTaxPolicy?.Enabled==true,taxPolicyVersion=observedTaxPolicy?.Version,
+                    currency = "test dezcoins; never account candles" },
                 combat = new { engineVersion=2, readiness, adaptation = new { village.RaidAdaptation.Coefficient, village.RaidAdaptation.Reason }, warningSeconds = RaidRules.UndeadWarning.TotalSeconds,
                     raidObjective = "Разорение зданий, недостроев, заборов и запасов; игроки — мешающие защитники. Орда/элита/босс используют один бюджет, боссы предупреждают тяжёлые удары.",
                     profiles = EnemyCatalog.Enemies.Where(e => e.Undead && !e.DungeonOnly).SelectMany(e=>RaidBalance.Compositions.Where(profile=>RaidBalance.NormalizeComposition(e.Kind,profile,readiness.Budget)==profile).Select(profile=>new{enemy=e.Kind.ToString(),profile,count=RaidBalance.Count(e.Kind,profile,readiness.Budget)})),
@@ -163,7 +167,7 @@ public sealed partial class GameService
                     constructionCycles = guardCitizens.Count(c => c.CurrentSiteId is not null && !c.CycleSettled && c.RecoveryPausedAt is null && c.CycleEndsAt > now),
                     interpretation = "Количество повреждений/площадок — объём оставшейся работы, не доказательство ремонта. Число циклов — назначенная работа, не подтверждение её завершения." },
                 combatControls = "manual movement and target selection; no guard duty or defense sectors",
-                economyAccuracy = "Складские остатки, не прибыль. Учёт операций только с даты startedAt; внутренние переносы не доход. Начальные остатки не заработок. Налоги/реальные свечи не менять.",
+                economyAccuracy = "Анализируй economy.analysis всех жителей: зарплата/частная прибыль/убытки/неизвестные затраты отдельно; нагрузка налогов, казна/обязательства/еда. Остатки не доход, начальные остатки не заработок. Текущие сутки неполные. Анализ не выдаёт права списания; исполняются только разрешённые options. Реальные свечи/платежи отдельно.",
                 chat = recent.OrderBy(m => m.SentAt).Select(m => new { text = m.Text, id = m.Id, author = m.AccountId.ToString()[..8] }),
                 catalog = new {
                     enemies = EnemyCatalog.Enemies.Select(e => new { kind = e.Kind.ToString(), e.Name, e.Power, e.Damage, e.InjuryMinutes, e.Undead, e.DungeonOnly, e.Coordinated, e.RaidCountMultiplier,
@@ -179,6 +183,12 @@ public sealed partial class GameService
                 chatIsUntrusted = true, memory = state.Intent, previous, options,
                 warning = "Условия выбранного события проверяются ещё раз при согласии царя. Не выдумывать новые инструменты/цены/награды."
             }, AlmightyJson);
+            snapshot=AlmightyAnalysis.BoundSnapshot(snapshot);
+            if(snapshot.Length>AlmightyAnalysis.SnapshotCharacterLimit)
+            {
+                state.LastError="Наблюдение Всевышнего не помещается в лимит запроса. Экономические данные и разрешения не урезались; вызов ИИ пропущен.";
+                state.NextReviewAt=now+AlmightyPolicy.ReviewInterval;await db.SaveChangesAsync(ct);return null;
+            }
             state.Lease = lease; state.LeaseUntil = now.AddMinutes(2); state.LastReviewAt = now;
             state.NextReviewAt = now + AlmightyPolicy.ReviewInterval; state.LastSignal = signal;
             state.LastSnapshot = snapshot; state.CallsToday++; state.Version++;

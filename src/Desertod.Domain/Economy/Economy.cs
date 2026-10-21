@@ -10,6 +10,7 @@ public sealed class KingdomEconomy
     public DateTimeOffset StartedAt { get; set; }
     public long TreasuryCoins { get; set; }
     public bool WorkContractsEnabled { get; set; }
+    public long LatestTaxPolicyVersion { get; set; }
     public DateOnly FundDay { get; set; }
     public int CandlesIssuedToday { get; set; }
     private List<TradeReserve>? tradeReserves = [];
@@ -26,6 +27,10 @@ public sealed class GameWallet
     public DateOnly IncomeDay { get; set; }
     public long EarnedToday { get; set; }
     public long ProfitToday { get; set; }
+    public long TaxableProfitToday { get; set; }
+    public long TaxPaidToday { get; set; }
+    public int TaxRemainder { get; set; }
+    public long TaxRevision { get; set; }
     public DateOnly ExchangeDay { get; set; }
     public int ExchangedToday { get; set; }
 }
@@ -62,6 +67,7 @@ public sealed class MarketLot
     public long Price { get; set; }
     public long CostBasis { get; set; }
     public bool CostBasisKnown { get; set; }
+    public long? TaxPolicyVersion { get; set; }
     public required string Status { get; set; } = "open";
     public Guid? BuyerAccountId { get; set; }
     public DateTimeOffset CreatedAt { get; set; }

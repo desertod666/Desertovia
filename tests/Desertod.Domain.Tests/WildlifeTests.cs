@@ -9,6 +9,13 @@ namespace Desertod.Domain.Tests;
 
 public class WildlifeTests
 {
+    private static Desertod.Domain.Entities.Village HuntingVillage()
+    {
+        // Hunting rules use a fixed, reachable terrain fixture; navigation is verified separately.
+        var village=NewVillage();village.Id=Guid.Parse("11111111-1111-4111-8111-111111111111");
+        village.Wilds=Wilderness.Generate(village.Id);return village;
+    }
+
     [Fact]
     public void NewVillage_HasFullHerdsOfEveryAnimal()
     {
@@ -69,7 +76,7 @@ public class WildlifeTests
     public void EachPrey_NeedsItsHuntingLevel(string taskId, int hunting)
     {
         var task = Task(taskId);
-        var village = NewVillage();
+        var village = HuntingVillage();
         var skilled = NewCitizen(village).WithSkill(Skill.Hunting, hunting);
 
         if (hunting > 0)
@@ -91,7 +98,7 @@ public class WildlifeTests
         var experience = new Dictionary<string, int>();
         foreach (var taskId in new[] { "hunt", "track-game", "hunt-birds" })
         {
-            var village = NewVillage();
+            var village = HuntingVillage();
             var citizen = NewCitizen(village, (Stat.Dexterity, 3)).WithSkill(Skill.Hunting, 3);
             CycleEngine.Start(citizen, Task(taskId), WorkContext.For(village), Now);
             experience[taskId] = Finish(citizen, WorkContext.For(village)).PrimaryExperience;

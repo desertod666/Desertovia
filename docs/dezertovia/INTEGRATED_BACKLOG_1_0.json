@@ -1454,7 +1454,7 @@
       "id": "PKG-T024",
       "milestone": "M2",
       "title": "Версионированная дань на согласованную базу",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partially_implemented",
       "dependencies": [
         "PKG-T020",
         "PKG-T023"
@@ -1493,9 +1493,14 @@
       "original_task_id": "T024",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "plan",
-        "evidence": "TaxPreview не исполняемый сбор; настоящий налог ждёт корректный basis/версию/quote.",
-        "runtime_verification": "not_run_this_assignment"
+        "status": "partial",
+        "evidence": "DIRECTOR_ECONOMY_1_0.md / DIRECTOR_ECONOMY_VERIFICATION_1_0.json: D111 all-resident observation and partial immutable market policy/quote settlement. No default scale or automatic fiscal authority. T025/T026/T054 active.",
+        "runtime_verification": "696Domain/16final API+boundary+migration/4browser and frontend pass; isolated54to55 compared20old tables unchanged, fiscal defaults off. Full exact CI pending."
+      },
+      "live_balance_research": {
+        "evidence": "LIVE_INCOME_ANALYSIS_2026_10_21.json",
+        "status": "read_only_aggregates_verified_no_rate_approved",
+        "owner_direction": "D111: exact balancing delegated to Almighty; observe all residents, actual profit and tax burden, preserve unknown costs"
       }
     },
     {
@@ -2097,7 +2102,8 @@
         "evidence": "Existing lease/snapshot/options/owner-confirmed handlers reused; v1 envelope and compact closed kinds, stored observation authoritative; autonomous/economic/party contracts pending",
         "runtime_verification": "Current source loaded in loopback API; schema53 unchanged,22wallets/5economies preserved; Director tables0rows. Old admitted reviews tested in isolated DB; no live model/Telegram."
       },
-      "implementation_evidence": "DIRECTOR_CONTRACT_1_0.md / DIRECTOR_CONTRACT_VERIFICATION_1_0.json;686Domain/26API/13mockedBot PASS; actual local restart schema53 unchanged; full exactCI pending, fullT050/A20/A22 incomplete"
+      "implementation_evidence": "DIRECTOR_CONTRACT_1_0.md / DIRECTOR_CONTRACT_VERIFICATION_1_0.json;686Domain/26API/13mockedBot PASS; actual local restart schema53 unchanged; full exactCI pending, fullT050/A20/A22 incomplete",
+      "economic_observation": "D111 extends the same snapshot with bounded all-resident economic aggregates;14complete UTC days/table and separate partial day. Budget never drops economic rows/admission. No extension of v1 revision scope or new executor authority."
     },
     {
       "id": "PKG-T051",
@@ -2241,7 +2247,7 @@
       "id": "PKG-T054",
       "milestone": "M5",
       "title": "Экономические действия всевышнего",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partially_implemented",
       "dependencies": [
         "PKG-T051",
         "PKG-T024",
@@ -2278,9 +2284,15 @@
       "original_task_id": "T054",
       "source": "source-package/05_TASKS.json",
       "current_support": {
-        "status": "plan",
-        "evidence": "Экономический исполнитель не найден, economy_report не меняет налог/деньги.",
-        "runtime_verification": "not_run_this_assignment"
+        "status": "partial",
+        "evidence": "DIRECTOR_ECONOMY_1_0.md / DIRECTOR_ECONOMY_VERIFICATION_1_0.json: D111 all-resident observation and partial immutable market policy/quote settlement. No default scale or automatic fiscal authority. T025/T026/T054 active.",
+        "runtime_verification": "696Domain/16final API+boundary+migration/4browser and frontend pass; isolated54to55 compared20old tables unchanged, fiscal defaults off. Full exact CI pending."
+      },
+      "owner_economic_direction": {
+        "decision": "D111",
+        "scope": "all-resident wage/private profit/loss/unknown cost/tax burden, treasury commitments, food and before/after consequences",
+        "integration": "existing director snapshot and economic executors; no second model/SQL access",
+        "status": "analysis_in_progress_full_autonomy_not_verified"
       }
     },
     {

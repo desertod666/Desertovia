@@ -121,7 +121,18 @@
     "DevTools": false
   },
   "candidate_ci": {
-    "status": "not_created"
+    "status": "success",
+    "sha": "2a8ca905c9205b9dc16ca51313d623a4f6d94594",
+    "run_id": 39566032798,
+    "url": "https://github.com/desertod666/Desertovia/actions/runs/39566032798",
+    "jobs": 5,
+    "domain_passed": 687,
+    "api_passed": 439,
+    "browser_passed": 414,
+    "browser_skipped": 2,
+    "frontend_lint_build": "success",
+    "docker": "success",
+    "evidence": "Fresh gh run view and job logs119108409421/119108409790/119108409838; parent resilience only, not new economic source."
   },
   "public_release": false,
   "source_sha256": {
@@ -133,7 +144,6 @@
     "tests/Desertod.Api.Tests/DirectorResilienceApiTests.cs": "12ec0398be8ed90847c4415f2f6e12c400d68b8a274b6aa808318599efbdae49"
   },
   "remaining": [
-    "Full exact-candidate CI",
     "Live Gemini chain/provider and Telegram delivery, physical devices, production/load not verified",
     "Full director economic executor, scheduling/shadow/autonomy and remaining1.0 DAG"
   ],

@@ -1,0 +1,328 @@
+{
+  "captured_at": "2026-10-21T08:30:36.810753+00:00",
+  "database": "desertod",
+  "period_utc": {
+    "from": "2026-10-16T00:00:00Z",
+    "until_exclusive": "2026-10-21T00:00:00Z"
+  },
+  "ledger_coverage": {
+    "rows": 48989,
+    "first": "2026-10-15T18:29:34.04617+00:00",
+    "last": "2026-10-21T08:30:22.591901+00:00"
+  },
+  "population": {
+    "citizens": 151,
+    "accounts": 151
+  },
+  "worlds": 1,
+  "wages": {
+    "player_days": 302,
+    "unique_receivers": 94,
+    "total": 118060,
+    "mean": 390.93,
+    "percentiles_10_25_50_75_90_95": [
+      30,
+      80,
+      260,
+      640,
+      920,
+      1059.5
+    ],
+    "min": 10,
+    "max": 1590,
+    "at_most_200": 132,
+    "above_500": 103,
+    "above_1000": 22
+  },
+  "wage_units": [
+    {
+      "unit": 10,
+      "payments": 5656
+    },
+    {
+      "unit": 20,
+      "payments": 3075
+    }
+  ],
+  "trade_ledger_crosscheck": {
+    "credits": 111,
+    "credit_sum": 5021,
+    "debits": 111,
+    "debit_sum": -5021
+  },
+  "trade": {
+    "seller_days": 24,
+    "unique_sellers": 15,
+    "sales": 111,
+    "revenue": 5021,
+    "recorded_basis": 775,
+    "recorded_positive_margin": 4290,
+    "recorded_net_margin": 4246,
+    "positive_basis_only_margin": 757,
+    "mean": 178.75,
+    "percentiles_25_50_75_90_95": [
+      10,
+      34,
+      130,
+      474.9999999999999,
+      609.2499999999998
+    ],
+    "max": 1734,
+    "above_200": 5,
+    "above_500": 3,
+    "above_1000": 1
+  },
+  "daily": [
+    {
+      "d": "2026-10-16",
+      "wage_receivers": 60,
+      "wages": 25890,
+      "wage_median": 350,
+      "sellers": 1,
+      "sales": 2,
+      "sales_revenue": 520,
+      "recorded_positive_margin": 520,
+      "max_seller_positive_margin": 520,
+      "taxed_sellers": 1,
+      "hypothetical_tax_exact": 34.0,
+      "hypothetical_tax_whole": 34
+    },
+    {
+      "d": "2026-10-17",
+      "wage_receivers": 64,
+      "wages": 21860,
+      "wage_median": 105,
+      "sellers": 8,
+      "sales": 11,
+      "sales_revenue": 159,
+      "recorded_positive_margin": 149,
+      "max_seller_positive_margin": 60,
+      "taxed_sellers": 0,
+      "hypothetical_tax_exact": 0.0,
+      "hypothetical_tax_whole": 0
+    },
+    {
+      "d": "2026-10-18",
+      "wage_receivers": 62,
+      "wages": 26930,
+      "wage_median": 330,
+      "sellers": 3,
+      "sales": 8,
+      "sales_revenue": 88,
+      "recorded_positive_margin": 88,
+      "max_seller_positive_margin": 40,
+      "taxed_sellers": 0,
+      "hypothetical_tax_exact": 0.0,
+      "hypothetical_tax_whole": 0
+    },
+    {
+      "d": "2026-10-19",
+      "wage_receivers": 59,
+      "wages": 25060,
+      "wage_median": 340,
+      "sellers": 6,
+      "sales": 23,
+      "sales_revenue": 1155,
+      "recorded_positive_margin": 901,
+      "max_seller_positive_margin": 370,
+      "taxed_sellers": 2,
+      "hypothetical_tax_exact": 22.5,
+      "hypothetical_tax_whole": 22
+    },
+    {
+      "d": "2026-10-20",
+      "wage_receivers": 57,
+      "wages": 18320,
+      "wage_median": 220,
+      "sellers": 6,
+      "sales": 67,
+      "sales_revenue": 3099,
+      "recorded_positive_margin": 2632,
+      "max_seller_positive_margin": 1734,
+      "taxed_sellers": 2,
+      "hypothetical_tax_exact": 405.2,
+      "hypothetical_tax_whole": 405
+    }
+  ],
+  "full_period_trade_basis": {
+    "zero_basis_sales": 95,
+    "positive_basis_sales": 16,
+    "zero_basis_revenue": 3533,
+    "positive_basis_revenue": 1488
+  },
+  "positive_basis_sensitivity": {
+    "seller_days": 24,
+    "above_200": 1,
+    "maximum": 370,
+    "tax_exact": 17.0
+  },
+  "tax_full_period": {
+    "exact": 461.7,
+    "whole_units": 461,
+    "taxed_seller_days": 5,
+    "unique_taxed_sellers": 4
+  },
+  "alternative_half_rates": {
+    "exact": 230.85,
+    "whole_units": 229,
+    "rates_percent": [
+      0,
+      5,
+      10,
+      15
+    ],
+    "same_thresholds": true
+  },
+  "top_seller_days_anonymous": [
+    {
+      "d": "2026-10-20",
+      "revenue": 1734,
+      "basis": 0,
+      "gain": 1734,
+      "net": 1734,
+      "sales": 45,
+      "tax": 350.2,
+      "effective_percent": 20.2
+    },
+    {
+      "d": "2026-10-20",
+      "revenue": 625,
+      "basis": 0,
+      "gain": 625,
+      "net": 625,
+      "sales": 14,
+      "tax": 55.0,
+      "effective_percent": 8.8
+    },
+    {
+      "d": "2026-10-16",
+      "revenue": 520,
+      "basis": 0,
+      "gain": 520,
+      "net": 520,
+      "sales": 2,
+      "tax": 34.0,
+      "effective_percent": 6.54
+    },
+    {
+      "d": "2026-10-19",
+      "revenue": 500,
+      "basis": 130,
+      "gain": 370,
+      "net": 370,
+      "sales": 2,
+      "tax": 17.0,
+      "effective_percent": 4.59
+    },
+    {
+      "d": "2026-10-19",
+      "revenue": 255,
+      "basis": 0,
+      "gain": 255,
+      "net": 255,
+      "sales": 9,
+      "tax": 5.5,
+      "effective_percent": 2.16
+    },
+    {
+      "d": "2026-10-20",
+      "revenue": 460,
+      "basis": 300,
+      "gain": 160,
+      "net": 160,
+      "sales": 4,
+      "tax": 0.0,
+      "effective_percent": 0.0
+    },
+    {
+      "d": "2026-10-19",
+      "revenue": 120,
+      "basis": 0,
+      "gain": 120,
+      "net": 120,
+      "sales": 4,
+      "tax": 0.0,
+      "effective_percent": 0.0
+    },
+    {
+      "d": "2026-10-20",
+      "revenue": 250,
+      "basis": 137,
+      "gain": 113,
+      "net": 113,
+      "sales": 1,
+      "tax": 0.0,
+      "effective_percent": 0.0
+    },
+    {
+      "d": "2026-10-19",
+      "revenue": 120,
+      "basis": 24,
+      "gain": 96,
+      "net": 96,
+      "sales": 6,
+      "tax": 0.0,
+      "effective_percent": 0.0
+    },
+    {
+      "d": "2026-10-17",
+      "revenue": 60,
+      "basis": 0,
+      "gain": 60,
+      "net": 60,
+      "sales": 1,
+      "tax": 0.0,
+      "effective_percent": 0.0
+    }
+  ],
+  "today_partial": {
+    "day_utc": "2026-10-21",
+    "wage_receivers": 36,
+    "wages": 4880,
+    "median": 120
+  },
+  "today_trade_partial": {
+    "seller_days": 5,
+    "sales": 24,
+    "revenue": 1231,
+    "recorded_positive_margin": 1030,
+    "maximum": 566,
+    "tax_exact": 54.7,
+    "tax_whole": 54
+  },
+  "wallet_day_warning": {
+    "wallets": 105,
+    "stale_income_days": 58,
+    "coins_total": 77060
+  },
+  "method": {
+    "mode": "single repeatable-read READ ONLY transaction, 15s statement timeout",
+    "source_container": "dezertovia-postgres-1",
+    "excluded_synthetic_container": "desertovia-foundation-dev-postgres",
+    "deployed_image_commit": "4bb125f2dc05711ebaf4dac2723f3ee19eae3ea9",
+    "day_boundary": "UTC, matching deployed EconomyDay; 00:00 UTC = 02:00 Europe/Oslo on these dates",
+    "privacy": "only aggregate totals and anonymous seller-day amounts; no account IDs, names or credentials",
+    "rates_status": "hypothetical, NOT approved or activated",
+    "legacy_basis_warning": "live schema has no CostBasisKnown: recorded margins are not proven economic profit and must not become retrospective tax bills",
+    "hypothetical_scale": [
+      [
+        0,
+        0
+      ],
+      [
+        200,
+        0.1
+      ],
+      [
+        500,
+        0.2
+      ],
+      [
+        1000,
+        0.3
+      ]
+    ],
+    "gain_formula": "sum(max(sale Price - recorded CostBasis, 0)) per seller UTC day; losses do not refund prior tax",
+    "rounding": "fractional tax retained within seller-day; whole-unit tax floors once at seller-day level"
+  }
+}

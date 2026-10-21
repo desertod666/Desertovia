@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Desertod.Api.Game;
 
@@ -6,6 +7,37 @@ namespace Desertod.Api.Game;
 public static class AlmightyAnalysis
 {
     public static readonly TimeSpan Deadline=TimeSpan.FromSeconds(50);
+    public const int SnapshotCharacterLimit=36000;
+
+    /// <summary>Keep authoritative facts, permissions and all economic aggregates within the existing bot input limit.</summary>
+    public static string BoundSnapshot(string snapshot)
+    {
+        if(snapshot.Length<=SnapshotCharacterLimit)return snapshot;
+        var root=JsonNode.Parse(snapshot)!.AsObject();var omissions=new JsonArray();root["contextOmissions"]=omissions;
+        string Save()=>root.ToJsonString(GameService.AlmightyJson);
+        if(root["previous"] is JsonArray previous)
+        {
+            foreach(var item in previous.OfType<JsonObject>())
+                foreach(var (field,limit) in new[]{("reason",400),("result",160)})
+                    if(item[field]?.GetValue<string>() is {} value&&value.Length>limit)item[field]=value[..limit];
+            omissions.Add("Long previous proposal text shortened; full audit remains stored.");
+        }
+        if(Save().Length<=SnapshotCharacterLimit)return Save();
+        if(root["chat"] is JsonArray chat)
+        {
+            while(chat.Count>8)chat.RemoveAt(0);
+            omissions.Add("Only the latest eight chat messages are included.");
+        }
+        if(Save().Length<=SnapshotCharacterLimit)return Save();
+        if(root["catalog"] is JsonObject catalog)
+            foreach(var field in new[]{"recipes","items","enemies","weapons","armor"})
+            {
+                if(catalog.Remove(field))omissions.Add("Descriptive catalog."+field+" omitted to fit input budget; this never grants new tools.");
+                if(Save().Length<=SnapshotCharacterLimit)return Save();
+            }
+        // Never silently discard economic people/days, current facts or execution admission.
+        return Save();
+    }
 
     public static async Task<AlmightyAnswer?> RunAsync(IAlmightyBridge bridge,AlmightyReview review,TimeProvider time,CancellationToken ct)
     {
