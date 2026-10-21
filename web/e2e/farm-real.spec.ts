@@ -39,7 +39,8 @@ test('real resting resident inspects the map farm without waking or accepting wo
  page.on('request',request=>{if(request.method()!=='GET'&&request.url().includes('/api/villages/'))writes.push(request.url())})
  const minimap=page.locator('.minimap');await expect(minimap).toBeVisible()
  const bounds=(await minimap.locator('canvas').first().boundingBox())!
- await page.mouse.click(bounds.x+(xy.x+1.5+44)/120*bounds.width,bounds.y+(xy.y+1.5+32)/90*bounds.height)
+ const area=world.state.mapArea??{x:-44,y:-32,width:120,height:90}
+ await page.mouse.click(bounds.x+(xy.x+1.5-area.x)/area.width*bounds.width,bounds.y+(xy.y+1.5-area.y)/area.height*bounds.height)
  const canvas=page.locator('.game-canvas>canvas');const map=(await canvas.boundingBox())!
  await canvas.click({position:{x:map.width/2,y:map.height/2}})
  const popup=page.locator('.farm-popup');await expect(popup).toBeVisible()
