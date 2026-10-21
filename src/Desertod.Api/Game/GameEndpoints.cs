@@ -54,6 +54,9 @@ public static class GameEndpoints
         player.MapPut("/villages/{slug}/director/mode", async (string slug, AlmightyMode request, ClaimsPrincipal user, GameService game, CancellationToken ct) => {
             await game.SetAlmightyModeAsync(slug, user.RequireAccountId(), request.Mode, ct); return Results.Ok();
         });
+        player.MapPut("/villages/{slug}/director/category/{kind}", (string slug,string kind,AlmightyCategoryRequest request,
+            ClaimsPrincipal user,GameService game,CancellationToken ct)=>
+            game.SetAlmightyCategoryAsync(slug,user.RequireAccountId(),kind,request,ct));
         player.MapPost("/villages/{slug}/director/{id:guid}/vote", async (Guid id, AlmightyVote vote, ClaimsPrincipal user, GameService game, CancellationToken ct) =>
             Results.Ok(new { result = await game.DecideAlmightyAsync(id, user.RequireAccountId(), null, vote.Accept, ct) }));
         player.MapGet("/villages/{slug}/hospital", (string slug, ClaimsPrincipal user, GameService game, CancellationToken ct) =>

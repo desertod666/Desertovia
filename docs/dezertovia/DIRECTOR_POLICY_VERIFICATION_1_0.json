@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-21T07:29:20.936299+00:00",
+  "scope": "Partial T051: owner-controlled categories over existing handlers; atomic policy/audit/idempotent category receipt; no autonomous economic executor",
+  "source_base": "7ca133e",
+  "domain": {
+    "result": "TestResults/director-policy-domain/Admin_DESKTOP-FQ85FTD_2026-10-21_09_15_15_net10.0.trx",
+    "passed": 687,
+    "failed": 0,
+    "total": 687
+  },
+  "first_api": {
+    "result": "TestResults/director-policy-first/Admin_DESKTOP-FQ85FTD_2026-10-21_09_14_34_net10.0.trx",
+    "passed": 31,
+    "failed": 1,
+    "total": 32
+  },
+  "focused_api": {
+    "result": "TestResults/director-policy-final/Admin_DESKTOP-FQ85FTD_2026-10-21_09_22_32_net10.0.trx",
+    "passed": 22,
+    "failed": 0,
+    "total": 22
+  },
+  "final_test_cleanup_guards": {
+    "result": "TestResults/director-policy-guards/Admin_DESKTOP-FQ85FTD_2026-10-21_09_27_45_net10.0.trx",
+    "passed": 1,
+    "failed": 0,
+    "total": 1
+  },
+  "first_api_correction": "First acknowledgement time was100ns precision while PostgreSQL replay was microseconds. Normalize receipt At before persistence; exact equality now passes. Final test-only cleanup replaces completed Task.Result reads with await.",
+  "frontend": "TypeScript/Vite/oxlint success after adding required policy fields to existing harness; no graphical changes",
+  "bot": {
+    "recorded_at_utc": "2026-10-21T07:25:18.983916+00:00",
+    "tests": 13,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "python": "3.12.14",
+    "actual_snapshot_characters": 14992,
+    "options": 6,
+    "capability_kinds": 3,
+    "snapshot_sha256": "c2ecabde733830a693daa0ad8ca12eebad419328c15056559c6dbb2844bc7c9a",
+    "scope": "Existing bot HTTP/parser/cache tests plus exact exported synthetic C#v1 observation through existing bot handle; AI/Telegram mocked, no paid models or real messages",
+    "bot_changed": false,
+    "source_sha256": {
+      "sramoslav/almighty.py": "518b8a320e543c3787f10c2f94044cbce699d46ba3a11b9d93a0c96ab0d92eba",
+      "tests/test_almighty.py": "f4915d0d1e5b2dfdb224eef45af34809ce5b66415afcb9e5cadc9f2a863259f6"
+    }
+  },
+  "runtime": {
+    "loaded": true,
+    "schema": 54,
+    "migration_added": "20261021071117_AlmightyCategoryPolicy",
+    "before_backup": "/tmp/foundation-before-restart-20261021T072555Z.dump",
+    "compared_old_rows_unchanged": {
+      "accounts": {
+        "rows": 285,
+        "sha256": "48fb666de1222570033522491443534b3b6389e0c4ecf41d30a9c5fb274f8b4d"
+      },
+      "citizens": {
+        "rows": 28,
+        "sha256": "c6a96eff1fe3a758d0d3ce3a9485aa2d0a9623bf48720fc9063f5f9bd0de768b"
+      },
+      "villages": {
+        "rows": 5,
+        "sha256": "26a9cbb253634ac0bd01b6960a760baaeade18ad8d9be88a1d212f45bf7d0e66"
+      },
+      "dungeons": {
+        "rows": 5,
+        "sha256": "58822ec9801172152139efa57d0061593b0a591d9c36440aaebba78afe5a9b80"
+      },
+      "battles": {
+        "rows": 1,
+        "sha256": "dc7e0680ac864efa250e3bc45ad8e453b5084bc492d7912612728cb2bb93ee89"
+      },
+      "states": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "observations": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "proposals": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "wallets": {
+        "rows": 22,
+        "sha256": "3ec8b8f2af008d398461794a6f8daf46b7eed88e006c12a61e75195c14909d4b"
+      },
+      "economy": {
+        "rows": 5,
+        "sha256": "04c7d1fbadd9b1fce3d41ac39816c3b35c8d814dd9d72da1fb43efdced6505d9"
+      },
+      "orders": {
+        "rows": 1,
+        "sha256": "8af9465aeab271a2801725f42392b73842f7ba0b877cb018db759db645aa6bf9"
+      },
+      "claims": {
+        "rows": 1,
+        "sha256": "2da0fe2c943c37f3473da5e988cc13b10e79e263193d5b44b0585bbbf435881b"
+      }
+    },
+    "limits": "3Director tables were empty in shared migration fixture; nonempty history and active lease preservation proven only by isolated migration test. New state fields excluded. Other tables not compared.",
+    "http_restart": {
+      "verifiedAtUtc": "2026-10-21T07:28:48.363877+00:00",
+      "scope": "Actual loopback HTTP; durable original acknowledgement, current policy and two audit rows across an external API restart",
+      "policyVersion": 2,
+      "auditRows": 2,
+      "staleReplayUnchanged": true,
+      "modelCalls": 0,
+      "privateSyntheticWorld": true,
+      "publicRelease": false
+    },
+    "model_enabled": false,
+    "DevTools": false
+  },
+  "candidate_ci": {
+    "status": "not_created"
+  },
+  "public_release": false,
+  "source_sha256": {
+    "src/Desertod.Domain/Director/Almighty.cs": "1c9095ce53ab748666ff731e48f2fdc6d9c36f8489588d2f504b968684268ebf",
+    "src/Desertod.Domain/Director/AlmightyPermissions.cs": "3b8820e99352c495cb1c1aa312f8974ad6bd29103f6ec935421741638c9a4d8d",
+    "src/Desertod.Api/Game/GameService.Almighty.cs": "11caaf8e497594dafacf829eea7632f975fdb15fff7138d40f96a583f283e38a",
+    "src/Desertod.Api/Game/GameService.AlmightyPolicy.cs": "7ed50a8a3568e54395b41804549f325ce354320f73af04d41e14661a71a011ff",
+    "src/Desertod.Api/Game/GameEndpoints.cs": "2441542d19f98dbda43eb8f338c4cf30f91a3299aaadb3d0d98157f235fd52b9",
+    "src/Desertod.Infrastructure/Data/DesertodDbContext.cs": "15fc2c0282abf27f99699c972407cc8fd1f1a118bb396b729cf0ebbabddbe2c4",
+    "src/Desertod.Infrastructure/Data/Migrations/20261021071117_AlmightyCategoryPolicy.cs": "56ae66578436f857c3f313d8b660b9930cc4d0ff7e63861e3614eb6bee8cf536",
+    "src/Desertod.Infrastructure/Data/Migrations/20261021071117_AlmightyCategoryPolicy.Designer.cs": "068b3dca43704a8904226376633931ecaffb9692ce8fb61f726e5bf3af96f52a",
+    "src/Desertod.Infrastructure/Data/Migrations/DesertodDbContextModelSnapshot.cs": "f277d1da190974ad03c56ca0434eb16b09125c6b84b63707ba3391e7b6c54ee3",
+    "tests/Desertod.Domain.Tests/AlmightyPermissionTests.cs": "443e0606e5de04689c3ca5b644340dc84b568878287f2ba5c9896a080fe7cc11",
+    "tests/Desertod.Api.Tests/DirectorPolicyApiTests.cs": "6b8a04898647d00d0ea06869dac4d7baece909481aadc7a446fb307af8e7f3bd",
+    "tests/Desertod.Api.Tests/DirectorPolicyMigrationTests.cs": "9716acb540479174a367a725ca13fd0a14c971c6bb2a908a99e815f36af8bddd",
+    "web/src/api.ts": "bb936acd206ef32d3a097e59dc10d9ad6e03cc5e6f694ee22c1b458eb973bcd8",
+    "web/e2e/almighty-harness.tsx": "fd70e50404e309d467301001cfa6664cf4155107ec0ec642d14646f89264ef35",
+    "tools/verify-director-policy.py": "232b858670b594bafa0b339ffc833589c58b2db7a2f645f4c418861a532297ff"
+  },
+  "remaining": [
+    "Full exact-candidate CI",
+    "Category controls and visible audit in final interface phase D109",
+    "Full autonomous T051 executor/admission/funding/receipts, shadow comparison and remaining1.0 DAG",
+    "Live model/Telegram, physical devices, production/load not verified"
+  ],
+  "existing_dependency_warning": "Restore reports pre-existing NU1903 for Microsoft.AspNetCore.SignalR.Common10.0.12; no dependency change in this slice. Review separately before final release."
+}

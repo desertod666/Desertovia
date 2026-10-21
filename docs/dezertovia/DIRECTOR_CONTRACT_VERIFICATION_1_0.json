@@ -78,7 +78,7 @@
     "DevTools": false
   },
   "candidate_ci": {
-    "status": "new_exact_candidate_required_after_exploration_fixture_fix",
+    "status": "success_all_five_jobs",
     "pr": "https://github.com/desertod666/Desertovia/pull/92",
     "previous_sha": "547af63cec9a58b9b9788286b88dd17f83ded398",
     "previous_run": 39557808739,
@@ -91,7 +91,26 @@
     },
     "previous_frontend": "success",
     "previous_docker": "success",
-    "previous_browser": "not complete when correction prepared"
+    "previous_browser": "not complete when correction prepared",
+    "sha": "283b17f2e4c3f890a3daa2a7b7a61cf265c847e3",
+    "run": 39558809271,
+    "url": "https://github.com/desertod666/Desertovia/actions/runs/39558809271",
+    "backend": {
+      "job": 119085203513,
+      "domain_passed": 686,
+      "api_passed": 403,
+      "failed": 0
+    },
+    "browser": {
+      "desktop_job": 119085203064,
+      "desktop_passed": 208,
+      "phone_job": 119085203507,
+      "phone_passed": 206,
+      "skipped": 2
+    },
+    "frontend": "success",
+    "docker": "success",
+    "verified_at_utc": "2026-10-21T07:29:20.936299+00:00"
   },
   "source_sha256": {
     "src/Desertod.Domain/Director/AlmightyPermissions.cs": "8949fa9cad64e6f6f868f5ac27cbcea546d95898637a043365d2f190ea716a47",
@@ -104,7 +123,6 @@
   },
   "public_release": false,
   "remaining": [
-    "Final-source API and full exact candidate CI",
     "Full T050 global revision/economic/party evidence; T051-055 executors/receipts/category stops/shadow comparison/autonomy",
     "Live model/Telegram integration, physical devices and wider1.0 DAG"
   ],

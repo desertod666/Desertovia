@@ -14,12 +14,14 @@ using Microsoft.EntityFrameworkCore;
 namespace Desertod.Api.Game;
 
 public sealed record AlmightyView(AlmightyState State, IReadOnlyList<AlmightyProposal> Proposals,
-    IReadOnlyList<AlmightyObservation> Observations, bool Enabled);
+    IReadOnlyList<AlmightyObservation> Observations, bool Enabled,
+    IReadOnlyList<AlmightyPolicyChange>? PolicyChanges = null);
 public sealed record AlmightyReview(Guid VillageId, string Slug, Guid Lease, string Snapshot, string Intent,
     IReadOnlyList<AlmightyOption> Options);
 public sealed record AlmightyAnswer(string Option, string Reason, string Intent, string? ErrorCode = null);
 public sealed record AlmightyVote(bool Accept);
 public sealed record AlmightyMode(string Mode);
+public sealed record AlmightyCategoryRequest(Guid RequestId, bool? Enabled, long? ExpectedPolicyVersion);
 public sealed record AlmightyNotice(Guid ProposalId, string Slug, string OwnerId, string Title, string Reason, string Effect, DateTimeOffset ExpiresAt);
 
 public sealed partial class GameService
@@ -57,7 +59,8 @@ public sealed partial class GameService
             await db.SaveChangesAsync(ct);
             return new AlmightyView(state,
                 await db.AlmightyProposals.Where(p => p.VillageId == village.Id).OrderByDescending(p => p.CreatedAt).Take(30).ToListAsync(ct),
-                await db.AlmightyObservations.Where(p => p.VillageId == village.Id).OrderByDescending(p => p.At).Take(12).ToListAsync(ct), enabled);
+                await db.AlmightyObservations.Where(p => p.VillageId == village.Id).OrderByDescending(p => p.At).Take(12).ToListAsync(ct), enabled,
+                await db.AlmightyPolicyChanges.Where(p=>p.VillageId==village.Id).OrderByDescending(p=>p.At).ThenByDescending(p=>p.RequestId).Take(30).ToListAsync(ct));
         }, ct);
 
     public async Task SetAlmightyModeAsync(string slug, Guid actor, string mode, CancellationToken ct)
@@ -67,6 +70,7 @@ public sealed partial class GameService
             var village = await LoadVillageAsync(db, slug, ct);
             if (village.OwnerAccountId != actor) throw new UnauthorizedAccessException();
             var state = await DirectorStateAsync(db, village.Id, time.GetUtcNow(), ct);
+            if(state.Mode!=mode)state.PolicyVersion++;
             state.Mode = mode; state.Version++; state.Lease = null; state.LeaseUntil = null;
             state.NextReviewAt = time.GetUtcNow();
             foreach (var proposal in await db.AlmightyProposals.Where(p => p.VillageId == village.Id && p.Status == "Pending").ToListAsync(ct)) proposal.Status = "Superseded";
@@ -100,6 +104,7 @@ public sealed partial class GameService
             var options = AlmightyPolicy.Options(facts, RaidBalance.Approaches(village),readiness.Budget).Concat(VigorTuning.Options(village)).ToList();
             if (facts.Online >= 3 && facts.PendingRaids == 0 && facts.Patients == 0 && !await db.DungeonRuns.AnyAsync(r => r.VillageId == villageId && r.Kind==DungeonRunKind.Group && r.Phase != DungeonPhase.Ended, ct) && !await HasPersonalEncounterAsync(db,villageId,village.OwnerAccountId,ct) && !await HasActiveRaidActorAsync(db,villageId,village.OwnerAccountId,null,ct) && RegionalTravel.WesternExit(village) is not null)
                 options.Add(new("dungeon", "Общий поход", "Открыть сбор в существующий данж. Вход добровольный, обычные правила/награды/ранения."));
+            options=AlmightyPermissions.Filter(options,state.DisabledKinds);
             // Любая недавняя заявка о набеге, включая отклонённую, даёт царю паузу.
             var raidOptionIds = AlmightyPolicy.RaidOptionIds();
             var lastRaidProposal = await db.AlmightyProposals.Where(p => p.VillageId == villageId && raidOptionIds.Contains(p.Option))
@@ -107,6 +112,8 @@ public sealed partial class GameService
             var lastEncounter = village.Raids.Select(r => r.ResolvedAt ?? r.AnnouncedAt)
                 .Append(village.CreatedAt).Max();
             var raidPressure = AlmightyPolicy.RaidPressure(facts, now, lastEncounter, lastRaidProposal);
+            if(state.DisabledKinds.Contains("raid"))raidPressure=raidPressure with { Eligible=false,ProposalDue=false,
+                BlockedBy=raidPressure.BlockedBy.Append("director_raid_category_disabled").ToArray() };
             var fallbackRaid = raidPressure.ProposalDue ? options.FirstOrDefault(o => o.Enemy is not null && o.Composition == "mixed")
                 ?? options.FirstOrDefault(o => o.Enemy is not null) : null;
             var stock = village.Storages.SelectMany(s => s.Goods).GroupBy(g => g.Kind.ToString()).ToDictionary(g => g.Key, g => g.Sum(x => x.Amount));
@@ -132,6 +139,7 @@ public sealed partial class GameService
                     capturedAt=now,mode=state.Mode,revision,revisionScope=AlmightyPermissions.RevisionScope,
                     scope="Observed evidence only; economic executors and party policy remain outside this contract."},
                 permissions,
+                directorPolicy=new{state.PolicyVersion,state.DisabledKinds},
                 now, facts, stock, previousStock,
                 raidPressure = new { raidPressure.Eligible, raidPressure.ProposalDue, raidPressure.BlockedBy,
                     raidPressure.NextProposalAt, lastEncounterAt = lastEncounter, approvedRestUntil = state.RestUntil, fallbackOption = fallbackRaid?.Id,
@@ -194,7 +202,7 @@ public sealed partial class GameService
                 observation.Reason=state.LastError;
                 await db.SaveChangesAsync(ct);return false;
             }
-            var admittedOptions=saved.RootElement.GetProperty("options").Deserialize<List<AlmightyOption>>(AlmightyJson)!;
+            var admittedOptions=AlmightyPermissions.Filter(saved.RootElement.GetProperty("options").Deserialize<List<AlmightyOption>>(AlmightyJson)!,state.DisabledKinds);
             var chosen = answer is not null ? admittedOptions.FirstOrDefault(o => o.Id == answer.Option) : null;
             if (answer is null || answer.ErrorCode is not null || chosen is null || string.IsNullOrWhiteSpace(answer.Reason) || answer.Reason.Length > 1200 || (answer.Intent?.Length ?? 0) > 1000) {
                 state.LastError = (answer?.ErrorCode switch {
@@ -313,6 +321,7 @@ public sealed partial class GameService
                 var allowed = AlmightyPolicy.Options(facts, paths,bossBudget).Concat(VigorTuning.Options(village)).FirstOrDefault(o => o.Id == p.Option);
                 var approach = allowed?.Sector is { } sector ? paths.FirstOrDefault(a => a.Sector == sector) : null;
                 var permitted = allowed is not null || p.Option == "dungeon" && facts.Online >= 3 && facts.Patients == 0 && facts.PendingRaids == 0 && !await db.DungeonRuns.AnyAsync(r => r.VillageId == villageId && r.Kind==DungeonRunKind.Group && r.Phase != DungeonPhase.Ended, ct) && !await HasPersonalEncounterAsync(db,villageId,village.OwnerAccountId,ct) && !await HasActiveRaidActorAsync(db,villageId,village.OwnerAccountId,null,ct) && RegionalTravel.WesternExit(village) is not null;
+                permitted=permitted && AlmightyPermissions.IsEnabled(p.Option,state.DisabledKinds);
                 if (p.Option.StartsWith("vigor_", StringComparison.Ordinal))
                 {
                     using var snapshot = JsonDocument.Parse(p.Snapshot);

@@ -7,6 +7,8 @@ public sealed class AlmightyState
     public Guid VillageId { get; set; }
     public string Mode { get; set; } = "Propose";
     public long Version { get; set; }
+    public long PolicyVersion { get; set; }
+    public string[] DisabledKinds { get; set; } = [];
     public string Intent { get; set; } = "Наблюдать за городом и предлагать царю полезные события.";
     public DateTimeOffset NextReviewAt { get; set; }
     public DateTimeOffset? LastReviewAt { get; set; }
@@ -62,6 +64,22 @@ public sealed class AlmightyObservation
     public string Snapshot { get; set; } = "{}";
     public string Option { get; set; } = "none";
     public string Reason { get; set; } = "";
+}
+
+/// <summary>Durable acknowledgement and audit of a category request, including no-op requests.</summary>
+public sealed class AlmightyPolicyChange
+{
+    public Guid VillageId { get; set; }
+    public Guid RequestId { get; set; }
+    public Guid ActorId { get; set; }
+    public string Kind { get; set; } = "";
+    public bool Enabled { get; set; }
+    public long ExpectedPolicyVersion { get; set; }
+    public long PolicyVersion { get; set; }
+    public bool Changed { get; set; }
+    public DateTimeOffset At { get; set; }
+    public string[] DisabledKinds { get; set; } = [];
+    public Guid[] SupersededProposals { get; set; } = [];
 }
 
 public sealed record AlmightyFacts(int Population, int Online, int ReadyGuards, int Patients, int PendingRaids,

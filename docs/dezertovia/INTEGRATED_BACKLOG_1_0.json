@@ -2103,7 +2103,7 @@
       "id": "PKG-T051",
       "milestone": "M5",
       "title": "Идемпотентный исполнитель решений",
-      "status": "planned_not_implemented_by_this_assignment",
+      "status": "partially_implemented",
       "dependencies": [
         "PKG-T050",
         "PKG-T011"
@@ -2139,9 +2139,13 @@
       "source": "source-package/05_TASKS.json",
       "current_support": {
         "status": "partial",
-        "evidence": "Существующие проверяемые handlers после решения владельца есть; новый автономный executor не готов.",
-        "runtime_verification": "not_run_this_assignment"
-      }
+        "evidence": "Owner-only category stops, separate policy version, atomic durable category acknowledgements/audit; no autonomous economic executor. DIRECTOR_POLICY_1_0.md and DIRECTOR_POLICY_VERIFICATION_1_0.json.",
+        "runtime_verification": "loopback HTTP/restart, schema53-to54 old-row comparison and isolated migration/history/concurrency tests; full exact CI pending"
+      },
+      "implementation_evidence": [
+        "DIRECTOR_POLICY_1_0.md",
+        "DIRECTOR_POLICY_VERIFICATION_1_0.json"
+      ]
     },
     {
       "id": "PKG-T052",

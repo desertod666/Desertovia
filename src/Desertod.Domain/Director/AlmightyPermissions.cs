@@ -16,7 +16,24 @@ public sealed record AlmightyObservedWorld(AlmightyFacts Facts,RaidReadiness Rea
 public static class AlmightyPermissions
 {
     public const int SnapshotVersion=1;
+    public static IReadOnlyList<string> ControllableKinds { get; } = Array.AsReadOnly<string>(["advice","notice","rest","raid","dungeon","vigor"]);
     public static readonly string[] RevisionScope=["facts","stock","readiness","mode","vigor","offeredPermissions"];
+
+    public static string? KindForOptionId(string id) => id switch
+    {
+        "none"=>"observe", "economy_report"=>"advice", "work_notice"=>"notice", "rest"=>"rest", "dungeon"=>"dungeon",
+        "vigor_stronger" or "vigor_weaker" or "vigor_frequent" or "vigor_rare"=>"vigor",
+        _=>AlmightyPolicy.RaidOptionIds().Contains(id,StringComparer.Ordinal)?"raid":null,
+    };
+
+    public static bool IsEnabled(string optionId,IReadOnlyCollection<string> disabledKinds) =>
+        KindForOptionId(optionId) is {} kind && (kind=="observe" || !disabledKinds.Contains(kind,StringComparer.Ordinal));
+
+    public static List<AlmightyOption> Filter(IReadOnlyList<AlmightyOption> options,IReadOnlyCollection<string> disabledKinds)
+    {
+        Describe(options); // A category switch never turns unknown parameters into an admitted action.
+        return options.Where(o=>IsEnabled(o.Id,disabledKinds)).ToList();
+    }
 
     // Parameters already live in options; repeating every raid profile would waste bridge payload.
     public static IReadOnlyList<AlmightyCapability> Catalog(IReadOnlyList<AlmightyOption> options)=>

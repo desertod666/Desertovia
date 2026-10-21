@@ -241,6 +241,52 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.ToTable("AlmightyObservations");
                 });
 
+            modelBuilder.Entity("Desertod.Domain.Director.AlmightyPolicyChange", b =>
+                {
+                    b.Property<Guid>("VillageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RequestId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ActorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("At")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Changed")
+                        .HasColumnType("boolean");
+
+                    b.PrimitiveCollection<string[]>("DisabledKinds")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("ExpectedPolicyVersion")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)");
+
+                    b.Property<long>("PolicyVersion")
+                        .HasColumnType("bigint");
+
+                    b.PrimitiveCollection<Guid[]>("SupersededProposals")
+                        .IsRequired()
+                        .HasColumnType("uuid[]");
+
+                    b.HasKey("VillageId", "RequestId");
+
+                    b.HasIndex("VillageId", "At", "RequestId");
+
+                    b.ToTable("AlmightyPolicyChanges");
+                });
+
             modelBuilder.Entity("Desertod.Domain.Director.AlmightyProposal", b =>
                 {
                     b.Property<Guid>("Id")
@@ -311,6 +357,12 @@ namespace Desertod.Infrastructure.Data.Migrations
                     b.Property<int>("CallsToday")
                         .HasColumnType("integer");
 
+                    b.PrimitiveCollection<string[]>("DisabledKinds")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text[]")
+                        .HasDefaultValueSql("ARRAY[]::text[]");
+
                     b.Property<string>("Intent")
                         .IsRequired()
                         .HasColumnType("text");
@@ -345,6 +397,11 @@ namespace Desertod.Infrastructure.Data.Migrations
 
                     b.Property<DateTimeOffset>("NextReviewAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("PolicyVersion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasDefaultValue(0L);
 
                     b.Property<DateTimeOffset?>("RestUntil")
                         .HasColumnType("timestamp with time zone");
@@ -2139,6 +2196,15 @@ namespace Desertod.Infrastructure.Data.Migrations
                 });
 
             modelBuilder.Entity("Desertod.Domain.Director.AlmightyObservation", b =>
+                {
+                    b.HasOne("Desertod.Domain.Entities.Village", null)
+                        .WithMany()
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Desertod.Domain.Director.AlmightyPolicyChange", b =>
                 {
                     b.HasOne("Desertod.Domain.Entities.Village", null)
                         .WithMany()

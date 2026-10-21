@@ -1547,9 +1547,15 @@ export interface AlmightyProposal {
 }
 export interface AlmightyView {
   enabled: boolean;
-  state: { mode: string; intent: string; lastReviewAt: string | null; nextReviewAt: string; restUntil: string | null; lastError: string; callsToday: number; lastSnapshot: string };
+  state: { mode: string; policyVersion:number; disabledKinds:AlmightyCategory[]; intent: string; lastReviewAt: string | null; nextReviewAt: string; restUntil: string | null; lastError: string; callsToday: number; lastSnapshot: string };
+  policyChanges?:AlmightyPolicyChange[];
   proposals: AlmightyProposal[];
   observations: { id: string; at: string; option: string; reason: string; snapshot: string }[]
+}
+export type AlmightyCategory='advice'|'notice'|'rest'|'raid'|'dungeon'|'vigor'
+export interface AlmightyPolicyChange {
+  villageId:string;requestId:string;actorId:string;kind:AlmightyCategory;enabled:boolean;expectedPolicyVersion:number;
+  policyVersion:number;changed:boolean;at:string;disabledKinds:AlmightyCategory[];supersededProposals:string[]
 }
 
 export function createOperationId() {
@@ -1608,6 +1614,8 @@ export const api = {
   defenseSector: (slug: string, sector: string) => request<void>('PUT', `/api/villages/${encodeURIComponent(slug)}/me/defense`, { mode: sector }),
   almighty: (slug: string) => request<AlmightyView>('GET', `/api/villages/${encodeURIComponent(slug)}/director`),
   almightyMode: (slug: string, mode: string) => request<void>('PUT', `/api/villages/${encodeURIComponent(slug)}/director/mode`, { mode }),
+  // Keep this explicit operation ID for retries; the receipt describes its original commit, not the latest policy.
+  almightyCategory: (slug:string,kind:AlmightyCategory,enabled:boolean,expectedPolicyVersion:number,requestId:string) => request<AlmightyPolicyChange>('PUT', `/api/villages/${encodeURIComponent(slug)}/director/category/${kind}`,{requestId,enabled,expectedPolicyVersion}),
   almightyVote: (slug: string, id: string, accept: boolean) => request<{result:string}>('POST', `/api/villages/${encodeURIComponent(slug)}/director/${id}/vote`, { accept }),
   rescue: (slug:string, id:string)=>request<Citizen>('POST',`/api/villages/${encodeURIComponent(slug)}/rescue/${id}`),
   requestRescue: (slug:string)=>request<boolean>('POST',`/api/villages/${encodeURIComponent(slug)}/rescue/request`),
