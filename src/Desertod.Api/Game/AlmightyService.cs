@@ -20,17 +20,24 @@ public interface IAlmightyBridge
 }
 public sealed class AlmightyBridge(IServiceScopeFactory scopes) : IAlmightyBridge
 {
-    private async Task<T?> Call<T>(object request, CancellationToken ct)
+    private async Task<T?> Call<T>(object request, CancellationToken ct,bool requireValid=false)
     {
         using var scope = scopes.CreateScope();
         var bridge = scope.ServiceProvider.GetRequiredService<TelegramBrowserBridge>();
         try { return bridge.Enabled ? await bridge.CallAsync<T>("director", request, ct) : default; }
-        catch (Exception e) when (e is InvalidOperationException or JsonException) { return default; }
+        catch (Exception e) when (!requireValid && e is (InvalidOperationException or JsonException)) { return default; }
     }
     public async Task<AlmightyAnswer?> AnalyzeAsync(AlmightyReview r, CancellationToken ct)
     {
-        try { return await Call<AlmightyAnswer>(new { kind = "analyze", requestId = r.Lease, worldId = r.VillageId, snapshot = r.Snapshot, intent = r.Intent }, ct); }
+        try {
+            var json=await Call<JsonElement?>(new { kind = "analyze", requestId = r.Lease, worldId = r.VillageId, snapshot = r.Snapshot, intent = r.Intent }, ct,requireValid:true);
+            return json is {} value?AlmightyAnalysis.ReadAnswer(value,r.Options):AlmightyAnalysis.Failed("bridge.unavailable");
+        }
         catch (OperationCanceledException) when (!ct.IsCancellationRequested) { return new("none", "", "", "bridge.timeout"); }
+        catch (DirectorBridgePayloadException) { return AlmightyAnalysis.Failed("bridge.payload"); }
+        catch (JsonException) { return AlmightyAnalysis.Failed("bridge.json"); }
+        catch (InvalidOperationException) { return AlmightyAnalysis.Failed("bridge.fields"); }
+        catch (HttpRequestException e) when(e.StatusCode==System.Net.HttpStatusCode.TooManyRequests) { return AlmightyAnalysis.Failed("bridge.rate_limit"); }
         catch (HttpRequestException) { return new("none", "", "", "bridge.http"); }
     }
     public async Task<AlmightyDelivery> NotifyAsync(AlmightyNotice n, CancellationToken ct) =>
@@ -61,7 +68,7 @@ public sealed class AlmightyService(GameService game, IDbContextFactory<Desertod
             if (review is not null)
             {
                 AlmightyAnswer? answer = null;
-                try { answer = await bridge.AnalyzeAsync(review, ct); }
+                try { answer = await AlmightyAnalysis.RunAsync(bridge,review,time,ct); }
                 catch (Exception e) when (e is not OperationCanceledException || !ct.IsCancellationRequested) { logger.LogWarning("Director model unavailable ({Type}).", e.GetType().Name); }
                 await game.CompleteAlmightyReviewAsync(review, answer, ct);
             }

@@ -117,7 +117,27 @@
     "DevTools": false
   },
   "candidate_ci": {
-    "status": "not_created"
+    "status": "success_all_five_jobs",
+    "pr": "https://github.com/desertod666/Desertovia/pull/93",
+    "sha": "597c74a536039ff606925c539fe2667ed6e4b8e4",
+    "run": 39562557428,
+    "url": "https://github.com/desertod666/Desertovia/actions/runs/39562557428",
+    "backend": {
+      "job": 119097014814,
+      "domain_passed": 687,
+      "api_passed": 413,
+      "failed": 0
+    },
+    "browser": {
+      "desktop_job": 119097014619,
+      "desktop_passed": 208,
+      "phone_job": 119097014854,
+      "phone_passed": 206,
+      "skipped": 2
+    },
+    "frontend": "success",
+    "docker": "success",
+    "verified_at_utc": "2026-10-21T07:57:17.009206+00:00"
   },
   "public_release": false,
   "source_sha256": {
@@ -138,7 +158,6 @@
     "tools/verify-director-policy.py": "232b858670b594bafa0b339ffc833589c58b2db7a2f645f4c418861a532297ff"
   },
   "remaining": [
-    "Full exact-candidate CI",
     "Category controls and visible audit in final interface phase D109",
     "Full autonomous T051 executor/admission/funding/receipts, shadow comparison and remaining1.0 DAG",
     "Live model/Telegram, physical devices, production/load not verified"
