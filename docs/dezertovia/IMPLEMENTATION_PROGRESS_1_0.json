@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "decision": "D-104",
-  "recorded_at_utc": "2026-10-21T13:41:37.840222+00:00",
-  "status": "main_plan_active_director_finance_executors_implemented_expanded_verification_running",
+  "recorded_at_utc": "2026-10-21T13:58:42.367057+00:00",
+  "status": "main_plan_active_director_finance_scoped_checks_passed_repaired_exact_ci_required",
   "authorization": {
     "owner_statement": "Но пока это все тестовый сервер. Так что можно. Начинай работу если готов",
     "implementation": true,
@@ -3626,12 +3626,12 @@
     ]
   },
   "director_finance_1_0": {
-    "recorded_at_utc": "2026-10-21T13:41:37.840222+00:00",
+    "recorded_at_utc": "2026-10-21T13:58:42.367057+00:00",
     "branch": "feat/desertovia-1-0-director-finance",
     "source_parent": "c8cd2e6",
-    "status": "implemented_partial_verification_running",
+    "status": "implemented_scoped_checks_passed_repaired_exact_ci_required",
     "implemented": true,
-    "verified": "scoped_only_expanded_checks_running",
+    "verified": "scoped_not_full_T054",
     "released": false,
     "checks": {
       "domain": {
@@ -3693,9 +3693,84 @@
         "oxlint": "PASS with pre-existing warnings"
       },
       "expanded_api": {
-        "status": "running",
-        "session": 22700,
-        "scope": "finance tax/day/retention, migration, economy observation and large snapshots"
+        "path": "TestResults/director-finance-expanded/director-finance-expanded.trx",
+        "sha256": "a5fd380e0d77170884d2ef89983bc7d0d4f844a32684535f9f3ae51e89ef1c38",
+        "counters": {
+          "total": "20",
+          "executed": "20",
+          "passed": "20",
+          "failed": "0",
+          "error": "0",
+          "timeout": "0",
+          "aborted": "0",
+          "inconclusive": "0",
+          "passedButRunAborted": "0",
+          "notRunnable": "0",
+          "notExecuted": "0",
+          "disconnected": "0",
+          "warning": "0",
+          "completed": "0",
+          "inProgress": "0",
+          "pending": "0"
+        }
+      },
+      "browser": {
+        "path_outside_git": "qa/director-finance-browser-results.json",
+        "passed": 4,
+        "scope": "desktop/phone320px existing panel, unknown acknowledgement retry, mode and stop/spent-allowance display; mocked adapter"
+      },
+      "legacy_fixture_first_repair": {
+        "path": "TestResults/director-finance-legacy-migration-fix/director-finance-legacy-migration-fix.trx",
+        "sha256": "d2d5c1a7ad32e3e0c0cd4480684ae7d1e5151eaaaf68cde857e2c83c6d0566f5",
+        "counters": {
+          "total": "2",
+          "executed": "2",
+          "passed": "0",
+          "failed": "2",
+          "error": "0",
+          "timeout": "0",
+          "aborted": "0",
+          "inconclusive": "0",
+          "passedButRunAborted": "0",
+          "notRunnable": "0",
+          "notExecuted": "0",
+          "disconnected": "0",
+          "warning": "0",
+          "completed": "0",
+          "inProgress": "0",
+          "pending": "0"
+        }
+      },
+      "legacy_fixture_final_repair": {
+        "path": "TestResults/director-finance-legacy-migration-final/director-finance-legacy-migration-final.trx",
+        "sha256": "a33365b24ab8612bc9701ab0cfc7dcb24df8731c39bfd40e71f899877f4108a4",
+        "counters": {
+          "total": "2",
+          "executed": "2",
+          "passed": "2",
+          "failed": "0",
+          "error": "0",
+          "timeout": "0",
+          "aborted": "0",
+          "inconclusive": "0",
+          "passedButRunAborted": "0",
+          "notRunnable": "0",
+          "notExecuted": "0",
+          "disconnected": "0",
+          "warning": "0",
+          "completed": "0",
+          "inProgress": "0",
+          "pending": "0"
+        }
+      },
+      "bot_full_ci": {
+        "run_id": 39610582046,
+        "job_id": 119258074683,
+        "head_sha": "f453fe1c94300f820e1f53aec63b99182bd6e3d4",
+        "passed": 1122,
+        "conclusion": "success",
+        "pr": "https://github.com/desertod666/TG-bots/pull/105",
+        "released": false
       }
     },
     "migration": {
@@ -3742,10 +3817,63 @@
       "raw_snapshots_committed": false
     },
     "private_http": {
-      "status": "not_yet_run"
+      "before_restart": {
+        "phase": "before",
+        "at": "2026-10-21T13:48:54.027449+00:00",
+        "syntheticOnly": true,
+        "version": 2,
+        "enabled": false,
+        "directorMode": "Off",
+        "actions": 0,
+        "actionsToday": 0,
+        "reservedToday": 0,
+        "oldGrantReplayVersion": 1,
+        "oldFundingIssueReplayIdentical": true,
+        "coins": 800,
+        "treasury": 160,
+        "coinChange": 0,
+        "treasuryChange": 0,
+        "realModelCalls": false,
+        "telegram": false
+      },
+      "after_restart": {
+        "phase": "after",
+        "at": "2026-10-21T13:53:51.557022+00:00",
+        "syntheticOnly": true,
+        "version": 2,
+        "enabled": false,
+        "directorMode": "Off",
+        "actions": 0,
+        "actionsToday": 0,
+        "reservedToday": 0,
+        "oldGrantReplayVersion": 1,
+        "oldFundingIssueReplayIdentical": true,
+        "coins": 800,
+        "treasury": 160,
+        "coinChange": 0,
+        "treasuryChange": 0,
+        "realModelCalls": false,
+        "telegram": false
+      },
+      "pre_restart_backup": "/tmp/foundation-before-restart-20261021T135243Z.dump",
+      "initial_observer_error": "Mode endpoint returns200, not204. Resumed the same owned grant requests, paused delegation and Off; no model calls or duplicate money.",
+      "scope": "Own pre-existing synthetic QA world only.Grant v1 then pause v2, Off, original grant replay v1 and old funding receipt replay; zero money change. Current API product source loaded; model/Telegram/DevTools disabled."
     },
     "candidate_ci": {
-      "status": "not_yet_started"
+      "run_id": 39610526154,
+      "head_sha": "d2a9f61753a01dc9dffdd3bd75610eaab032ddc6",
+      "status": "backend_two_legacy_fixture_failures_browser_still_running",
+      "domain_passed": 726,
+      "api_passed": 480,
+      "api_failed": 2,
+      "failures": [
+        "TreasuryFundingMigrationTests old/all-column comparison and partial downgrade shape",
+        "MonetaryAuditMigrationTests old/all-column comparison and partial downgrade shape"
+      ],
+      "frontend": "success",
+      "docker": "success",
+      "repair": "Exclude only new nullable DirectorReviewId from old-column comparison, assert it separately; re-upgrade current schema after the older guard refuses. No game guard weakened.",
+      "replacement_status": "two corrected legacy migration tests passed locally; exact replacement CI required"
     },
     "remaining": [
       "Exact final candidate API/browser/CI/restart evidence",
@@ -3753,6 +3881,23 @@
       "Wider T054 adaptive threshold/target selection and farm/building/adventure funding integration",
       "T055 shadow comparisons and actual bounded staging director loop",
       "Full1.0 DAG, final UI after functionality; no public deployment or real payments"
-    ]
+    ],
+    "owner_work_session_rule": {
+      "remaining_percent_last_observed": 51,
+      "window_minutes": 10080,
+      "observed_at_utc": "2026-10-21T13:55:14Z",
+      "stop_at_or_below_percent": 9,
+      "pause_pre_authorized": true,
+      "awake_script": "tools/work-session.ps1",
+      "awake_process_id": 33868,
+      "lease_expires_without_renewal_utc": "2026-10-21T14:10:57.2250719Z",
+      "system_request_verified": true,
+      "permanent_power_settings_changed": false
+    },
+    "source_hashes": {
+      "src/Desertod.Api/Game/GameService.DirectorFinance.cs": "e401fa3a920033398a3d96107bcf3a67b4b84cc996e52674da8b02a34d2f439f",
+      "src/Desertod.Domain/Director/DirectorFinance.cs": "2d8b92db6a970c4e011f8622c356a25db4515cfc34eed693de6dadb668cb20e2",
+      "src/Desertod.Infrastructure/Data/DesertodDbContext.DirectorFinance.cs": "d676af5d25e5f6c7a2504794718e5cdf78c5dd0dfe776173357913e416017283"
+    }
   }
 }

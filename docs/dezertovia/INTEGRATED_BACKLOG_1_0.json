@@ -2286,7 +2286,7 @@
       "current_support": {
         "status": "partial_implemented_scoped_verification_running",
         "evidence": "DIRECTOR_FINANCE_1_0.md / DIRECTOR_FINANCE_VERIFICATION_1_0.json: delegated closed economic executors, fresh admission, system audit and comparative consequences; no default grant or chosen live tax scale. Full T054 remains open.",
-        "runtime_verification": "726Domain/39initialAPI/13mockedBot passed; isolated57to58 preserved27old tables; expanded tests/CI pending. Local model and Telegram disabled."
+        "runtime_verification": "726Domain;39initial/20expanded/2finalAPI across stages;4browser and1122botCI PASS;57to58 preserved27old tables, actual grant/pause/restart/replay unchanged800/160. First gameCI had2legacy migration fixture failures, repaired locally; exact replacement CI required. No real model/Telegram."
       },
       "owner_economic_direction": {
         "decision": "D111",
