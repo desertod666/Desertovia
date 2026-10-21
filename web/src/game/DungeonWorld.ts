@@ -18,6 +18,8 @@ import { VILLAGER_SPRITES } from './worldMap'
 const LABEL_FONT = 'system-ui, "Segoe UI", sans-serif'
 /** About this many tiles across the screen at the default zoom. */
 const DEFAULT_VIEW_TILES = 22
+/** At least48px across the selection circle on a narrow screen. */
+const MINIMUM_DEFAULT_TILE_PIXELS = 32
 const MAXIMUM_SCALE = 6
 /** Figures glide toward the latest snapshot; further than this many tiles they jump. */
 const JUMP_TILES = 3
@@ -401,6 +403,17 @@ export class DungeonWorld {
     this.layoutCamera()
   }
 
+  /** Resume following after inspecting another part of the map. No movement order is sent. */
+  focusHero() {
+    this.following = true
+    const mine = this.myHeroId ? this.heroes.get(this.myHeroId) : null
+    if (mine) {
+      this.centerX = mine.x
+      this.centerY = mine.y
+      this.layoutCamera()
+    }
+  }
+
   /** Rings under the player's hero, their target and whom they heal. */
   private drawMarks(snapshot: DungeonSnapshot) {
     this.marks.clear()
@@ -640,7 +653,7 @@ export class DungeonWorld {
   }
 
   private defaultScale() {
-    return Math.max(this.minimumScale(), this.app.screen.width / (DEFAULT_VIEW_TILES * TILE))
+    return Math.max(this.minimumScale(), MINIMUM_DEFAULT_TILE_PIXELS / TILE, this.app.screen.width / (DEFAULT_VIEW_TILES * TILE))
   }
 
   /** Keeps the map on screen: centred when it is smaller than the screen, clamped to its edges otherwise. */
@@ -696,16 +709,51 @@ export class DungeonWorld {
   private bindPointer() {
     const canvas = this.app.canvas
     canvas.style.touchAction = 'none'
+    const pointers = new Map<number, { x: number; y: number }>()
+    let pinching = false
+    let previousPinch: { distance: number; x: number; y: number } | null = null
     const local = (event: PointerEvent | WheelEvent) => {
       const bounds = canvas.getBoundingClientRect()
       return { x: event.clientX - bounds.left, y: event.clientY - bounds.top }
     }
+    const pinch = () => {
+      const [a, b] = [...pointers.values()]
+      return a && b ? { distance: Math.hypot(a.x - b.x, a.y - b.y), x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 } : null
+    }
     canvas.addEventListener('pointerdown', (event) => {
+      if (event.button !== 0) return
+      if (pointers.size === 0) { pinching = false; previousPinch = null }
+      pointers.set(event.pointerId, local(event))
       canvas.setPointerCapture(event.pointerId)
+      if (pointers.size > 1) {
+        pinching = true
+        this.dragging = null
+        previousPinch = pinch()
+        return
+      }
       this.dragging = { x: event.clientX, y: event.clientY, centerX: this.centerX, centerY: this.centerY, moved: false }
     })
     canvas.addEventListener('pointermove', (event) => {
+      if (pointers.has(event.pointerId)) pointers.set(event.pointerId, local(event))
+      if (pinching) {
+        const next = pinch()
+        if (next && previousPinch && previousPinch.distance > 0 && next.distance > 0) {
+          const anchor = this.toTiles(previousPinch.x, previousPinch.y)
+          this.following = false
+          this.zoomBy(next.distance / previousPinch.distance)
+          const moved = this.toTiles(next.x, next.y)
+          // Near an edge the displayed centre differs from the requested hero centre.
+          // Anchor against the displayed map, otherwise the first pinch jumps sideways.
+          const displayed = this.toTiles(this.app.screen.width / 2, this.app.screen.height / 2)
+          this.centerX = Math.min(this.width, Math.max(0, displayed.x + anchor.x - moved.x))
+          this.centerY = Math.min(this.height, Math.max(0, displayed.y + anchor.y - moved.y))
+          this.layoutCamera()
+        }
+        previousPinch = next
+        return
+      }
       if (!this.dragging) {
+        if (event.pointerType !== 'mouse') return
         const point = local(event)
         const tiles = this.toTiles(point.x, point.y)
         const overFoe = [...this.foes.values()].some((foe) => !foe.dead && Math.hypot(foe.x - tiles.x, foe.y - 0.35 - tiles.y) < PICK_RADIUS)
@@ -722,14 +770,24 @@ export class DungeonWorld {
       this.layoutCamera()
     })
     canvas.addEventListener('pointerup', (event) => {
+      if (event.button !== 0) return
+      if (!pointers.delete(event.pointerId)) return
       const dragging = this.dragging
       this.dragging = null
-      if (!dragging || dragging.moved) return
+      // Lifting either finger, including the last one, must never issue an attack or move.
+      if (pinching || !dragging || dragging.moved) { previousPinch = pinch(); return }
       const point = local(event)
       const tiles = this.toTiles(point.x, point.y)
       this.pick(tiles.x, tiles.y)
     })
-    canvas.addEventListener('pointercancel', () => (this.dragging = null))
+    const cancel = (event: PointerEvent) => {
+      if (!pointers.delete(event.pointerId)) return
+      pinching = true
+      previousPinch = null
+      this.dragging = null
+    }
+    canvas.addEventListener('pointercancel', cancel)
+    canvas.addEventListener('lostpointercapture', cancel)
     canvas.addEventListener('contextmenu', (event) => event.preventDefault())
     canvas.addEventListener(
       'wheel',

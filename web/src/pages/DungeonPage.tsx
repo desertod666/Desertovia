@@ -102,18 +102,20 @@ function DungeonView() {
         ) : view ? (
           <DungeonHud view={view} snapshot={snapshot} backTo={backTo} onRetreat={retreat}/>
         ) : null}
-        <div className="zoom-controls">
-          <button onClick={() => world?.zoomBy(ZOOM_STEP)} aria-label={t('hud.zoomIn')}>
-            +
-          </button>
-          <button onClick={() => world?.zoomBy(1 / ZOOM_STEP)} aria-label={t('hud.zoomOut')}>
-            −
-          </button>
-        </div>
+        <DungeonCameraControls world={world} hasHero={!!myHeroId} />
       </div>
       {view && view.run.phase === 'Ended' && <DungeonResult view={view} backTo={backTo} />}
     </div>
   )
+}
+
+export function DungeonCameraControls({ world, hasHero }: { world: Pick<DungeonWorld, 'zoomBy' | 'focusHero'> | null; hasHero: boolean }) {
+  const { t } = useI18n()
+  return <div className="zoom-controls">
+    <button onClick={() => world?.zoomBy(ZOOM_STEP)} aria-label={t('hud.zoomIn')}>+</button>
+    <button onClick={() => world?.zoomBy(1 / ZOOM_STEP)} aria-label={t('hud.zoomOut')}>−</button>
+    {hasHero && <button onClick={() => world?.focusHero()} aria-label={t('hud.locate')}>◎</button>}
+  </div>
 }
 
 export function DungeonHud({ view, snapshot, backTo,onRetreat }: { view: DungeonRunView; snapshot: DungeonSnapshot | null; backTo: string;onRetreat:()=>void }) {
