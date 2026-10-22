@@ -2345,7 +2345,7 @@
     "physical_mobile_hardware_tested": false
   },
   "manual_garden_d102": {
-    "status": "planned_model_selected",
+    "status": "planned_model_calculated",
     "recorded_on": "2026-10-20",
     "document": "docs/dezertovia/SHARED_FARM_PLAN.md",
     "owner_request": [
@@ -2355,8 +2355,7 @@
       "delegate_economic_model_choice"
     ],
     "open_questions": [
-      "calculate_timing_inputs_and_fertilizer_recipe",
-      "validate_food_and_workload_for_5_10_20_active_citizens"
+      "validate_actual_paths_visit_schedule_and_rounded_yields_during_implementation"
     ],
     "implementation_authorized": false,
     "game_code_changed": false,
@@ -2382,7 +2381,9 @@
       "public_food_reserve": "two_existing_standard_portions_per_citizen_active_in_last_24_real_hours",
       "below_reserve": "defer_personal_claim_keep_earned_share",
       "fractional_shares": "persist_no_rounding_up"
-    }
+    },
+    "calculation_document": "docs/dezertovia/SHARED_FARM_CALCULATION.md",
+    "calculated_on": "2026-10-22"
   },
   "candidate_0_7_17": {
     "status": "released_verified",
