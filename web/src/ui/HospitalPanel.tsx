@@ -90,7 +90,7 @@ export function HospitalPanel({ slug, actorId, citizenId, tsar, village, onVilla
             }}>{t('hospital.buy', { price: confirmation.price })}</button><button onClick={() => setConfirmation(null)}>{t('hospital.cancel')}</button></div>
           </section> : <div className="hospital-tiers">{status?.tiers.map(tier => <button className="hospital-tier" key={tier.code}
             disabled={!status.available || !admitted || busy || !!tier.blocked || (status.balance ?? 0) < tier.price} onClick={() => setConfirmation(tier)}>
-            <strong>{tier.title}</strong><span>{t('hospital.effect', { min: tier.minHours, max: tier.maxHours })}</span><span>{tier.price} 🕯</span>
+            <strong>{tier.title}</strong><span>{t('hospital.effect', { min: tier.minHours, max: tier.maxHours })}</span><span>{tier.price} 🪙</span>
           </button>)}</div>}
         <section className="hospital-patients"><h3>{t('hospital.patients', { count: status?.patients.length ?? 0 })}</h3>
           {status?.patients.map(p => <button type="button" className="hospital-patient-card" disabled={busy||!!payment} key={p.id} aria-label={`Пациент ${p.name}`}
