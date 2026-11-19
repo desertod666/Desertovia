@@ -9,7 +9,7 @@ let paid = false
 const until = new Date(Date.now() + 24 * 3600000).toISOString()
 const recovery = { episodeId: 'duel-test', admittedAt: new Date().toISOString(), until, checkedAt: new Date().toISOString(), available:true, hospitalPercent:4, skillPercent:2 }
 const status: HospitalStatus = { available:true, level:2, balance:200, recovery,
-  tiers:[{code:'candle',title:'Свечка за здравие',minHours:1,maxHours:2,price:50,blocked:''},{code:'prayer',title:'Молитва',minHours:3,maxHours:4,price:100,blocked:''}],
+  tiers:[{code:'candle',title:'Благословение за здравие',minHours:1,maxHours:2,price:50,blocked:''},{code:'prayer',title:'Молитва',minHours:3,maxHours:4,price:100,blocked:''}],
   patients:[{id:'patient',name:'Игрок с длинным именем',appearance:{gender:'Male',style:0,skinTone:0,hairColor:0,outfitColor:0},recovery}] }
 api.hospital = async () => paid ? {...status,patients:[],recovery:null,balance:150} : status
 let firstId: string | null = null
