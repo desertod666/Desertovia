@@ -178,7 +178,7 @@ public sealed partial class GameService
                     }
                     else
                     {
-                        if (wallet.TestCandles < 3) throw new GameRuleException("economy.candles", "Not enough test candles.");
+                        if (wallet.TestCandles < 3) throw new GameRuleException("economy.candles", "Not enough test descoins.");
                         wallet.TestCandles -= 3;
                         MoneyEntry(db, village.Id, request.RequestId, account, "energy-drink", "TEST_CANDLE", "wallet", -3, now);
                     }
